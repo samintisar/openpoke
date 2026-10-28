@@ -460,7 +460,11 @@ def _agent_result(kit: _Kit, i: int, rng: random.Random) -> _Draft:
     roles = ("main", "colleague", "other", "dormant", "main_cross", "typo", "twin", "main_neg")
     agent, person = kit.target(roles[i % len(roles)])
     body = rng.choice(AGENT_RESULTS).format(first=person.first, phrase=agent.topic)
-    return _Draft(f"[SUCCESS] {agent.name}: {body}", [agent.id], {"message_type": "agent", "dispatch_optional": True})
+    # Every AGENT_RESULTS template needs the user's input, so relaying it as a question is correct too.
+    return _Draft(
+        f"[SUCCESS] {agent.name}: {body}", [agent.id],
+        {"message_type": "agent", "dispatch_optional": True, "clarify_ok": True},
+    )
 
 
 _BUILDERS: dict[str, Callable[[_Kit, int, random.Random], _Draft]] = {

@@ -181,7 +181,7 @@ def test_messages_are_unique_within_each_kind():
 
 # Pins the exact output of generation. Any change to the world generator or case builders
 # changes it: update the constant deliberately, after checking the new cases by hand.
-GOLDEN_SHA256 = "546d099ae44b267c3c39f1cd15adf7229fb195566a5aa1f11038b6480bad5e67"
+GOLDEN_SHA256 = "289de94bc84eaedd2fb0a837425e0d0df29e8d9f132b8781099a7702936932b2"
 
 
 def test_generation_matches_the_golden_hash():
