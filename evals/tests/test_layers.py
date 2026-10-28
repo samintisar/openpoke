@@ -264,3 +264,75 @@ def test_render_context_handles_long_contexts():
     stamps = re.findall(r'timestamp="([^"]+)"', rendered)
     parsed = [datetime.strptime(stamp, "%Y-%m-%d %H:%M:%S") for stamp in stamps]
     assert parsed == sorted(parsed) and len(set(parsed)) == 150
+
+
+def test_iteration_cap_matches_production():
+    from server.agents.interaction_agent.runtime import InteractionAgentRuntime
+
+    assert MAX_ITERATIONS == InteractionAgentRuntime.MAX_TOOL_ITERATIONS == 8
+
+
+@pytest.mark.parametrize(
+    "name, args",
+    [
+        ("send_message_to_agent", {"agent_name": "x"}),
+        ("send_message_to_agent", {}),
+        ("send_message_to_agent", {"agent_name": "x", "instructions": "y", "priority": "high"}),
+        ("send_message_to_user", {}),
+        ("send_message_to_user", {"message": "m", "extra": 1}),
+        ("send_draft", {"to": "a"}),
+        ("send_draft", {"to": "a", "subject": "s", "body": "b", "cc": "c"}),
+        ("wait", {}),
+        ("wait", {"reason": "r", "why": "w"}),
+    ],
+)
+async def test_argument_errors_are_byte_identical_to_production(name, args):
+    from server.agents.interaction_agent.tools import handle_tool_call
+
+    expected = handle_tool_call(name, json.dumps(args)).payload["error"]
+    world, case = setup()
+    decision, captured = await run(case, world, first_turn_only(raw_call(name, json.dumps(args))))
+    assert decision.tool_calls[0]["error"] == expected
+    assert json.loads(captured[1][-1]["content"])["error"] == {"error": expected}
+
+
+class FailingLLM:
+    """One successful paid call with a tool call, then the given exception."""
+
+    def __init__(self, exc):
+        self.exc = exc
+        self.calls = 0
+
+    async def complete(self, **kwargs):
+        self.calls += 1
+        if self.calls > 1:
+            raise self.exc
+        meta = {"cost": 0.04, "cached": False, "cache_key": "k1", "prompt_tokens": 10}
+        message = {"role": "assistant", "content": "", "tool_calls": [tool_call("wait", reason="x")]}
+        return {"choices": [{"message": message}], "_meta": meta}
+
+    async def aclose(self):
+        return None
+
+
+async def test_mid_case_error_carries_partial_cost():
+    from evals.layers.routing import RoutingCaseError
+
+    world, case = setup()
+    original = RuntimeError("upstream broke")
+    with pytest.raises(RoutingCaseError) as info:
+        await run_routing_case(case, world, BaselineSystem(), FailingLLM(original), model="m", sample=0)
+    assert info.value.__cause__ is original
+    assert "upstream broke" in str(info.value)
+    partial = info.value.decision
+    assert partial.cost == pytest.approx(0.04) and partial.fresh_cost == pytest.approx(0.04)
+    assert partial.iterations == 1 and partial.cache_keys == ["k1"]
+
+
+async def test_budget_exceeded_propagates_with_partial_decision():
+    from evals.llm import BudgetExceeded
+
+    world, case = setup()
+    with pytest.raises(BudgetExceeded) as info:
+        await run_routing_case(case, world, BaselineSystem(), FailingLLM(BudgetExceeded("cap")), model="m", sample=0)
+    assert info.value.decision.fresh_cost == pytest.approx(0.04)
