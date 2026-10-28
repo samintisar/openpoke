@@ -57,7 +57,7 @@ async def test_agent_intent_uses_the_report_prompt():
     llm = Recorder(["Alice replied: she can do Thursday at 3"])
     assert await _write(llm, intent=intent) == "Alice replied: she can do Thursday at 3"
     assert llm.calls[0]["system"] == AGENT_SYSTEM
-    assert "Report what a contact replied" in llm.calls[0]["user"]
+    assert "Report the outcome of the task" in llm.calls[0]["user"]
 
 
 async def test_transcript_tail_renders_only_the_last_six_entries():

@@ -11,25 +11,29 @@ ATTEMPTS = 3
 TAIL = 6
 
 USER_SYSTEM = (
-    "You write the exact chat message a busy person sends to their AI assistant. "
-    "Keep it short and casual, often lowercase, and occasionally include a small typo, "
-    "but never misspell any of the words you are required to include. "
+    "You write the exact chat message a busy person texts their AI assistant. "
+    "Usually one line, casual, often lowercase, sometimes a small typo, but never misspell a required word. "
+    "Vary how messages open; most skip greetings. Never announce what kind of request it is "
+    "(no \"something new\", \"a new task\", \"two things\"); just say it. "
+    "Refer to people by first name only unless the hard rules require more. "
+    "Assume the assistant knows the person's life; don't over-explain. "
     "Output only the message itself: no quotes, no preamble, no explanation."
 )
 
 AGENT_SYSTEM = (
-    "You write the body of a status report that an AI assistant's background worker sends back "
-    "after hearing from a contact. Describe what the contact replied, for example "
-    '"Alice replied: she can do Thursday at 3". One or two sentences, plain and factual. '
-    "Output only the report body: no prefix, no quotes, no preamble."
+    "You write the body of a status report that an AI assistant's background worker sends back. "
+    "If a contact is involved, say what they replied, for example "
+    '"Alice replied: she can do Thursday at 3". If no contact is involved, say what the worker found '
+    'or did, for example "Found 3 flights under $400; cheapest is Tuesday 7am". '
+    "One or two sentences, plain and factual. Output only the report body: no prefix, no quotes, no preamble."
 )
 
 _KIND_PHRASES = {
-    "start": "Ask the assistant for help with something new",
-    "follow_up": "Continue an ongoing task with the assistant, adding the next step or update",
-    "revival": "Pick back up a task you last talked about weeks ago",
-    "multi": "Make two separate requests in one message",
-    "result": "Report what a contact replied",
+    "start": "Ask the assistant to do this. It's the first time you mention it, but don't say so",
+    "follow_up": "Add the next step to something the assistant is already handling for you",
+    "revival": "Pick back up something you last discussed weeks ago",
+    "multi": "Ask for two unrelated things in one message; keep them clearly separate, don't blend them",
+    "result": "Report the outcome of the task",
 }
 
 
@@ -38,7 +42,7 @@ def _about(intent: Intent) -> str:
     phrase = _KIND_PHRASES.get(intent.kind, "Send a message to the assistant")
     parts = [phrase + "."]
     if intent.contacts:
-        parts.append("It concerns: " + ", ".join(intent.contacts) + ".")
+        parts.append("It concerns: " + ", ".join(intent.contacts) + " (the user knows them; use first names).")
     if intent.topic:
         parts.append(f"Topic: {intent.topic}.")
     if intent.detail:
