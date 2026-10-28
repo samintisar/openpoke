@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Set
 from .agent import build_system_prompt, prepare_message_with_history
 from .tools import ToolResult, get_tool_schemas, handle_tool_call
 from ...config import get_settings
+from ...services.agents.registry import get_agent_directory
 from ...services.conversation import get_conversation_log, get_working_memory_log
 from ...openrouter_client import request_chat_completion
 from ...logging_config import logger
@@ -39,6 +40,15 @@ class _LoopSummary:
     user_messages: List[str] = field(default_factory=list)
     tool_names: List[str] = field(default_factory=list)
     execution_agents: Set[str] = field(default_factory=set)
+    dispatched_ids: List[str] = field(default_factory=list)
+
+
+def _dispatched_agent_id(result: ToolResult) -> Optional[str]:
+    """The agent id a successful `send_message_to_agent` result reports, if any."""
+    if not result.success or not isinstance(result.payload, dict):
+        return None
+    agent_id = result.payload.get("agent_id")
+    return agent_id if isinstance(agent_id, str) and agent_id else None
 
 
 class InteractionAgentRuntime:
@@ -76,6 +86,7 @@ class InteractionAgentRuntime:
 
             logger.info("Processing user message through interaction agent")
             summary = await self._run_interaction_loop(system_prompt, messages)
+            self._update_last_routed(summary)
 
             final_response = self._finalize_response(summary)
 
@@ -166,12 +177,14 @@ class InteractionAgentRuntime:
             for tool_call in parsed_tool_calls:
                 summary.tool_names.append(tool_call.name)
 
-                if tool_call.name == "send_message_to_agent":
-                    agent_name = tool_call.arguments.get("agent_name")
-                    if isinstance(agent_name, str) and agent_name:
-                        summary.execution_agents.add(agent_name)
-
                 result = self._execute_tool(tool_call)
+
+                if tool_call.name == "send_message_to_agent":
+                    agent_id = _dispatched_agent_id(result)
+                    if agent_id:
+                        summary.execution_agents.add(agent_id)
+                        if agent_id not in summary.dispatched_ids:
+                            summary.dispatched_ids.append(agent_id)
 
                 if result.user_message:
                     summary.user_messages.append(result.user_message)
@@ -189,6 +202,17 @@ class InteractionAgentRuntime:
             logger.warning("Interaction loop exited without assistant content")
 
         return summary
+
+    # Remember which agents this user turn reached, for the next turn's retrieval boost
+    def _update_last_routed(self, summary: _LoopSummary) -> None:
+        # A turn that dispatched nothing ("thanks!") keeps the previous routing, so a later vague
+        # follow-up still resolves to the agents last worked with.
+        if not summary.dispatched_ids:
+            return
+        try:
+            get_agent_directory().set_last_routed(summary.dispatched_ids)
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning("Failed to record last routed agents", extra={"error": str(exc)})
 
     # Load conversation history, preferring summarized version if available
     def _load_conversation_transcript(self) -> str:

@@ -1,4 +1,7 @@
-"""Execution agent log management with structured XML-style tags."""
+"""Execution agent log management with structured XML-style tags.
+
+Logs are keyed by agent id (the registry card id), so two agents whose names slug alike never share a log.
+"""
 
 from __future__ import annotations
 
@@ -6,7 +9,7 @@ import re
 import threading
 from html import escape, unescape
 from pathlib import Path
-from typing import Dict, Iterator, List, Tuple
+from typing import Dict, Iterator, List, Optional, Tuple
 
 from ...logging_config import logger
 from ...utils.timezones import now_in_user_timezone
@@ -157,6 +160,18 @@ class ExecutionAgentLogStore:
         """Load recent log entries."""
         entries = list(self.iter_entries(agent_name))
         return entries[-limit:] if entries else []
+
+    def rename_agent(self, old_key: str, new_key: str) -> bool:
+        """Move an agent's log to a new key; never overwrites an existing log."""
+        source, target = self._log_path(old_key), self._log_path(new_key)
+        if source == target or not source.exists() or target.exists():
+            return False
+        try:
+            source.rename(target)
+            return True
+        except Exception as exc:
+            logger.error(f"Failed to rename log: {exc}")
+            return False
 
     def list_agents(self) -> list[str]:
         """List all agents with logs."""

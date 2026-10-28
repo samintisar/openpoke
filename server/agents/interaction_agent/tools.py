@@ -3,11 +3,14 @@
 import asyncio
 import json
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any, Optional
 
 from ...logging_config import logger
+from ...services.agents import TOOL_SCHEMAS, dispatch, search_payload
+from ...services.agents.registry import get_agent_directory
 from ...services.conversation import get_conversation_log
-from ...services.execution import get_agent_roster, get_execution_agent_logs
+from ...services.execution import get_execution_agent_logs
 from ..execution_agent.batch_manager import ExecutionBatchManager
 
 
@@ -20,134 +23,61 @@ class ToolResult:
     user_message: Optional[str] = None
     recorded_reply: bool = False
 
-# Tool schemas for OpenRouter
-TOOL_SCHEMAS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "send_message_to_agent",
-            "description": "Deliver instructions to a specific execution agent. Creates a new agent if the name doesn't exist in the roster, or reuses an existing one.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "agent_name": {
-                        "type": "string",
-                        "description": "Human-readable agent name describing its purpose (e.g., 'Vercel Job Offer', 'Email to Sharanjeet'). This name will be used to identify and potentially reuse the agent."
-                    },
-                    "instructions": {"type": "string", "description": "Instructions for the agent to execute."},
-                },
-                "required": ["agent_name", "instructions"],
-                "additionalProperties": False,
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "send_message_to_user",
-            "description": "Deliver a natural-language response directly to the user. Use this for updates, confirmations, or any assistant response the user should see immediately.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "message": {
-                        "type": "string",
-                        "description": "Plain-text message that will be shown to the user and recorded in the conversation log.",
-                    },
-                },
-                "required": ["message"],
-                "additionalProperties": False,
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "send_draft",
-            "description": "Record an email draft so the user can review the exact text.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "to": {
-                        "type": "string",
-                        "description": "Recipient email for the draft.",
-                    },
-                    "subject": {
-                        "type": "string",
-                        "description": "Email subject for the draft.",
-                    },
-                    "body": {
-                        "type": "string",
-                        "description": "Email body content (plain text).",
-                    },
-                },
-                "required": ["to", "subject", "body"],
-                "additionalProperties": False,
-            },
-        },
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "wait",
-            "description": "Wait silently when a message is already in conversation history to avoid duplicating responses. Adds a <wait> log entry that is not visible to the user.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "reason": {
-                        "type": "string",
-                        "description": "Brief explanation of why waiting (e.g., 'Message already sent', 'Draft already created').",
-                    },
-                },
-                "required": ["reason"],
-                "additionalProperties": False,
-            },
-        },
-    },
-]
 
 _EXECUTION_BATCH_MANAGER = ExecutionBatchManager()
 
 
-# Create or reuse execution agent and dispatch instructions asynchronously
-def send_message_to_agent(agent_name: str, instructions: str) -> ToolResult:
-    """Send instructions to an execution agent."""
-    roster = get_agent_roster()
-    roster.load()
-    existing_agents = set(roster.get_agents())
-    is_new = agent_name not in existing_agents
-
-    if is_new:
-        roster.add_agent(agent_name)
-
-    get_execution_agent_logs().record_request(agent_name, instructions)
-
-    action = "Created" if is_new else "Reused"
-    logger.info(f"{action} agent: {agent_name}")
-
-    async def _execute_async() -> None:
-        try:
-            result = await _EXECUTION_BATCH_MANAGER.execute_agent(agent_name, instructions)
-            status = "SUCCESS" if result.success else "FAILED"
-            logger.info(f"Agent '{agent_name}' completed: {status}")
-        except Exception as exc:  # pragma: no cover - defensive
-            logger.error(f"Agent '{agent_name}' failed: {str(exc)}")
-
+# Reuse or create an execution agent through the registry and dispatch instructions asynchronously
+def send_message_to_agent(
+    instructions: str,
+    agent_id: Optional[str] = None,
+    name: Optional[str] = None,
+    purpose: Optional[str] = None,
+    force_new: bool = False,
+) -> ToolResult:
+    """Send instructions to an execution agent, reusing `agent_id` or creating one from `name`/`purpose`."""
     try:
         loop = asyncio.get_running_loop()
     except RuntimeError:
         logger.error("No running event loop available for async execution")
         return ToolResult(success=False, payload={"error": "No event loop available"})
 
+    result = dispatch(
+        get_agent_directory(),
+        instructions=instructions,
+        agent_id=agent_id,
+        name=name,
+        purpose=purpose,
+        force_new=bool(force_new),
+        now=datetime.now(timezone.utc),
+    )
+    if result.action not in {"reused", "created"} or result.card is None:
+        # possible_duplicate or error: nothing was sent; the payload says what to do next.
+        logger.info(f"send_message_to_agent not dispatched: {result.action}")
+        return ToolResult(success=False, payload=result.payload)
+
+    card = result.card
+    get_execution_agent_logs().record_request(card.id, instructions)
+    logger.info(f"{result.action.capitalize()} agent: {card.name} ({card.id})")
+
+    async def _execute_async() -> None:
+        try:
+            outcome = await _EXECUTION_BATCH_MANAGER.execute_agent(card.id, instructions, agent_name=card.name)
+            status = "SUCCESS" if outcome.success else "FAILED"
+            logger.info(f"Agent '{card.name}' completed: {status}")
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.error(f"Agent '{card.name}' failed: {str(exc)}")
+
     loop.create_task(_execute_async())
 
-    return ToolResult(
-        success=True,
-        payload={
-            "status": "submitted",
-            "agent_name": agent_name,
-            "new_agent_created": is_new,
-        },
-    )
+    return ToolResult(success=True, payload=result.payload)
+
+
+# Search every agent card, archived included, when nothing listed fits
+def search_agents(query: str) -> ToolResult:
+    """Return the rendered best-matching agent cards for `query`."""
+    payload = search_payload(get_agent_directory(), query, datetime.now(timezone.utc))
+    return ToolResult(success=True, payload=payload)
 
 
 # Send immediate message to user and record in conversation history
@@ -208,7 +138,7 @@ def wait(reason: str) -> ToolResult:
     )
 
 
-# Return predefined tool schemas for LLM function calling
+# Return the shared tool schemas for LLM function calling
 def get_tool_schemas():
     """Return OpenAI-compatible tool schemas."""
     return TOOL_SCHEMAS
@@ -227,6 +157,8 @@ def handle_tool_call(name: str, arguments: Any) -> ToolResult:
 
         if name == "send_message_to_agent":
             return send_message_to_agent(**args)
+        if name == "search_agents":
+            return search_agents(**args)
         if name == "send_message_to_user":
             return send_message_to_user(**args)
         if name == "send_draft":
