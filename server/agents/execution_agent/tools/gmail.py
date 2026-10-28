@@ -6,7 +6,7 @@ import json
 from typing import Any, Callable, Dict, List, Optional
 
 from server.services.execution import get_execution_agent_logs
-from server.services.gmail import execute_gmail_tool, get_active_gmail_user_id
+from server.services.gmail import execute_gmail_tool, get_active_gmail_user_id, wrap_message_text_fields
 
 _GMAIL_AGENT_NAME = "gmail-execution-agent"
 
@@ -491,7 +491,8 @@ def gmail_list_drafts(
     composio_user_id = get_active_gmail_user_id()
     if not composio_user_id:
         return {"error": "Gmail not connected. Please connect Gmail in settings first."}
-    return _execute("GMAIL_LIST_DRAFTS", composio_user_id, arguments)
+    # Verbose drafts carry message text (e.g. quoted replies), so mark it untrusted
+    return wrap_message_text_fields(_execute("GMAIL_LIST_DRAFTS", composio_user_id, arguments))
 
 
 def gmail_search_people(

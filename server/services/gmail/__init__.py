@@ -11,6 +11,7 @@ from .importance_classifier import classify_email_importance
 from .importance_watcher import ImportantEmailWatcher, get_important_email_watcher
 from .processing import EmailTextCleaner, ProcessedEmail, parse_gmail_fetch_response
 from .seen_store import GmailSeenStore
+from .untrusted import escape_untrusted, wrap_message_text_fields, wrap_untrusted_email
 
 __all__ = [
     "execute_gmail_tool",
@@ -25,4 +26,7 @@ __all__ = [
     "ProcessedEmail",
     "parse_gmail_fetch_response",
     "GmailSeenStore",
+    "escape_untrusted",
+    "wrap_message_text_fields",
+    "wrap_untrusted_email",
 ]

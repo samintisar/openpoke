@@ -15,6 +15,7 @@ from server.services.gmail import (
     execute_gmail_tool,
     get_active_gmail_user_id,
     parse_gmail_fetch_response,
+    wrap_untrusted_email,
 )
 from .gmail_internal import GMAIL_FETCH_EMAILS_SCHEMA
 from .schemas import (
@@ -424,7 +425,7 @@ def _safe_json_dumps(payload: Any) -> str:
 
 
 def _processed_to_schema(email: ProcessedEmail) -> GmailSearchEmail:
-    """Convert shared processed email into GmailSearchEmail schema."""
+    """Convert shared processed email into GmailSearchEmail schema, marking the body untrusted."""
 
     return GmailSearchEmail(
         id=email.id,
@@ -435,7 +436,7 @@ def _processed_to_schema(email: ProcessedEmail) -> GmailSearchEmail:
         recipient=email.recipient,
         timestamp=email.timestamp,
         label_ids=list(email.label_ids),
-        clean_text=email.clean_text,
+        clean_text=wrap_untrusted_email(email.clean_text, sender=email.sender, thread_id=email.thread_id),
         has_attachments=email.has_attachments,
         attachment_count=email.attachment_count,
         attachment_filenames=list(email.attachment_filenames),
