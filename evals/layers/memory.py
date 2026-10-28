@@ -140,7 +140,7 @@ async def run_memory_agent(agent: AgentHistory, llm: LLMClient, *, model: str, b
 
     full = await _condition(llm, model, system_prompt(agent.name, agent.purpose, full_history), full_history, agent.facts)
     if result is not None:
-        history = render_history(result.memory, identifiers, tail)
+        history = render_history(result.memory, identifiers, tail, context_entries=prefix)
         # Compaction refreshes the card's purpose, which the agent's prompt then uses.
         compacted = await _condition(
             llm, model, system_prompt(agent.name, result.purpose, history), history, agent.facts

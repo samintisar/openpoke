@@ -279,7 +279,9 @@ def test_system_prompt_with_memory_renders_memory_identifiers_and_entries_after_
     logs.record_memory("gary-lease", "Gary agreed to $4,200.", ["gary@example.com", THREAD], 8)
     entries = memory.load_entries(logs, "gary-lease")
     prompt = ExecutionAgent("gary-lease", "Gary Lease").build_system_prompt_with_history()
-    expected = render_history("Gary agreed to $4,200.", ["gary@example.com", THREAD], entries[8:])
+    expected = render_history(
+        "Gary agreed to $4,200.", ["gary@example.com", THREAD], entries[8:], context_entries=entries[:8]
+    )
     assert prompt.endswith("# Execution History\n\n" + expected)
     assert "Run 0" not in prompt and "Run 1" not in prompt and "Run 2" in prompt
 
@@ -438,3 +440,16 @@ async def test_batch_manager_schedules_compaction_after_the_run(monkeypatch):
     for _ in range(3):
         await asyncio.sleep(0)
     assert not batch_module._COMPACTION_TASKS
+
+
+def test_identifiers_are_annotated_with_their_last_use():
+    texts = [
+        'Calling gmail_create_draft with: {"thread_id": "119649bb5f34b724", "subject": "Lease 4B renewal"}',
+        'Calling reply_to_thread with: {"thread_id": "1c77a99d35cb9c1b", "subject": "Parking side question"}',
+        'Calling reply_to_thread with: {"thread_id": "119649bb5f34b724", "subject": "Re: Lease 4B renewal"}',
+    ]
+    main, side = memory.annotate_identifiers(["119649bb5f34b724", "1c77a99d35cb9c1b"], texts)
+    assert main.startswith("119649bb5f34b724 (") and "Re: Lease 4B" in main
+    assert "Parking side question" in side
+    rendered = render_history("m", ["119649bb5f34b724"], [], context_entries=[memory.Entry("agent_action", texts[2])])
+    assert "<agent_identifiers>\n119649bb5f34b724 (" in rendered

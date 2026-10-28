@@ -200,11 +200,49 @@ async def compact(
     return parse_compaction(raw, purpose)
 
 
-def render_history(memory: str, identifiers: Sequence[str], tail_entries: Sequence[Entry]) -> str:
-    """`<agent_memory>`, `<agent_identifiers>`, then the raw tail rendered as the log store renders it."""
+_CONTEXT_BEFORE = 70
+_CONTEXT_AFTER = 30
+_SPACE_RE = re.compile(r"\s+")
+
+
+def annotate_identifiers(identifiers: Sequence[str], texts: Sequence[str]) -> list[str]:
+    """Each identifier with the text around its last appearance in `texts`, e.g.
+    `119649bb5f34b724 (Calling reply_to_thread with: {"thread_id": "… "subject": "Re: Lease 4B")`.
+
+    A bare list of ids does not say which is the main thread and which a side thread or a deleted
+    draft (on the memory eval, unlabelled ids cut thread-id recall to 0.50), so the context goes with them.
+    """
+    lowered = [text.lower() for text in texts]
+    annotated: list[str] = []
+    for identifier in identifiers:
+        needle = identifier.lower()
+        context = ""
+        for text, low in zip(reversed(texts), reversed(lowered)):
+            pos = low.rfind(needle)
+            if pos >= 0:
+                before = text[max(0, pos - _CONTEXT_BEFORE):pos]
+                after = text[pos + len(identifier):pos + len(identifier) + _CONTEXT_AFTER]
+                context = _SPACE_RE.sub(" ", f"{before}…{after}").strip()
+                break
+        annotated.append(f"{identifier} ({context})" if context else identifier)
+    return annotated
+
+
+def render_history(
+    memory: str, identifiers: Sequence[str], tail_entries: Sequence[Entry], context_entries: Sequence[Entry] = ()
+) -> str:
+    """`<agent_memory>`, `<agent_identifiers>`, then the raw tail rendered as the log store renders it.
+
+    With `context_entries` (the compacted prefix) each identifier gets its own line with the text around
+    its last use there; without them, the identifiers are a comma-separated list.
+    """
+    if context_entries:
+        ids = "\n" + "\n".join(annotate_identifiers(identifiers, [entry.text for entry in context_entries])) + "\n"
+    else:
+        ids = ", ".join(identifiers)
     head = (
         f"<agent_memory>{escape(memory, quote=False)}</agent_memory>\n"
-        f"<agent_identifiers>{escape(', '.join(identifiers), quote=False)}</agent_identifiers>\n"
+        f"<agent_identifiers>{escape(ids, quote=False)}</agent_identifiers>\n"
     )
     return head + render_entries(tail_entries)
 
