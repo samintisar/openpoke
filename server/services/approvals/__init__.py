@@ -19,6 +19,7 @@ from .gate import (  # noqa: E402
     SendContent,
     agent_ids_with_pending,
     approve,
+    approve_recurring,
     check_send,
     content_hash,
     expire_stale,
@@ -28,10 +29,11 @@ from .gate import (  # noqa: E402
     pending_shown,
     render,
     request_approval,
+    revoke_standing,
     set_approval_store,
     show,
 )
-from .store import PendingAction, PendingActionStore  # noqa: E402
+from .store import PendingAction, PendingActionStore, StandingApproval  # noqa: E402
 
 __all__ = [
     "APPROVAL_TTL",
@@ -40,8 +42,10 @@ __all__ = [
     "PendingAction",
     "PendingActionStore",
     "SendContent",
+    "StandingApproval",
     "agent_ids_with_pending",
     "approve",
+    "approve_recurring",
     "check_send",
     "content_hash",
     "default_db_path",
@@ -53,6 +57,7 @@ __all__ = [
     "pending_shown",
     "render",
     "request_approval",
+    "revoke_standing",
     "set_approval_store",
     "show",
 ]

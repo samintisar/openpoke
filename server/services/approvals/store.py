@@ -33,6 +33,18 @@ class PendingAction:
     created_at: datetime  # timezone-aware UTC
 
 
+@dataclass(frozen=True)
+class StandingApproval:
+    """The user's standing yes for one trigger's sends to a fixed set of recipients, until revoked."""
+
+    id: int
+    trigger_id: int
+    agent_id: str
+    recipients: List[str]  # normalized, sorted
+    created_at: datetime  # timezone-aware UTC
+    revoked_at: Optional[datetime]
+
+
 def to_storage(moment: datetime) -> str:
     """UTC ISO 8601 with microseconds, so shown/approval times compare exactly against user-message times."""
     return moment.astimezone(timezone.utc).isoformat(timespec="microseconds")
@@ -89,10 +101,26 @@ class PendingActionStore:
         CREATE INDEX IF NOT EXISTS idx_pending_actions_lookup
         ON pending_actions (kind, gmail_ref, agent_id, status);
         """
+        standing_sql = """
+        CREATE TABLE IF NOT EXISTS standing_approvals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            trigger_id INTEGER NOT NULL,
+            agent_id TEXT NOT NULL,
+            recipients TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            revoked_at TEXT
+        );
+        """
+        standing_index_sql = """
+        CREATE INDEX IF NOT EXISTS idx_standing_approvals_trigger
+        ON standing_approvals (trigger_id, agent_id, revoked_at);
+        """
         with self._lock, self._connect() as conn:
             conn.execute("PRAGMA journal_mode=WAL;")
             conn.execute(schema_sql)
             conn.execute(index_sql)
+            conn.execute(standing_sql)
+            conn.execute(standing_index_sql)
 
     def insert(
         self,
@@ -204,9 +232,55 @@ class PendingActionStore:
             )
             return cursor.rowcount
 
+    # -- standing approvals ----------------------------------------------------------------------------------
+
+    def insert_standing(
+        self, *, trigger_id: int, agent_id: str, recipients: List[str], created_at: datetime
+    ) -> StandingApproval:
+        with self._lock, self._connect() as conn:
+            cursor = conn.execute(
+                "INSERT INTO standing_approvals (trigger_id, agent_id, recipients, created_at) VALUES (?, ?, ?, ?)",
+                (int(trigger_id), agent_id, json.dumps(sorted(recipients)), to_storage(created_at)),
+            )
+            row = conn.execute(
+                "SELECT * FROM standing_approvals WHERE id = ?", (int(cursor.lastrowid),)
+            ).fetchone()
+        return self._row_to_standing(row)
+
+    def active_standing(self, trigger_id: int, agent_id: str) -> List[StandingApproval]:
+        """Unrevoked standing approvals for this trigger and agent, oldest first."""
+        with self._lock, self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM standing_approvals WHERE trigger_id = ? AND agent_id = ? AND revoked_at IS NULL"
+                " ORDER BY id",
+                (int(trigger_id), agent_id),
+            ).fetchall()
+        return [self._row_to_standing(row) for row in rows]
+
+    def revoke_standing(self, moment: datetime, trigger_id: Optional[int] = None) -> int:
+        """Revoke the unrevoked standing approvals of one trigger (or of every trigger); the count revoked."""
+        sql = "UPDATE standing_approvals SET revoked_at = ? WHERE revoked_at IS NULL"
+        params: List[Any] = [to_storage(moment)]
+        if trigger_id is not None:
+            sql += " AND trigger_id = ?"
+            params.append(int(trigger_id))
+        with self._lock, self._connect() as conn:
+            return conn.execute(sql, params).rowcount
+
     def clear_all(self) -> None:
         with self._lock, self._connect() as conn:
             conn.execute("DELETE FROM pending_actions")
+            conn.execute("DELETE FROM standing_approvals")
+
+    def _row_to_standing(self, row: sqlite3.Row) -> StandingApproval:
+        return StandingApproval(
+            id=int(row["id"]),
+            trigger_id=int(row["trigger_id"]),
+            agent_id=row["agent_id"],
+            recipients=json.loads(row["recipients"]),
+            created_at=_from_storage(row["created_at"]),  # type: ignore[arg-type]
+            revoked_at=_from_storage(row["revoked_at"]),
+        )
 
     def _row_to_action(self, row: sqlite3.Row) -> PendingAction:
         return PendingAction(
@@ -226,4 +300,4 @@ class PendingActionStore:
         )
 
 
-__all__ = ["KINDS", "PendingAction", "PendingActionStore", "STATUSES", "to_storage"]
+__all__ = ["KINDS", "PendingAction", "PendingActionStore", "STATUSES", "StandingApproval", "to_storage"]

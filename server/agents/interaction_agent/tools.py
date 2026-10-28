@@ -13,6 +13,7 @@ from ...services.agents.registry import get_agent_directory
 from ...services.conversation import get_conversation_log
 from ...services.execution import get_execution_agent_logs
 from ...services.execution.runner import get_agent_runner
+from ...services.triggers import get_trigger_service
 from .turn import current_turn
 
 
@@ -161,6 +162,7 @@ def approve_send(action_id: Any) -> ToolResult:
         )
     except approvals.ApprovalError as exc:
         return ToolResult(success=False, payload={"error": str(exc)})
+    send_tool = _SEND_TOOLS.get(action.kind, "its send tool")
     return ToolResult(
         success=True,
         payload={
@@ -169,7 +171,68 @@ def approve_send(action_id: Any) -> ToolResult:
             "agent_id": action.agent_id,
             "next": (
                 f"Tell agent {action.agent_id} (send_message_to_agent with agent_id={action.agent_id}) that the "
-                f"user approved action {action.id} and to send it now, unchanged."
+                f"user approved action {action.id} and to send it now by calling {send_tool} with "
+                f"action_id={action.id} (that sends the approved content as stored)."
+            ),
+        },
+    )
+
+
+_SEND_TOOLS = {"draft": "gmail_execute_draft", "reply": "gmail_reply_to_thread", "forward": "gmail_forward_email"}
+
+
+# Approve one trigger's future sends to named recipients; only the user's own message can do this
+def approve_recurring_send(trigger_id: Any, recipients: Any) -> ToolResult:
+    """Let `trigger_id`'s runs send to `recipients` without a per-send approval, until the trigger stops."""
+    turn = current_turn.get()
+    origin = turn.origin if turn else None
+    user_message_at = turn.user_message_at if turn else None
+    if origin != "user" or user_message_at is None:
+        # Checked first, so a non-user turn learns nothing about triggers.
+        return ToolResult(
+            success=False,
+            payload={
+                "error": "Only the user can approve recurring sends, in their own message. This turn was not "
+                "started by a user message."
+            },
+        )
+    if isinstance(trigger_id, bool) or not str(trigger_id).strip().isdigit():
+        return ToolResult(success=False, payload={"error": f"Invalid trigger_id {trigger_id!r}: pass one numeric id."})
+    trigger_id_int = int(str(trigger_id).strip())
+    if isinstance(recipients, str):
+        recipients = [recipients]
+    if not isinstance(recipients, list):
+        return ToolResult(success=False, payload={"error": "recipients must be a list of email addresses."})
+
+    trigger = get_trigger_service().get_trigger(trigger_id_int)
+    if trigger is None:
+        return ToolResult(success=False, payload={"error": f"Unknown trigger {trigger_id_int}."})
+    if trigger.status != "active":
+        return ToolResult(
+            success=False,
+            payload={"error": f"Trigger {trigger_id_int} is {trigger.status}; only an active trigger can be approved."},
+        )
+    if not trigger.agent_id:
+        return ToolResult(success=False, payload={"error": f"Trigger {trigger_id_int} has no owning agent."})
+    try:
+        approval = approvals.approve_recurring(
+            trigger_id_int, trigger.agent_id, recipients, origin=origin, user_message_at=user_message_at
+        )
+    except approvals.ApprovalError as exc:
+        return ToolResult(success=False, payload={"error": str(exc)})
+    listed = ", ".join(approval.recipients)
+    return ToolResult(
+        success=True,
+        payload={
+            "status": "approved",
+            "standing_approval_id": approval.id,
+            "trigger_id": trigger_id_int,
+            "agent_id": trigger.agent_id,
+            "recipients": approval.recipients,
+            "next": (
+                f"Sends from trigger {trigger_id_int}'s runs by agent {trigger.agent_id} to {listed} now go out "
+                "without asking each time, until the trigger is paused, completed or deleted. Any other recipient "
+                "still needs approval. Tell the user what you approved."
             ),
         },
     )
@@ -221,6 +284,8 @@ def handle_tool_call(name: str, arguments: Any) -> ToolResult:
             return send_draft(**args)
         if name == "approve_send":
             return approve_send(**args)
+        if name == "approve_recurring_send":
+            return approve_recurring_send(**args)
         if name == "wait":
             return wait(**args)
 

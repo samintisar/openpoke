@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List, Optional
 from zoneinfo import ZoneInfo
 
 from ...logging_config import logger
+from ..approvals import gate as approval_gate
 from .models import TriggerRecord
 from .store import TriggerStore
 from .utils import (
@@ -109,6 +110,9 @@ class TriggerService:
             status_changed_to_active = (
                 normalized_status == "active" and existing.status != "active"
             )
+            if normalized_status != "active":
+                # A paused or completed trigger loses its standing send approvals; resuming does not restore them.
+                approval_gate.revoke_standing(trigger_id)
         else:
             normalized_status = existing.status
 
@@ -184,6 +188,10 @@ class TriggerService:
         updated = self._store.update(trigger_id, agent_id, fields)
         return self._store.fetch_one(trigger_id, agent_id) if updated else existing
 
+    def get_trigger(self, trigger_id: int) -> Optional[TriggerRecord]:
+        """Any agent's trigger by id (the interaction agent approves recurring sends by trigger id)."""
+        return self._store.fetch_by_id(trigger_id)
+
     def list_triggers(self, *, agent_id: str) -> List[TriggerRecord]:
         return self._store.list_for_agent(agent_id)
 
@@ -207,7 +215,15 @@ class TriggerService:
         """Give rows written before agent ids existed an `agent_id`, resolved from their `agent_name`."""
         return self._store.backfill_agent_ids(resolve)
 
+    def delete_trigger(self, trigger_id: int, *, agent_id: str) -> bool:
+        """Delete one of `agent_id`'s triggers, revoking its standing send approvals; False if not found."""
+        if self._store.fetch_one(trigger_id, agent_id) is None:
+            return False
+        approval_gate.revoke_standing(trigger_id)
+        return self._store.delete(trigger_id, agent_id)
+
     def mark_as_completed(self, trigger_id: int, *, agent_id: str) -> None:
+        approval_gate.revoke_standing(trigger_id)
         self._store.update(
             trigger_id,
             agent_id,
@@ -236,6 +252,7 @@ class TriggerService:
         }
         if next_fire is None:
             fields["status"] = "completed"
+            approval_gate.revoke_standing(trigger.id)
         self._store.update(trigger.id, trigger.agent_id, fields)
         return self._store.fetch_one(trigger.id, trigger.agent_id)
 
@@ -259,6 +276,7 @@ class TriggerService:
         return self._store.fetch_one(trigger_id, agent_id)
 
     def clear_all(self) -> None:
+        approval_gate.revoke_standing()  # every trigger is deleted, so every standing approval goes
         self._store.clear_all()
 
     def _compute_next_fire(
