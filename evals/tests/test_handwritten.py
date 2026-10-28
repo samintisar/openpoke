@@ -66,3 +66,25 @@ def test_empty_gold_targets_need_clarify_ok(tmp_path):
     ok = "  - {id: hw-x, kind: same_name_people, message: m, gold_targets: [], clarify_ok: true}\n"
     _, cases = _load(tmp_path, "agents:\n" + AGENT_A + "cases:\n" + ok)
     assert cases[0].gold_targets == []
+
+
+AGENT_B = "  - {id: b, name: B, purpose: p, last_active_days: 1, created_days: 2}\n"
+AGENT_C = "  - {id: c, name: C, purpose: p, last_active_days: 1, created_days: 2}\n"
+
+
+def test_acceptable_ids_with_several_gold_ids_is_rejected(tmp_path):
+    bad = "  - {id: hw-x, kind: multi_task, message: m, gold_targets: [a, b], acceptable_ids: [c]}\n"
+    with pytest.raises(ValueError, match="hw-x.*acceptable_ids"):
+        _load(tmp_path, "agents:\n" + AGENT_A + AGENT_B + AGENT_C + "cases:\n" + bad)
+
+
+def test_acceptable_ids_with_one_gold_id_and_new_is_allowed(tmp_path):
+    ok = "  - {id: hw-x, kind: multi_task, message: m, gold_targets: [a, NEW], acceptable_ids: [b]}\n"
+    _, cases = _load(tmp_path, "agents:\n" + AGENT_A + AGENT_B + "cases:\n" + ok)
+    assert cases[0].acceptable_ids == ["b"]
+
+
+def test_duplicate_agent_name_is_rejected(tmp_path):
+    same_name = "  - {id: b, name: A, purpose: p, last_active_days: 1, created_days: 2}\n"
+    with pytest.raises(ValueError, match="duplicate agent name 'A'"):
+        _load(tmp_path, "agents:\n" + AGENT_A + same_name + "cases:\n" + CASE_X)

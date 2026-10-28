@@ -1,4 +1,11 @@
-"""Grade a routing decision by outcome: which agents got work, not how the model got there."""
+"""Grade a routing decision by outcome: which agents got work, not how the model got there.
+
+Known limitations:
+- multi_task can't tell a near-duplicate of the gold agent from the needed new agent: one
+  create counts as the new task whatever it was named.
+- Clarifying while also acting correctly isn't penalized.
+- MISSED_CREATE is also used when the model dispatched to a wrong agent and also created.
+"""
 
 from __future__ import annotations
 
@@ -38,7 +45,8 @@ class Decision:
 
 def grade(case: Case, decision: Decision) -> str:
     predicted = set(decision.dispatched_ids)
-    created = bool(decision.created_names)
+    distinct_created = len(set(decision.created_names))
+    created = distinct_created > 0
     expected = set(case.expected_ids)
     acceptable = set(case.acceptable_ids)
 
@@ -60,6 +68,8 @@ def grade(case: Case, decision: Decision) -> str:
     if unmatched:
         return DUPLICATE_CREATE if created and not case.expects_new else PARTIAL
     if created and not case.expects_new:
+        return EXTRA_CREATE
+    if case.expects_new and distinct_created > 1:
         return EXTRA_CREATE
     if case.expects_new and not created:
         return PARTIAL if expected else MISSED_CREATE
