@@ -25,9 +25,9 @@ from typing import Any
 
 import yaml
 
-from .cases import Case, filter_cases
+from .cases import ROUTING_KINDS, Case, filter_cases
 from .grading import ERROR, Decision, duplicate_possible, grade
-from .integrity import REPO_ROOT, compute_checksum, expected_checksum
+from .integrity import REPO_ROOT, compute_checksum, expected_checksum, expected_file_committed
 from .layers.retrieval import run_retrieval_case
 from .layers.routing import RoutingCaseError, run_routing_case
 from .leaderboard import write_leaderboard
@@ -64,7 +64,38 @@ def load_config(path: Path) -> Config:
     unknown = set(raw) - {f.name for f in fields(Config)}
     if unknown:
         raise ValueError(f"unknown config keys: {sorted(unknown)}")
-    return Config(**raw)
+    cfg = Config(**raw)
+    _validate(cfg)
+    return cfg
+
+
+def _is_int(v: Any) -> bool:
+    return isinstance(v, int) and not isinstance(v, bool)
+
+
+def _validate(cfg: Config) -> None:
+    def bad(key: str, why: str) -> ValueError:
+        return ValueError(f"config key {key!r}: {why}")
+
+    for key in ("n_agents", "world_seeds"):
+        v = getattr(cfg, key)
+        if not isinstance(v, list) or not all(_is_int(x) for x in v):
+            raise bad(key, "must be a list of ints")
+    for key in ("k", "cases_per_kind", "concurrency"):
+        v = getattr(cfg, key)
+        if not _is_int(v) or v <= 0:
+            raise bad(key, "must be a positive int")
+    b = cfg.budget_usd
+    if isinstance(b, bool) or not isinstance(b, (int, float)) or b <= 0:
+        raise bad("budget_usd", "must be a positive number")
+    if not isinstance(cfg.layers, list) or not set(cfg.layers) <= {"retrieval", "routing"}:
+        raise bad("layers", "must be a list drawn from ['retrieval', 'routing']")
+    if cfg.suite not in ("all", "capability", "regression"):
+        raise bad("suite", "must be one of all, capability, regression")
+    if cfg.kinds is not None and (
+        not isinstance(cfg.kinds, list) or not set(cfg.kinds) <= set(ROUTING_KINDS)
+    ):
+        raise bad("kinds", f"must be null or a list drawn from {list(ROUTING_KINDS)}")
 
 
 Unit = tuple[Any, World, list[Case]]  # (roster-size label, world, cases)
@@ -84,18 +115,30 @@ def _build_units(cfg: Config, split: str) -> list[Unit]:
 
 
 def _routing_row(
-    label: Any, world: World, case: Case, sample: int, d: Decision, outcome: str, system: str, error: str | None = None
+    label: Any, world: World, case: Case, sample: int, d: Decision, outcome: str, system: str, error: str | None = None,
+    dup: bool | None = None,
 ) -> dict[str, Any]:
     return {
         "system": system, "n_agents": label, "world_seed": world.seed, "case_id": case.id, "kind": case.kind,
         "sample": sample, "message": case.message, "gold": case.gold_targets, "acceptable": case.acceptable_ids,
-        "expects_reuse": case.expects_reuse, "duplicate_possible": duplicate_possible(case), "outcome": outcome,
+        "expects_reuse": case.expects_reuse, "duplicate_possible": duplicate_possible(case) if dup is None else dup, "outcome": outcome,
         "error": error, "dispatched_ids": d.dispatched_ids, "created_names": d.created_names, "clarified": d.clarified,
         "user_messages": d.user_messages, "tool_calls": d.tool_calls, "iterations": d.iterations,
         "hit_iteration_cap": d.hit_iteration_cap, "cost": d.cost, "fresh_cost": d.fresh_cost,
         "cached_calls": d.cached_calls, "latency_s": d.latency_s, "prompt_tokens": d.prompt_tokens,
         "completion_tokens": d.completion_tokens, "cache_keys": d.cache_keys,
     }
+
+
+def _fallback_row(
+    label: Any, world: World, case: Case, sample: int, system: str, message: str, decision: Decision | None
+) -> dict[str, Any]:
+    """ERROR row for a failed job; if even _routing_row fails (e.g. duplicate_possible), use a bare row."""
+    d = decision if decision is not None else Decision()
+    try:
+        return _routing_row(label, world, case, sample, d, ERROR, system, message)
+    except Exception as exc:  # e.g. duplicate_possible itself raised
+        return _routing_row(label, world, case, sample, d, ERROR, system, f"{message} (row build failed: {exc})", dup=False)
 
 
 def _git(*args: str) -> str:
@@ -121,17 +164,20 @@ async def _run_routing(
                 return
             try:
                 decision = await run_routing_case(case, world, system, llm, model=cfg.model, sample=sample)
+                try:
+                    outcome, error = grade(case, decision), None
+                except Exception as exc:  # recorded as a failing sample, never silently dropped
+                    outcome, error = ERROR, f"grading failed: {type(exc).__name__}: {exc}"
+                results[index] = _routing_row(label, world, case, sample, decision, outcome, system.name, error)
             except BudgetExceeded:
                 exhausted = True  # this in-flight case is dropped, not recorded as an error
                 return
             except RoutingCaseError as exc:
-                results[index] = _routing_row(label, world, case, sample, exc.decision, ERROR, system.name, str(exc))
-                continue
-            try:
-                outcome, error = grade(case, decision), None
-            except Exception as exc:  # recorded as a failing sample, never silently dropped
-                outcome, error = ERROR, f"grading failed: {type(exc).__name__}: {exc}"
-            results[index] = _routing_row(label, world, case, sample, decision, outcome, system.name, error)
+                results[index] = _fallback_row(label, world, case, sample, system.name, str(exc), exc.decision)
+            except Exception as exc:  # never escape gather
+                results[index] = _fallback_row(
+                    label, world, case, sample, system.name, f"{type(exc).__name__}: {exc}", None
+                )
 
     await asyncio.gather(*(worker() for _ in range(max(1, cfg.concurrency))))
     return [row for row in results if row is not None], exhausted
@@ -169,12 +215,12 @@ async def run_experiment(cfg: Config, *, llm: LLMClient, out_dir: Path, split: s
             "split": split,
             "final": final,
             "git_sha": _git("rev-parse", "--short", "HEAD"),
-            "git_dirty": bool(_git("status", "--porcelain")),
+            "git_dirty": bool(_git("status", "--porcelain", "--untracked-files=no")),
             "started_at": started.isoformat(),
             "finished_at": datetime.now(timezone.utc).isoformat(),
             "checksum": checksum,
             "expected_checksum": expected,
-            "valid": expected is not None and checksum == expected,
+            "valid": expected is not None and checksum == expected and expected_file_committed(),
             # spent: everything the client charged; fresh: what finished rows account for;
             # unattributed: the rest (cases dropped when the budget ran out).
             "budget_spent_usd": None if spent is None else round(spent, 4),

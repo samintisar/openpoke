@@ -37,3 +37,28 @@ def test_repo_checksum_matches_committed_file():
 
 def test_cli_check_exits_zero_on_the_repo():
     assert main([]) == 0
+
+
+def test_protected_covers_the_harness_itself():
+    for rel in ("evals/run.py", "evals/llm.py", "evals/integrity.py", "evals/systems/baseline.py"):
+        assert rel in PROTECTED
+
+
+def test_expected_file_committed_follows_git_exit_code(monkeypatch, tmp_path):
+    import subprocess
+
+    from evals import integrity
+
+    def fake(code):
+        return lambda *a, **k: subprocess.CompletedProcess(a, code)
+
+    monkeypatch.setattr(integrity.subprocess, "run", fake(0))
+    assert integrity.expected_file_committed(tmp_path) is True
+    monkeypatch.setattr(integrity.subprocess, "run", fake(1))
+    assert integrity.expected_file_committed(tmp_path) is False
+
+    def boom(*a, **k):
+        raise FileNotFoundError("git")
+
+    monkeypatch.setattr(integrity.subprocess, "run", boom)
+    assert integrity.expected_file_committed(tmp_path) is True
