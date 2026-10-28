@@ -148,3 +148,17 @@ def test_initialize_migrates_and_backfills_triggers(tmp_path, monkeypatch):
     assert len(trigger_service.list_triggers(agent_id="email-to-alice")) == 1
     # A name the registry doesn't know keeps its old log key.
     assert len(trigger_service.list_triggers(agent_id="unknown-agent")) == 1
+
+
+def test_update_card_overwrites_only_given_fields(tmp_path):
+    from datetime import datetime, timezone
+    from server.services.agents.directory import InMemoryDirectory
+    from server.services.agents.registry import SqliteAgentDirectory
+
+    now = datetime(2026, 6, 1, tzinfo=timezone.utc)
+    for directory in (SqliteAgentDirectory(tmp_path / "agents.db"), InMemoryDirectory()):
+        card = directory.create("Kwame Book Club Dates", "Ask Kwame which dates work", "ask Kwame", now)
+        directory.update_card(card.id, purpose="Book club with Kwame: dates and what to bring", status="dormant")
+        got = directory.get(card.id)
+        assert got.purpose == "Book club with Kwame: dates and what to bring" and got.status == "dormant"
+        assert got.name == "Kwame Book Club Dates" and got.last_status == ""
