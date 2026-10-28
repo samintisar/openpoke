@@ -66,6 +66,11 @@ def _case(entry: dict[str, Any], index: int) -> Case:
 def load_handwritten(path: Path = HANDWRITTEN_PATH) -> tuple[World, list[Case]]:
     """The hand-written world and its cases; raises ValueError on any malformed entry."""
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError(f"{path.name}: expected a mapping with 'agents' and 'cases'")
+    for key in ("agents", "cases"):
+        if key not in raw:
+            raise ValueError(f"{path.name} is missing required top-level key {key!r}")
     agents = [_agent(entry, index) for index, entry in enumerate(raw["agents"])]
     _check_unique([agent.id for agent in agents], "agent")
     cases = [_case(entry, index) for index, entry in enumerate(raw["cases"])]
@@ -73,6 +78,8 @@ def load_handwritten(path: Path = HANDWRITTEN_PATH) -> tuple[World, list[Case]]:
     world = World(seed=0, agents=agents)
     known = world.by_id()
     for case in cases:
+        if not case.gold_targets and not case.clarify_ok:
+            raise ValueError(f"{case.id}: empty gold_targets requires clarify_ok")
         for target in [*case.gold_targets, *case.acceptable_ids]:
             if target != NEW and target not in known:
                 raise ValueError(f"{case.id}: unknown agent id {target!r}")

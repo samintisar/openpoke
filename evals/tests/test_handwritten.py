@@ -50,3 +50,19 @@ def test_missing_required_key_names_the_entry(tmp_path):
     no_message = "  - {id: hw-x, kind: follow_up, gold_targets: [a]}\n"
     with pytest.raises(ValueError, match="case 'hw-x'.*'message'"):
         _load(tmp_path, "agents:\n" + AGENT_A + "cases:\n" + no_message)
+
+
+def test_missing_top_level_key_is_a_clear_error(tmp_path):
+    with pytest.raises(ValueError, match="'agents'"):
+        _load(tmp_path, "cases:\n" + CASE_X)
+    with pytest.raises(ValueError, match="'cases'"):
+        _load(tmp_path, "agents:\n" + AGENT_A)
+
+
+def test_empty_gold_targets_need_clarify_ok(tmp_path):
+    empty = "  - {id: hw-x, kind: follow_up, message: m, gold_targets: []}\n"
+    with pytest.raises(ValueError, match="hw-x.*gold_targets"):
+        _load(tmp_path, "agents:\n" + AGENT_A + "cases:\n" + empty)
+    ok = "  - {id: hw-x, kind: same_name_people, message: m, gold_targets: [], clarify_ok: true}\n"
+    _, cases = _load(tmp_path, "agents:\n" + AGENT_A + "cases:\n" + ok)
+    assert cases[0].gold_targets == []
