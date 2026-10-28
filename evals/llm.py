@@ -123,14 +123,13 @@ class LLMClient(Protocol):
 def build_payload(
     *, model: str, system: str, messages: list[dict[str, Any]], tools: list[dict[str, Any]]
 ) -> dict[str, Any]:
-    """The exact JSON body sent to OpenRouter."""
-    return {
-        "model": model,
-        "messages": [{"role": "system", "content": system}, *messages],
-        "tools": tools,
-        "stream": False,
-        "usage": {"include": True},
-    }
+    """The exact JSON body sent to OpenRouter. An empty tool list is left out (plain text calls)."""
+    payload: dict[str, Any] = {"model": model, "messages": [{"role": "system", "content": system}, *messages]}
+    if tools:
+        payload["tools"] = tools
+    payload["stream"] = False
+    payload["usage"] = {"include": True}
+    return payload
 
 
 def _payload_key(payload: dict[str, Any], sample: int) -> str:

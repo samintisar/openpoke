@@ -13,6 +13,7 @@ from evals.llm import (
     RunAborted,
     RetryableResponseError,
     ScriptedLLM,
+    build_payload,
     cache_key,
     estimate_cost,
     fake_llm,
@@ -378,3 +379,23 @@ async def test_rate_limiter_runs_before_every_attempt(tmp_path):
     await llm.complete(**KW)  # cached: no request, no wait
     await llm.aclose()
     assert len(calls) == 2
+
+
+def test_payload_with_tools_is_unchanged():
+    tools = [{"type": "function", "function": {"name": "wait"}}]
+    payload = build_payload(model="m", system="s", messages=[{"role": "user", "content": "x"}], tools=tools)
+    before = {
+        "model": "m",
+        "messages": [{"role": "system", "content": "s"}, {"role": "user", "content": "x"}],
+        "tools": tools,
+        "stream": False,
+        "usage": {"include": True},
+    }
+    assert list(payload) == ["model", "messages", "tools", "stream", "usage"]
+    assert json.dumps(payload) == json.dumps(before)
+
+
+def test_payload_without_tools_has_no_tools_key():
+    payload = build_payload(model="m", system="s", messages=[], tools=[])
+    assert "tools" not in payload
+    assert list(payload) == ["model", "messages", "stream", "usage"]
