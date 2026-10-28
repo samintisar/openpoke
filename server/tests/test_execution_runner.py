@@ -8,7 +8,6 @@ import pytest
 
 import server.agents.execution_agent.agent as agent_module
 import server.agents.execution_agent.runtime as runtime_module
-import server.agents.interaction_agent.runtime as ia_runtime_module
 import server.services.execution.runner as runner_module
 from server.agents.execution_agent.runtime import ExecutionAgentRuntime, ExecutionResult
 from server.services.agents import AgentCard, InMemoryDirectory
@@ -171,18 +170,17 @@ async def test_each_result_is_delivered_on_its_own(env, monkeypatch):
     assert sorted(item[0] for item in delivered) == ["[SUCCESS] a: a done", "[SUCCESS] b: b done"]
 
 
-async def test_deliver_result_hands_the_payload_to_the_interaction_agent(monkeypatch):
+async def test_deliver_result_posts_the_payload_to_the_inbox(monkeypatch):
     received = []
 
-    class FakeInteraction:
-        async def handle_agent_message(self, payload):
-            received.append(payload)
+    class FakeInbox:
+        def post(self, kind, payload, agent_id=None):
+            received.append((kind, payload, agent_id))
 
-    monkeypatch.setattr(ia_runtime_module, "InteractionAgentRuntime", FakeInteraction)
+    monkeypatch.setattr(runner_module, "get_inbox", lambda: FakeInbox())
     failed = ExecutionResult(agent_name="Bob", agent_id="bob", success=False, response="No such thread")
     runner_module.deliver_result(failed, origin="interaction")
-    await settle()
-    assert received == ["[FAILED] Bob: No such thread"]
+    assert received == [("agent_result", "[FAILED] Bob: No such thread", "bob")]
 
 
 # -- partial results ------------------------------------------------------------------------------------------

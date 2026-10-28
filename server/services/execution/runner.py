@@ -2,7 +2,7 @@
 
 Runs for the same agent are serial in FIFO order (a correction sent mid-run queues behind the run in progress).
 The global slot is taken inside the agent lock, so a queued run never holds one. Each finished run records its
-status, schedules memory compaction and hands its result to `deliver_result`.
+status, schedules memory compaction and hands its result to `deliver_result`, which posts it to the inbox.
 """
 
 from __future__ import annotations
@@ -19,6 +19,7 @@ from ...config import get_settings
 from ...logging_config import logger
 from ..agents.memory import maybe_compact
 from ..agents.registry import get_agent_directory
+from ..inbox import get_inbox
 from .log_store import ExecutionAgentLogStore, get_execution_agent_logs
 
 
@@ -82,16 +83,11 @@ def format_result(result: ExecutionResult) -> str:
 
 
 def deliver_result(result: ExecutionResult, *, origin: str, trigger_id: Optional[int] = None) -> None:
-    """Hand a finished run's result to the interaction agent.
-
-    The single replaceable hook for result delivery: for now it starts an interaction-agent turn per result.
-    `origin` ("interaction" or "trigger") and `trigger_id` are carried for the inbox that will replace this.
-    """
-    from ...agents.interaction_agent.runtime import InteractionAgentRuntime
-
-    payload = format_result(result)
+    """Post a finished run's result to the interaction inbox: `trigger_result` for trigger fires, else
+    `agent_result`. The inbox coalesces results that finish close together into one interaction-agent turn."""
+    kind = "trigger_result" if trigger_id is not None else "agent_result"
     try:
-        _spawn(InteractionAgentRuntime().handle_agent_message(payload))
+        get_inbox().post(kind, format_result(result), agent_id=result.agent_id)
     except Exception as exc:  # pragma: no cover - defensive
         logger.error(f"[{result.agent_name}] Failed to deliver result ({origin}, trigger={trigger_id}): {exc}")
 

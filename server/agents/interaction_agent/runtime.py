@@ -2,10 +2,12 @@
 
 import json
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Sequence, Set
 
 from .agent import build_system_prompt, prepare_message_with_history
 from .tools import ToolResult, get_tool_schemas, handle_tool_call
+from .turn import TurnContext, current_turn
 from ...config import get_settings
 from ...services.agents.registry import get_agent_directory
 from ...services.conversation import get_conversation_log, get_working_memory_log
@@ -72,12 +74,28 @@ class InteractionAgentRuntime:
             )
 
     # Main entry point for processing user messages through the LLM interaction loop
-    async def execute(self, user_message: str) -> InteractionResult:
-        """Handle a user-authored message."""
+    async def execute(
+        self,
+        user_message: str,
+        *,
+        user_message_at: Optional[datetime] = None,
+        recorded: Sequence[str] = (),
+    ) -> InteractionResult:
+        """Handle a user-authored message.
 
+        `recorded` lists the user messages of this turn already written to the conversation log (the inbox
+        records them when posted); they are left out of the history so they appear once, as the new message.
+        Without it the message is recorded now. `user_message_at` is when the newest of them was posted
+        (timezone-aware UTC); it defaults to the moment it is recorded.
+        """
+
+        token = None
         try:
-            transcript_before = self._load_conversation_transcript()
-            self.conversation_log.record_user_message(user_message)
+            transcript_before = self._load_conversation_transcript(omit_user_messages=recorded)
+            if not recorded:
+                self.conversation_log.record_user_message(user_message)
+            moment = (user_message_at or datetime.now(timezone.utc)).astimezone(timezone.utc)
+            token = current_turn.set(TurnContext(origin="user", user_message_at=moment))
 
             system_prompt = build_system_prompt()
             messages = prepare_message_with_history(
@@ -106,11 +124,21 @@ class InteractionAgentRuntime:
                 response="",
                 error=str(exc),
             )
+        finally:
+            if token is not None:
+                current_turn.reset(token)
 
     # Handle incoming messages from execution agents and generate appropriate responses
-    async def handle_agent_message(self, agent_message: str) -> InteractionResult:
-        """Process a status update emitted by an execution agent."""
+    async def handle_agent_message(self, agent_message: str, *, origin: str = "agent") -> InteractionResult:
+        """Process a status update emitted by an execution agent, a trigger run or the email watcher.
 
+        `origin` is the inbox kind behind the message ("agent_result", "trigger_result", "watcher", or "agent"
+        for a mix); it is what `current_turn` reports, never "user".
+        """
+
+        if origin == "user":
+            raise ValueError("Agent messages cannot start a user turn")
+        token = current_turn.set(TurnContext(origin=origin, user_message_at=None))
         try:
             transcript_before = self._load_conversation_transcript()
             self.conversation_log.record_agent_message(agent_message)
@@ -141,6 +169,8 @@ class InteractionAgentRuntime:
                 response="",
                 error=str(exc),
             )
+        finally:
+            current_turn.reset(token)
 
     # Core interaction loop that handles LLM calls and tool executions until completion
     async def _run_interaction_loop(
@@ -215,12 +245,12 @@ class InteractionAgentRuntime:
             logger.warning("Failed to record last routed agents", extra={"error": str(exc)})
 
     # Load conversation history, preferring summarized version if available
-    def _load_conversation_transcript(self) -> str:
+    def _load_conversation_transcript(self, omit_user_messages: Sequence[str] = ()) -> str:
         if self.settings.summarization_enabled:
-            rendered = self.working_memory_log.render_transcript()
+            rendered = self.working_memory_log.render_transcript(omit_user_messages=omit_user_messages)
             if rendered.strip():
                 return rendered
-        return self.conversation_log.load_transcript()
+        return self.conversation_log.load_transcript(omit_user_messages=omit_user_messages)
 
     # Execute API call to OpenRouter with system prompt, messages, and tool schemas
     async def _make_llm_call(

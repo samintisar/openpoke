@@ -5,25 +5,16 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional
 
 from .client import execute_gmail_tool, get_active_gmail_user_id
 from .processing import EmailTextCleaner, ProcessedEmail, parse_gmail_fetch_response
 from .seen_store import GmailSeenStore
 from .importance_classifier import classify_email_importance
 from .untrusted import wrap_untrusted_email
+from ..inbox import get_inbox
 from ...logging_config import logger
 from ...utils.timezones import convert_to_user_timezone
-
-
-if TYPE_CHECKING:  # pragma: no cover - typing only
-    from ...agents.interaction_agent.runtime import InteractionAgentRuntime
-
-
-def _resolve_interaction_runtime() -> "InteractionAgentRuntime":
-    from ...agents.interaction_agent.runtime import InteractionAgentRuntime
-
-    return InteractionAgentRuntime()
 
 
 DEFAULT_POLL_INTERVAL_SECONDS = 60.0
@@ -229,11 +220,10 @@ class ImportantEmailWatcher:
         )
         self._complete_poll(user_now)
 
+    # Alerts reach the interaction agent through the inbox, like agent results
     async def _dispatch_summary(self, summary: str, email: ProcessedEmail) -> None:
-        runtime = _resolve_interaction_runtime()
         try:
-            contextualized = format_watcher_alert(summary, email)
-            await runtime.handle_agent_message(contextualized)
+            get_inbox().post("watcher", format_watcher_alert(summary, email))
         except Exception as exc:  # pragma: no cover - defensive
             logger.error(
                 "Failed to dispatch important email summary",
