@@ -261,8 +261,10 @@ def merge_background(snapshot: Snapshot, background: Sequence[AgentSpec], target
     """The snapshot's agents plus background agents, interleaved by created day, up to `target`.
 
     Background agents are taken in the given order. One whose name equals an existing or already
-    kept name is dropped, since production's exact-name match would have reused that agent. Created
-    days after the snapshot day are clamped to it. Transcript and thread maps are unchanged."""
+    kept name is dropped, since production's exact-name match would have reused that agent. Background
+    days, drawn over the whole life, are rescaled onto [0, snapshot.day] so they keep a realistic spread
+    (clamping piled ~40% of them onto the snapshot day as "active just now"). Transcript and thread maps
+    are unchanged."""
     names = {agent.name for agent in snapshot.agents}
     ids = {agent.id for agent in snapshot.agents}
     # (life day created, group, order, agent): snapshot agents sort before background on a tie.
@@ -274,8 +276,9 @@ def merge_background(snapshot: Snapshot, background: Sequence[AgentSpec], target
         if agent.name in names:
             continue
         names.add(agent.name)
-        created = min(agent.created_days, snapshot.day)
-        active = min(max(agent.last_active_days, created), snapshot.day)
+        scale = snapshot.day / LIFE_DAYS
+        created = min(agent.created_days * scale, snapshot.day)
+        active = min(max(agent.last_active_days * scale, created), snapshot.day)
         rows.append((created, 1, i, replace(
             copy.deepcopy(agent), id=_unique_id(agent.name, ids),
             created_days=round(snapshot.day - created, 6), last_active_days=round(snapshot.day - active, 6),
