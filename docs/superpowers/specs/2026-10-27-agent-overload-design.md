@@ -181,8 +181,8 @@ evals/
   results/              per-run JSON + leaderboard.md
 ```
 
-**Case:** `id, split, world_seed, n_agents, context, message, kind, gold_agent_ids (empty = create), acceptable_ids, clarify_ok`.
-`gold_agent_ids` is a list so multi-task messages expect one dispatch per task; `clarify_ok` marks
+**Case:** `id, kind, world_seed, message, message_type, context, gold_targets, acceptable_ids, clarify_ok, dispatch_optional` (split is derived from a hash of the id; roster size comes from the run, not the case).
+`gold_targets` holds agent ids and/or the sentinel `NEW` (= create), so multi-task messages expect one dispatch per task; `dispatch_optional` marks agent-result turns where no dispatch is fine; `clarify_ok` marks
 cases where asking the user is a correct outcome.
 
 **Case kinds** (each generated with hard negatives, and represented in the handwritten set):
