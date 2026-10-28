@@ -92,3 +92,14 @@ def test_filler_never_uses_a_core_topic_for_a_core_person():
         for agent in world.agents:
             if not agent.core and agent.person in core_people:
                 assert agent.topic not in core_topics, agent.name
+
+
+def test_every_kind_yields_per_kind_unique_cases():
+    for seed in range(1, 11):
+        cases = generate_cases(build_world(seed), per_kind=4)
+        for kind in ROUTING_KINDS:
+            of_kind = [c for c in cases if c.kind == kind]
+            assert len(of_kind) == 4, (seed, kind)
+            assert len({(c.message, tuple(c.context)) for c in of_kind}) == 4, (seed, kind)
+            assert len({c.message for c in of_kind}) == 4, (seed, kind)
+            assert [c.id for c in of_kind] == [f"{kind}-s{seed}-{i:02d}" for i in range(4)]
