@@ -1,0 +1,3201 @@
+{
+ "meta": {
+  "name": "memory",
+  "model": "anthropic/claude-haiku-5.5",
+  "seed": 1,
+  "n_agents": 12,
+  "runs": 40,
+  "budget_tokens": 4000,
+  "budget_usd": 1.0,
+  "concurrency": 4,
+  "requests_per_minute": null,
+  "max_retries": 3,
+  "system": "memory",
+  "split": "dev",
+  "git_sha": "d268ddf",
+  "git_dirty": false,
+  "started_at": "2026-10-28T11:54:50.372762+00:00",
+  "finished_at": "2026-10-28T11:55:17.927650+00:00",
+  "checksum": "407e3b3ed113e918effae3f868deb8cdd8708685f2e049e0c306f238dda33350",
+  "expected_checksum": "407e3b3ed113e918effae3f868deb8cdd8708685f2e049e0c306f238dda33350",
+  "valid": true,
+  "budget_spent_usd": 0.0852,
+  "fresh_cost_usd": 0.0852,
+  "unattributed_cost_usd": 0.0,
+  "budget_exhausted": false,
+  "aborted": null
+ },
+ "summary": {
+  "memory": {
+   "planned_agents": 12,
+   "agents": 12,
+   "errors": 0,
+   "incomplete_agents": 0,
+   "full": {
+    "recall": 1.0,
+    "by_kind": {
+     "thread_id": 1.0,
+     "draft_id": 1.0,
+     "email": 1.0,
+     "preference": 1.0,
+     "decision": 1.0,
+     "commitment": 1.0
+    },
+    "stale_rate": 0.0,
+    "mean_history_tokens": 9348.1667,
+    "mean_prompt_tokens": 17171.3056,
+    "qa_cost_usd": 0.1275
+   },
+   "compacted": {
+    "recall": 1.0,
+    "by_kind": {
+     "thread_id": 1.0,
+     "draft_id": 1.0,
+     "email": 1.0,
+     "preference": 1.0,
+     "decision": 1.0,
+     "commitment": 1.0
+    },
+    "stale_rate": 0.0,
+    "mean_history_tokens": 5515.5,
+    "mean_prompt_tokens": 11105.3889,
+    "qa_cost_usd": 0.0852,
+    "fallback_agents": 0
+   },
+   "compaction": {
+    "calls": 12,
+    "failures": 0,
+    "skipped": 0,
+    "cost_usd": 0.0215,
+    "mean_prefix_tokens": 5400.3333,
+    "mean_memory_tokens": 340.75
+   },
+   "total_cost_usd": 0.2342
+  }
+ },
+ "agent_rows": [
+  {
+   "agent_id": "lease-gary",
+   "name": "Lease renewal with Gary",
+   "purpose": "Negotiate the apartment lease renewal with Gary Whitman, the landlord",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 94,
+   "tail_entries": 66,
+   "full_history_tokens": 9390,
+   "prefix_tokens": 5479,
+   "compacted_history_tokens": 5653,
+   "identifiers": [
+    "gary@whitmanproperties.com",
+    "1c77a99d35cb9c1b",
+    "noreply@whitmanproperties.com",
+    "16d885c9ed8f7301",
+    "1aee088e3f8fd28c",
+    "119649bb5f34b724",
+    "jordan.reyes@gmail.com",
+    "15280437ef2ea024",
+    "freya.lindqvist@gmail.com",
+    "11e50997f75cb042",
+    "marcus.lee@northwindlabs.com",
+    "r-7404459187664868500",
+    "130f5a2c1443d43e",
+    "16d24583e4338ba2",
+    "19a9ba35913d6a2c",
+    "r-3123388041983989228",
+    "1029dc0848c3a18c",
+    "1ce26262d303b5e9",
+    "13ad6af7489571de",
+    "dokoye20@whitmanproperties.com",
+    "r-8487106398570743728",
+    "16cffd1c2e216516",
+    "1cba54e5ec8f6ee5",
+    "kwame.mensah@outlook.com",
+    "r-5881863696016580594",
+    "1c33e77869590db8",
+    "1005c1995a4ac504",
+    "1cc41c89b7ff4060",
+    "14904b18d226d8fe",
+    "r-5794220690112083320",
+    "1db58e6fd35ad54c",
+    "1e70cebe0b972d84",
+    "1e7f346006258700",
+    "1e99bb7e333ff6d1",
+    "1f2ae13f2a8e369f",
+    "1e03026542163f48",
+    "112d5b8fc467ecfd",
+    "r-4287747154228003060",
+    "133fe57d09a6804a",
+    "1e92dd5a04669e5d",
+    "r-2040724596530807408",
+    "14d002c04c4f7c6d",
+    "1b79dcb09f1ead1a"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "Lease renewal for unit 4B (Jordan Reyes, tenant) with landlord Gary Whitman, Whitman Properties, gary@whitmanproperties.com; main thread 119649bb5f34b724. Agreed monthly rent: first $4,750 was confirmed on Sept 4, then Gary revised it to a final $3,750 (Sept 8, acknowledged). Jordan promised Gary the signed lease by Monday Sept 14; no record shows it was sent. Paperwork goes to office manager Dana Okoye, dokoye20@whitmanproperties.com. The user wants every email in this matter kept under five sentences. An earlier draft to Gary saying Jordan wants to move forward (Sept 12) was not found in the drafts list on Sept 13, so it may be gone. Newsletter thread 1c77a99d35cb9c1b (noreply@whitmanproperties.com) has received several unprompted 'thanks, received' replies; avoid sending filler there. Check-in offers went out: Mon Sept 21 4pm (thread 1e99bb7e333ff6d1, 'Re: paperwork follow-up') and a quick call Sat Sept 26 4:30pm (newsletter thread; send result not confirmed). Whitman sent a $690 parking charge note, which was forwarded to Marcus Lee (northwindlabs.com) on Sept 21, an unrelated contact. Unsent 'Quick update' drafts exist for Freya Lindqvist (two, freya.lindqvist@gmail.com) and Kwame Mensah (kwame.mensah@outlook.com). The Marcus Lee draft was deleted on the user's instruction. Open: whether the signed lease was sent, whether the Sept 21 check-in happened, and whether the Sept 26 call is confirmed.",
+    "purpose": "Negotiate and finalize the apartment lease renewal for unit 4B with landlord Gary Whitman of Whitman Properties, and handle the related paperwork, scheduling and follow-ups.",
+    "last_status": "Rent agreed at $3,750/month; the signed lease was promised by Sept 14 with no confirmation it was sent, and a Sept 26 4:30pm call was offered to Whitman Properties, awaiting their reply.",
+    "memory_tokens": 355,
+    "cost": 0.0019707,
+    "fresh_cost": 0,
+    "prompt_tokens": 9782,
+    "completion_tokens": 1985,
+    "cached_calls": 1,
+    "cache_keys": [
+     "66fc0240e07efc4a978c3ce816e2d96995195bf2544a7edc040fa0442e4dfbb8"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9390,
+     "system_tokens": 10348,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Lease renewal for unit 4B' thread with Gary?",
+       "gold": [
+        "119649bb5f34b724"
+       ],
+       "answer": "The thread ID is **119649bb5f34b724**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17173,
+       "cost": 0.0017568,
+       "cached": true,
+       "cache_key": "9f2f5d83c76eae13758058aea2d135e981beb0d1b59394c48fe5612284186048"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Gary on the 'Lease renewal for unit 4B' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-8487106398570743728"
+       ],
+       "answer": "The draft is **r-8487106398570743728**. It was created on 2026-09-12 to gary@whitmanproperties.com. However, a later drafts check on 2026-09-13 returned no drafts, so it may no longer exist.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17186,
+       "cost": 0.0018431,
+       "cached": true,
+       "cache_key": "7d9a3532716f0fa39069601e3244b45f4bfe6d13d44301a940a3006a61cbb3af"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Dana Okoye, Gary's office manager?",
+       "gold": [
+        "dokoye20@whitmanproperties.com"
+       ],
+       "answer": "dokoye20@whitmanproperties.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17161,
+       "cost": 0.0017506,
+       "cached": true,
+       "cache_key": "82e0bccb576df7f2e6b8b5c1898559b15f1505ae3e604717f0fa07f49156af2b"
+      },
+      {
+       "kind": "preference",
+       "question": "What length limit did the user set for emails in this matter?",
+       "gold": [
+        "five sentences",
+        "5 sentences"
+       ],
+       "answer": "Under five sentences per email (user note, 2026-09-13).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17155,
+       "cost": 0.0017475,
+       "cached": true,
+       "cache_key": "e305ed89ad6168aaa9e1449224a5ddf25692870d26f2c3fe7b53359293238778"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed monthly rent on the renewed lease?",
+       "gold": [
+        "$3,750"
+       ],
+       "answer": "The currently agreed monthly rent on the renewed lease is **$3,750**. Gary's update on September 8 replaced the earlier $4,750 figure, and the acknowledgment was sent on the 'Lease renewal for unit 4B' thread.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17160,
+       "cost": 0.001813,
+       "cached": true,
+       "cache_key": "981774c5fe3c0dc0e1f69aa33a394599fdbd41893bb5a538e7055e77f6d349cd"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Gary they would send the signed lease?",
+       "gold": [
+        "September 14",
+        "Sep 14",
+        "Sept 14",
+        "14 September",
+        "2026-09-14"
+       ],
+       "answer": "Monday, September 14. This was sent to Gary on the 'Lease renewal for unit 4B' thread on 2026-09-10.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17159,
+       "cost": 0.0017389,
+       "cached": true,
+       "cache_key": "5a19fe964f94625c8f1ad39ff13ace9a522f4f9e04ab35679abf1ffa861a555d"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5653,
+     "system_tokens": 6637,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Lease renewal for unit 4B' thread with Gary?",
+       "gold": [
+        "119649bb5f34b724"
+       ],
+       "answer": "119649bb5f34b724",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11408,
+       "cost": 0.0011888,
+       "cached": false,
+       "cache_key": "677219e42c3383585126003f775857aca2fbe3372e054fc123c6e7be44728029"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Gary on the 'Lease renewal for unit 4B' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-8487106398570743728"
+       ],
+       "answer": "The draft is **r-8487106398570743728** (message ID 16cffd1c2e216516, thread 119649bb5f34b724), addressed to gary@whitmanproperties.com with subject \"Re: Lease renewal f...\". My notes don't show it being sent. However, a Sept 13 check didn't find an earlier draft to Gary, so this one may also be missing from the drafts list.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11421,
+       "cost": 0.0013316,
+       "cached": false,
+       "cache_key": "b8f28e23b431bf84a95a5d445b8d889732f41eb9db65cfc4f556f611c85d7ed1"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Dana Okoye, Gary's office manager?",
+       "gold": [
+        "dokoye20@whitmanproperties.com"
+       ],
+       "answer": "dokoye20@whitmanproperties.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11396,
+       "cost": 0.0012051,
+       "cached": false,
+       "cache_key": "6b31e10d7554ea74bc09cca22122ca5e1e45a74af0c5156a0b5771b9de7f6622"
+      },
+      {
+       "kind": "preference",
+       "question": "What length limit did the user set for emails in this matter?",
+       "gold": [
+        "five sentences",
+        "5 sentences"
+       ],
+       "answer": "Every email in this matter must be kept under five sentences.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11390,
+       "cost": 0.001171,
+       "cached": false,
+       "cache_key": "1c79d55ec0f1340a7022959b82f3b8cf8f60917e6f9d5e06f60825367de97e38"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed monthly rent on the renewed lease?",
+       "gold": [
+        "$3,750"
+       ],
+       "answer": "The currently agreed monthly rent is **$3,750**. Gary Whitman revised the earlier $4,750 figure (confirmed Sept 4) to $3,750 on Sept 8, and that was acknowledged.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11395,
+       "cost": 0.00122,
+       "cached": false,
+       "cache_key": "ab7dfe415b2f3208b4ea54640f6234b7883cbb11a1d5517460ff22d4fa5df2e4"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Gary they would send the signed lease?",
+       "gold": [
+        "September 14",
+        "Sep 14",
+        "Sept 14",
+        "14 September",
+        "2026-09-14"
+       ],
+       "answer": "Monday, September 14.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11394,
+       "cost": 0.0011954,
+       "cached": false,
+       "cache_key": "9accf39efc5be60c09ed9f0952551527ad6f0f9f85d62df68a9292e690b39531"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "globex-renewal",
+   "name": "Globex contract renewal",
+   "purpose": "Close the 2027 contract renewal with Ben Carter at Globex",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 91,
+   "tail_entries": 69,
+   "full_history_tokens": 9196,
+   "prefix_tokens": 5233,
+   "compacted_history_tokens": 5879,
+   "identifiers": [
+    "ben@globex.com",
+    "1d8505d2f1be4254",
+    "1649fc50810a9ace",
+    "jordan.reyes@gmail.com",
+    "1a216d3aa6267f4d",
+    "noreply@globex.com",
+    "1329faca8597015b",
+    "r-4126282273065760293",
+    "1433d8eaeab5d4e6",
+    "1195acf439f16ebc",
+    "1cad7205a85c452e",
+    "1c6530d7e9a9784b",
+    "grace.liu@northwindlabs.com",
+    "15ea831d75f73145",
+    "1f4503db40e85ce1",
+    "r-4660779608024825659",
+    "1927dc48f1dacc3d",
+    "1bb2ebee13f1689a",
+    "1f66757d36786822",
+    "15048194acab9ed9",
+    "omar.haddad@northwindlabs.com",
+    "r-2298231104748925599",
+    "16d652068097c6c6",
+    "1aad7fd067ec0ee2",
+    "cdubois33@globex.com",
+    "r-9068713841383120737",
+    "1df7fd3387f5f508",
+    "114eab93df6a8bc1",
+    "sara.lund@fastmail.com",
+    "r-4395978440430010026",
+    "1650983aa43e5d78",
+    "1477c42ff18a1881",
+    "r-8580555533649504921",
+    "1a428cc8787eb510",
+    "17c75b5e0b00de1c",
+    "r-1661114264965837546",
+    "11bd5a58d2a5a30f",
+    "1b42130c24ba972a",
+    "11526b89b569fd9c",
+    "10b7c993b74915ca",
+    "16a5aba5055d8e85",
+    "r-4526110436738605682",
+    "151574980164ad01",
+    "10a5c5908a89bd58",
+    "1ebba9ebdee4cacc",
+    "1862e6ba79e5d14e",
+    "1ce3729bc625464c",
+    "16055f06a69e814a",
+    "1c55c350210b52c8"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "Matter: 2027 Globex contract renewal with Ben Carter (ben@globex.com). Procurement lead for paperwork: Colette Dubois (cdubois33@globex.com). Globex automated notices come from noreply@globex.com. Other contacts: Grace Liu (grace.liu@northwindlabs.com), Omar Haddad (omar.haddad@northwindlabs.com), Sara Lund (sara.lund@fastmail.com).\n\nDecisions: Annual license fee was first agreed at $50,000 (confirmed on thread 9/5), then Ben revised it. Final agreed fee is $25,000, acknowledged on thread 9/11, superseding the earlier figure.\n\nUser preference: every reply to Ben must be formal, with full names and no exclamation marks.\n\nCommitments: User promised to return the countersigned order form by Tuesday, September 15; Ben was told on 9/7. Offered a check-in with Globex on Sunday, September 13 at 2:30pm (via noreply thread, 9/3); no confirmation seen.\n\nGlobex fee notes forwarded for records (no action needed): cancellation $930 and admin $560 (to Grace/Sara), document $810 (to Grace), deposit refund $945 (to Omar).\n\nOpen loops: Order form return deadline (Sept 15) has passed with no record of it being returned. Unsent draft to Ben (9/4, 'details below') still awaits user approval and has no details. Several unsent 'Quick update' drafts to Grace, Sara and Omar have truncated bodies, and some mention attachments that were never attached.",
+    "purpose": "Close the 2027 contract renewal with Ben Carter at Globex, from agreeing terms through returning the countersigned order form.",
+    "last_status": "Fee agreed at $25,000 and Ben told the order form would return by Sept 15, but no record shows it was returned; the 9/4 draft to Ben and several status drafts remain unsent pending user review.",
+    "memory_tokens": 337,
+    "cost": 0.001754,
+    "fresh_cost": 0,
+    "prompt_tokens": 9380,
+    "completion_tokens": 1632,
+    "cached_calls": 1,
+    "cache_keys": [
+     "096e006743dd6994cc64656867d2c24b8d35f8dad65dd9f11b5c66ac1c826ab9"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9196,
+     "system_tokens": 10151,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Globex renewal: 2027 terms' thread with Ben?",
+       "gold": [
+        "1649fc50810a9ace"
+       ],
+       "answer": "1649fc50810a9ace",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16851,
+       "cost": 0.0017341,
+       "cached": true,
+       "cache_key": "c91376c6493b111410983538c9af8fc6354a8b2679613034edd51b22336ab0bf"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Ben on the 'Globex renewal: 2027 terms' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-4126282273065760293"
+       ],
+       "answer": "Draft ID **r-4126282273065760293** (message ID 1433d8eaeab5d4e6), created September 4, 2026 to ben@globex.com. It has not been sent or deleted.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16864,
+       "cost": 0.0017759,
+       "cached": true,
+       "cache_key": "00f60bcac82372304cf24f9c1bcb1c7700ea7f4677e8ea3f97f53dcf41915f8a"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Colette Dubois, Ben's procurement lead?",
+       "gold": [
+        "cdubois33@globex.com"
+       ],
+       "answer": "cdubois33@globex.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16840,
+       "cost": 0.00169,
+       "cached": true,
+       "cache_key": "18fb1f471e91673d1a350522819e0a0daa881446d998d9d2e839af6ea82423de"
+      },
+      {
+       "kind": "preference",
+       "question": "What tone did the user ask for in replies to Ben?",
+       "gold": [
+        "formal"
+       ],
+       "answer": "Formal: full names, no exclamation marks (noted on 2026-09-06).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16833,
+       "cost": 0.0016973,
+       "cached": true,
+       "cache_key": "1df2e43d77e850355819095429fa4708bbc9951775d17861dd9bac92608c6962"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed annual license fee?",
+       "gold": [
+        "$25,000"
+       ],
+       "answer": "The currently agreed annual license fee is **$25,000**. Ben Carter updated it from the earlier $50,000, and the acknowledgement was sent on the 'Globex renewal: 2027 terms' thread on 2026-09-11.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16830,
+       "cost": 0.0017755,
+       "cached": true,
+       "cache_key": "f550ee9948d54d8a673988cb1c9adcb8d5c5c2777e5713a66ad91a02cf41d838"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Ben they would return the countersigned order form?",
+       "gold": [
+        "September 15",
+        "Sep 15",
+        "Sept 15",
+        "15 September",
+        "2026-09-15"
+       ],
+       "answer": "Tuesday, September 15. This was set in the 2026-09-07 request, and the reply to Ben on the 'Globex renewal: 2027 terms' thread confirmed it.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16838,
+       "cost": 0.0017143,
+       "cached": true,
+       "cache_key": "c39dd90fe4ead09660adcaf4b4e9168ec62fce4560bffedfa90e03f74ba715ac"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5879,
+     "system_tokens": 6851,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Globex renewal: 2027 terms' thread with Ben?",
+       "gold": [
+        "1649fc50810a9ace"
+       ],
+       "answer": "The thread ID is **1649fc50810a9ace**. The draft to ben@globex.com with subject \"Re: Globex renewal: 2027 terms\" is attached to that thread.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11739,
+       "cost": 0.0012909,
+       "cached": false,
+       "cache_key": "6591e51c4ee7e06373f26fc44c2e29f24bd8a730dfeda95cc7f1d96fdcdfff65"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Ben on the 'Globex renewal: 2027 terms' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-4126282273065760293"
+       ],
+       "answer": "The draft ID is **r-4126282273065760293**. It's a reply to ben@globex.com with subject 'Re: Globex renewal: 2027 terms' and is still unsent.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11752,
+       "cost": 0.0013362,
+       "cached": false,
+       "cache_key": "200c130d10f09065401af180417b4540fc670ab143186a26bfb334cd0ee090a0"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Colette Dubois, Ben's procurement lead?",
+       "gold": [
+        "cdubois33@globex.com"
+       ],
+       "answer": "Colette Dubois's email address is cdubois33@globex.com.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11728,
+       "cost": 0.0012248,
+       "cached": false,
+       "cache_key": "f386e37ffc57e16c0243228f0036b26b20f8296e4181d929383e014d33d60ce0"
+      },
+      {
+       "kind": "preference",
+       "question": "What tone did the user ask for in replies to Ben?",
+       "gold": [
+        "formal"
+       ],
+       "answer": "Formal, with full names and no exclamation marks.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11721,
+       "cost": 0.0011811,
+       "cached": false,
+       "cache_key": "e5c440dd660649228b0619a09c5c7dd0cdac4f895dc523fdccc13bf34119cb35"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed annual license fee?",
+       "gold": [
+        "$25,000"
+       ],
+       "answer": "The currently agreed annual license fee is **$25,000**. Ben revised the original $50,000 figure, and the $25,000 was acknowledged on the thread on 9/11.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11718,
+       "cost": 0.0012378,
+       "cached": false,
+       "cache_key": "fd2ad46cc7add5bc20dfa0176c3f20edea22cb14e9b1ce5f928fb0e1917fb8bf"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Ben they would return the countersigned order form?",
+       "gold": [
+        "September 15",
+        "Sep 15",
+        "Sept 15",
+        "15 September",
+        "2026-09-15"
+       ],
+       "answer": "Tuesday, September 15. The execution history records that the user promised to return the countersigned order form by then, and Ben was told on 9/7.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11726,
+       "cost": 0.0011956,
+       "cached": false,
+       "cache_key": "1e4aec489f63d1b59c7f298103cde297d65b7ebf722934b39ed1eb4ea3b00464"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "tax-paul",
+   "name": "Tax return with Paul",
+   "purpose": "Get the 2025 tax return filed with Paul Fenwick, the accountant",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 91,
+   "tail_entries": 69,
+   "full_history_tokens": 9153,
+   "prefix_tokens": 5182,
+   "compacted_history_tokens": 5361,
+   "identifiers": [
+    "paul@fenwicktax.com",
+    "kwame.mensah@outlook.com",
+    "r-2406300590521563052",
+    "140c8c4e55347fc9",
+    "1cbe2cad2cca690b",
+    "134f928860fb42cc",
+    "16338e07ae0a292f",
+    "jordan.reyes@gmail.com",
+    "bsauer21@fenwicktax.com",
+    "priya.shah@northwindlabs.com",
+    "grace.liu@northwindlabs.com",
+    "17c39affd1c02420",
+    "130a41205bdaa7b9",
+    "13f58e6cb0ea0066",
+    "r-3127564561778804565",
+    "1d53b407497cb825",
+    "19326cc4fbfe2232",
+    "noreply@fenwicktax.com",
+    "1853d955dc8daa8e",
+    "1dc7f793b3ab86e9",
+    "15e4f6c841306dfb",
+    "1ad07815d14fbda8",
+    "1eb1aa9645882e49",
+    "123601821b780f96",
+    "1ed315e83d7c54a2",
+    "1240b213ae365c76",
+    "1337611020cce03b",
+    "1d51699e844150bc",
+    "168669759300f7e9",
+    "192bb800de0b1be9",
+    "1d454ea4a09d58ce",
+    "13bde5e883d0d915",
+    "1ce1566e7d051e77"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "Matter: 2025 tax return with Paul Fenwick (Fenwick Tax, paul@fenwicktax.com). Main thread: '2025 return: missing documents' (thread 16338e07ae0a292f). Paperwork goes to bookkeeper Bruno Sauer (bsauer21@fenwicktax.com). The user is Jordan Reyes.\n\nDecisions: preparation fee agreed at $800, superseding an earlier $1,250 (both confirmed on thread). Fenwick sent a rush fee note of $505 and a document fee note of $210; both were forwarded to Priya Shah (priya.shah@northwindlabs.com) for records.\n\nCommitment: the user promised to upload brokerage 1099s by Friday, September 18. Upload status is unconfirmed.\n\nUser preferences: keep every reply to Paul formal, with full names and no exclamation marks. Don't send drafts without the user's confirmation.\n\nOpen loops: draft r-3127564561778804565 to Paul ('Re: 2025 return: missing documents') is unsent, awaiting the user's go-ahead; its body is only a placeholder and says 'details below' with none. Paul has not replied on the main thread since the $800 update. Check-in and call times were offered to Fenwick Tax via noreply@fenwicktax.com on several threads (Sep 17, 21, 22, 26); the latest offer is a quick call Saturday, September 26 at 4pm. Those replies went to an automated address, so Paul may not have seen them. Grace Liu (grace.liu@northwindlabs.com) is saved as a contact. The Kwame Mensah draft was deleted.",
+    "purpose": "Get Jordan Reyes's 2025 tax return filed with accountant Paul Fenwick, settling open document and fee points, and keep the user's formal communication and deadlines on track.",
+    "last_status": "Waiting on Paul: the fee is settled at $800 and the 1099 upload was promised by Sept 18 (unconfirmed), but the reply draft to Paul is unsent pending the user's confirmation, and offered check-in times went to an automated address.",
+    "memory_tokens": 342,
+    "cost": 0.0016,
+    "fresh_cost": 0,
+    "prompt_tokens": 9395,
+    "completion_tokens": 1321,
+    "cached_calls": 1,
+    "cache_keys": [
+     "5486f848846ca91f17b64908a46362c1813e257e62e39dfea8f3c940b2e502da"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9153,
+     "system_tokens": 10109,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the '2025 return: missing documents' thread with Paul?",
+       "gold": [
+        "16338e07ae0a292f"
+       ],
+       "answer": "16338e07ae0a292f",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16982,
+       "cost": 0.0017297,
+       "cached": true,
+       "cache_key": "4398e5dee0d13cc85a53343ee0bde70ef93d83cd29fac06822fed21acaf1ea58"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Paul on the '2025 return: missing documents' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-3127564561778804565"
+       ],
+       "answer": "Draft ID: **r-3127564561778804565** (message ID 1d53b407497cb825). It was created on 2026-09-11 to paul@fenwicktax.com and has not been sent or deleted.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16995,
+       "cost": 0.001777,
+       "cached": true,
+       "cache_key": "557ef53e19d0705e08dbc01f5ef8c7d9954ae33b7bf6e8bf941808a3cff0a2c0"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Bruno Sauer, Paul's bookkeeper?",
+       "gold": [
+        "bsauer21@fenwicktax.com"
+       ],
+       "answer": "bsauer21@fenwicktax.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16978,
+       "cost": 0.0017058,
+       "cached": true,
+       "cache_key": "57c8584b1f1d31fc0ded69dc23b77119a5dc68176d5b2f66b97d294766aa4877"
+      },
+      {
+       "kind": "preference",
+       "question": "What tone did the user ask for in replies to Paul?",
+       "gold": [
+        "formal"
+       ],
+       "answer": "Formal: full names and no exclamation marks in every reply to Paul (noted 2026-09-08).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16969,
+       "cost": 0.0017144,
+       "cached": true,
+       "cache_key": "a1ce16e9dc8d5f2ef86a6587b4d970297c59f50d339d94c0b4a22c4dee2965c6"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed preparation fee?",
+       "gold": [
+        "$800"
+       ],
+       "answer": "The currently agreed preparation fee is **$800**. It replaced the earlier $1,250 figure, and I acknowledged it on the thread on September 9.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16966,
+       "cost": 0.0017861,
+       "cached": true,
+       "cache_key": "5255d52ea707bcd8ab6348ec7dc776b21abdbcedd10dda4cba2d4a943d22b87f"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Paul they would upload the brokerage 1099s?",
+       "gold": [
+        "September 18",
+        "Sep 18",
+        "Sept 18",
+        "18 September",
+        "2026-09-18"
+       ],
+       "answer": "Friday, September 18 (confirmed in my 2026-09-10 reply to Paul on the '2025 return: missing documents' thread).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16977,
+       "cost": 0.0017212,
+       "cached": true,
+       "cache_key": "16fda3b0b5f0fad16c38d8c4a5ea97c03d96de6a5e7e3fa5fc2d45e938b680f5"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5361,
+     "system_tokens": 6345,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the '2025 return: missing documents' thread with Paul?",
+       "gold": [
+        "16338e07ae0a292f"
+       ],
+       "answer": "16338e07ae0a292f",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10839,
+       "cost": 0.0011194,
+       "cached": false,
+       "cache_key": "7d15768cea90ea4f7dc7d4e8fbe0614d344202472d4b3a52ea3926f48ce47aab"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Paul on the '2025 return: missing documents' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-3127564561778804565"
+       ],
+       "answer": "Draft ID: **r-3127564561778804565** (to paul@fenwicktax.com, subject \"Re: 2025 return: missing documents\"). It is unsent and awaiting the user's go-ahead. Its body is only a placeholder that says \"details below\" with no details.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10852,
+       "cost": 0.0011917,
+       "cached": false,
+       "cache_key": "a350de7e6d18b94221622bfc106837aa66b5956d25bc91da53671f3e5aaaff6e"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Bruno Sauer, Paul's bookkeeper?",
+       "gold": [
+        "bsauer21@fenwicktax.com"
+       ],
+       "answer": "bsauer21@fenwicktax.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10835,
+       "cost": 0.0010915,
+       "cached": false,
+       "cache_key": "7de7827c2e95657c58c2a904c88caec33b58e5ecd3ddfd014f4a23273ce2b88d"
+      },
+      {
+       "kind": "preference",
+       "question": "What tone did the user ask for in replies to Paul?",
+       "gold": [
+        "formal"
+       ],
+       "answer": "Formal, with full names and no exclamation marks.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10826,
+       "cost": 0.0011231,
+       "cached": false,
+       "cache_key": "85ee46ccb159da0f0af9b89e2aa107a83c6525c65e0c85f507a44166bbe68a36"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed preparation fee?",
+       "gold": [
+        "$800"
+       ],
+       "answer": "The currently agreed preparation fee is $800, which superseded an earlier $1,250. Both were confirmed on the '2025 return: missing documents' thread.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10823,
+       "cost": 0.0011373,
+       "cached": false,
+       "cache_key": "4679cfec09b5fd4b657620c5fac6b2e6eb3cec711541871d1723d5861f1b9d4b"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Paul they would upload the brokerage 1099s?",
+       "gold": [
+        "September 18",
+        "Sep 18",
+        "Sept 18",
+        "18 September",
+        "2026-09-18"
+       ],
+       "answer": "The user promised to upload the brokerage 1099s by Friday, September 18. Upload status is unconfirmed.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10834,
+       "cost": 0.0011724,
+       "cached": false,
+       "cache_key": "1ca01d8c0e761ced01c865f1120dcb9462721a93475118b6fa52eecf75a90e07"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "bathroom-remodel",
+   "name": "Bathroom remodel",
+   "purpose": "Agree scope, price and schedule for the bathroom remodel with Carl Jensen",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 96,
+   "tail_entries": 64,
+   "full_history_tokens": 9323,
+   "prefix_tokens": 5396,
+   "compacted_history_tokens": 5509,
+   "identifiers": [
+    "carl@jensenbuilders.com",
+    "1a3b3ab5eb9f69cf",
+    "kwame.mensah@outlook.com",
+    "1c282b15e7122050",
+    "136a9b7a4a6b753c",
+    "165bd12da96f49bd",
+    "priya.shah@northwindlabs.com",
+    "1f6e62cd575477b9",
+    "1c632b774df161fc",
+    "noreply@jensenbuilders.com",
+    "1be99273108664a5",
+    "185c71d8be9732dd",
+    "1ac5ce760e418ba3",
+    "jordan.reyes@gmail.com",
+    "1c662fb6f4d529e6",
+    "1d091ac63badeec0",
+    "13e43bfcfcabfda0",
+    "r-5444105397306524931",
+    "13d2d672c3d08e64",
+    "yhaddad61@jensenbuilders.com",
+    "1153747cdb0a46d9",
+    "freya.lindqvist@gmail.com",
+    "r-7205515835386119621",
+    "1acaeed47f8e4300",
+    "147c81bc7b118e8d",
+    "derek.shaw@yahoo.com",
+    "r-3427016500810475421",
+    "1b26ea8b81e967c5",
+    "1ce2ef428a4ba0fb",
+    "147b9e01f11d8fac",
+    "r-3689066115983717435",
+    "1022b0380e4402d8",
+    "19b1157e81db85f2",
+    "1b611fef77ff3d9d",
+    "1da4b812daa29c62",
+    "1d816535286ae562",
+    "1cca114afcb67a9b",
+    "1a849bd515d31080",
+    "149e082fc110e0fd"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "User: Jordan Reyes. Matter: bathroom remodel with Carl Jensen (Jensen Builders, carl@jensenbuilders.com). Site supervisor for paperwork: Yara Haddad (yhaddad61@jensenbuilders.com). Jensen's automated replies come from noreply@jensenbuilders.com. Price: fixed price is $22,000 (Carl's update, acknowledged on the 'Bathroom remodel quote' thread, Sept 8). This supersedes the earlier $16,500. Standing preference from user: always cc Jamie on anything that mentions money. Earlier money emails (the $16,500 and $22,000 replies) went without a Jamie cc. Commitments: user will pick tile samples by Tue Sept 22 (Carl told Sept 14; not confirmed as done). Meetings offered by agent, not yet confirmed by Carl: check-in Sat Sept 12 3pm; quick call Tue Sept 29 1pm; paperwork review Tue Sept 29 4pm (on 'Re: paperwork follow-up'). Fees Jensen noted, forwarded for records only: late fee $145 (to Kwame Mensah), late fee $915 (to Priya Shah), rush fee $635 (to Freya Lindqvist). The first two amounts conflict and are unverified. Open loops: draft r-5444105397306524931 to Carl ('want to move forward', no details in body) is unsent and awaits user approval. Unsent drafts to Freya Lindqvist (r-3689066115983717435) and Derek Shaw (r-3427016500810475421) are pending. Jensen's Sept 24 note needs no action; they will reach out if anything changes or a signature is needed.",
+    "purpose": "Agree scope, price and schedule for Jordan's bathroom remodel with Carl Jensen of Jensen Builders.",
+    "last_status": "Fixed price $22,000 acknowledged; tile picks due Sept 22; review/call meetings offered for Sept 12 and Sept 29; Carl's draft reply is waiting for user approval, and Jensen's latest note needs no action.",
+    "memory_tokens": 341,
+    "cost": 0.001904,
+    "fresh_cost": 0,
+    "prompt_tokens": 9740,
+    "completion_tokens": 1860,
+    "cached_calls": 1,
+    "cache_keys": [
+     "666d960ec14ebac69bf77de90ca1c8d054433fca3b773350a3f351cf3a17dc91"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9323,
+     "system_tokens": 10280,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Bathroom remodel quote' thread with Carl?",
+       "gold": [
+        "1ac5ce760e418ba3"
+       ],
+       "answer": "The 'Bathroom remodel quote' thread with Carl is **1ac5ce760e418ba3**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17147,
+       "cost": 0.0017792,
+       "cached": true,
+       "cache_key": "082d7a600836bf3ebeac572d41e4ed6ab1727f96d0c8fe713b4030ce727c61b3"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Carl on the 'Bathroom remodel quote' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-5444105397306524931"
+       ],
+       "answer": "Draft ID: **r-5444105397306524931** (message ID 13d2d672c3d08e64), created September 11, 2026. It has not been sent or deleted according to the history.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17160,
+       "cost": 0.001847,
+       "cached": true,
+       "cache_key": "5ac114aa9ef670f3c0feb336d0eb9249a65e7cbdb5e2f7fba066e386ecd78ea5"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Yara Haddad, Carl's site supervisor?",
+       "gold": [
+        "yhaddad61@jensenbuilders.com"
+       ],
+       "answer": "yhaddad61@jensenbuilders.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17139,
+       "cost": 0.0017229,
+       "cached": true,
+       "cache_key": "8af543cbbd501b5553c1e0d54018decbb05fdaea6c58171ac558353ec4632eeb"
+      },
+      {
+       "kind": "preference",
+       "question": "Who did the user ask to be cc'd on anything that mentions money?",
+       "gold": [
+        "jamie"
+       ],
+       "answer": "Jamie. On 2026-09-09, the user asked that Jamie be cc'd on anything that mentions money.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17137,
+       "cost": 0.0017567,
+       "cached": true,
+       "cache_key": "dc1c80f3f51410ba28058948571519e0b2da1cd93425118f615d76129f17b1d6"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed fixed price for the remodel?",
+       "gold": [
+        "$22,000"
+       ],
+       "answer": "The currently agreed fixed price for the remodel is **$22,000**. It replaced the earlier $16,500 figure, and I acknowledged the update to Carl on the 'Bathroom remodel quote' thread on 2026-09-08.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17133,
+       "cost": 0.0018003,
+       "cached": true,
+       "cache_key": "89372139f64ccafd6019fb5148fe8210974683b98549c0930a4637b248a9846c"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Carl they would pick the tile samples?",
+       "gold": [
+        "September 22",
+        "Sep 22",
+        "Sept 22",
+        "22 September",
+        "2026-09-22"
+       ],
+       "answer": "Tuesday, September 22. This was relayed to Carl on the \"Bathroom remodel quote\" thread (1ac5ce760e418ba3) on 2026-09-14.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17136,
+       "cost": 0.0017436,
+       "cached": true,
+       "cache_key": "b1e297f65dcfdeaecff15f47011b5adfeb3670d5a9f655399c1705fbd6555ca8"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5509,
+     "system_tokens": 6472,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Bathroom remodel quote' thread with Carl?",
+       "gold": [
+        "1ac5ce760e418ba3"
+       ],
+       "answer": "The 'Bathroom remodel quote' thread is most likely **1ac5ce760e418ba3**. The history doesn't name that thread directly. I inferred it because the unsent draft to Carl with subject 'Re: Bathroom remodel q\u2026' is on that thread, and the replies to it were sent there.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11050,
+       "cost": 0.001352,
+       "cached": false,
+       "cache_key": "4edbdcfa8286823b38ff74133ca263431df316372991ed5b32c1aab62f29d775"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Carl on the 'Bathroom remodel quote' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-5444105397306524931"
+       ],
+       "answer": "The draft is **r-5444105397306524931**, addressed to carl@jensenbuilders.com with subject \"Re: Bathroom remodel quote.\" It is unsent and awaiting the user's approval.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11063,
+       "cost": 0.0012058,
+       "cached": false,
+       "cache_key": "2b3150b35f40be42881e2097a4850c16a30ba536420fb8c9eef4fd9db6b0785d"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Yara Haddad, Carl's site supervisor?",
+       "gold": [
+        "yhaddad61@jensenbuilders.com"
+       ],
+       "answer": "yhaddad61@jensenbuilders.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11042,
+       "cost": 0.0011437,
+       "cached": false,
+       "cache_key": "2c23f8e816c7b792a4def01a0d326efbfd3e4efbd114c90a701c749abc3a396e"
+      },
+      {
+       "kind": "preference",
+       "question": "Who did the user ask to be cc'd on anything that mentions money?",
+       "gold": [
+        "jamie"
+       ],
+       "answer": "Jamie. The standing preference from the user is to always cc Jamie on anything that mentions money.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11040,
+       "cost": 0.0011205,
+       "cached": false,
+       "cache_key": "e0d25475fe49bee455ed6ccf8a074c22dfe0fae085c35a2257cabfae3585ab91"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed fixed price for the remodel?",
+       "gold": [
+        "$22,000"
+       ],
+       "answer": "The currently agreed fixed price is **$22,000**, per Carl's update acknowledged on the 'Bathroom remodel quote' thread (Sept 8). It supersedes the earlier $16,500.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11036,
+       "cost": 0.0011851,
+       "cached": false,
+       "cache_key": "ace39de2eb815edc0b154494cb72f185cdc6a78852034634bce88ac95eb18968"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Carl they would pick the tile samples?",
+       "gold": [
+        "September 22",
+        "Sep 22",
+        "Sept 22",
+        "22 September",
+        "2026-09-22"
+       ],
+       "answer": "**Tuesday, September 22.** Carl told the user on September 14, and the commitment was not confirmed as done.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11039,
+       "cost": 0.0011799,
+       "cached": false,
+       "cache_key": "41721f1fac3b70d2c310bd9dec8923aa6bb0119052cbea71a53d82557397132f"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "director-offer",
+   "name": "Director role offer",
+   "purpose": "Negotiate the Director of Product offer with Anjali Rao at Talentbridge",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 92,
+   "tail_entries": 68,
+   "full_history_tokens": 9499,
+   "prefix_tokens": 5544,
+   "compacted_history_tokens": 5216,
+   "identifiers": [
+    "anjali@talentbridge.io",
+    "15d73b97fd215613",
+    "noreply@talentbridge.io",
+    "1c9fbaaeda17c914",
+    "1a47eabfd49cf141",
+    "17c114e7df08c758",
+    "jordan.reyes@gmail.com",
+    "priya.shah@northwindlabs.com",
+    "r-7347544015407339826",
+    "14d84a2c91d60cd3",
+    "16aa69dca5ef7ca9",
+    "1e15cec05b6005bd",
+    "18cbf646dca3b8aa",
+    "148031b2f15248ce",
+    "r-9278825227385190461",
+    "1e84929e5a263264",
+    "ihalvorsen40@talentbridge.io",
+    "155bb32c8b93ab68",
+    "omar.haddad@northwindlabs.com",
+    "106aafded178e940",
+    "1b8c8aa078c893e3",
+    "1b1b6a37e212abf7",
+    "10399f331b497e5f",
+    "marcus.lee@northwindlabs.com",
+    "15e54fcea83924db",
+    "1874c6f5b666b909",
+    "12ff5e8eb7873faa",
+    "1e98233559d751d3",
+    "11af0bfbf9b36576"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "People: Anjali Rao (Talentbridge, anjali@talentbridge.io) is the main contact for the Director of Product offer. Ingrid Halvorsen (Talentbridge HR coordinator, ihalvorsen40@talentbridge.io) handles paperwork. Omar Haddad (omar.haddad@northwindlabs.com) and Marcus Lee (marcus.lee@northwindlabs.com) are contacts the user may loop in.\n\nDecisions: Signing bonus was first confirmed at $36,500 (Sep 6), then Anjali set the final agreed figure at $25,000, which we acknowledged on the thread (Sep 10). Talentbridge late fee of $420 was forwarded to Omar (Sep 12).\n\nCommitments: On Sep 14 we told Anjali the user would give a final answer on the offer by Tuesday, Sep 22. No record shows the user's answer was sent.\n\nPaperwork review slots offered to Talentbridge: Wed Sep 9 at 2:30pm and Mon Sep 7 at 3pm, sent to noreply@talentbridge.io. Neither slot is confirmed, and the two conflict.\n\nUser preferences: keep every email in this matter under five sentences. Do not send drafts without the user's confirmation.\n\nOpen loops: Draft r-9278825227385190461 to Anjali ('move forward on the open points; details below') is unsent and waits for the user's OK. It mentions details that are not in it. Talentbridge (Sep 20) said it is running behind due to staff holidays. Automated 'Survey' and 'Quick question about scheduling' threads need no action.",
+    "purpose": "Negotiate and close out the Director of Product offer with Anjali Rao at Talentbridge, including the signing bonus, paperwork and final acceptance.",
+    "last_status": "Bonus agreed at $25,000; the user's final answer promised for Sep 22 has passed with no record of it; a draft to Anjali is awaiting the user's confirmation and Talentbridge is running behind.",
+    "memory_tokens": 335,
+    "cost": 0.0017693,
+    "fresh_cost": 0,
+    "prompt_tokens": 9763,
+    "completion_tokens": 1586,
+    "cached_calls": 1,
+    "cache_keys": [
+     "38bf46aa64bc819f52ddeb6df398c8596ae1ca7b525aee6b65e23a1c2ac0302b"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9499,
+     "system_tokens": 10457,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Director of Product offer' thread with Anjali?",
+       "gold": [
+        "17c114e7df08c758"
+       ],
+       "answer": "The thread ID is **17c114e7df08c758**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17243,
+       "cost": 0.0017943,
+       "cached": true,
+       "cache_key": "93fd887376724b515ae5c03d75567851eb28ec00e54a50256da014878b67bb6d"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Anjali on the 'Director of Product offer' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-9278825227385190461"
+       ],
+       "answer": "The draft ID is **r-9278825227385190461** (message ID 1e84929e5a263264). It was created on 2026-09-08 and has not been sent or deleted.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17256,
+       "cost": 0.0018166,
+       "cached": true,
+       "cache_key": "18cd9750a0396b55165acbe655d7cbe1b5289b11dbb17627257602aca19971aa"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Ingrid Halvorsen, Anjali's HR coordinator?",
+       "gold": [
+        "ihalvorsen40@talentbridge.io"
+       ],
+       "answer": "ihalvorsen40@talentbridge.io",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17243,
+       "cost": 0.0017673,
+       "cached": true,
+       "cache_key": "1434e60d2b077026b31c6bf7400a971f3a92b2be5ad28eb5684115ec62ceb237"
+      },
+      {
+       "kind": "preference",
+       "question": "What length limit did the user set for emails in this matter?",
+       "gold": [
+        "five sentences",
+        "5 sentences"
+       ],
+       "answer": "Every email in this matter must be under five sentences. The user set this on 2026-09-07.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17229,
+       "cost": 0.0017719,
+       "cached": true,
+       "cache_key": "8bd7c277c98ca6c25947e5975146b4c05bbb87be1546f2d5ce5d0d760759cd3a"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed signing bonus?",
+       "gold": [
+        "$25,000"
+       ],
+       "answer": "$25,000. Per the Sept 10 update from Anjali, this replaced the earlier $36,500 figure, and it was acknowledged on the thread.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17227,
+       "cost": 0.0017967,
+       "cached": true,
+       "cache_key": "e1c1bdeb7bc4a2b0841049e7132b86befc5340644bdc06e30288575ad753cfae"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Anjali they would give a final answer on the offer?",
+       "gold": [
+        "September 22",
+        "Sep 22",
+        "Sept 22",
+        "22 September",
+        "2026-09-22"
+       ],
+       "answer": "Tuesday, September 22.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17237,
+       "cost": 0.0017752,
+       "cached": true,
+       "cache_key": "97f4003530098a15cecadb50d43bcb4795924602ca0fef9df01e2919bd2676e6"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5216,
+     "system_tokens": 6192,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Director of Product offer' thread with Anjali?",
+       "gold": [
+        "17c114e7df08c758"
+       ],
+       "answer": "The thread ID is **17c114e7df08c758**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10350,
+       "cost": 0.001159,
+       "cached": false,
+       "cache_key": "6da60c45dfade5d2f2ffbdf2bb5614b2c630f69e319ef075fff92470a71338cc"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Anjali on the 'Director of Product offer' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-9278825227385190461"
+       ],
+       "answer": "Draft ID: **r-9278825227385190461** (to anjali@talentbridge.io, subject \"Re: Director of Product\"). It is still unsent and waiting for the user's OK.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10363,
+       "cost": 0.0011288,
+       "cached": false,
+       "cache_key": "6e3feb6c0ccec8e696893a8723b43c7e8f4ff33bfdd45a6d2a465149f826d3f7"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Ingrid Halvorsen, Anjali's HR coordinator?",
+       "gold": [
+        "ihalvorsen40@talentbridge.io"
+       ],
+       "answer": "ihalvorsen40@talentbridge.io",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10350,
+       "cost": 0.001109,
+       "cached": false,
+       "cache_key": "413f5457bded3dd4619455075f42008171428261afc4ae3fc2c87594ab7e43d4"
+      },
+      {
+       "kind": "preference",
+       "question": "What length limit did the user set for emails in this matter?",
+       "gold": [
+        "five sentences",
+        "5 sentences"
+       ],
+       "answer": "Under five sentences per email.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10336,
+       "cost": 0.0010701,
+       "cached": false,
+       "cache_key": "6dcdbe774a8dbd48e7ac0cc26cb1248de39df3e2d8a7adaf9fb82e741821c601"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed signing bonus?",
+       "gold": [
+        "$25,000"
+       ],
+       "answer": "The currently agreed signing bonus is **$25,000**. Anjali set it on the thread, replacing the earlier $36,500 figure from Sep 6, and we acknowledged it on Sep 10.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10334,
+       "cost": 0.0011209,
+       "cached": false,
+       "cache_key": "1eed27ff781e1d46c25f3d3620522599b11d3db8f9102145ca9d2f7aef7a0401"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Anjali they would give a final answer on the offer?",
+       "gold": [
+        "September 22",
+        "Sep 22",
+        "Sept 22",
+        "22 September",
+        "2026-09-22"
+       ],
+       "answer": "Tuesday, September 22. On September 14, the agent told Anjali the user would give a final answer by then. The execution history shows no record that the user's answer was sent.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10344,
+       "cost": 0.0011094,
+       "cached": false,
+       "cache_key": "52244452793bc80a7427bbbcc2637950f4444a90d78e4d17e36b49593d1673e6"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "crown-dental",
+   "name": "Crown treatment",
+   "purpose": "Sort out the crown treatment and its cost with Brightsmile Dental",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 94,
+   "tail_entries": 66,
+   "full_history_tokens": 9778,
+   "prefix_tokens": 5869,
+   "compacted_history_tokens": 5431,
+   "identifiers": [
+    "laura@brightsmiledental.com",
+    "11ecdeaba7727d47",
+    "10ccfb69d264b2ef",
+    "jordan.reyes@gmail.com",
+    "priya.shah@northwindlabs.com",
+    "yhaddad77@brightsmiledental.com",
+    "1819c22f78d754c5",
+    "elena.reyes@gmail.com",
+    "18fba5db79f05ea5",
+    "15882bed2ad65685",
+    "1697f2aa78d505bd",
+    "18f92f5fe3985189",
+    "noreply@brightsmiledental.com",
+    "r-6982553933136998697",
+    "1dc97c6c284ab1e6",
+    "110d1549a2f97d98",
+    "r-9269634108876678424",
+    "1b3d3446e744b0a2",
+    "100651edcaa2eb87",
+    "1b30096051fdb257",
+    "1c9c4c9b3d30ff72",
+    "16deaba082682041",
+    "1290bbbe67d387f8",
+    "101088dfe7325c81",
+    "freya.lindqvist@gmail.com",
+    "r-8660786847916997341",
+    "1d7b27e46a3dcf30",
+    "1126a0533baa8030",
+    "1e1ab540e707fc8b",
+    "1fea2beb062266b1",
+    "1b13f4044416b2e9",
+    "108fbdba3fdced9d",
+    "sara.lund@fastmail.com",
+    "r-7246700121521553960",
+    "1e7a890f5432d0ad",
+    "1c7edb50990fb3fd",
+    "170eacbfa2b646f1",
+    "14d78a6e60e7ef4d"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "Matter: crown treatment and cost with Brightsmile Dental. Contacts: Laura Kemp (laura@brightsmiledental.com), main contact on the 'Crown fitting estimate' thread (10ccfb69d264b2ef). Yara Haddad (yhaddad77@brightsmiledental.com) is billing coordinator; paperwork goes to her. Decisions: $900 was confirmed to Laura on Sep 11, then superseded by a final out-of-pocket crown cost of $700, acknowledged on Sep 13. Commitments: the user promised to send the insurance pre-authorization form by Saturday, Sep 26; Laura has been told. Open loop: the form itself, and Laura's reply on open points. Brightsmile's automated noreply threads (Holiday hours, Survey) have had several meeting slots offered: paperwork review Tue Sep 15 2:30pm, check-in Mon Sep 21 4:30pm, walkthrough Sun Sep 27 1pm, quick call Fri Sep 25 1pm (last sent, unconfirmed). Parking charge of $845 was forwarded to Elena Reyes for records. Drafts: a reply to Laura saying the user wants to move forward (r-9269634108876678424) is unsent and awaits confirmation; 'Quick update' drafts to Freya Lindqvist and Sara Lund are unsent. The Elena draft text looks corrupted with unrelated wording. User preferences: keep every email in this matter under five sentences; never send without the user's confirmation for new drafts.",
+    "purpose": "Settle the crown treatment and its out-of-pocket cost with Brightsmile Dental (Laura Kemp and billing coordinator Yara Haddad), and handle the related paperwork and scheduling.",
+    "last_status": "Cost agreed at $700 (Sep 13); insurance pre-authorization form due by Sep 26 is still outstanding from the user, and the Friday Sep 25 call slot is unconfirmed.",
+    "memory_tokens": 320,
+    "cost": 0.0018276,
+    "fresh_cost": 0,
+    "prompt_tokens": 10416,
+    "completion_tokens": 1572,
+    "cached_calls": 1,
+    "cache_keys": [
+     "6a4be83672d283585e468cd9f5c86edd9739ad175d5b4599dea130cf68fd1aeb"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9778,
+     "system_tokens": 10733,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Crown fitting estimate' thread with Laura?",
+       "gold": [
+        "10ccfb69d264b2ef"
+       ],
+       "answer": "The Gmail thread ID for the 'Crown fitting estimate' thread with Laura is **10ccfb69d264b2ef**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17883,
+       "cost": 0.0018538,
+       "cached": true,
+       "cache_key": "e4ffab8e57f52200d4a564ab2385201bd9b96411a0ac1f5f2d6b69d387c1d08c"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Laura on the 'Crown fitting estimate' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-9269634108876678424"
+       ],
+       "answer": "The draft ID is **r-9269634108876678424** (created 2026-09-09, to laura@brightsmiledental.com, subject \"Re: Crown fitting estimate\"). It was never sent or deleted in the history. The $900 and $700 confirmations were separate replies sent via gmail_reply_to_thread.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17896,
+       "cost": 0.0019496,
+       "cached": true,
+       "cache_key": "548a8ef318dc429a73ce387af4a0294f5af2f2373ab01b1147be7e6478b30814"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Yara Haddad, Laura's billing coordinator?",
+       "gold": [
+        "yhaddad77@brightsmiledental.com"
+       ],
+       "answer": "yhaddad77@brightsmiledental.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17877,
+       "cost": 0.0017967,
+       "cached": true,
+       "cache_key": "13a916621bfa1ff120252c763ab4ad6fa75447dd6413ad65e7cbe051ca04baed"
+      },
+      {
+       "kind": "preference",
+       "question": "What length limit did the user set for emails in this matter?",
+       "gold": [
+        "five sentences",
+        "5 sentences"
+       ],
+       "answer": "Under five sentences per email in this matter.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17868,
+       "cost": 0.0018133,
+       "cached": true,
+       "cache_key": "1b1cf732796b51590ceb43f0e5bc3c72850f6b979ee559b9d0d8b01f738b61d0"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed out-of-pocket cost for the crown?",
+       "gold": [
+        "$700"
+       ],
+       "answer": "The currently agreed out-of-pocket cost for the crown is **$700**. Laura's update replaced the earlier $900 figure, and I acknowledged the $700 on the 'Crown fitting estimate' thread on 2026-09-13.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17874,
+       "cost": 0.0018584,
+       "cached": true,
+       "cache_key": "ff5616d794a98146fb08a19137ed8714380a165dfe5bf5f57d6b7c5e32c3adcb"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Laura they would send the insurance pre-authorization form?",
+       "gold": [
+        "September 26",
+        "Sep 26",
+        "Sept 26",
+        "26 September",
+        "2026-09-26"
+       ],
+       "answer": "Saturday, September 26.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17878,
+       "cost": 0.0017933,
+       "cached": true,
+       "cache_key": "69521d7526cdcd775ce4ca66bd5563b92ee31651772c2e5e202f3cef42eb9db0"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5431,
+     "system_tokens": 6414,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Crown fitting estimate' thread with Laura?",
+       "gold": [
+        "10ccfb69d264b2ef"
+       ],
+       "answer": "The Gmail thread ID for the 'Crown fitting estimate' thread with Laura is **10ccfb69d264b2ef**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11013,
+       "cost": 0.0011973,
+       "cached": false,
+       "cache_key": "81fb38540ceed52f009014d89d3dd8de6720c012e646cef3f31108d4448e118d"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Laura on the 'Crown fitting estimate' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-9269634108876678424"
+       ],
+       "answer": "The draft is **r-9269634108876678424**. It is addressed to laura@brightsmiledental.com on thread 10ccfb69d264b2ef and is still unsent, awaiting the user's confirmation.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11026,
+       "cost": 0.0012161,
+       "cached": false,
+       "cache_key": "30b69a5a8ce7c61597d0a027bb69abb74aaeddbbd8d8f5d6954116c9aac4917c"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Yara Haddad, Laura's billing coordinator?",
+       "gold": [
+        "yhaddad77@brightsmiledental.com"
+       ],
+       "answer": "yhaddad77@brightsmiledental.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11007,
+       "cost": 0.0011462,
+       "cached": false,
+       "cache_key": "9b0eb8996ea37cdc5d550cb4daf1ae4ac882e5bd5b41bf1d838758b359aa00b7"
+      },
+      {
+       "kind": "preference",
+       "question": "What length limit did the user set for emails in this matter?",
+       "gold": [
+        "five sentences",
+        "5 sentences"
+       ],
+       "answer": "Under five sentences per email.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10998,
+       "cost": 0.0011363,
+       "cached": false,
+       "cache_key": "84ddee93d2120ac4f32e00f04596b040d69ec04f16db7ef096b913abe73594e5"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed out-of-pocket cost for the crown?",
+       "gold": [
+        "$700"
+       ],
+       "answer": "The currently agreed out-of-pocket cost for the crown is **$700**. It superseded an earlier $900 figure confirmed to Laura Kemp on Sep 11, and the final amount was acknowledged on Sep 13.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11004,
+       "cost": 0.0012049,
+       "cached": false,
+       "cache_key": "68c6cde7d8afe64f202b2e4551dab7f175604861f1f00ff49ed00be9fa1dbe1c"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Laura they would send the insurance pre-authorization form?",
+       "gold": [
+        "September 26",
+        "Sep 26",
+        "Sept 26",
+        "26 September",
+        "2026-09-26"
+       ],
+       "answer": "Saturday, September 26.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11008,
+       "cost": 0.0011473,
+       "cached": false,
+       "cache_key": "f0f423591609d993fd0f966b3442e21d1c459de37d22a3cadbe78a2a93184086"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "brake-repair",
+   "name": "Brake repair",
+   "purpose": "Get the car's brakes repaired at Eastside Auto",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 91,
+   "tail_entries": 69,
+   "full_history_tokens": 9116,
+   "prefix_tokens": 5198,
+   "compacted_history_tokens": 5313,
+   "identifiers": [
+    "steve@eastsideauto.net",
+    "1954a84f562e09d8",
+    "12e4b80d43a644c2",
+    "jordan.reyes@gmail.com",
+    "18e01eee448ce25e",
+    "freya.lindqvist@gmail.com",
+    "1008dc10a39fe396",
+    "1b294a9c2ddf6308",
+    "1c19d0c97c5f9d52",
+    "bsauer23@eastsideauto.net",
+    "10ebdd912a7c69a5",
+    "1f61f11fb3401304",
+    "noreply@eastsideauto.net",
+    "1d9f92b301c7e305",
+    "1c2adc791675d60b",
+    "kwame.mensah@outlook.com",
+    "r-4381046916943625718",
+    "1f7809a832b4170f",
+    "136af59e382cbcf8",
+    "16fb235294ebee10",
+    "marcus.lee@northwindlabs.com",
+    "1c7502f1016064a4",
+    "r-9945166760431103273",
+    "14febfa81aad4814",
+    "1188be0ce93842c3",
+    "1c7e498cc6d017bf",
+    "1e954d9bfe0bcca3",
+    "1cdc3e36a2f03741",
+    "132452eba32bb0aa",
+    "16fdf4185dd3d83d",
+    "r-2952995454762801655",
+    "114a4f1fe1de1251",
+    "134aa80bbce660f3"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "Matter: Jordan Reyes (user) is getting the car's brakes repaired at Eastside Auto. Contacts: Steve Kowalski (Eastside Auto, main contact, steve@eastsideauto.net); Bruno Sauer (Steve's service writer, for paperwork, bsauer23@eastsideauto.net); Eastside Auto automated messages come from noreply@eastsideauto.net. Other contacts saved, no role on this matter: Freya Lindqvist (freya.lindqvist@gmail.com), Kwame Mensah (kwame.mensah@outlook.com), Marcus Lee (marcus.lee@northwindlabs.com). User preference: keep all replies to Steve formal, with full names and no exclamation marks. Decisions: final brake job price is $1,000, which superseded the $1,200 confirmed on Sept 8. Eastside Auto fees noted: rush fee $400 and cancellation fee $265; both notes were forwarded to Freya for records. Commitments: told Steve (Sept 4) that Jordan will drop off the car by Wednesday, Sept 16; drop-off status is unconfirmed. Offered a walkthrough on Sunday, Sept 20 at 1pm via the paperwork thread (to noreply); no confirmation received. Open loops: draft reply to Steve saying 'we want to move forward' (id r-4381046916943625718) is unsent and waits for user approval; a draft to Kwame Mensah with a status update (id r-2952995454762801655, Sept 23) is unsent and needs user direction. The draft to Freya was deleted at the user's request.",
+    "purpose": "Get the car's brakes repaired at Eastside Auto by coordinating the estimate, price, drop-off and paperwork with Steve Kowalski and his team.",
+    "last_status": "Price settled at $1,000 and acknowledged; drop-off by Sept 16 and Sept 20 walkthrough are unconfirmed; a draft to Steve is waiting for user approval and a draft to Kwame is unsent.",
+    "memory_tokens": 331,
+    "cost": 0.0017103,
+    "fresh_cost": 0,
+    "prompt_tokens": 9363,
+    "completion_tokens": 1548,
+    "cached_calls": 1,
+    "cache_keys": [
+     "0e06344df183706b6ee91349025a2ad7a3cc39dc94a1c28b4d398c55a13d57e3"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9116,
+     "system_tokens": 10065,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Brake job estimate' thread with Steve?",
+       "gold": [
+        "12e4b80d43a644c2"
+       ],
+       "answer": "The 'Brake job estimate' thread with Steve has thread ID **12e4b80d43a644c2**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16871,
+       "cost": 0.0017351,
+       "cached": true,
+       "cache_key": "fe9bc42cdca6c68a9492801b999142bb7f6a05787c29bcc7b68d0873e0127bf1"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Steve on the 'Brake job estimate' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-4381046916943625718"
+       ],
+       "answer": "The draft reply to Steve is **r-4381046916943625718** (message ID 1f7809a832b4170f). It was created on 2026-09-12 and is still waiting for the user's confirmation before sending.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16884,
+       "cost": 0.0017729,
+       "cached": true,
+       "cache_key": "9843d16dce1c0868ae0f4b2294dbdb5e1f299e7b2d99fdbf0295e9014d270b45"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Bruno Sauer, Steve's service writer?",
+       "gold": [
+        "bsauer23@eastsideauto.net"
+       ],
+       "answer": "bsauer23@eastsideauto.net",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16865,
+       "cost": 0.001725,
+       "cached": true,
+       "cache_key": "55baa8f693f91b23be7ace98109242f9ce25c3b2088b477a8ad44deefd7e2e7b"
+      },
+      {
+       "kind": "preference",
+       "question": "What tone did the user ask for in replies to Steve?",
+       "gold": [
+        "formal"
+       ],
+       "answer": "Formal: full names, no exclamation marks (user note relayed on 2026-09-03).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16859,
+       "cost": 0.0017014,
+       "cached": true,
+       "cache_key": "ead93d7a681180cb395317a24cf59873dab75db1219cabe21bf7aacbd5fe6d58"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed price for the brake job?",
+       "gold": [
+        "$1,000"
+       ],
+       "answer": "$1,000. Steve's later update replaced the earlier $1,200 figure, and we acknowledged the $1,000 on the 'Brake job estimate' thread on 2026-09-10.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16857,
+       "cost": 0.0017507,
+       "cached": true,
+       "cache_key": "447f04ac81a5b7073a88ffce6da0a38005ec5239510fc9bc16e76d848cdf1e62"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Steve they would drop off the car?",
+       "gold": [
+        "September 16",
+        "Sep 16",
+        "Sept 16",
+        "16 September",
+        "2026-09-16"
+       ],
+       "answer": "Wednesday, September 16 (per the September 4 request, which I replied to Steve on the 'Brake job estimate' thread).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16861,
+       "cost": 0.0017081,
+       "cached": true,
+       "cache_key": "61dc22598fc2da4b045a6e3408d7b7bf0c88e5194a74e79b8407b628b5ff5f07"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5313,
+     "system_tokens": 6286,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Brake job estimate' thread with Steve?",
+       "gold": [
+        "12e4b80d43a644c2"
+       ],
+       "answer": "**12e4b80d43a644c2**",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10784,
+       "cost": 0.0012689,
+       "cached": false,
+       "cache_key": "9a2b0e38324c7be58cff5cb97777de2656f16fe9f7d27961b42eb1a1e28a8606"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Steve on the 'Brake job estimate' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-4381046916943625718"
+       ],
+       "answer": "The draft is **r-4381046916943625718**, addressed to steve@eastsideauto.net with the subject \"Re: Brake job estimate.\" It is unsent and waiting for the user's approval.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10797,
+       "cost": 0.0011892,
+       "cached": false,
+       "cache_key": "e83d137f55f613494e190364b15e4e4228364ef228a6a775180a25b2c88d6dbe"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Bruno Sauer, Steve's service writer?",
+       "gold": [
+        "bsauer23@eastsideauto.net"
+       ],
+       "answer": "bsauer23@eastsideauto.net",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10778,
+       "cost": 0.0010858,
+       "cached": false,
+       "cache_key": "6ae947b90a178575301a0487fbe65fefff6cc213fc4e3991526172e86d79df56"
+      },
+      {
+       "kind": "preference",
+       "question": "What tone did the user ask for in replies to Steve?",
+       "gold": [
+        "formal"
+       ],
+       "answer": "Formal. The user asked that all replies to Steve Kowalski be formal, use full names, and contain no exclamation marks.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10772,
+       "cost": 0.0010982,
+       "cached": false,
+       "cache_key": "611535233339a8dc659d47e8d6f9f5bbc5bf92fcbf8dcea24e861654093f5c5a"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed price for the brake job?",
+       "gold": [
+        "$1,000"
+       ],
+       "answer": "The currently agreed brake job price is $1,000. It supersedes the $1,200 confirmed on Sept 8.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10770,
+       "cost": 0.001136,
+       "cached": false,
+       "cache_key": "83715f80400d2d092ac531a136ac273501c64e2a2d1ad1d360159fb8dbeb323e"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Steve they would drop off the car?",
+       "gold": [
+        "September 16",
+        "Sep 16",
+        "Sept 16",
+        "16 September",
+        "2026-09-16"
+       ],
+       "answer": "Wednesday, September 16. Jordan told Steve on September 4 that the car would be dropped off by then. The drop-off has not been confirmed.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10774,
+       "cost": 0.0011609,
+       "cached": false,
+       "cache_key": "5c43b6c9b35ccad60cc6a8fb9fd532ba15b3d7ed8aff29fd08aac9d731e3ef3f"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "initech-sow",
+   "name": "Initech statement of work",
+   "purpose": "Agree the phase 2 statement of work with Hugo Lambert at Initech",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 92,
+   "tail_entries": 68,
+   "full_history_tokens": 8949,
+   "prefix_tokens": 4985,
+   "compacted_history_tokens": 5450,
+   "identifiers": [
+    "hugo@initech.com",
+    "1030696b62c6276b",
+    "16326f84e7bfd120",
+    "jordan.reyes@gmail.com",
+    "18d84ba65e6fdd49",
+    "13f69ec2a7c1137d",
+    "noreply@initech.com",
+    "10b63ba6ee4e50fa",
+    "1ec1c95e0c49a40e",
+    "kwame.mensah@outlook.com",
+    "1ee9e90c7fad8d35",
+    "1e5cc59a743f42a1",
+    "rmehta95@initech.com",
+    "167ffeeb77e5856e",
+    "1d3c7c28a1f57a77",
+    "180cda2101cf987c",
+    "16326f",
+    "r-5048920452629884446",
+    "1188b592d28ffae5",
+    "12fb5c93420b4ba6",
+    "1dc2893a146b5456",
+    "11a8c7575f67fdbb",
+    "173c7caf411323b7",
+    "1c66a053d655c3c0",
+    "1ccfd0d13dbe4f0c",
+    "12621aa93557e90b",
+    "elena.reyes@gmail.com",
+    "17b2767b700c19f9",
+    "19cbb9d41958b89c",
+    "1be64124eb96e8f9",
+    "1e86b481806a54a6",
+    "r-3185110131611687884",
+    "160d6b720ae6ab70",
+    "17836fcd6f9f06de",
+    "156d59576afc3d92",
+    "priya.shah@northwindlabs.com"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "PEOPLE: Hugo Lambert, Initech (hugo@initech.com), main counterpart on the phase 2 SOW. Raj Mehta, Hugo's project coordinator (rmehta95@initech.com); paperwork goes to Raj. Kwame Mensah (kwame.mensah@outlook.com) and Elena Reyes (elena.reyes@gmail.com) receive forwarded Initech fee notes for their records. Priya Shah (priya.shah@northwindlabs.com) is a contact with no role noted yet.\n\nDECISIONS: Phase 2 budget first agreed at $58,500 (confirmed on thread 3 Sep), then superseded by the final figure of $69,500 (acknowledged 14 Sep).\n\nUSER PREFERENCE: Always cc Jamie on anything that mentions money. The 3 Sep and 14 Sep budget replies were logged without a Jamie cc.\n\nCOMMITMENTS: User promised Hugo the revised SOW by Friday 18 Sep. No record of it being sent.\n\nOPEN LOOPS:\n- Draft r-5048920452629884446 to Hugo ('Re: SOW for phase 2', 11 Sep) is unsent and vague. It awaits user confirmation and may need rewriting for the final $69,500 figure.\n- Check-in or walkthrough offered on Sun 20 Sep, first at 4:30pm then corrected to 1pm, on thread 1c66a053d655c3c0. Not yet confirmed by Initech.\n- Forwarded fees for records: $805 cancellation and $660 document (Kwame); $145 parking and $745 deposit refund (Elena).\n\nROUTINE: Repeated short acknowledgements go to noreply@initech.com on the newsletter and holiday-hours threads. These need no action.",
+    "purpose": "Agree the phase 2 statement of work with Hugo Lambert at Initech and bring it to a signed-off revised SOW.",
+    "last_status": "Budget agreed at $69,500, but the revised SOW promised for 18 Sep has no record of being sent. A draft to Hugo awaits the user's confirmation, and the 20 Sep check-in is unconfirmed.",
+    "memory_tokens": 338,
+    "cost": 0.0017755,
+    "fresh_cost": 0,
+    "prompt_tokens": 9070,
+    "completion_tokens": 1737,
+    "cached_calls": 1,
+    "cache_keys": [
+     "814037bb581ae28f3f6b1625dbb0dcf1622577f94ea1af91e41cf80af5a3dab2"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 8949,
+     "system_tokens": 9906,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'SOW for phase 2' thread with Hugo?",
+       "gold": [
+        "16326f84e7bfd120"
+       ],
+       "answer": "The Gmail thread ID for the 'SOW for phase 2' thread with Hugo is **16326f84e7bfd120**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16544,
+       "cost": 0.0017064,
+       "cached": true,
+       "cache_key": "c3f50a7e9d66088229d837aeda91ac6c08b427a49a1e3efb0c8563fbbe88fcad"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Hugo on the 'SOW for phase 2' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-5048920452629884446"
+       ],
+       "answer": "The draft ID is **r-5048920452629884446** (message ID 1188b592d28ffae5). It is still unsent, since no send or delete was run on it.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16557,
+       "cost": 0.0017822,
+       "cached": true,
+       "cache_key": "0f71359602f4c2f3c606d213ee274409346044b55c2beb11aec0ed4ca6365d8a"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Raj Mehta, Hugo's project coordinator?",
+       "gold": [
+        "rmehta95@initech.com"
+       ],
+       "answer": "rmehta95@initech.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16538,
+       "cost": 0.0016818,
+       "cached": true,
+       "cache_key": "b6c328e8970807badf349e185e8aaf7ea0fc7749bca6a85a9bc79f38d945ab8b"
+      },
+      {
+       "kind": "preference",
+       "question": "Who did the user ask to be cc'd on anything that mentions money?",
+       "gold": [
+        "jamie"
+       ],
+       "answer": "Jamie. The note from the user (logged 2026-09-04) said to always cc Jamie on anything that mentions money.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16535,
+       "cost": 0.001674,
+       "cached": true,
+       "cache_key": "8ea57eabd693fd7ae4c6c3c78177065c894bb2397a7dc1ac1f75714682e27990"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed phase 2 budget?",
+       "gold": [
+        "$69,500"
+       ],
+       "answer": "The currently agreed phase 2 budget is **$69,500**, which replaces the earlier $58,500 (per Hugo's update on 2026-09-14).\n\nThe standing instruction to cc Jamie on anything that mentions money does not appear to have been followed on the $58,500 confirmation (2026-09-03) or the $69,500 acknowledgement (2026-09-14). Neither reply included Jamie.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16529,
+       "cost": 0.0018429,
+       "cached": true,
+       "cache_key": "d7477da2dd0067d68bb963c20c4894ec1c16aa9d8db5b02d8f9884a6dddb9117"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Hugo they would send the revised statement of work?",
+       "gold": [
+        "September 18",
+        "Sep 18",
+        "Sept 18",
+        "18 September",
+        "2026-09-18"
+       ],
+       "answer": "Friday, September 18 (promised on 2026-09-10 via reply on the 'SOW for phase 2' thread).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16536,
+       "cost": 0.0016741,
+       "cached": true,
+       "cache_key": "300333623360aeb1f8e98f6b5b472627077552c986f6b745f694b0b8562d0fc5"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5450,
+     "system_tokens": 6417,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'SOW for phase 2' thread with Hugo?",
+       "gold": [
+        "16326f84e7bfd120"
+       ],
+       "answer": "The 'SOW for phase 2' thread with Hugo is **16326f84e7bfd120**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10974,
+       "cost": 0.0012169,
+       "cached": false,
+       "cache_key": "5c45e00049e15f1028aacce4c6e67fde0161eb883f78784c1c7fcf17e3bf6e61"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Hugo on the 'SOW for phase 2' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-5048920452629884446"
+       ],
+       "answer": "The draft ID is **r-5048920452629884446**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10987,
+       "cost": 0.0011447,
+       "cached": false,
+       "cache_key": "353242e5a5f423d7bbc2a7ba51b71ab37c33514d188519b2a6bfe68d9e969fb8"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Raj Mehta, Hugo's project coordinator?",
+       "gold": [
+        "rmehta95@initech.com"
+       ],
+       "answer": "rmehta95@initech.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10968,
+       "cost": 0.0011028,
+       "cached": false,
+       "cache_key": "82b9ff957289ac80d8b468ec41eb74e16787ded55ef2fb32746641417b0b934c"
+      },
+      {
+       "kind": "preference",
+       "question": "Who did the user ask to be cc'd on anything that mentions money?",
+       "gold": [
+        "jamie"
+       ],
+       "answer": "Jamie. The agent memory records a user preference to always cc Jamie on anything that mentions money. The 3 Sep and 14 Sep budget replies were logged without a Jamie cc.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10965,
+       "cost": 0.0011285,
+       "cached": false,
+       "cache_key": "8139d2e5caaaf599eeae6ca18822d7ee05af8a827023eebbea01d39803c60ead"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed phase 2 budget?",
+       "gold": [
+        "$69,500"
+       ],
+       "answer": "The currently agreed phase 2 budget is **$69,500**. It superseded the earlier $58,500 figure confirmed on 3 Sep, and Initech acknowledged it on 14 Sep.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10959,
+       "cost": 0.0011659,
+       "cached": false,
+       "cache_key": "2fccd707a04ac23cb207e59e752435d1cff0252eb93764c14df6714b3f999925"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Hugo they would send the revised statement of work?",
+       "gold": [
+        "September 18",
+        "Sep 18",
+        "Sept 18",
+        "18 September",
+        "2026-09-18"
+       ],
+       "answer": "Friday, 18 September.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 10966,
+       "cost": 0.0011021,
+       "cached": false,
+       "cache_key": "ac6cc82f5c95bf7820711c22588447d15c0a1de483dc12e641ed8806477bcd89"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "biscuit-surgery",
+   "name": "Biscuit's surgery",
+   "purpose": "Arrange Biscuit's dental surgery at Paws Clinic",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 94,
+   "tail_entries": 66,
+   "full_history_tokens": 9586,
+   "prefix_tokens": 5619,
+   "compacted_history_tokens": 5747,
+   "identifiers": [
+    "monica@pawsclinic.vet",
+    "grace.liu@northwindlabs.com",
+    "r-8809487339019469201",
+    "1f6f728877a8dfcc",
+    "17f777bcf61e0571",
+    "12a10dd5aaa03813",
+    "1db8a91b06f2b2b5",
+    "jordan.reyes@gmail.com",
+    "185a2dcd68cc6927",
+    "15dfdfe48a522375",
+    "noreply@pawsclinic.vet",
+    "1d195c983f0ce107",
+    "19fe2bd1e696d9fc",
+    "1c73c608c7925e55",
+    "1ef42885fabf1303",
+    "13e988283d08bbc8",
+    "elena.reyes@gmail.com",
+    "r-1977717483412146089",
+    "1f87789f88aa20ec",
+    "10bb0e72d149784f",
+    "bsauer35@pawsclinic.vet",
+    "r-2373104911802089689",
+    "129566b45434ef6f",
+    "16dbc39f9af2c8b2",
+    "15bc2e3d59e4d478",
+    "r-6210811688846573271",
+    "12e0504f7641fcc2",
+    "190e396073331012",
+    "15f0657e5c777596",
+    "1cd5a492e4dc6130",
+    "1da28c9b9bf2143f",
+    "1f761772f811b428",
+    "r-2538397421391532915",
+    "14e53c526feaabb0",
+    "1ffdfa83b3f0f32a",
+    "12e7d051d7c4cf3e",
+    "10a0805aeadc05f2",
+    "omar.haddad@northwindlabs.com",
+    "r-5483445694582809001",
+    "137f45758f3769f1",
+    "1cdfcaba89aaad5b",
+    "1780ef8b8db5e8b5",
+    "11b81fd811000021",
+    "1e377e4ea0d5b98d",
+    "1d29f602b865730d"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "Matter: Biscuit's dental surgery at Paws Clinic. Monica Reed (monica@pawsclinic.vet) is the clinic contact on the 'Biscuit dental surgery' thread (1db8a91b06f2b2b5). Bruno Sauer (bsauer35@pawsclinic.vet) is her practice manager; send paperwork to him. User: Jordan Reyes. USER PREFERENCE: keep every reply to Monica formal, with full names and no exclamation marks. Money: estimate first agreed at $1,400 (confirmed 6 Sept); final agreed surgery estimate is $2,850, which supersedes the earlier figure (acknowledged 12 Sept). Other Paws Clinic fees forwarded for records: admin $130 (to Grace Liu), document $320 (to Elena Reyes), parking $935 (to Omar Haddad), document $415 (to Grace Liu). Commitments: user promised to confirm pre-op bloodwork by Mon 14 Sept; no confirmation is on record after the 5 Sept note. Open: unsent draft r-2373104911802089689 to Monica ('we want to move forward') awaits user approval before sending. Offered on Paws Clinic threads: paperwork review/check-in Mon 28 Sept 4:30pm (newsletter thread 15f0657e5c777596, sent to noreply@pawsclinic.vet); quick call Fri 25 Sept 1pm (survey thread 13e988283d08bbc8, sent 24 Sept, no reply seen). Monica last said she is consulting her team and will come back. Unsent 'Quick update' drafts to Elena Reyes and Omar Haddad exist; Omar's draft mentions an attachment that was not attached.",
+    "purpose": "Arrange Biscuit's dental surgery at Paws Clinic, including estimate, pre-op bloodwork, paperwork and scheduling, with Monica Reed as the main contact.",
+    "last_status": "Surgery estimate settled at $2,850; Paws Clinic is consulting internally and has not replied to the 25 Sept call offer or the 28 Sept check-in; an unsent draft to Monica awaits user approval.",
+    "memory_tokens": 339,
+    "cost": 0.0018683,
+    "fresh_cost": 0,
+    "prompt_tokens": 10093,
+    "completion_tokens": 1718,
+    "cached_calls": 1,
+    "cache_keys": [
+     "3abfdf75cf25519ca11474da095acb8970e12cf70bd3253cf0cfaf0ae7091a9f"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9586,
+     "system_tokens": 10537,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Biscuit dental surgery' thread with Monica?",
+       "gold": [
+        "1db8a91b06f2b2b5"
+       ],
+       "answer": "The 'Biscuit dental surgery' thread with Monica has Gmail thread ID **1db8a91b06f2b2b5**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17588,
+       "cost": 0.0018398,
+       "cached": true,
+       "cache_key": "ab1e13b4110cee27dcb4f2a0a353b6c5548a0210400aa0b20d31ebb285e361a2"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Monica on the 'Biscuit dental surgery' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-2373104911802089689"
+       ],
+       "answer": "The draft ID is **r-2373104911802089689**. It is addressed to monica@pawsclinic.vet and has not been sent.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17601,
+       "cost": 0.0018616,
+       "cached": true,
+       "cache_key": "204c519a7d0175a2500ce1e686008943aa18c1364cb0d03cd3aa078dccb86675"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Bruno Sauer, Monica's practice manager?",
+       "gold": [
+        "bsauer35@pawsclinic.vet"
+       ],
+       "answer": "bsauer35@pawsclinic.vet",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17580,
+       "cost": 0.0017665,
+       "cached": true,
+       "cache_key": "337d63aaa9b7015a328f685f0c919d5473dfe99c4eb9633ef1251113d6e7b60f"
+      },
+      {
+       "kind": "preference",
+       "question": "What tone did the user ask for in replies to Monica?",
+       "gold": [
+        "formal"
+       ],
+       "answer": "Formal: full names and no exclamation marks.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17573,
+       "cost": 0.0017658,
+       "cached": true,
+       "cache_key": "a3d6bd0c715601bc8f027eeec2aee354cfc69c268b3d47705e0f6e4b2d8b8533"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed surgery estimate?",
+       "gold": [
+        "$2,850"
+       ],
+       "answer": "The currently agreed surgery estimate is $2,850. Monica sent an updated figure replacing the earlier $1,400, and the reply acknowledging $2,850 was sent on the 'Biscuit dental surgery' thread on 2026-09-12.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17571,
+       "cost": 0.0017996,
+       "cached": true,
+       "cache_key": "20bdab727d737800f745ef847f24453469c1461fee2b92edeee90ec6b76d0542"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Monica they would confirm the pre-op bloodwork appointment?",
+       "gold": [
+        "September 14",
+        "Sep 14",
+        "Sept 14",
+        "14 September",
+        "2026-09-14"
+       ],
+       "answer": "Monday, September 14. The user promised Monica they would confirm the pre-op bloodwork appointment by that date (logged 2026-09-05).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17586,
+       "cost": 0.0017831,
+       "cached": true,
+       "cache_key": "d9298d6310b618e5fe35ff1190ce25ef6ebe4a454c65a17f1bec5de4d7760110"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5747,
+     "system_tokens": 6724,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Biscuit dental surgery' thread with Monica?",
+       "gold": [
+        "1db8a91b06f2b2b5"
+       ],
+       "answer": "The thread ID is **1db8a91b06f2b2b5**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11561,
+       "cost": 0.0012451,
+       "cached": false,
+       "cache_key": "143314e2c00c9be4454abcaf6769c9587643874062692c4a9655d4b7b4fe0fa5"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Monica on the 'Biscuit dental surgery' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-2373104911802089689"
+       ],
+       "answer": "The draft is **r-2373104911802089689**. It is addressed to monica@pawsclinic.vet and is still unsent, awaiting the user's approval.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11574,
+       "cost": 0.0012599,
+       "cached": false,
+       "cache_key": "c8806da89ed4e2d2ce80d72fa8f6d4b32d3aa954db5b37b707b0d17cf7e12dfe"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Bruno Sauer, Monica's practice manager?",
+       "gold": [
+        "bsauer35@pawsclinic.vet"
+       ],
+       "answer": "bsauer35@pawsclinic.vet",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11553,
+       "cost": 0.0011858,
+       "cached": false,
+       "cache_key": "a55981584c4c96234ef9248261bd9fab8918bfba4723f9dc73cb4e702d60f439"
+      },
+      {
+       "kind": "preference",
+       "question": "What tone did the user ask for in replies to Monica?",
+       "gold": [
+        "formal"
+       ],
+       "answer": "Formal. Per the agent memory, the user's preference is that every reply to Monica be formal, use full names, and contain no exclamation marks.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11546,
+       "cost": 0.0011781,
+       "cached": false,
+       "cache_key": "0f04edc9a9d789bf25cf958cf223183429e9e0209442cb4252b9464fa84acc9e"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed surgery estimate?",
+       "gold": [
+        "$2,850"
+       ],
+       "answer": "The currently agreed surgery estimate is **$2,850**. It supersedes the earlier $1,400 estimate, which was confirmed on 6 Sept, and the change was acknowledged on 12 Sept.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11544,
+       "cost": 0.0012384,
+       "cached": false,
+       "cache_key": "941e198a767dfa599d97d16972d6a7b52cfdfdabe75abfba093bfd6462c5e666"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Monica they would confirm the pre-op bloodwork appointment?",
+       "gold": [
+        "September 14",
+        "Sep 14",
+        "Sept 14",
+        "14 September",
+        "2026-09-14"
+       ],
+       "answer": "Monday, 14 September.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11559,
+       "cost": 0.0012119,
+       "cached": false,
+       "cache_key": "f5fbfd8a14346ad65b3ff17cf869f449856818ea9e85bdf0e8b4c9cf7b1b9676"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "tahoe-cabin",
+   "name": "Tahoe cabin weekend",
+   "purpose": "Plan the Tahoe cabin weekend with Rowan Brooks and friends",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 91,
+   "tail_entries": 69,
+   "full_history_tokens": 9326,
+   "prefix_tokens": 5355,
+   "compacted_history_tokens": 5424,
+   "identifiers": [
+    "rowan@brooksmail.com",
+    "18af22c1148e0b3b",
+    "sara.lund@fastmail.com",
+    "15eb153fe9cdfc7e",
+    "17b9c2c66bb5b708",
+    "1bc7509f61df6034",
+    "noreply@brooksmail.com",
+    "1b9b188f36bcc193",
+    "15a11d6f7a86a97b",
+    "1dce236e96d28852",
+    "jordan.reyes@gmail.com",
+    "r-2416465183115950631",
+    "1862df3695e0873b",
+    "12f0f30b9a6b904f",
+    "13eac6b9cf39a507",
+    "1801899d1542eb28",
+    "1cf025cbb78dd244",
+    "marcus.lee@northwindlabs.com",
+    "14d8ce410351fe32",
+    "1494a08c97379a6c",
+    "13ad66d583085f30",
+    "1f37dec77dfc0515",
+    "nferro28@brooksmail.com",
+    "17213b5740815f80",
+    "1d14b044b0fb75f6",
+    "1fb2e7d219519aac",
+    "derek.shaw@yahoo.com",
+    "r-9418006509818949868",
+    "1d020798982dc136",
+    "13de037195c31f37",
+    "r-5159360795888038095",
+    "1be777f8468116c1",
+    "145d7e5ab6c2c69d",
+    "18ecc4a0d442f2f1",
+    "140280a41cb1b848",
+    "1ea74555beb7ada9"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "User: Jordan Reyes (jordan.reyes@gmail.com). Main counterpart: Rowan Brooks (rowan@brooksmail.com), Brooks family. Rowan's rental agent: Noemi Ferro (nferro28@brooksmail.com); send paperwork there. Other contacts: Sara Lund (sara.lund@fastmail.com), who may be looped in later and received a forwarded Brooks document fee note ($470); Marcus Lee (marcus.lee@northwindlabs.com), who received a forwarded Brooks document fee note ($150).\n\nDecisions: Jordan's share of the cabin rental is $600, the final figure (earlier $400 superseded; acknowledged on thread 13 Sep). Jordan promised to Venmo the deposit by Wed 16 Sep; no confirmation it was paid.\n\nUser preference: never propose a call or meeting before 10am.\n\nMeetings offered (no confirmations from Brooks yet): walkthrough Sat 12 Sep 2:30pm; quick call Mon 21 Sep 4pm; paperwork review Sun 27 Sep 2:30pm; quick call Sun 27 Sep 2:30pm; quick call Wed 30 Sep 2:30pm. Conflicting offers, so clarify which one stands.\n\nOpen loops: an unsent draft to Rowan on 'Re: Tahoe cabin weekend' (6 Sep) says Jordan wants to move forward, with 'details below' but none included; it awaits Jordan's approval. An unsent status-update draft to Marcus Lee (19 Sep) is still in drafts. The Derek Shaw draft was deleted on user instruction.",
+    "purpose": "Plan the Tahoe cabin weekend with Rowan Brooks and friends, settling costs, deposit, paperwork and meeting times for Jordan Reyes.",
+    "last_status": "Waiting on Brooks family to confirm a meeting slot, Jordan to approve the unsent draft to Rowan, and confirmation that the $600 deposit was paid by 16 Sep.",
+    "memory_tokens": 318,
+    "cost": 0.0017525,
+    "fresh_cost": 0,
+    "prompt_tokens": 9640,
+    "completion_tokens": 1577,
+    "cached_calls": 1,
+    "cache_keys": [
+     "e2f2c090474c2c4bd99a53c1c77b54fe8c8745b1a9998caa20ef2df50ec455d0"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9326,
+     "system_tokens": 10280,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Tahoe cabin weekend' thread with Rowan?",
+       "gold": [
+        "1dce236e96d28852"
+       ],
+       "answer": "The Gmail thread ID for the 'Tahoe cabin weekend' thread with Rowan is 1dce236e96d28852.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17247,
+       "cost": 0.0017477,
+       "cached": true,
+       "cache_key": "2bccc401543298ac15444c5bd13b04593c3b434895d4f5d2b584c54169d34032"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Rowan on the 'Tahoe cabin weekend' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-2416465183115950631"
+       ],
+       "answer": "The draft ID is **r-2416465183115950631** (message ID 1862df3695e0873b). It was created on 2026-09-06 and has not been sent or deleted.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17260,
+       "cost": 0.001807,
+       "cached": true,
+       "cache_key": "932c5fbf556b83957b76cd41a86a523b832af8bed0d6d21994c0247ff533985a"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Noemi Ferro, Rowan's rental agent?",
+       "gold": [
+        "nferro28@brooksmail.com"
+       ],
+       "answer": "nferro28@brooksmail.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17238,
+       "cost": 0.0017308,
+       "cached": true,
+       "cache_key": "f6ab579b6307e1d82767c9e72bf46c322d3afc63a72fc6615bdcd2d29cbce33e"
+      },
+      {
+       "kind": "preference",
+       "question": "What is the earliest time the user is willing to take a call or meeting for this matter?",
+       "gold": [
+        "10am",
+        "10:00",
+        "10 o'clock"
+       ],
+       "answer": "10am. The user's note from 2026-09-11 says never propose a call or meeting before 10am.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17238,
+       "cost": 0.0017403,
+       "cached": true,
+       "cache_key": "50c969dd29e9fd1db774dededf1e503015b1c0c8255b48a887489ae11cf3a07c"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed user's share of the cabin rental?",
+       "gold": [
+        "$600"
+       ],
+       "answer": "$600. Rowan's update on 2026-09-13 superseded the earlier $400 figure, and the acknowledgement was sent on the 'Tahoe cabin weekend' thread.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17232,
+       "cost": 0.0017847,
+       "cached": true,
+       "cache_key": "6f5b67494833989ef3a270b24accb7ac4714b67ef03eb55cccbf32fcf4aefdef"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Rowan they would Venmo the deposit?",
+       "gold": [
+        "September 16",
+        "Sep 16",
+        "Sept 16",
+        "16 September",
+        "2026-09-16"
+       ],
+       "answer": "Wednesday, September 16 (the 2026-09-08 instruction; I replied on the 'Tahoe cabin weekend' thread saying Jordan will Venmo the deposit by Wednesday, September 16).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17236,
+       "cost": 0.0017601,
+       "cached": true,
+       "cache_key": "ab40d255a358d077f546bd82b43e3c3e36b60d6dd8a6e1c0f968b707143a8afc"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5424,
+     "system_tokens": 6397,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Tahoe cabin weekend' thread with Rowan?",
+       "gold": [
+        "1dce236e96d28852"
+       ],
+       "answer": "**1dce236e96d28852**",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11036,
+       "cost": 0.0012721,
+       "cached": false,
+       "cache_key": "99ff1d82b1dc58960f99746103bc490d9d7d3b3e046e2a937a3e9aa0b2ebc0f5"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Rowan on the 'Tahoe cabin weekend' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-2416465183115950631"
+       ],
+       "answer": "The draft is **r-2416465183115950631**, addressed to rowan@brooksmail.com with subject \"Re: Tahoe cabin weekend.\" It is unsent and awaiting Jordan's approval.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11049,
+       "cost": 0.0012669,
+       "cached": false,
+       "cache_key": "e927971451d8204693eb9bfc1e960f278bd4487319983bf776573929fca39898"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Noemi Ferro, Rowan's rental agent?",
+       "gold": [
+        "nferro28@brooksmail.com"
+       ],
+       "answer": "nferro28@brooksmail.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11027,
+       "cost": 0.0011097,
+       "cached": false,
+       "cache_key": "baf3ca63601ae5cab067545750d6946fe90a74109175b4600b71dc863ec79003"
+      },
+      {
+       "kind": "preference",
+       "question": "What is the earliest time the user is willing to take a call or meeting for this matter?",
+       "gold": [
+        "10am",
+        "10:00",
+        "10 o'clock"
+       ],
+       "answer": "10am. The execution history records the user's preference: never propose a call or meeting before 10am.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11027,
+       "cost": 0.0011177,
+       "cached": false,
+       "cache_key": "64aa4dde7c934327f7cc05ccba01d50b766b100ac835c12d0d8ff88e6e00c741"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed user's share of the cabin rental?",
+       "gold": [
+        "$600"
+       ],
+       "answer": "Jordan's agreed share of the cabin rental is **$600**. It replaced an earlier $400 figure, and the change was acknowledged on the thread on 13 Sep.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11021,
+       "cost": 0.0011661,
+       "cached": false,
+       "cache_key": "a77b98f01f4754804f59ec62353a06a9caca9faf11cc60fe8bc4169e358feab1"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Rowan they would Venmo the deposit?",
+       "gold": [
+        "September 16",
+        "Sep 16",
+        "Sept 16",
+        "16 September",
+        "2026-09-16"
+       ],
+       "answer": "Jordan promised to Venmo the deposit by Wednesday, September 16. The history has no confirmation that it was paid.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11025,
+       "cost": 0.0011655,
+       "cached": false,
+       "cache_key": "f5af7d26316b8f2bd5a4b23ce3c74fdb01a8aed5ac3f41da5198d0bdb5fac127"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "water-heater",
+   "name": "Water heater replacement",
+   "purpose": "Replace the water heater with Tran Plumbing",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 96,
+   "tail_entries": 64,
+   "full_history_tokens": 9792,
+   "prefix_tokens": 5840,
+   "compacted_history_tokens": 5728,
+   "identifiers": [
+    "henry@tranplumbing.com",
+    "derek.shaw@yahoo.com",
+    "r-9275060939746836123",
+    "1f6ad968111fa13f",
+    "1367ce754b772fe9",
+    "169e7fb4f41eac52",
+    "1a432d38a263cb66",
+    "jordan.reyes@gmail.com",
+    "marcus.lee@northwindlabs.com",
+    "1dd77eaf990a71a9",
+    "noreply@tranplumbing.com",
+    "1803765b814bf65d",
+    "r-5044100201049837674",
+    "1f9afc1311343f15",
+    "1f7ee4aee1fec858",
+    "1eee904ff1eb775f",
+    "ktanaka20@tranplumbing.com",
+    "1fb45f5896e2af5c",
+    "182cb20785a8e7f3",
+    "1585d54780d3edff",
+    "kwame.mensah@outlook.com",
+    "r-5762411204429503085",
+    "1a31df163a6c5ba5",
+    "12c5a0f0c533c50f",
+    "omar.haddad@northwindlabs.com",
+    "r-9071958012668944218",
+    "10b54fb06c3f0b67",
+    "1435076fa9626052",
+    "1b7e5af1c0edac3b",
+    "105f3ea7eb7998b4",
+    "15269546d0b71a64",
+    "1848ba5165ed64c8",
+    "r-1379950360694185796",
+    "1f493d194ca2cfea",
+    "13f5848ee61da629",
+    "r-6003208575207725381",
+    "1524dde554880e68",
+    "1b023121a3db988f",
+    "1c11a542ea99ea17",
+    "1e6820e36a4ad88c",
+    "r-8479540438834589515",
+    "1e144c93fb2ac71a",
+    "135b5a7304f45b00",
+    "14fbaab5c816b050",
+    "13f9fa634333ff7d"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "User: Jordan Reyes. Matter: replace water heater with Tran Plumbing.\n\nPeople: Henry Tran (Tran Plumbing, henry@tranplumbing.com) is the main contact. Keiko Tanaka (ktanaka20@tranplumbing.com) is Henry's dispatcher and receives paperwork. Tran's automated mail comes from noreply@tranplumbing.com. Marcus Lee (marcus.lee@northwindlabs.com) may be looped in later.\n\nDecisions: The installed price was first $2,100 (confirmed Sept 7), then superseded by the final agreed price of $3,400 (acknowledged Sept 10 on 'Water heater replacement quote', thread 1a432d38a263cb66).\n\nCommitments: Jordan promised to clear garage access by Monday, Sept 21 (Henry told Sept 8). Jordan offered these slots: walkthrough Tue Sept 15 4pm ('Updated contact details' thread); quick call Tue Sept 22 4pm and paperwork review Mon Sept 28 4pm (newsletter thread 105f3ea7eb7998b4); quick call Sat Sept 26 4pm ('Re: paperwork follow-up' thread 1585d54780d3edff). Sept 21 and 23 thank-you replies were sent.\n\nUser preference: write to Henry in Spanish from now on.\n\nOpen loops: Tran's team has not confirmed any offered slot. Their Sept 24 automated message promised a reply within two business days. No direct message from Henry since Sept 10. Unsent 'Quick update' drafts exist to Derek Shaw, Kwame Mensah and Omar Haddad (not Tran matters); the draft list was empty on Sept 11, so their status should be checked.",
+    "purpose": "Replace the water heater with Tran Plumbing by handling the quote, agreed price, garage access, scheduling and paperwork with Henry Tran and his team for Jordan Reyes.",
+    "last_status": "Price agreed at $3,400 and access promised by Sept 21; Tran has not yet confirmed any offered visit or call times, and the team's reply is pending.",
+    "memory_tokens": 346,
+    "cost": 0.0018385,
+    "fresh_cost": 0,
+    "prompt_tokens": 10315,
+    "completion_tokens": 1614,
+    "cached_calls": 1,
+    "cache_keys": [
+     "40feac408d09afb4b0536511c58129cceb4a16730aba266030fc40b177fabecc"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9792,
+     "system_tokens": 10743,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Water heater replacement quote' thread with Henry?",
+       "gold": [
+        "1a432d38a263cb66"
+       ],
+       "answer": "The thread ID is **1a432d38a263cb66**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17818,
+       "cost": 0.0018418,
+       "cached": true,
+       "cache_key": "f184a5aab999903512415944477c7e9262df7b0bf95f0d832cacd62dc07affb9"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Henry on the 'Water heater replacement quote' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-5044100201049837674"
+       ],
+       "answer": "The draft is **r-5044100201049837674** (message ID 1f9afc1311343f15). However, a drafts check on 2026-09-11 returned no drafts, so it may no longer be pending.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17831,
+       "cost": 0.0019291,
+       "cached": true,
+       "cache_key": "bf7d274af626e09664f0fb8771afcc3f23300b068de5b96a6c6e0fe8df94e1f5"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Keiko Tanaka, Henry's dispatcher?",
+       "gold": [
+        "ktanaka20@tranplumbing.com"
+       ],
+       "answer": "ktanaka20@tranplumbing.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17813,
+       "cost": 0.0017898,
+       "cached": true,
+       "cache_key": "1fb221f43f8ca0797cf235d754a525ffc661fbb6138d6a6a0d5cd611f164a886"
+      },
+      {
+       "kind": "preference",
+       "question": "In what language did the user ask for emails to Henry to be written?",
+       "gold": [
+        "spanish"
+       ],
+       "answer": "Spanish. The 2026-09-11 request said: \"Note from the user for this matter: write to Henry in Spanish from now on.\"",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17806,
+       "cost": 0.0018026,
+       "cached": true,
+       "cache_key": "2dd72fa22c7e6e417e4c0260bd4f9f572f83bd57318977f6ccff4c91f7631cb4"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed installed price for the water heater?",
+       "gold": [
+        "$3,400"
+       ],
+       "answer": "$3,400 installed. Henry's update on 2026-09-10 superseded the earlier $2,100 figure, and the acknowledgement was sent on the 'Water heater replacement quote' thread.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17804,
+       "cost": 0.0018479,
+       "cached": true,
+       "cache_key": "d58f5f1af0d0bca46fd443efb593be369de00d0ea6540bc1c45bbf8909ebe55c"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Henry they would clear access to the garage?",
+       "gold": [
+        "September 21",
+        "Sep 21",
+        "Sept 21",
+        "21 September",
+        "2026-09-21"
+       ],
+       "answer": "The user promised Henry they would clear garage access by **Monday, September 21** (2026). This was relayed on the \"Water heater replacement quote\" thread on September 8, 2026.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17808,
+       "cost": 0.0018598,
+       "cached": true,
+       "cache_key": "c737087a0f102e650febfc6a44c40db1df58646acb11c696a2fdd4b04a2c5f25"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5728,
+     "system_tokens": 6711,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Water heater replacement quote' thread with Henry?",
+       "gold": [
+        "1a432d38a263cb66"
+       ],
+       "answer": "The thread ID is **1a432d38a263cb66**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11547,
+       "cost": 0.0012432,
+       "cached": false,
+       "cache_key": "4cb8a368d8d6755273e4b5868bfc77c73bb13987bb71712dc449abe742e73a16"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Henry on the 'Water heater replacement quote' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-5044100201049837674"
+       ],
+       "answer": "The draft is **r-5044100201049837674** (message ID 1f9afc1311343f15, thread 1a432d38a263cb66). It was created to henry@tranplumbing.com with subject \"Re: Water heater replac...\".\n\nThe history doesn't show it being confirmed or sent. The draft list was empty on Sept 11, and the same thread has later SENT replies, so its current status is unclear.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11560,
+       "cost": 0.0014305,
+       "cached": false,
+       "cache_key": "65db40ee81eeb1763ed920e188464ee747ad2d98132b68c30d5fd8082caf83f2"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Keiko Tanaka, Henry's dispatcher?",
+       "gold": [
+        "ktanaka20@tranplumbing.com"
+       ],
+       "answer": "ktanaka20@tranplumbing.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11542,
+       "cost": 0.0012282,
+       "cached": false,
+       "cache_key": "279551bdafcc67a4074762d1ec3d66cc04a29adc759d570a8781ec38230061fe"
+      },
+      {
+       "kind": "preference",
+       "question": "In what language did the user ask for emails to Henry to be written?",
+       "gold": [
+        "spanish"
+       ],
+       "answer": "Spanish. The stored user preference is to write to Henry in Spanish from now on.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11535,
+       "cost": 0.0011995,
+       "cached": false,
+       "cache_key": "3c3687e290a0402ca18fdfc5dd930a3ecb3c8a869da56e146a46d45299b6ef05"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed installed price for the water heater?",
+       "gold": [
+        "$3,400"
+       ],
+       "answer": "The currently agreed installed price is **$3,400**. It superseded the earlier $2,100 figure and was acknowledged on Sept 10 in the 'Water heater replacement quote' thread (1a432d38a263cb66).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11533,
+       "cost": 0.0012468,
+       "cached": false,
+       "cache_key": "718bffa0e42b26831791e8ec3cff6f7591d9b7ec6747d5375b9bb47b241a41ef"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Henry they would clear access to the garage?",
+       "gold": [
+        "September 21",
+        "Sep 21",
+        "Sept 21",
+        "21 September",
+        "2026-09-21"
+       ],
+       "answer": "Monday, September 21. Jordan promised Henry on September 8 to clear garage access by then.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11537,
+       "cost": 0.0012047,
+       "cached": false,
+       "cache_key": "65406e76decb663585a4031dae47da8c2c4e0fcfd9d8c34250f787df50d37e28"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "home-policy",
+   "name": "Home policy renewal",
+   "purpose": "Renew the home insurance policy with Amy Fox at Cascade Insurance",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 87,
+   "tail_entries": 73,
+   "full_history_tokens": 9070,
+   "prefix_tokens": 5104,
+   "compacted_history_tokens": 5475,
+   "identifiers": [
+    "amy@cascadeins.com",
+    "11c98210243ef4a7",
+    "162751829f0aa5d7",
+    "jordan.reyes@gmail.com",
+    "15232c449a9d05ff",
+    "noreply@cascadeins.com",
+    "1872dbdb7af147fe",
+    "11113b6802de5c50",
+    "r-2822343476078381005",
+    "1cf6b8df6d3315d5",
+    "wcalloway51@cascadeins.com",
+    "134817823dd695ee",
+    "1e8dc9e6e44f6fa4",
+    "10f7c8be1b1c6f5c",
+    "priya.shah@northwindlabs.com",
+    "1e8772103789f410",
+    "sara.lund@fastmail.com",
+    "19bd9a14bd58982b",
+    "19aa4b6bef98d0db",
+    "1ea5acc0fca922ee",
+    "194c6d6f3176d1b6",
+    "16a1f8058c7e18a1",
+    "r-5922196978839087920",
+    "117c291caa473f68",
+    "1569e0630895dcfb",
+    "17eba5dc05b695bc",
+    "13dca5abacd60248",
+    "1e14526c332f57a5",
+    "r-9350095575908317062",
+    "185ed2bc0e324134",
+    "104067faa6219d62",
+    "1a9a8a14fd6905c7",
+    "116f3bd27b003fa2",
+    "1483b1b89ef0809a",
+    "130233c4e044e532"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "Matter: home insurance renewal with Amy Fox at Cascade Insurance (amy@cascadeins.com). Main thread: 'Home policy renewal 2027' (thread 162751829f0aa5d7). User is Jordan Reyes. Sara Lund (sara.lund@fastmail.com) receives forwarded Cascade money notices for records. Priya Shah (priya.shah@northwindlabs.com) is a possible future loop-in; unsent status-update drafts exist for her (Sept 16 and Sept 19). Wren Calloway (wcalloway51@cascadeins.com) is Amy's underwriting assistant; send paperwork there.\n\nDecisions: annual premium first agreed at $1,800 (confirmed Sept 8), then superseded by a final $2,250 (acknowledged Sept 12).\n\nUser preference: always cc Jamie on anything that mentions money. The Sept 8 and Sept 12 replies mentioned money without a cc to Jamie. Flag this for the user.\n\nCommitments: user promised Amy photos of the new roof by Fri Sept 18. Delivery not confirmed in the log.\n\nOpen loops:\n- Sept 6 draft (r-2822343476078381005) to Amy saying the user wants to move forward. It was awaiting user confirmation; its status is unclear and it may be stale.\n- Offered times on Cascade threads, none confirmed by Cascade: walkthrough Sun Sept 13 3pm; check-in Sun Sept 27 2:30pm; check-in Sat Oct 3 4:30pm.\n- Cascade notices of a $270 deposit refund, a $355 late fee, and a $700 deposit refund were forwarded to Sara. Their reconciliation is unclear.\n- Sept 21 reply on 'Updated contact details' says something is attached, but no attachment was sent.\n\nCascade's automated notices (survey, holiday hours, contact details) need no action.",
+    "purpose": "Renew Jordan Reyes's home insurance policy with Amy Fox at Cascade Insurance, settling the premium, paperwork and related items.",
+    "last_status": "Annual premium agreed at $2,250 and acknowledged; roof photos were promised by Sept 18 (delivery unconfirmed); an Oct 3 4:30pm check-in was offered to Cascade and is unconfirmed; the Jamie cc rule was missed on money emails.",
+    "memory_tokens": 387,
+    "cost": 0.0017595,
+    "fresh_cost": 0,
+    "prompt_tokens": 9210,
+    "completion_tokens": 1677,
+    "cached_calls": 1,
+    "cache_keys": [
+     "2b46f2e1cc2b9a89efc385c363922aefc7f1c5a07bdaccfad9750f83ec274fd1"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9070,
+     "system_tokens": 10026,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Home policy renewal 2027' thread with Amy?",
+       "gold": [
+        "162751829f0aa5d7"
+       ],
+       "answer": "The thread ID is **162751829f0aa5d7**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16770,
+       "cost": 0.001747,
+       "cached": true,
+       "cache_key": "27be6dec208e754af214564d1de5cc7b09a19d93cb14520ea5faddf7525446fb"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Amy on the 'Home policy renewal 2027' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-2822343476078381005"
+       ],
+       "answer": "The draft is **r-2822343476078381005**. It was created on 2026-09-06 to amy@cascadeins.com and has not been sent or deleted in the history.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16783,
+       "cost": 0.0017783,
+       "cached": true,
+       "cache_key": "1fbb490d3b1ceb6d74083b73cda4927fa9b6650c9ab4df2fae88d5727f12c33f"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Wren Calloway, Amy's underwriting assistant?",
+       "gold": [
+        "wcalloway51@cascadeins.com"
+       ],
+       "answer": "wcalloway51@cascadeins.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16764,
+       "cost": 0.0016844,
+       "cached": true,
+       "cache_key": "4842d03a4fe90caef722abe712393d06cadbb2405e994dd240c4209a74c2d758"
+      },
+      {
+       "kind": "preference",
+       "question": "Who did the user ask to be cc'd on anything that mentions money?",
+       "gold": [
+        "jamie"
+       ],
+       "answer": "Jamie. The execution history records the user's note (2026-09-05): \"always cc Jamie on anything that mentions money.\"",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16760,
+       "cost": 0.0016965,
+       "cached": true,
+       "cache_key": "ba783572f8f02f78d2774c1cffac26946a653e6bb8b72ca513449297efda0b77"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed annual premium?",
+       "gold": [
+        "$2,250"
+       ],
+       "answer": "$2,250. Per the 2026-09-12 update from the user, Amy's final agreed annual premium replaced the earlier $1,800 figure, and I acknowledged it on the 'Home policy renewal 2027' thread.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16751,
+       "cost": 0.0017651,
+       "cached": true,
+       "cache_key": "bde2f90b9a201b739a84a01fd66c63ae0ef9159fda52b16432cc5800ff864fe4"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Amy they would send photos of the new roof?",
+       "gold": [
+        "September 18",
+        "Sep 18",
+        "Sept 18",
+        "18 September",
+        "2026-09-18"
+       ],
+       "answer": "Friday, September 18. The user promised Amy photos of the new roof by then (reply sent on the 'Home policy renewal 2027' thread on 2026-09-13).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16760,
+       "cost": 0.0017045,
+       "cached": true,
+       "cache_key": "60251cca3b48b0f148ce3dc01551b5658ed0830b98569dfe25422c5352e59cc8"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5475,
+     "system_tokens": 6447,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Home policy renewal 2027' thread with Amy?",
+       "gold": [
+        "162751829f0aa5d7"
+       ],
+       "answer": "162751829f0aa5d7",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11025,
+       "cost": 0.001132,
+       "cached": false,
+       "cache_key": "c00fd5b2abc67c381ec91e79f04e4e40fdeb6212059edeacf41f6d5ec592506b"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Amy on the 'Home policy renewal 2027' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-2822343476078381005"
+       ],
+       "answer": "The draft is **r-2822343476078381005**, addressed to amy@cascadeins.com. Its status is unclear and it may be stale.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11038,
+       "cost": 0.0012118,
+       "cached": false,
+       "cache_key": "7fc3d1df09eb923a87df62c62937b5cb23ec37c7a95296e2baf6170d09076456"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Wren Calloway, Amy's underwriting assistant?",
+       "gold": [
+        "wcalloway51@cascadeins.com"
+       ],
+       "answer": "wcalloway51@cascadeins.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11019,
+       "cost": 0.0011099,
+       "cached": false,
+       "cache_key": "fe1664d1b8abcf929ee6e4832a926ec751d9e27b20365aad4eb78d6f075a30fd"
+      },
+      {
+       "kind": "preference",
+       "question": "Who did the user ask to be cc'd on anything that mentions money?",
+       "gold": [
+        "jamie"
+       ],
+       "answer": "Jamie. The agent memory records a standing user preference to always cc Jamie on anything that mentions money.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11015,
+       "cost": 0.0011195,
+       "cached": false,
+       "cache_key": "08cf20a377ea0a43dfc73a5c7bea71328ae16c6407e284e4393fdf105d0e707a"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed annual premium?",
+       "gold": [
+        "$2,250"
+       ],
+       "answer": "$2,250. It superseded the earlier $1,800 agreed on Sept 8 and was acknowledged on Sept 12.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11006,
+       "cost": 0.0011571,
+       "cached": false,
+       "cache_key": "9348afd00f1e496a5e74b13e0f73df6df80b9c6036e374e4c0f5033c91c201db"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Amy they would send photos of the new roof?",
+       "gold": [
+        "September 18",
+        "Sep 18",
+        "Sept 18",
+        "18 September",
+        "2026-09-18"
+       ],
+       "answer": "Friday, September 18. The agent memory records that the user promised Amy photos of the new roof by then, and the log does not confirm delivery.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11015,
+       "cost": 0.0011245,
+       "cached": false,
+       "cache_key": "044accaf6dbc8365cef2865064b855c776159607856cd8eb552f1e7e7ba98b36"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  }
+ ]
+}

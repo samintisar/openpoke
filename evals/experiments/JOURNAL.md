@@ -68,3 +68,10 @@ Template:
 - **Dev result:** lived-10 0.98 / 0.96 / 0.00 · lived-50 0.87 / 0.86 / 0.10 · lived-200 0.99 / 0.96 / 0.00 · lived-1000 0.96 / 0.93 / 0.00. dormant_revival 27/27.
 - **Regression suite:** the same 3 borderline cases as v3, no new failures.
 - **Decision:** keep (default on).
+
+## 2026-10-28 · memory compaction (Plan 3, memory eval)
+- **Setup:** 12 synthetic execution-agent logs, 40 runs each, in production log shapes. Planted facts (thread id, draft id, email, preference, a decision superseded inside the compacted prefix, a commitment) sit among distractors. The production `compact` folds each over-budget prefix (budget 4k tokens). QA uses the execution agent's real system prompt. Full history averages 9.3k tokens at 40 runs and grows without bound; compacted stays bounded.
+- **Run 1** `20261028-115016-memory-dev.json` ($0.22): full recall 1.00; compacted 0.86 (thread id 0.50, draft id 0.67, everything else 1.00) at 4.5k tokens. The identifier block was a bare list of ~40 ids, so the agent could not tell the main thread from side threads or deleted drafts.
+- **Run 2** `20261028-115342-memory-dev.json` ($0.08): each id carries the text around its last use (70 chars before / 30 after). Compacted 0.97 (thread id 0.83) at 5.3k tokens. The after-window cut the email subject.
+- **Run 3** `20261028-115450-memory-dev.json` ($0.09): 60 / 60 window. Compacted **1.00** on every fact type, stale-answer rate 0.00, at 5.5k tokens (full history 9.3k).
+- **Decision:** keep run 3. Prose facts (preference, superseded decision, commitment) were 1.00 from the start; the summary keeps the latest decision, not the stale one. The token target (≤ 4.5k) is missed by about 1k, a deliberate trade for identifier recall. Caveat: the window was tuned on this eval's own logs, and there is no held-out memory set.
