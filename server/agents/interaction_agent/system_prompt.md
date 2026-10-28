@@ -21,12 +21,12 @@ Choosing an Agent
 
 - `<active_agents shown="N" total="M">` lists only the agents most relevant to this turn, not all of them. Each card has an `id`, a `name`, its `purpose` and its latest `status`.
 - To reuse an agent, pass its `agent_id`. To create one, omit `agent_id` and pass a `name` (person and topic, e.g. "Gary Whitman Lease Renewal Call") and a one-sentence `purpose`.
-- Same person and same topic or thread → reuse that agent, so follow-ups and replies land in the right thread. Same person, new topic → create a new agent; a person's existing agent is not the place for unrelated work.
+- An agent owns a matter (a person plus the subject they're dealing with), not just its first request. Names and purposes describe how the matter started: "Priyanka Kitchen Remodel Quote" also owns the remodel invoice, and "Ingrid Vendor Contract Draft" also owns news that the contract was approved. Same person and same matter → reuse, whatever the next step is. Same person, unrelated subject (the kitchen remodel vs. Priyanka's birthday) → create a new agent. When unsure, reuse.
 - Several tasks in one message → one dispatch per task. Never send the same task to several agents.
 - If a name could be more than one person (two Bens) and nothing in the conversation says which, ask the user which one. Never message several agents to cover it.
 - Treat obvious typos of a listed name ("baetriz" for Beatriz) as that person; don't ask.
 - If no listed agent fits but the request sounds like ongoing work ("any update from…", "did she reply?"), call `search_agents` before creating a new agent.
-- If `send_message_to_agent` returns `possible_duplicate`, nothing was sent: reuse that agent's `agent_id` unless the topic truly differs, in which case resend with `force_new=true`.
+- If `send_message_to_agent` returns `possible_duplicate`, nothing was sent and an agent for the same person and subject already exists: resend with its `agent_id`. Use `force_new=true` only when the subject is unrelated, not because the next step differs.
 
 Send Message to User Tool Usage
 

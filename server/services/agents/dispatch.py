@@ -71,6 +71,8 @@ def dispatch(
             {"error": "Pass agent_id to reuse an agent, or both name and purpose to create a new one."},
         )
 
+    # Models sometimes send booleans as strings; "false" must not count as true.
+    force_new = force_new is True or str(force_new).strip().lower() == "true"
     if not force_new:
         cards = directory.list_cards()
         duplicate = find_duplicate(name, purpose, cards, now, cfg)
@@ -82,9 +84,10 @@ def dispatch(
                     "status": "possible_duplicate",
                     "candidate": render_cards([duplicate], len(cards), now),
                     "instructions": (
-                        f"Nothing was sent. An existing agent may already cover this work. If it does, resend "
-                        f"with agent_id=\"{duplicate.id}\". If this is truly different work, resend with "
-                        "force_new=true."
+                        f"Nothing was sent. This existing agent works with the same person on the same subject. "
+                        f"Resend with agent_id=\"{duplicate.id}\", even if this is a new step (an invoice after "
+                        "scheduling, a sign-off after a draft). Resend with force_new=true only if the subject "
+                        "is unrelated to this agent's work."
                     ),
                 },
             )

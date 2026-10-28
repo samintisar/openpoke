@@ -146,3 +146,19 @@ def test_schema_shape():
     assert by_name["send_draft"]["parameters"]["required"] == ["to", "subject", "body"]
     assert by_name["wait"]["parameters"]["required"] == ["reason"]
     assert by_name["send_message_to_user"]["parameters"]["required"] == ["message"]
+
+
+def test_force_new_string_false_does_not_bypass_the_guard():
+    from server.services.agents.cards import AgentCard
+    from server.services.agents.directory import InMemoryDirectory
+    from server.services.agents.dispatch import dispatch
+    from datetime import datetime, timezone
+
+    now = datetime(2026, 6, 1, tzinfo=timezone.utc)
+    card = AgentCard(id="kwame-book-club-dates", name="Kwame Book Club Dates", purpose="Ask Kwame which dates work for book club",
+                     entities=["kwame"], created_at=now, last_active_at=now)
+    directory = InMemoryDirectory([card])
+    kwargs = dict(instructions="ask Kwame what to bring", name="Kwame Book Club Bring Item Note",
+                  purpose="Ask Kwame what to bring to book club", now=now)
+    assert dispatch(directory, force_new="false", **kwargs).action == "possible_duplicate"
+    assert dispatch(directory, force_new="True", **kwargs).action == "created"
