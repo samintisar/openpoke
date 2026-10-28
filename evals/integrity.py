@@ -27,6 +27,8 @@ PROTECTED = (
     "evals/llm.py",
     "evals/integrity.py",
     "evals/systems/baseline.py",
+    "evals/systems/frozen/baseline_system_prompt.md",
+    "evals/systems/frozen/baseline_tools.json",
     "evals/worlds/lived/model.py",
     "evals/worlds/lived/plan.py",
     "evals/worlds/lived/writer.py",

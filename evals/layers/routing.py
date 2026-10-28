@@ -1,7 +1,8 @@
 """L2 routing eval: one real Interaction Agent turn, with its tools intercepted.
 
-The prompt is assembled with the server's own helpers, so the model sees exactly what
-production sends, except that the roster section comes from the system under test.
+The user message is assembled with the server's own helpers, so the model sees exactly what
+production sends, except that the roster section, system prompt, tool schemas and tool
+semantics come from the system under test.
 """
 
 from __future__ import annotations
@@ -9,14 +10,9 @@ from __future__ import annotations
 import json
 from datetime import datetime, timedelta
 from html import escape
-from typing import Any
+from typing import Any, Callable
 
-from server.agents.interaction_agent.agent import (
-    _render_conversation_history,
-    _render_current_turn,
-    build_system_prompt,
-)
-from server.agents.interaction_agent.tools import get_tool_schemas
+from server.agents.interaction_agent.agent import _render_conversation_history, _render_current_turn
 
 from ..cases import Case
 from ..grading import Decision
@@ -84,30 +80,9 @@ def _parse_arguments(raw: Any) -> tuple[dict[str, Any], str | None]:
     return {}, f"unsupported argument type: {type(raw).__name__}"
 
 
-# No-op shims with the IA tools' signatures and names: calling one with the model's arguments
-# raises the same TypeError, word for word, that production's tool(**args) raises.
-def send_message_to_agent(agent_name: str, instructions: str) -> None:
-    return None
-
-
-def send_message_to_user(message: str) -> None:
-    return None
-
-
-def send_draft(to: str, subject: str, body: str) -> None:
-    return None
-
-
-def wait(reason: str) -> None:
-    return None
-
-
-_SHIMS = {f.__name__: f for f in (send_message_to_agent, send_message_to_user, send_draft, wait)}
-
-
-def _schema_error(name: str, args: dict[str, Any]) -> str | None:
+def _schema_error(name: str, args: dict[str, Any], shims: dict[str, Callable[..., Any]]) -> str | None:
     """The error production's handle_tool_call gives for an unknown tool or bad arguments."""
-    shim = _SHIMS.get(name)
+    shim = shims.get(name)
     if shim is None:
         return f"Unknown tool: {name}"
     try:
@@ -120,38 +95,6 @@ def _schema_error(name: str, args: dict[str, Any]) -> str | None:
 def _error_result(name: str, args: dict[str, Any], error: str) -> dict[str, Any]:
     """Production's _format_tool_result for a failed ToolResult(payload={"error": ...})."""
     return {"tool": name, "status": "error", "arguments": args, "error": {"error": error}}
-
-
-class _Turn:
-    """Per-run tool state: the stub has to remember agents created earlier in the turn."""
-
-    def __init__(self, world: World, system: RoutingSystem, decision: Decision) -> None:
-        self.world = world
-        self.system = system
-        self.decision = decision
-        self.created: set[str] = set()
-
-    def handle(self, name: str, args: dict[str, Any]) -> dict[str, Any]:
-        """Record a valid call's effect and return the stubbed tool result."""
-        if name == "send_message_to_agent":
-            agent_name = str(args.get("agent_name", ""))  # raw, like production: no normalization
-            agent_id = self.system.resolve_name(self.world, agent_name)
-            is_new = agent_id is None and agent_name not in self.created
-            if agent_id is None:
-                if is_new:
-                    self.created.add(agent_name)
-                    self.decision.created_names.append(agent_name)
-            elif agent_id not in self.decision.dispatched_ids:
-                self.decision.dispatched_ids.append(agent_id)
-            result = {"status": "submitted", "agent_name": agent_name, "new_agent_created": is_new}
-        elif name == "send_message_to_user":
-            self.decision.user_messages.append(str(args.get("message", "")))
-            result = {"status": "delivered"}
-        elif name == "send_draft":
-            result = {"status": "draft_recorded", "to": args.get("to"), "subject": args.get("subject")}
-        else:  # wait; unknown names never reach here
-            result = {"status": "waiting", "reason": args.get("reason")}
-        return {"tool": name, "status": "success", "arguments": args, "result": result}
 
 
 async def run_routing_case(
@@ -174,9 +117,10 @@ async def _run_turn(
     case: Case, world: World, system: RoutingSystem, llm: LLMClient, *, model: str, sample: int, decision: Decision
 ) -> Decision:
     messages = build_messages(case, world, system)
-    system_prompt = build_system_prompt()
-    tools = get_tool_schemas()
-    turn = _Turn(world, system, decision)
+    system_prompt = system.system_prompt()
+    tools = system.tool_schemas()
+    shims = system.tool_signatures()
+    turn = system.new_turn(world, case)
     last_assistant_text = ""
 
     for iteration in range(MAX_ITERATIONS):
@@ -211,13 +155,13 @@ async def _run_turn(
             function = raw.get("function") or {}
             name = function.get("name") or ""
             args, error = _parse_arguments(function.get("arguments"))
-            error = error or _schema_error(name, args)
+            error = error or _schema_error(name, args, shims)
             if error:
                 decision.tool_calls.append({"name": name, "arguments": args, "error": error})
                 result = _error_result(name, args, error)
             else:
                 decision.tool_calls.append({"name": name, "arguments": args})
-                result = turn.handle(name, args)
+                result = turn.handle(name, args, decision)
             messages.append({
                 "role": "tool",
                 "tool_call_id": raw.get("id") or name,

@@ -1,5 +1,7 @@
+import hashlib
 import json
 import re
+from dataclasses import asdict
 from datetime import datetime
 
 import pytest
@@ -7,7 +9,7 @@ import pytest
 from evals.grading import grade
 from evals.layers.retrieval import run_retrieval_case
 from evals.layers.routing import MAX_ITERATIONS, build_messages, run_routing_case
-from evals.llm import ScriptedLLM, tool_call
+from evals.llm import ScriptedLLM, cache_key, tool_call
 from evals.systems.baseline import BaselineSystem
 from evals.worlds.generator import build_world, generate_cases
 
@@ -336,3 +338,108 @@ async def test_budget_exceeded_propagates_with_partial_decision():
     with pytest.raises(BudgetExceeded) as info:
         await run_routing_case(case, world, BaselineSystem(), FailingLLM(BudgetExceeded("cap")), model="m", sample=0)
     assert info.value.decision.fresh_cost == pytest.approx(0.04)
+
+
+class KeyedLLM:
+    """Records the cache key of every payload a ScriptedLLM is sent."""
+
+    def __init__(self, script):
+        self.inner = ScriptedLLM(script)
+        self.keys = []
+
+    async def complete(self, **kwargs):
+        self.keys.append(cache_key(**kwargs))
+        return await self.inner.complete(**kwargs)
+
+    async def aclose(self):
+        return None
+
+
+def mixed_script(world, case):
+    """Acknowledge plus a bad call, then reuse, create, draft and wait, then finish with text."""
+    by_id = world.by_id()
+    target = by_id[case.gold_targets[0]].name if case.gold_targets and case.gold_targets[0] in by_id else "Brand new"
+
+    def script(messages, sample):
+        seen = tool_turns(messages)
+        if seen == 0:
+            return {"content": "", "tool_calls": [
+                tool_call("send_message_to_user", message="on it?"),
+                {"id": "raw", "type": "function", "function": {"name": "send_message_to_agent", "arguments": '{"agent_name": "x"}'}},
+            ]}
+        if seen == 2:
+            return {"content": "", "tool_calls": [
+                tool_call("send_message_to_agent", agent_name=target, instructions="do"),
+                tool_call("send_message_to_agent", agent_name="Fresh one", instructions="x"),
+                tool_call("send_draft", to="a", subject="s", body="b"),
+                tool_call("wait", reason="r"),
+            ]}
+        return {"content": "done"}
+
+    return script
+
+
+# Decisions and payload cache keys for these runs, as produced by the routing layer at fa4bf6f, before
+# systems supplied the prompt, tools and handler. Equal hashes mean the baseline's payloads are unchanged.
+BASELINE_GOLDEN_SHA256 = "b8815b161431bbdcc707c84579a137d87cc96505a79fa35506b14560023b44eb"
+
+
+async def test_baseline_decisions_and_payloads_match_pre_refactor():
+    full = build_world(1)
+    world = full.truncated(20)
+    out = []
+    for case in generate_cases(full, per_kind=1)[:8]:
+        llm = KeyedLLM(mixed_script(world, case))
+        decision = await run_routing_case(case, world, BaselineSystem(), llm, model="m", sample=0)
+        out.append({"case": case.id, "decision": asdict(decision), "keys": llm.keys})
+    blob = json.dumps(out, indent=1, sort_keys=True).encode("utf-8")
+    assert hashlib.sha256(blob).hexdigest() == BASELINE_GOLDEN_SHA256
+
+
+class SpySystem(BaselineSystem):
+    """A baseline with its own prompt, tools, shims and handler, to show the layer uses them."""
+
+    def system_prompt(self):
+        return "spy prompt"
+
+    def tool_schemas(self):
+        return [{"type": "function", "function": {"name": "ping", "parameters": {"type": "object"}}}]
+
+    def tool_signatures(self):
+        def ping(target: str) -> None:
+            return None
+
+        return {"ping": ping}
+
+    def new_turn(self, world, case):
+        return self
+
+    def handle(self, name, args, decision):
+        decision.dispatched_ids.append(args["target"])
+        return {"tool": name, "status": "success", "arguments": args, "result": {"pong": True}}
+
+
+async def test_layer_uses_the_systems_prompt_tools_shims_and_handler():
+    world, case = setup()
+    seen = {}
+
+    class Capture:
+        async def complete(self, *, system, tools, messages, **kwargs):
+            seen.setdefault("system", system)
+            seen.setdefault("tools", tools)
+            calls = []
+            if tool_turns(messages) == 0:
+                calls = [tool_call("ping", target="a1"), raw_call("ping", "{}"), raw_call("send_message_to_agent", "{}")]
+            else:
+                seen["results"] = [json.loads(m["content"]) for m in messages if m["role"] == "tool"]
+            return {"choices": [{"message": {"role": "assistant", "content": "", "tool_calls": calls}}], "_meta": {}}
+
+        async def aclose(self):
+            return None
+
+    decision = await run_routing_case(case, world, SpySystem(), Capture(), model="m", sample=0)
+    assert seen["system"] == "spy prompt" and seen["tools"][0]["function"]["name"] == "ping"
+    assert decision.dispatched_ids == ["a1"]
+    assert seen["results"][0]["result"] == {"pong": True}
+    assert seen["results"][1]["error"]["error"].startswith("Missing required arguments: ")
+    assert seen["results"][2]["error"]["error"] == "Unknown tool: send_message_to_agent"

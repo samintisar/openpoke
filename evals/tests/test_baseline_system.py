@@ -1,6 +1,10 @@
+import hashlib
+import json
+
 import pytest
 
 import server.agents.interaction_agent.agent as ia_agent
+from evals.grading import Decision
 from evals.systems import get_system
 from evals.systems.baseline import BaselineSystem
 from evals.worlds.generator import build_world
@@ -75,3 +79,39 @@ def test_get_system():
     assert get_system("baseline").name == "baseline"
     with pytest.raises(ValueError):
         get_system("nope")
+
+
+# sha256 of the prompt and tools production sent at commit fa4bf6f (Plan 2 start). If these move, every
+# cached baseline call misses and the baseline numbers are no longer comparable.
+FROZEN_PROMPT_SHA256 = "d89d3676196edcd517f2bb34f9dad2f74b7176897638a74622410129a841f6f8"
+FROZEN_TOOLS_SHA256 = "f4d7dd0edb758224dc49f605aa98fc6cf055e02c1dcad6b496bdd0875afa5e58"
+
+
+def test_frozen_prompt_and_tools_hash_to_fixed_values():
+    system = BaselineSystem()
+    assert hashlib.sha256(system.system_prompt().encode("utf-8")).hexdigest() == FROZEN_PROMPT_SHA256
+    assert hashlib.sha256(json.dumps(system.tool_schemas()).encode("utf-8")).hexdigest() == FROZEN_TOOLS_SHA256
+
+
+def test_frozen_prompt_is_stripped_like_production():
+    prompt = BaselineSystem().system_prompt()
+    assert prompt == prompt.strip() and "\r" not in prompt
+
+
+def test_signatures_cover_every_tool_schema():
+    system = BaselineSystem()
+    assert sorted(system.tool_signatures()) == sorted(s["function"]["name"] for s in system.tool_schemas())
+
+
+def test_new_turn_is_fresh_state():
+    world = build_world(1).truncated(20)
+    system = BaselineSystem()
+    args = {"agent_name": "Brand new", "instructions": "x"}
+    first, second = Decision(), Decision()
+    system.new_turn(world, None).handle("send_message_to_agent", args, first)
+    result = system.new_turn(world, None).handle("send_message_to_agent", args, second)
+    assert first.created_names == second.created_names == ["Brand new"]
+    assert result == {
+        "tool": "send_message_to_agent", "status": "success", "arguments": args,
+        "result": {"status": "submitted", "agent_name": "Brand new", "new_agent_created": True},
+    }
