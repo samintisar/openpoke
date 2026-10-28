@@ -7,8 +7,8 @@ from datetime import datetime, timezone
 import pytest
 
 import server.agents.execution_agent.agent as agent_module
-import server.agents.execution_agent.batch_manager as batch_module
 import server.services.agents.memory as memory
+import server.services.execution.runner as runner_module
 from server.agents.execution_agent.agent import ExecutionAgent
 from server.agents.execution_agent.runtime import ExecutionResult
 from server.services.agents import AgentCard, InMemoryDirectory
@@ -401,10 +401,10 @@ async def test_maybe_compact_defaults_budget_to_setting(compact_env):
     assert calls == []
 
 
-# -- batch manager hook ---------------------------------------------------------------------------------------
+# -- runner hook ----------------------------------------------------------------------------------------------
 
 
-async def test_batch_manager_schedules_compaction_after_the_run(monkeypatch):
+async def test_runner_schedules_compaction_after_the_run(tmp_path, monkeypatch):
     directory = InMemoryDirectory([card()])
     order = []
     started = asyncio.Event()
@@ -424,22 +424,23 @@ async def test_batch_manager_schedules_compaction_after_the_run(monkeypatch):
         await release.wait()
         raise RuntimeError("boom")  # a failing compaction never reaches the run
 
-    async def capture(self, payload):
+    def capture(result, *, origin, trigger_id=None):
         order.append("dispatch")
 
-    monkeypatch.setattr(batch_module, "get_agent_directory", lambda: directory)
-    monkeypatch.setattr(batch_module, "ExecutionAgentRuntime", FakeRuntime)
-    monkeypatch.setattr(batch_module, "maybe_compact", slow_compact)
-    monkeypatch.setattr(batch_module.ExecutionBatchManager, "_dispatch_to_interaction_agent", capture)
+    monkeypatch.setattr(runner_module, "get_agent_directory", lambda: directory)
+    monkeypatch.setattr(runner_module, "ExecutionAgentRuntime", FakeRuntime)
+    monkeypatch.setattr(runner_module, "maybe_compact", slow_compact)
+    monkeypatch.setattr(runner_module, "deliver_result", capture)
 
-    result = await batch_module.ExecutionBatchManager().execute_agent("gary-lease", "Follow up")
+    runner = runner_module.AgentRunner(log_store=ExecutionAgentLogStore(tmp_path / "logs"))
+    result = await runner.run("gary-lease", "Follow up", origin="interaction")
     assert result.success and order == ["run", "dispatch"]  # returned without waiting on compaction
     await asyncio.wait_for(started.wait(), 1)
     assert order[-1] == ("compact", "gary-lease")
     release.set()
     for _ in range(3):
         await asyncio.sleep(0)
-    assert not batch_module._COMPACTION_TASKS
+    assert not runner_module._BACKGROUND_TASKS
 
 
 def test_identifiers_are_annotated_with_their_last_use():

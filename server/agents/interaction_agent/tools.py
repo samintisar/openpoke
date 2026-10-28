@@ -11,7 +11,7 @@ from ...services.agents import TOOL_SCHEMAS, dispatch, search_payload
 from ...services.agents.registry import get_agent_directory
 from ...services.conversation import get_conversation_log
 from ...services.execution import get_execution_agent_logs
-from ..execution_agent.batch_manager import ExecutionBatchManager
+from ...services.execution.runner import get_agent_runner
 
 
 @dataclass
@@ -22,9 +22,6 @@ class ToolResult:
     payload: Any = None
     user_message: Optional[str] = None
     recorded_reply: bool = False
-
-
-_EXECUTION_BATCH_MANAGER = ExecutionBatchManager()
 
 
 # Reuse or create an execution agent through the registry and dispatch instructions asynchronously
@@ -62,8 +59,8 @@ def send_message_to_agent(
 
     async def _execute_async() -> None:
         try:
-            outcome = await _EXECUTION_BATCH_MANAGER.execute_agent(card.id, instructions, agent_name=card.name)
-            status = "SUCCESS" if outcome.success else "FAILED"
+            outcome = await get_agent_runner().run(card.id, instructions, origin="interaction", agent_name=card.name)
+            status = "PARTIAL" if outcome.partial else ("SUCCESS" if outcome.success else "FAILED")
             logger.info(f"Agent '{card.name}' completed: {status}")
         except Exception as exc:  # pragma: no cover - defensive
             logger.error(f"Agent '{card.name}' failed: {str(exc)}")

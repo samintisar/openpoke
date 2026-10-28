@@ -76,6 +76,10 @@ class Settings(BaseModel):
     # Execution-agent memory: verbatim history kept in the prompt before older entries are compacted
     history_token_budget: int = Field(default=4000)
 
+    # Execution-agent runs: concurrent runs across all agents, and the per-run time limit
+    max_concurrent_agents: int = Field(default=4)
+    agent_timeout_seconds: int = Field(default=90)
+
     @property
     def cors_allow_origins(self) -> List[str]:
         """Parse CORS origins from comma-separated string."""

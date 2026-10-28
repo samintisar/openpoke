@@ -6,10 +6,10 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-import server.agents.execution_agent.batch_manager as batch_module
 import server.agents.interaction_agent.agent as agent_module
 import server.agents.interaction_agent.runtime as runtime_module
 import server.agents.interaction_agent.tools as tools
+import server.services.execution.runner as runner_module
 from server.agents.execution_agent.runtime import ExecutionResult
 from server.agents.interaction_agent.runtime import InteractionAgentRuntime
 from server.agents.interaction_agent.tools import ToolResult
@@ -22,12 +22,13 @@ NOW = datetime(2026, 6, 26, 12, 0, tzinfo=timezone.utc)
 OLD = NOW - timedelta(days=5)
 
 
-class StubBatchManager:
+class StubRunner:
     def __init__(self):
         self.calls = []
 
-    async def execute_agent(self, agent_id, instructions, agent_name=None, request_id=None):
+    async def run(self, agent_id, instructions, *, origin, trigger_id=None, agent_name=None):
         self.calls.append((agent_id, instructions, agent_name))
+        assert origin == "interaction" and trigger_id is None
         return ExecutionResult(agent_name=agent_name or agent_id, agent_id=agent_id, success=True, response="ok")
 
 
@@ -43,10 +44,10 @@ def env(tmp_path, monkeypatch):
         ]
     )
     logs = ExecutionAgentLogStore(tmp_path / "logs")
-    batch = StubBatchManager()
+    batch = StubRunner()
     monkeypatch.setattr(tools, "get_agent_directory", lambda: directory)
     monkeypatch.setattr(tools, "get_execution_agent_logs", lambda: logs)
-    monkeypatch.setattr(tools, "_EXECUTION_BATCH_MANAGER", batch)
+    monkeypatch.setattr(tools, "get_agent_runner", lambda: batch)
     return directory, logs, batch
 
 
@@ -264,7 +265,7 @@ async def test_runtime_collects_dispatched_ids_and_sets_last_routed(tmp_path, mo
 # -- execution side: status and the [SUCCESS] payload --------------------------------------------------
 
 
-async def test_batch_manager_records_status_and_keeps_payload_format(tmp_path, monkeypatch):
+async def test_runner_records_status_and_keeps_payload_format(tmp_path, monkeypatch):
     directory = SqliteAgentDirectory(tmp_path / "agents.db")
     card = directory.create("Email to Alice", "Reply to Alice", "", NOW)
     created = []
@@ -278,14 +279,19 @@ async def test_batch_manager_records_status_and_keeps_payload_format(tmp_path, m
 
     dispatched = []
 
-    async def capture(self, payload):
-        dispatched.append(payload)
+    async def no_compact(agent_id):
+        return False
 
-    monkeypatch.setattr(batch_module, "get_agent_directory", lambda: directory)
-    monkeypatch.setattr(batch_module, "ExecutionAgentRuntime", FakeRuntime)
-    monkeypatch.setattr(batch_module.ExecutionBatchManager, "_dispatch_to_interaction_agent", capture)
+    def capture(result, *, origin, trigger_id=None):
+        dispatched.append(runner_module.format_result(result))
 
-    await batch_module.ExecutionBatchManager().execute_agent(card.id, "Reply to Alice")
+    monkeypatch.setattr(runner_module, "get_agent_directory", lambda: directory)
+    monkeypatch.setattr(runner_module, "ExecutionAgentRuntime", FakeRuntime)
+    monkeypatch.setattr(runner_module, "maybe_compact", no_compact)
+    monkeypatch.setattr(runner_module, "deliver_result", capture)
+
+    runner = runner_module.AgentRunner(log_store=ExecutionAgentLogStore(tmp_path / "logs"))
+    await runner.run(card.id, "Reply to Alice", origin="interaction")
     assert created == [(card.id, "Email to Alice")]  # display name resolved from the card
     assert directory.get(card.id).last_status == ("Sent the reply. " * 30).strip()[:200]
     assert dispatched == [f"[SUCCESS] Email to Alice: {('Sent the reply. ' * 30).strip()}"]
