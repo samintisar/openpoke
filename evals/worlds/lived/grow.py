@@ -65,8 +65,7 @@ def _instructions(decision: Decision) -> dict[str, list[str]]:
 def _case(case_id: str, plan: LifePlan, message: str, message_type: str,
           transcript: Sequence[tuple[str, str, str]]) -> Case:
     # Kind follow_up only satisfies the schema; nothing grades growth turns.
-    # TODO(Task 5): pass 3-tuples once render_context accepts real timestamps.
-    context = [(tag, text) for tag, text, _ in transcript[-CONTEXT:]]
+    context = [tuple(entry) for entry in transcript[-CONTEXT:]]
     return Case(id=case_id, kind="follow_up", world_seed=plan.seed, message=message, gold_targets=[],
                 message_type=message_type, context=context)
 

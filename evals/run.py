@@ -49,6 +49,8 @@ from .metrics import summarize_retrieval, summarize_routing
 from .systems import get_system
 from .worlds.generator import build_world, generate_cases
 from .worlds.handwritten import load_handwritten
+from .worlds.lived.store import DEFAULT_PATH as LIVED_PATH
+from .worlds.lived.store import load_lived
 from .worlds.model import World
 
 DEFAULT_OUT = REPO_ROOT / "evals" / "results"
@@ -72,6 +74,8 @@ class Config:
     requests_per_minute: int | None = None  # set for free models, which OpenRouter caps per minute
     max_retries: int = 3
     include_handwritten: bool = True
+    world: str = "synthetic"  # synthetic, or lived (the frozen lived-in world; n_agents picks its sizes)
+    lived_path: str | None = None
 
 
 def load_config(path: Path) -> Config:
@@ -110,6 +114,10 @@ def _validate(cfg: Config) -> None:
         raise bad("budget_usd", "must be a positive number")
     if not isinstance(cfg.layers, list) or not set(cfg.layers) <= {"retrieval", "routing"}:
         raise bad("layers", "must be a list drawn from ['retrieval', 'routing']")
+    if cfg.world not in ("synthetic", "lived"):
+        raise bad("world", "must be synthetic or lived")
+    if cfg.lived_path is not None and not isinstance(cfg.lived_path, str):
+        raise bad("lived_path", "must be null or a path string")
     if cfg.suite not in ("all", "capability", "regression"):
         raise bad("suite", "must be one of all, capability, regression")
     if cfg.kinds is not None and (
@@ -123,7 +131,12 @@ Unit = tuple[Any, World, list[Case]]  # (roster-size label, world, cases)
 
 def _build_units(cfg: Config, split: str) -> list[Unit]:
     units: list[Unit] = []
-    for seed in cfg.world_seeds:
+    if cfg.world == "lived":
+        wanted = {f"lived-{n}" for n in cfg.n_agents}
+        for label, world, cases in load_lived(Path(cfg.lived_path) if cfg.lived_path else LIVED_PATH):
+            if label in wanted:
+                units.append((label, world, filter_cases(cases, split=split, suite=cfg.suite, kinds=cfg.kinds)))
+    for seed in cfg.world_seeds if cfg.world == "synthetic" else []:
         full = build_world(seed)
         cases = filter_cases(generate_cases(full, cfg.cases_per_kind), split=split, suite=cfg.suite, kinds=cfg.kinds)
         for n in cfg.n_agents:

@@ -37,7 +37,7 @@ class Case:
     message: str
     gold_targets: list[str]
     message_type: str = "user"  # "user" or "agent"
-    context: list[tuple[str, str]] = field(default_factory=list)  # (tag, text) pairs
+    context: list[tuple[str, ...]] = field(default_factory=list)  # (tag, text) or (tag, text, ISO timestamp)
     acceptable_ids: list[str] = field(default_factory=list)
     clarify_ok: bool = False
     dispatch_optional: bool = False
