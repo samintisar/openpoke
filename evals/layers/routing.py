@@ -40,13 +40,18 @@ CONTEXT_BASE_TIME = datetime(2026, 10, 24, 10, 0, 0)
 
 
 def render_context(case: Case) -> str:
+    """Context entries are (tag, text), stamped synthetically, or (tag, text, ISO timestamp) from the lived world."""
     parts: list[str] = []
-    for index, (tag, text) in enumerate(case.context):
+    for index, entry in enumerate(case.context):
+        tag, text = entry[0], entry[1]
         safe = escape(text, quote=False)
         if tag == "conversation_summary":
             parts.append(f"<conversation_summary>{safe}</conversation_summary>")
         else:
-            stamp = CONTEXT_BASE_TIME + timedelta(days=index // 2, minutes=index)
+            if len(entry) > 2:
+                stamp = datetime.fromisoformat(entry[2])
+            else:
+                stamp = CONTEXT_BASE_TIME + timedelta(days=index // 2, minutes=index)
             parts.append(f'<{tag} timestamp="{stamp:%Y-%m-%d %H:%M:%S}">{safe}</{tag}>')
     return "\n".join(parts)
 

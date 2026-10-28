@@ -27,14 +27,24 @@ PROTECTED = (
     "evals/llm.py",
     "evals/integrity.py",
     "evals/systems/baseline.py",
+    "evals/worlds/lived/model.py",
+    "evals/worlds/lived/plan.py",
+    "evals/worlds/lived/writer.py",
+    "evals/worlds/lived/grow.py",
+    "evals/worlds/lived/probes.py",
+    "evals/worlds/lived/store.py",
+    "evals/worlds/lived/world-s1.json",
 )
+_MISSING = b"<missing>"
 
 
 def compute_checksum(root: Path = REPO_ROOT) -> str:
     digest = hashlib.sha256()
     for rel in PROTECTED:
         digest.update(rel.encode("utf-8") + b"\0")
-        digest.update((root / rel).read_bytes().replace(b"\r\n", b"\n") + b"\0")
+        path = root / rel
+        data = path.read_bytes().replace(b"\r\n", b"\n") if path.exists() else _MISSING  # e.g. world not generated yet
+        digest.update(data + b"\0")
     return digest.hexdigest()
 
 
