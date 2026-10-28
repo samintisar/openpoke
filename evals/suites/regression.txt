@@ -1,2 +1,28 @@
 # Case ids that pass and must keep passing (one per line).
 # Every fixed failure is added here. Edited by hand only; protected by evals/PROTECTED.sha256.
+agent_result-s1-00
+agent_result-s1-02
+cross_agent-s1-01
+dormant_revival-s1-00
+follow_up-s1-00
+follow_up-s1-01
+follow_up-s1-02
+hw-01-follow-up
+hw-02-new-task
+hw-03-same-person-new-topic
+hw-04-vague-reference
+hw-05-multi-task
+hw-07-cross-agent
+hw-08-dormant-revival
+hw-09-typo
+hw-10-agent-result
+multi_task-s1-00
+multi_task-s1-01
+multi_task-s1-02
+new_task-s1-00
+new_task-s1-01
+same_name_people-s1-00
+same_name_people-s1-02
+typo-s1-00
+typo-s1-01
+vague_reference-s1-02
