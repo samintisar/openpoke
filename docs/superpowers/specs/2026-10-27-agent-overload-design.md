@@ -266,7 +266,9 @@ LLM access: OpenRouter (existing client). Default eval model configurable; small
 The baseline showed the synthetic world is too clean: the generator's tidy agent names let the model
 route 1,000 agents almost perfectly, so overload showed up only as cost. Real rosters are named by the
 IA itself, inconsistently, and grow alongside a real conversation. The lived-in world reproduces that
-and becomes the headline benchmark; the synthetic world stays as a fast, controlled unit suite.
+and is the **only reported benchmark**. The synthetic world stays in the repo as an internal sanity
+and regression check: its gold is noise-free, so it can tell a real regression from label noise. It is
+not used in the write-up, charts or leaderboard comparisons.
 
 1. **Life plan (code, seeded).** One persona with ~80 contacts, including deliberate collisions (two
    Alices, two Bens, a colleague and a cousin sharing a surname). About 600 events over 180 days,
