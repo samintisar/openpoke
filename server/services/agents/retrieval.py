@@ -31,6 +31,7 @@ class RetrievalConfig:
     min_score: float = 0.1
     fuzzy_min_len: int = 4
     fuzzy_weight: float = 0.5
+    archived_min_score: float = 0.4  # an archived card joins the top K only on a strong match (tuned on lived dev)
 
 
 DEFAULT_CONFIG = RetrievalConfig()
@@ -183,7 +184,11 @@ def select(
     pinned: Iterable[Union[AgentCard, str]] = (),
     open_work: Iterable[str] = (),
 ) -> list[AgentCard]:
-    """Pinned cards, then the hot set, then the top K relevant non-archived cards; deduped, in that order."""
+    """Pinned cards, then the hot set, then the top K relevant cards; deduped, in that order.
+
+    Archived cards are never hot and enter the top K only with score >= `archived_min_score`, so a
+    month-old matter the user names ("whatever happened with Gary's lease?") still surfaces.
+    """
     cfg = cfg or DEFAULT_CONFIG
     by_id = {card.id: card for card in cards}
     chosen: list[AgentCard] = []
@@ -211,9 +216,11 @@ def select(
         take(card)
 
     added = 0
-    for card, score in score_cards(query, live, now, last_routed, cfg):
+    for card, score in score_cards(query, cards, now, last_routed, cfg):
         if added >= cfg.k or score < cfg.min_score:
             break
+        if card.status == "archived" and score < cfg.archived_min_score:
+            continue
         if card.id not in seen:
             take(card)
             added += 1

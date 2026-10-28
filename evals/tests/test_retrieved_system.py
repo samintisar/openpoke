@@ -11,7 +11,7 @@ from evals.llm import ScriptedLLM, tool_call
 from evals.systems import get_system
 from evals.systems.cards_from_world import cards_for
 from evals.systems.full_cards import FullCardsSystem
-from evals.systems.retrieved import RetrievedSystem
+from evals.systems.retrieved import RetrievedNoLifecycleSystem, RetrievedSystem
 from evals.worlds.model import WORLD_NOW, AgentSpec, World
 from server.agents.interaction_agent.agent import build_system_prompt
 from server.services.agents.retrieval import RetrievalConfig
@@ -281,7 +281,7 @@ def test_pinned_card_appears_even_when_retrieval_would_drop_it():
 
 def test_query_uses_recent_context():
     world = toy_world()
-    world.by_id()[BEATRIZ].last_active_days = 40  # too stale to be shown on recency alone
+    world.by_id()[BEATRIZ].last_active_days = 20  # dormant: too stale to be shown on recency alone
     context = [("user_message", "let's sort out trivia with Beatriz", "2026-10-27T11:00:00"),
                ("assistant_message", "Sure, emailing her now.", "2026-10-27T11:00:05")]
     system = RetrievedSystem()
@@ -334,6 +334,32 @@ def test_cards_for_reads_only_registry_fields():
     assert gary.created_at == WORLD_NOW - timedelta(days=30)
     assert gary.last_active_at == WORLD_NOW - timedelta(days=3)
     assert [card.id for card in cards_for(world)] == [agent.id for agent in world.agents]
+
+
+def test_cards_for_sets_lifecycle_statuses():
+    world = toy_world()
+    world.by_id()[BEATRIZ].last_active_days = 7
+    world.by_id()["filler-0"].last_active_days = 30
+    statuses = {card.id: card.status for card in cards_for(world)}
+    assert statuses[GARY] == "active" and statuses[HOT] == "active"
+    assert statuses[BEATRIZ] == "dormant" and statuses[DENTIST] == "dormant"
+    assert statuses["filler-0"] == "archived"
+    assert {card.status for card in cards_for(world, lifecycle=False)} == {"active"}
+
+
+def test_lifecycle_archived_cards_surface_only_on_a_strong_match():
+    world = toy_world()
+    world.by_id()[DENTIST].last_active_days = 45
+    c = case("did the dentist confirm the cleaning?", [DENTIST], kind="dormant_revival")
+    assert DENTIST in RetrievedSystem().shown_ids(world, c)  # archived but named: still shown
+    weak = case("any update on the grocery order?", [], kind="follow_up")
+    assert DENTIST not in RetrievedSystem().shown_ids(world, weak)
+    assert DENTIST in RetrievedSystem(lifecycle=False).shown_ids(world, c)
+    assert DENTIST in RetrievedNoLifecycleSystem().shown_ids(world, c)
+    # Archived is still reachable through search_agents.
+    turn = RetrievedSystem().new_turn(world, c)
+    found = turn.handle("search_agents", {"query": "dentist cleaning"}, Decision())
+    assert f'id="{DENTIST}"' in found["result"]
 
 
 def test_cards_take_entities_from_history_requests():
@@ -390,9 +416,10 @@ async def test_gold_fields_are_never_read(system_cls):
 
 
 def test_systems_are_registered_with_production_prompt_and_tools():
-    for name, cls in (("retrieved", RetrievedSystem), ("full_cards", FullCardsSystem)):
+    for name, cls in (("retrieved", RetrievedSystem), ("retrieved_nolife", RetrievedNoLifecycleSystem),
+                      ("full_cards", FullCardsSystem)):
         system = get_system(name)
-        assert isinstance(system, cls) and system.name == name
+        assert type(system) is cls and system.name == name
         assert system.system_prompt() == build_system_prompt()
         assert system.tool_schemas() is TOOL_SCHEMAS
         assert sorted(system.tool_signatures()) == sorted(s["function"]["name"] for s in TOOL_SCHEMAS)
