@@ -1,0 +1,9 @@
+name: full-cards-lived
+system: full_cards
+model: anthropic/claude-haiku-5.5
+world: lived
+n_agents: [10, 50, 200, 1000]
+k: 3
+include_handwritten: true
+budget_usd: 5.0
+concurrency: 8

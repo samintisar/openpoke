@@ -274,6 +274,22 @@ def test_iteration_cap_matches_production():
     assert MAX_ITERATIONS == InteractionAgentRuntime.MAX_TOOL_ITERATIONS == 8
 
 
+def send_message_to_agent(agent_name: str, instructions: str) -> None:
+    """Production's signature before Plan 2 (tools.py at fa4bf6f), so its TypeError text can be reproduced."""
+
+
+def _pre_plan2_error(name: str, args: dict) -> str:
+    if name != "send_message_to_agent":
+        from server.agents.interaction_agent.tools import handle_tool_call  # unchanged tools
+
+        return handle_tool_call(name, json.dumps(args)).payload["error"]
+    try:
+        send_message_to_agent(**args)
+    except TypeError as exc:
+        return f"Missing required arguments: {exc}"
+    raise AssertionError("expected a TypeError")
+
+
 @pytest.mark.parametrize(
     "name, args",
     [
@@ -289,9 +305,7 @@ def test_iteration_cap_matches_production():
     ],
 )
 async def test_argument_errors_are_byte_identical_to_production(name, args):
-    from server.agents.interaction_agent.tools import handle_tool_call
-
-    expected = handle_tool_call(name, json.dumps(args)).payload["error"]
+    expected = _pre_plan2_error(name, args)
     world, case = setup()
     decision, captured = await run(case, world, first_turn_only(raw_call(name, json.dumps(args))))
     assert decision.tool_calls[0]["error"] == expected

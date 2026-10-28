@@ -1,9 +1,9 @@
 import hashlib
 import json
+from html import escape
 
 import pytest
 
-import server.agents.interaction_agent.agent as ia_agent
 from evals.grading import Decision
 from evals.systems import get_system
 from evals.systems.baseline import BaselineSystem
@@ -11,30 +11,19 @@ from evals.worlds.generator import build_world
 from evals.worlds.model import AgentSpec, World
 
 
-class FakeRoster:
-    def __init__(self, names):
-        self._names = names
-
-    def load(self):
-        pass
-
-    def get_agents(self):
-        return list(self._names)
-
-
-def production_roster(monkeypatch, world: World) -> str:
-    """The <active_agents> section exactly as production's prompt wrapper builds it."""
-    names = [a.name for a in world.roster_order()]
-    monkeypatch.setattr(ia_agent, "get_agent_roster", lambda: FakeRoster(names))
-    content = ia_agent.prepare_message_with_history("x", "")[0]["content"]
-    start = content.index("<active_agents>")
-    end = content.index("</active_agents>") + len("</active_agents>")
-    return content[start:end]
+def production_roster(world: World) -> str:
+    """The <active_agents> section as production built it before Plan 2 (agent.py at fa4bf6f), verbatim."""
+    agents = [a.name for a in world.roster_order()]
+    if not agents:
+        body = "None"
+    else:
+        body = "\n".join(f'<agent name="{escape(name or "agent", quote=True)}" />' for name in agents)
+    return f"<active_agents>\n{body}\n</active_agents>"
 
 
-def test_baseline_matches_production_rendering(monkeypatch):
+def test_baseline_matches_production_rendering():
     world = build_world(1).truncated(25)
-    assert BaselineSystem().render_roster(world, None) == production_roster(monkeypatch, world)
+    assert BaselineSystem().render_roster(world, None) == production_roster(world)
 
 
 def _spec(index: int, name: str) -> AgentSpec:
@@ -50,10 +39,10 @@ def _spec(index: int, name: str) -> AgentSpec:
         ['Say "hi" to Bo', "R&D <budget>", "", "plain"],
     ],
 )
-def test_baseline_matches_production_on_tricky_names(monkeypatch, names):
+def test_baseline_matches_production_on_tricky_names(names):
     world = World(seed=0, agents=[_spec(i, name) for i, name in enumerate(names)])
     rendered = BaselineSystem().render_roster(world, None)
-    assert rendered == production_roster(monkeypatch, world)
+    assert rendered == production_roster(world)
     if "" in names:
         assert '<agent name="agent" />' in rendered
 
