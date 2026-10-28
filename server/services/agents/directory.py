@@ -22,6 +22,11 @@ class AgentDirectory(Protocol):
 
     def set_last_routed(self, ids: Iterable[str]) -> None: ...
 
+    def update_card(
+        self, agent_id: str, *, purpose: Optional[str] = None, last_status: Optional[str] = None,
+        status: Optional[str] = None,
+    ) -> None: ...
+
 
 def merge_entities(existing: Iterable[str], texts: Iterable[str]) -> list[str]:
     merged = list(existing)
@@ -70,6 +75,19 @@ class InMemoryDirectory:
 
     def set_last_routed(self, ids: Iterable[str]) -> None:
         self._last_routed = list(ids)
+
+    def update_card(
+        self, agent_id: str, *, purpose: Optional[str] = None, last_status: Optional[str] = None,
+        status: Optional[str] = None,
+    ) -> None:
+        """Overwrite the given fields (compaction refreshes purpose and status; the sweep sets lifecycle)."""
+        card = self._cards[agent_id]
+        if purpose is not None:
+            card.purpose = purpose
+        if last_status is not None:
+            card.last_status = last_status
+        if status is not None:
+            card.status = status
 
 
 __all__ = ["AgentDirectory", "InMemoryDirectory", "merge_entities"]

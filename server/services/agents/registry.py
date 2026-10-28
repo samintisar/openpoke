@@ -146,6 +146,20 @@ class SqliteAgentDirectory:
         with self._lock, self._connect() as conn:
             conn.execute("UPDATE agents SET last_status = ? WHERE id = ?", (status, agent_id))
 
+    def update_card(
+        self, agent_id: str, *, purpose: Optional[str] = None, last_status: Optional[str] = None,
+        status: Optional[str] = None,
+    ) -> None:
+        """Overwrite the given fields (compaction refreshes purpose and status; the sweep sets lifecycle)."""
+        fields = {"purpose": purpose, "last_status": None if last_status is None else last_status.strip()[:STATUS_CHARS],
+                  "status": status}
+        updates = {k: v for k, v in fields.items() if v is not None}
+        if not updates:
+            return
+        assignments = ", ".join(f"{column} = ?" for column in updates)
+        with self._lock, self._connect() as conn:
+            conn.execute(f"UPDATE agents SET {assignments} WHERE id = ?", (*updates.values(), agent_id))
+
     def find_by_name(self, name: str) -> Optional[AgentCard]:
         """Exact display-name match first, then normalized; oldest card wins."""
         cards = self.list_cards()
