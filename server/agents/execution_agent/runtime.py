@@ -20,6 +20,7 @@ class ExecutionResult:
     response: str
     error: Optional[str] = None
     tools_executed: List[str] = None
+    agent_id: str = ""
 
 
 class ExecutionAgentRuntime:
@@ -28,12 +29,12 @@ class ExecutionAgentRuntime:
     MAX_TOOL_ITERATIONS = 8
 
     # Initialize execution agent runtime with settings, tools, and agent instance
-    def __init__(self, agent_name: str):
+    def __init__(self, agent_id: str, agent_name: Optional[str] = None):
         settings = get_settings()
-        self.agent = ExecutionAgent(agent_name)
+        self.agent = ExecutionAgent(agent_id, agent_name)
         self.api_key = settings.openrouter_api_key
         self.model = settings.execution_agent_model
-        self.tool_registry = get_tool_registry(agent_name=agent_name)
+        self.tool_registry = get_tool_registry(agent_id, agent_name=self.agent.name)
         self.tool_schemas = get_tool_schemas()
 
         if not self.api_key:
@@ -130,6 +131,7 @@ class ExecutionAgentRuntime:
 
             return ExecutionResult(
                 agent_name=self.agent.name,
+                agent_id=self.agent.agent_id,
                 success=True,
                 response=final_response,
                 tools_executed=tools_executed
@@ -143,6 +145,7 @@ class ExecutionAgentRuntime:
 
             return ExecutionResult(
                 agent_name=self.agent.name,
+                agent_id=self.agent.agent_id,
                 success=False,
                 response=failure_text,
                 error=error_msg

@@ -10,6 +10,25 @@ from typing import Dict, List, Optional
 
 from .runtime import ExecutionAgentRuntime, ExecutionResult
 from ...logging_config import logger
+from ...services.agents.registry import get_agent_directory
+
+
+def _display_name(agent_id: str) -> str:
+    """The registry card's display name, falling back to the id."""
+    try:
+        card = get_agent_directory().get(agent_id)
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning(f"[{agent_id}] Registry lookup failed: {exc}")
+        return agent_id
+    return card.name if card else agent_id
+
+
+def _record_status(agent_id: str, response: str) -> None:
+    """Store the agent's latest final response on its card (best effort)."""
+    try:
+        get_agent_directory().record_status(agent_id, response or "")
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning(f"[{agent_id}] Failed to record status: {exc}")
 
 
 @dataclass
@@ -17,6 +36,7 @@ class PendingExecution:
     """Track a pending execution request."""
 
     request_id: str
+    agent_id: str
     agent_name: str
     instructions: str
     batch_id: str
@@ -46,20 +66,27 @@ class ExecutionBatchManager:
     # Run execution agent with timeout handling and batch coordination for interaction agent
     async def execute_agent(
         self,
-        agent_name: str,
+        agent_id: str,
         instructions: str,
+        agent_name: Optional[str] = None,
         request_id: Optional[str] = None,
     ) -> ExecutionResult:
-        """Execute an agent asynchronously and buffer the result for batch dispatch."""
+        """Execute the agent `agent_id` asynchronously and buffer the result for batch dispatch.
+
+        `agent_name` is the display name used in prompts and the `[SUCCESS] <name>:` payload; it defaults to
+        the registry card's name.
+        """
 
         if not request_id:
             request_id = str(uuid.uuid4())
+        if not agent_name:
+            agent_name = _display_name(agent_id)
 
-        batch_id = await self._register_pending_execution(agent_name, instructions, request_id)
+        batch_id = await self._register_pending_execution(agent_id, agent_name, instructions, request_id)
 
         try:
             logger.info(f"[{agent_name}] Execution started")
-            runtime = ExecutionAgentRuntime(agent_name=agent_name)
+            runtime = ExecutionAgentRuntime(agent_id, agent_name)
             result = await asyncio.wait_for(
                 runtime.execute(instructions),
                 timeout=self.timeout_seconds,
@@ -70,6 +97,7 @@ class ExecutionBatchManager:
             logger.error(f"[{agent_name}] Execution timed out after {self.timeout_seconds}s")
             result = ExecutionResult(
                 agent_name=agent_name,
+                agent_id=agent_id,
                 success=False,
                 response=f"Execution timed out after {self.timeout_seconds} seconds",
                 error="Timeout",
@@ -78,6 +106,7 @@ class ExecutionBatchManager:
             logger.exception(f"[{agent_name}] Execution failed unexpectedly")
             result = ExecutionResult(
                 agent_name=agent_name,
+                agent_id=agent_id,
                 success=False,
                 response=f"Execution failed: {exc}",
                 error=str(exc),
@@ -85,12 +114,15 @@ class ExecutionBatchManager:
         finally:
             self._pending.pop(request_id, None)
 
+        _record_status(agent_id, result.response)
+
         await self._complete_execution(batch_id, result, agent_name)
         return result
 
     # Add execution request to current batch or create new batch if none exists
     async def _register_pending_execution(
         self,
+        agent_id: str,
         agent_name: str,
         instructions: str,
         request_id: str,
@@ -107,6 +139,7 @@ class ExecutionBatchManager:
             self._batch_state.pending += 1
             self._pending[request_id] = PendingExecution(
                 request_id=request_id,
+                agent_id=agent_id,
                 agent_name=agent_name,
                 instructions=instructions,
                 batch_id=batch_id,
@@ -150,6 +183,7 @@ class ExecutionBatchManager:
         return [
             {
                 "request_id": pending.request_id,
+                "agent_id": pending.agent_id,
                 "agent_name": pending.agent_name,
                 "batch_id": pending.batch_id,
                 "created_at": pending.created_at.isoformat(),

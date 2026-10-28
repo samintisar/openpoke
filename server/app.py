@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from .config import get_settings
 from .logging_config import configure_logging, logger
 from .routes import api_router
-from .services import get_important_email_watcher, get_trigger_scheduler
+from .services import get_agent_directory, get_important_email_watcher, get_trigger_scheduler
 
 
 # Register global exception handlers for consistent error responses across the API
@@ -68,6 +68,8 @@ app.include_router(api_router)
 @app.on_event("startup")
 # Initialize background services (trigger scheduler and email watcher) when the app starts
 async def _start_trigger_scheduler() -> None:
+    # Opening the registry migrates roster.json and backfills trigger agent ids before triggers fire.
+    get_agent_directory()
     scheduler = get_trigger_scheduler()
     await scheduler.start()
     watcher = get_important_email_watcher()

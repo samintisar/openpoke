@@ -47,6 +47,8 @@ def _resolve_working_memory_log() -> "WorkingMemoryLog":
 
 
 _ATTR_PATTERN = re.compile(r"(\w+)\s*=\s*\"([^\"]*)\"")
+# Entries that are conversation turns (wait markers are orchestration metadata).
+_TURN_TAGS = ("user_message", "agent_message", "poke_reply")
 
 
 class ConversationLog:
@@ -132,6 +134,13 @@ class ConversationLog:
             else:
                 parts.append(f"<{tag}>{safe_payload}</{tag}>")
         return "\n".join(parts)
+
+    def recent_texts(self, limit: int, tags: Tuple[str, ...] = _TURN_TAGS) -> List[str]:
+        """Payloads of the last `limit` entries with one of `tags`, oldest first."""
+        if limit <= 0:
+            return []
+        texts = [payload for tag, _, payload in self.iter_entries() if tag in tags]
+        return texts[-limit:]
 
     def record_user_message(self, content: str) -> None:
         timestamp = self._append("user_message", content)

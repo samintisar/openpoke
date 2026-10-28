@@ -3,7 +3,7 @@ from __future__ import annotations
 import sqlite3
 import threading
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from ...logging_config import logger
 from .models import TriggerRecord
@@ -37,6 +37,7 @@ class TriggerStore:
         schema_sql = """
         CREATE TABLE IF NOT EXISTS triggers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            agent_id TEXT,
             agent_name TEXT NOT NULL,
             payload TEXT NOT NULL,
             start_time TEXT,
@@ -50,12 +51,16 @@ class TriggerStore:
         );
         """
         index_sql = """
-        CREATE INDEX IF NOT EXISTS idx_triggers_agent_next
-        ON triggers (agent_name, next_trigger);
+        CREATE INDEX IF NOT EXISTS idx_triggers_agent_id_next
+        ON triggers (agent_id, next_trigger);
         """
         with self._lock, self._connect() as conn:
             conn.execute("PRAGMA journal_mode=WAL;")
             conn.execute(schema_sql)
+            columns = {row["name"] for row in conn.execute("PRAGMA table_info(triggers)")}
+            if "agent_id" not in columns:
+                # Rows from before agent ids are backfilled by name via `backfill_agent_ids`.
+                conn.execute("ALTER TABLE triggers ADD COLUMN agent_id TEXT")
             conn.execute(index_sql)
 
     def insert(self, payload: Dict[str, Any]) -> int:
@@ -67,55 +72,76 @@ class TriggerStore:
             trigger_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
             return int(trigger_id)
 
-    def fetch_one(self, trigger_id: int, agent_name: str) -> Optional[TriggerRecord]:
+    def fetch_one(self, trigger_id: int, agent_id: str) -> Optional[TriggerRecord]:
         with self._lock, self._connect() as conn:
             row = conn.execute(
-                "SELECT * FROM triggers WHERE id = ? AND agent_name = ?",
-                (trigger_id, agent_name),
+                "SELECT * FROM triggers WHERE id = ? AND agent_id = ?",
+                (trigger_id, agent_id),
             ).fetchone()
         return self._row_to_record(row) if row else None
 
-    def update(self, trigger_id: int, agent_name: str, fields: Dict[str, Any]) -> bool:
+    def update(self, trigger_id: int, agent_id: str, fields: Dict[str, Any]) -> bool:
         if not fields:
             return False
         assignments = ", ".join(f"{key} = :{key}" for key in fields.keys())
         sql = (
             f"UPDATE triggers SET {assignments}, updated_at = :updated_at"
-            " WHERE id = :trigger_id AND agent_name = :agent_name"
+            " WHERE id = :trigger_id AND agent_id = :agent_id"
         )
         payload = {
             **fields,
             "updated_at": to_storage_timestamp(utc_now()),
             "trigger_id": trigger_id,
-            "agent_name": agent_name,
+            "agent_id": agent_id,
         }
         with self._lock, self._connect() as conn:
             cursor = conn.execute(sql, payload)
             return cursor.rowcount > 0
 
-    def list_for_agent(self, agent_name: str) -> List[TriggerRecord]:
+    def list_for_agent(self, agent_id: str) -> List[TriggerRecord]:
         with self._lock, self._connect() as conn:
             rows = conn.execute(
-                "SELECT * FROM triggers WHERE agent_name = ? ORDER BY next_trigger IS NULL, next_trigger",
-                (agent_name,),
+                "SELECT * FROM triggers WHERE agent_id = ? ORDER BY next_trigger IS NULL, next_trigger",
+                (agent_id,),
             ).fetchall()
         return [self._row_to_record(row) for row in rows]
 
     def fetch_due(
-        self, agent_name: Optional[str], before_iso: str
+        self, agent_id: Optional[str], before_iso: str
     ) -> List[TriggerRecord]:
         sql = (
             "SELECT * FROM triggers WHERE status = 'active' AND next_trigger IS NOT NULL"
             " AND next_trigger <= ?"
         )
         params: List[Any] = [before_iso]
-        if agent_name:
-            sql += " AND agent_name = ?"
-            params.append(agent_name)
+        if agent_id:
+            sql += " AND agent_id = ?"
+            params.append(agent_id)
         sql += " ORDER BY next_trigger, id"
         with self._lock, self._connect() as conn:
             rows = conn.execute(sql, params).fetchall()
         return [self._row_to_record(row) for row in rows]
+
+    def backfill_agent_ids(self, resolve: Callable[[str], Optional[str]]) -> int:
+        """Set `agent_id` on rows that only have a name; names `resolve` returns None for stay unset."""
+        with self._lock, self._connect() as conn:
+            names = [
+                row[0]
+                for row in conn.execute("SELECT DISTINCT agent_name FROM triggers WHERE agent_id IS NULL")
+            ]
+        updated = 0
+        for name in names:
+            agent_id = resolve(name)
+            if not agent_id:
+                logger.warning("trigger agent not found in registry", extra={"agent": name})
+                continue
+            with self._lock, self._connect() as conn:
+                cursor = conn.execute(
+                    "UPDATE triggers SET agent_id = ? WHERE agent_id IS NULL AND agent_name = ?",
+                    (agent_id, name),
+                )
+                updated += cursor.rowcount
+        return updated
 
     def clear_all(self) -> None:
         with self._lock, self._connect() as conn:

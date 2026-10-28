@@ -74,6 +74,12 @@ class TriggerScheduler:
         for trigger in due_triggers:
             if trigger.id in self._in_flight:
                 continue
+            if not trigger.agent_id:
+                logger.warning(
+                    "Skipping trigger without agent_id",
+                    extra={"trigger_id": trigger.id, "agent": trigger.agent_name},
+                )
+                continue
             self._in_flight.add(trigger.id)
             asyncio.create_task(self._execute_trigger(trigger), name=f"trigger-{trigger.id}")
 
@@ -91,8 +97,9 @@ class TriggerScheduler:
             )
             execution_manager = ExecutionBatchManager()
             result = await execution_manager.execute_agent(
-                trigger.agent_name,
+                trigger.agent_id,
                 instructions,
+                agent_name=trigger.agent_name,
             )
             if result.success:
                 self._handle_success(trigger, fired_at)
@@ -128,7 +135,7 @@ class TriggerScheduler:
         if trigger.recurrence_rule:
             self._service.schedule_next_occurrence(trigger, fired_at=fired_at)
         else:
-            self._service.clear_next_fire(trigger.id, agent_name=trigger.agent_name)
+            self._service.clear_next_fire(trigger.id, agent_id=trigger.agent_id)
 
     def _format_instructions(self, trigger: TriggerRecord, fired_at: datetime) -> str:
         scheduled_for = trigger.next_trigger or _isoformat(fired_at)
