@@ -88,8 +88,10 @@ class ExecutionAgent:
         # With a compacted memory: memory + identifiers + the raw entries after it
         memory = self._log_store.latest_memory(self.agent_id)
         if memory is not None:
-            tail = load_entries(self._log_store, self.agent_id)[memory.upto:]
-            history = render_history(memory.memory, memory.identifiers, tail)
+            entries = load_entries(self._log_store, self.agent_id)
+            history = render_history(
+                memory.memory, memory.identifiers, entries[memory.upto:], context_entries=entries[:memory.upto]
+            )
             return f"{base_prompt}\n\n# Execution History\n\n{history}"
 
         # Load history transcript
