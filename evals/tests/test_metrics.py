@@ -9,7 +9,7 @@ def row(case_id, sample, outcome, n=10, kind="follow_up", reuse=True, seed=1, du
         "outcome": outcome, "expects_reuse": reuse,
         "duplicate_possible": reuse if dup_possible is None else dup_possible,
         "prompt_tokens": 1000, "cost": 0.01, "fresh_cost": 0.01, "cached_calls": 0, "iterations": 1,
-        "latency_s": 1.0, **extra,
+        "latency_s": 1.0, "hit_iteration_cap": False, **extra,
     }
 
 
@@ -133,3 +133,34 @@ def test_fresh_cost_and_cache_hit_rate():
     assert summary["total_cost_usd"] == pytest.approx(0.10)
     assert summary["fresh_cost_usd"] == pytest.approx(0.03)
     assert summary["cache_hit_rate"] == pytest.approx(0.75)
+
+
+def test_hit_cap_rate_is_over_non_error_rows():
+    rows = [
+        row("a", 0, "no_action", hit_iteration_cap=True), row("b", 0, "correct"),
+        row("c", 0, "correct"), row("d", 0, "error", hit_iteration_cap=True),
+    ]
+    assert summarize_routing(rows)["10"]["hit_cap_rate"] == pytest.approx(0.3333)
+
+
+def test_hit_cap_rate_is_none_for_an_all_error_group():
+    assert summarize_routing([row("a", 0, "error")])["10"]["hit_cap_rate"] is None
+
+
+def test_planned_cases_without_rows_count_as_incomplete():
+    rows = [row("a", 0, "correct"), row("a", 1, "correct"), row("b", 0, "correct")]
+    planned = {"10": {(1, "a"), (1, "b"), (1, "c")}, "20": {(1, "a")}}
+    summary = summarize_routing(rows, planned=planned, k=2)
+    ten = summary["10"]
+    assert ten["planned_cases"] == 3 and ten["cases"] == 2
+    assert ten["k"] == 2 and ten["incomplete_cases"] == 2  # b is short a sample, c never ran
+    assert ten["pass_hat_k"] == pytest.approx(1.0)
+    twenty = summary["20"]
+    assert twenty["samples"] == 0 and twenty["incomplete_cases"] == 1
+    assert twenty["pass_at_1"] is None and twenty["error_rate"] is None and twenty["hit_cap_rate"] is None
+
+
+def test_configured_k_is_used_for_pass_hat_k():
+    rows = [row("a", 0, "correct")]
+    summary = summarize_routing(rows, k=3)["10"]
+    assert summary["k"] == 3 and summary["pass_hat_k"] is None and summary["incomplete_cases"] == 1
