@@ -140,6 +140,11 @@ AGENT_RESULTS = (
 )
 
 
+def _cap(phrase: str) -> str:
+    """Capitalize the first character only, keeping casing such as "RSVP"."""
+    return phrase[0].upper() + phrase[1:]
+
+
 def _slug(name: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-") or "agent"
 
@@ -217,7 +222,7 @@ class _Builder:
         templates = list(NAME_TEMPLATES)
         self.rng.shuffle(templates)
         for template in templates:
-            name = template.format(first=person.first, last=person.last, short=short, topic=phrase.title())
+            name = template.format(first=person.first, last=person.last, short=short, topic=_cap(phrase))
             if month:
                 name = f"{name} ({month})"
             if name in self._names:
@@ -225,7 +230,7 @@ class _Builder:
             suffix = f" ({month} thread)" if month else ""
             agent = self.add(
                 name=name,
-                purpose=purpose or f"{phrase.capitalize()} with {person.full} at {person.company}{suffix}",
+                purpose=purpose or f"{_cap(phrase)} with {person.full} at {person.company}{suffix}",
                 entities=[person.full.lower(), person.first.lower(), person.email],
                 days=days,
                 person=person.full,
@@ -279,7 +284,7 @@ def build_world(seed: int, max_agents: int = MAX_AGENTS) -> World:
     # The main person's side of the colleague's deal: where "let main know colleague approved" goes.
     core(
         "main_cross", main, CROSS_TOPIC, 1, 6,
-        purpose=f"{CROSS_TOPIC[0].capitalize()} for {colleague.full}'s deal with {main.full} at {main.company}",
+        purpose=f"{_cap(CROSS_TOPIC[0])} for {colleague.full}'s deal with {main.full} at {main.company}",
     )
     core("dormant", dormant, t_dormant, 35, 60)
     core("typo", typo, t_typo, 1, 8)

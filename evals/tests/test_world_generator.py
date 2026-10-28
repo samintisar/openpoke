@@ -181,10 +181,19 @@ def test_messages_are_unique_within_each_kind():
 
 # Pins the exact output of generation. Any change to the world generator or case builders
 # changes it: update the constant deliberately, after checking the new cases by hand.
-GOLDEN_SHA256 = "553472899fc0fce902e4b927c993f93f54c26a13d4d9637fec1540e01d98a285"
+GOLDEN_SHA256 = "b292c8d0461e4e4d48d8b80c18c3d3def287b3f0462c880113163a47f2f35596"
 
 
 def test_generation_matches_the_golden_hash():
     world = build_world(1)
     text = "\n".join(a.name for a in world.agents) + "\n" + "\n".join(c.message for c in generate_cases(world, 4))
     assert hashlib.sha256(text.encode("utf-8")).hexdigest() == GOLDEN_SHA256
+
+
+def test_names_and_purposes_keep_the_topics_own_casing():
+    for seed in SEEDS:
+        for agent in build_world(seed).agents:
+            # Lowercased names are deliberate near-duplicate filler; their purposes are still checked.
+            name = "" if agent.name == agent.name.lower() else agent.name
+            assert "Rsvp" not in name + agent.purpose and "rsvp" not in name + agent.purpose, agent.name
+            assert "Approval with" not in agent.name, agent.name
