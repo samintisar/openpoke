@@ -68,10 +68,11 @@ class Case:
 
 
 def load_regression_ids(path: Path = REGRESSION_FILE) -> set[str]:
+    """Case ids listed one per line; blank lines and # comments are skipped."""
     if not path.exists():
         return set()
-    lines = path.read_text(encoding="utf-8").splitlines()
-    return {line.strip() for line in lines if line.strip() and not line.startswith("#")}
+    stripped = (line.strip() for line in path.read_text(encoding="utf-8").splitlines())
+    return {line for line in stripped if line and not line.startswith("#")}
 
 
 def filter_cases(
@@ -82,6 +83,8 @@ def filter_cases(
     kinds: Iterable[str] | None = None,
     regression_ids: set[str] | None = None,
 ) -> list[Case]:
+    if split not in (None, "dev", "test"):
+        raise ValueError(f"unknown split {split!r}")
     if suite not in ("all", "capability", "regression"):
         raise ValueError(f"unknown suite {suite!r}")
     regression = load_regression_ids() if regression_ids is None else regression_ids

@@ -1,6 +1,6 @@
 import pytest
 
-from evals.cases import NEW, ROUTING_KINDS, Case, filter_cases
+from evals.cases import NEW, ROUTING_KINDS, Case, filter_cases, load_regression_ids
 
 
 def _case(case_id: str, kind: str = "follow_up", gold=None, **kw) -> Case:
@@ -47,3 +47,14 @@ def test_filter_by_split_kind_and_suite():
 
     cap = filter_cases(cases, suite="capability", regression_ids=regression)
     assert not ({c.id for c in cap} & regression)
+
+
+def test_regression_ids_skip_indented_comments(tmp_path):
+    path = tmp_path / "regression.txt"
+    path.write_text("# header\n  # indented note\ncase-1\n\n  case-2  \n", encoding="utf-8")
+    assert load_regression_ids(path) == {"case-1", "case-2"}
+
+
+def test_unknown_split_is_rejected():
+    with pytest.raises(ValueError, match="split"):
+        filter_cases([_case("x")], split="train", regression_ids=set())
