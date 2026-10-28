@@ -1,0 +1,8 @@
+name: memory
+model: anthropic/claude-haiku-5.5
+seed: 1
+n_agents: 12
+runs: 40
+budget_tokens: 4000
+budget_usd: 1.0
+concurrency: 4
