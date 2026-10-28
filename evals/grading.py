@@ -77,3 +77,10 @@ def grade(case: Case, decision: Decision) -> str:
     if case.expects_new and not created:
         return PARTIAL if expected else MISSED_CREATE
     return CORRECT
+
+
+def duplicate_possible(case: Case) -> bool:
+    """Whether grade() can return DUPLICATE_CREATE for this case (the duplicate_rate_all base)."""
+    if case.dispatch_optional:
+        return bool(case.gold_targets)
+    return bool(case.expected_ids) and not case.expects_new
