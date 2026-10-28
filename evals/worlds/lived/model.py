@@ -3,8 +3,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
+
+from ..model import AgentSpec
 
 LIFE_DAYS = 180
+LIFE_START = datetime(2026, 4, 1, 9, 0, tzinfo=timezone.utc)
+
+
+def day_to_datetime(day: float) -> datetime:
+    return LIFE_START + timedelta(days=day)
 
 
 @dataclass(frozen=True)
@@ -69,3 +77,16 @@ class LifePlan:
 
     def contact(self, full: str) -> Contact:
         return next(c for c in self.contacts if c.full == full)
+
+
+@dataclass
+class Snapshot:
+    """The grown roster the first time it reached `size` agents."""
+
+    size: int
+    day: float
+    agents: list[AgentSpec]  # creation order; created_days / last_active_days are relative to `day`
+    transcript: list[tuple[str, str, str]]  # (tag, text, ISO timestamp), oldest first
+    thread_agents: dict[str, list[str]]  # thread id -> agent ids that served it, first-served first
+    thread_last_day: dict[str, float]  # thread id -> day of its last played event
+    last_user_threads: tuple[str, ...] = ()  # threads of the last user event played
