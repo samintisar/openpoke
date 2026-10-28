@@ -261,6 +261,42 @@ blocked, revoked on trigger pause).
 
 LLM access: OpenRouter (existing client). Default eval model configurable; small budget.
 
+### 8.1 Lived-in world (added after the baseline)
+
+The baseline showed the synthetic world is too clean: the generator's tidy agent names let the model
+route 1,000 agents almost perfectly, so overload showed up only as cost. Real rosters are named by the
+IA itself, inconsistently, and grow alongside a real conversation. The lived-in world reproduces that
+and becomes the headline benchmark; the synthetic world stays as a fast, controlled unit suite.
+
+1. **Life plan (code, seeded).** One persona with ~80 contacts, including deliberate collisions (two
+   Alices, two Bens, a colleague and a cousin sharing a surname). About 600 events over 180 days,
+   grouped into **threads**: one real-world task with a person and topic. Each thread has a start,
+   follow-ups, agent results, quiet spells, and revivals. Most events continue threads. The plan
+   knows each event's thread, which is the gold label.
+2. **Messages written by an LLM.** Each event is written as the user would type it: short, vague,
+   occasional typos, referring back to recent chat, sometimes two requests at once. The writer sees
+   the event and the recent transcript, never thread ids. A check confirms required mentions (the
+   person's first name for non-vague kinds); a failing message is regenerated, then dropped.
+3. **Roster grown by the real IA.** Events are played in order through the production IA turn (L2
+   machinery, baseline system), starting from an empty roster. Created agents become roster entries
+   with the IA's own names; the first instructions become the agent's purpose; dispatches add the
+   thread to the agent. IA replies and agent results enter the transcript, so the history is real. If
+   growth merges two threads into one agent, it stays merged, as in production; gold accepts any
+   agent that served the thread. Each agent's `threads` field is gold-only, and systems under test
+   must not read it.
+4. **Snapshots and probes.** Snapshots are taken when the roster first reaches 10, 50 and 200 agents.
+   At each snapshot, **probes** (held-out next events, never played into growth) are built from the
+   state for every routing kind, with the real transcript tail as context. The 1,000-agent size is the
+   200 snapshot plus 800 background agents: generic errands, each named by a real single IA turn with
+   an empty roster. A name equal to an existing one merges, as in production. Background tasks never
+   mention core contacts or thread topics. That size reuses the 200 snapshot's probes.
+5. **Frozen.** Generation runs once (Haiku 5.5, about $4, cached) and writes
+   `evals/worlds/lived/world-s1.json`, which is committed and protected. Every system is measured
+   against the same lived-in roster, like migrating a real user's existing agents.
+
+Known bias: the roster is grown by the same model that is evaluated, as in production. Not covered:
+agents actually running, concurrent turns, memory growth (Plan 4's L3).
+
 ## 9. Build order & cut line
 
 1. Temporary cross-platform lock in `roster.py` (`fcntl` on Unix, `msvcrt` on Windows; removed with
