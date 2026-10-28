@@ -6,7 +6,9 @@ import pytest
 from evals.llm import (
     Budget,
     BudgetExceeded,
+    FatalAPIError,
     OpenRouterLLM,
+    RunAborted,
     RetryableResponseError,
     ScriptedLLM,
     cache_key,
@@ -279,3 +281,29 @@ async def test_cache_write_failure_still_returns_paid_data(tmp_path, monkeypatch
     assert data["choices"][0]["message"]["content"] == "hi"
     assert llm.budget.spent_usd == pytest.approx(0.01)
     assert "disk full" in caplog.text
+
+
+@pytest.mark.parametrize("status", [401, 402, 403])
+async def test_auth_and_credit_errors_abort_without_retry(tmp_path, status):
+    sent = []
+
+    def handler(request):
+        sent.append(1)
+        return httpx.Response(status, json={"error": {"code": status, "message": "Insufficient credits"}})
+
+    llm = _llm(tmp_path, handler)
+    with pytest.raises(FatalAPIError, match=str(status)):
+        await llm.complete(**KW)
+    await llm.aclose()
+    assert len(sent) == 1
+
+
+async def test_credit_error_in_a_200_body_aborts(tmp_path):
+    llm = _llm(tmp_path, lambda r: httpx.Response(200, json={"error": {"code": 402, "message": "no credits"}}))
+    with pytest.raises(FatalAPIError):
+        await llm.complete(**KW)
+    await llm.aclose()
+
+
+def test_budget_and_fatal_errors_both_abort_the_run():
+    assert issubclass(BudgetExceeded, RunAborted) and issubclass(FatalAPIError, RunAborted)

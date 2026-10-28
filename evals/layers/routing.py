@@ -20,7 +20,7 @@ from server.agents.interaction_agent.tools import get_tool_schemas
 
 from ..cases import Case
 from ..grading import Decision
-from ..llm import BudgetExceeded, LLMClient
+from ..llm import LLMClient, RunAborted
 from ..systems.base import RoutingSystem
 from ..worlds.model import World
 
@@ -158,7 +158,7 @@ async def run_routing_case(
     decision = Decision()
     try:
         return await _run_turn(case, world, system, llm, model=model, sample=sample, decision=decision)
-    except BudgetExceeded as exc:
+    except RunAborted as exc:  # budget cap or account refused: the run stops, not this case alone
         exc.decision = decision  # type: ignore[attr-defined]
         raise
     except Exception as exc:

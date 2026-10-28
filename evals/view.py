@@ -56,6 +56,8 @@ def render(data: dict[str, Any]) -> str:
     )
     if meta.get("budget_exhausted"):
         parts.append("<p class='bad'>Budget exhausted: unrun cases are counted as incomplete.</p>")
+    elif meta.get("aborted"):
+        parts.append(f"<p class='bad'>Run aborted: {escape(str(meta['aborted']))}</p>")
 
     parts.append("<h2>Routing (L2)</h2>")
     parts.append(_table(

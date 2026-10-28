@@ -259,3 +259,24 @@ def test_view_renders_old_style_summary():
     }
     html = render(data)
     assert "old" in html and "–" in html
+
+
+async def test_fatal_api_error_stops_the_run_without_error_rows(tmp_path):
+    from evals.llm import FatalAPIError
+
+    class NoCredits:
+        budget = Budget(10.0)
+
+        async def complete(self, **kwargs):
+            raise FatalAPIError("OpenRouter returned 402: Insufficient credits")
+
+        async def aclose(self):
+            return None
+
+    path = await run_experiment(tiny(), llm=NoCredits(), out_dir=tmp_path, split="dev", final=False)
+    meta = json.loads(path.read_text(encoding="utf-8"))["meta"]
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data["routing_rows"] == []
+    assert meta["budget_exhausted"] is False
+    assert "402" in meta["aborted"]
+    assert meta["valid"] is False
