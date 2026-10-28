@@ -23,7 +23,10 @@ import httpx
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 # USD per million tokens (input, output), used only when OpenRouter omits usage.cost.
-FALLBACK_PRICING: dict[str, tuple[float, float]] = {"anthropic/claude-sonnet-4": (3.0, 15.0)}
+FALLBACK_PRICING: dict[str, tuple[float, float]] = {
+    "anthropic/claude-sonnet-4": (3.0, 15.0),
+    "anthropic/claude-sonnet-4.5": (3.0, 15.0),
+}
 DEFAULT_PRICING = (3.0, 15.0)
 RETRY_STATUS = {408, 429, 500, 502, 503, 504}
 MAX_RETRY_AFTER_S = 60.0

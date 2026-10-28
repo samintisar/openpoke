@@ -1,6 +1,6 @@
 name: baseline
 system: baseline
-model: anthropic/claude-sonnet-4
+model: anthropic/claude-sonnet-4.5
 n_agents: [10, 50, 200, 1000]
 world_seeds: [1]
 k: 3
