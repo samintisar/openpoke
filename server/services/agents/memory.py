@@ -200,8 +200,8 @@ async def compact(
     return parse_compaction(raw, purpose)
 
 
-_CONTEXT_BEFORE = 70
-_CONTEXT_AFTER = 30
+_CONTEXT_BEFORE = 60
+_CONTEXT_AFTER = 60
 _SPACE_RE = re.compile(r"\s+")
 
 
