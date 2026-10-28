@@ -168,3 +168,94 @@ async def test_budget_exceeded_on_the_client_is_not_an_error(tmp_path):
     path = await run_experiment(tiny(), llm=Broke(), out_dir=tmp_path, split="dev", final=False)
     data = json.loads(path.read_text(encoding="utf-8"))
     assert data["meta"]["budget_exhausted"] is True and data["routing_rows"] == []
+
+
+async def test_unexpected_exception_in_a_job_becomes_an_error_row(tmp_path, monkeypatch):
+    from evals import grading, run as run_mod
+
+    real = grading.duplicate_possible
+    calls = {"n": 0}
+
+    def flaky(case):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("dup exploded")
+        return real(case)
+
+    monkeypatch.setattr(run_mod, "duplicate_possible", flaky)
+    path = await run_experiment(tiny(), llm=fake_llm(), out_dir=tmp_path, split="dev", final=False)
+    rows = json.loads(path.read_text(encoding="utf-8"))["routing_rows"]
+    errors = [r for r in rows if r["outcome"] == ERROR]
+    assert len(errors) == 1 and "dup exploded" in errors[0]["error"]
+    assert len(rows) > 1
+
+
+async def test_exception_in_routing_row_is_contained(tmp_path, monkeypatch):
+    from evals import run as run_mod
+
+    real = run_mod._routing_row
+    state = {"raised": False}
+
+    def flaky(*args, **kwargs):
+        if not state["raised"]:
+            state["raised"] = True
+            raise ValueError("row exploded")
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(run_mod, "_routing_row", flaky)
+    path = await run_experiment(tiny(), llm=fake_llm(), out_dir=tmp_path, split="dev", final=False)
+    rows = json.loads(path.read_text(encoding="utf-8"))["routing_rows"]
+    assert any(r["outcome"] == ERROR and "row exploded" in r["error"] for r in rows)
+
+
+@pytest.mark.parametrize("body,key", [
+    ("n_agents: [10, x]", "n_agents"),
+    ("world_seeds: 3", "world_seeds"),
+    ("k: 0", "k"),
+    ("concurrency: 1.5", "concurrency"),
+    ("budget_usd: -1", "budget_usd"),
+    ("layers: [retrieval, bogus]", "layers"),
+    ("suite: everything", "suite"),
+    ("kinds: [not_a_kind]", "kinds"),
+])
+def test_load_config_rejects_bad_values(tmp_path, body, key):
+    config = tmp_path / "c.yaml"
+    config.write_text(f"name: t\n{body}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=key):
+        load_config(config)
+
+
+def test_load_config_accepts_valid_values(tmp_path):
+    config = tmp_path / "c.yaml"
+    config.write_text("name: t\nk: 2\nbudget_usd: 5\nkinds: null\nsuite: regression\n", encoding="utf-8")
+    assert load_config(config).k == 2
+
+
+def test_run_is_invalid_when_expected_file_uncommitted(tmp_path, monkeypatch):
+    import asyncio
+
+    from evals import run as run_mod
+
+    monkeypatch.setattr(run_mod, "expected_file_committed", lambda *a, **k: False)
+    path = asyncio.run(run_experiment(tiny(), llm=fake_llm(), out_dir=tmp_path, split="dev", final=False))
+    assert json.loads(path.read_text(encoding="utf-8"))["meta"]["valid"] is False
+
+
+def test_leaderboard_skips_corrupt_files(tmp_path):
+    (tmp_path / "bad.json").write_text("{not json", encoding="utf-8")
+    (tmp_path / "binary.json").write_bytes(b"\xff\xfe\x00\xff")
+    good = {"meta": {"system": "baseline", "split": "dev", "valid": True}, "summary": {"routing": {}}}
+    (tmp_path / "good.json").write_text(json.dumps(good), encoding="utf-8")
+    with pytest.warns(UserWarning, match="skipping"):
+        out = write_leaderboard(tmp_path)
+    text = out.read_text(encoding="utf-8")
+    assert "good" in text and "bad" not in text.replace("baseline", "")
+
+
+def test_view_renders_old_style_summary():
+    data = {
+        "meta": {"name": "old", "valid": True},
+        "summary": {"routing": {"10": {"cases": 3, "pass_at_1": 0.5}}, "retrieval": {"10": {"recall": 1.0}}},
+    }
+    html = render(data)
+    assert "old" in html and "–" in html

@@ -219,7 +219,7 @@ async def _run_turn(
                 "content": json.dumps(result, default=str),
             })
     else:
-        decision.hit_iteration_cap = True  # production raises here after its own, higher cap
+        decision.hit_iteration_cap = True  # production also caps at 8 and raises here; the eval records it instead
 
     # Production's _finalize_response shows the last assistant text when no message was sent.
     if not decision.user_messages and last_assistant_text:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -24,7 +25,13 @@ def _cell(group: dict[str, Any] | None) -> str:
 def write_leaderboard(results_dir: Path) -> Path:
     runs = []
     for path in sorted(results_dir.glob("*.json")):
-        data = json.loads(path.read_text(encoding="utf-8"))
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            warnings.warn(f"skipping unreadable result file {path.name}: {exc}", stacklevel=2)
+            continue
+        if not isinstance(data, dict):
+            continue
         if "meta" in data and "summary" in data:
             runs.append((path.stem, data))
     sizes = sorted({size for _, data in runs for size in data["summary"].get("routing", {})}, key=_size_order)

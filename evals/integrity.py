@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import subprocess
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -22,6 +23,10 @@ PROTECTED = (
     "evals/worlds/handwritten.py",
     "evals/worlds/handwritten_cases.yaml",
     "evals/suites/regression.txt",
+    "evals/run.py",
+    "evals/llm.py",
+    "evals/integrity.py",
+    "evals/systems/baseline.py",
 )
 
 
@@ -36,6 +41,17 @@ def compute_checksum(root: Path = REPO_ROOT) -> str:
 def expected_checksum(root: Path = REPO_ROOT) -> str | None:
     path = root / EXPECTED_FILE
     return path.read_text(encoding="utf-8").strip() if path.exists() else None
+
+
+def expected_file_committed(root: Path = REPO_ROOT) -> bool:
+    """False when PROTECTED.sha256 differs from HEAD; True if git is unavailable."""
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--quiet", "HEAD", "--", EXPECTED_FILE], cwd=root, capture_output=True
+        )
+    except OSError:
+        return True
+    return result.returncode == 0
 
 
 def write_expected(root: Path = REPO_ROOT) -> str:
