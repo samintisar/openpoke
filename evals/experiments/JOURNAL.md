@@ -60,3 +60,11 @@ Template:
 - **Dev result:** lived-10 0.98 / 0.96 / 0.00 · lived-50 0.87 / 0.86 / 0.10 · lived-200 **0.96 / 0.96 / 0.00** · lived-1000 **0.96 / 0.93 / 0.00**, at about 19k tokens per call.
 - **Regression suite:** the same 3 of 79 fail. Two are debatable labels: "the director of product thing" vs "Gavin Signing Bonus Wrap-up" is arguably one job offer, and "noah … export issue" at 1,000 where the IA asks because Ben Carter also has an export-issue agent. The third is a model miss with the gold card shown first ("any update on that?" sent to Paul instead of Monica).
 - **Decision:** keep as the Plan 2 system. This knowingly overrides the "reject any regression" rule, for the reasons above, which are recorded here. Plan 2 targets are met at 200 and 1,000. lived-50 trails the baseline (0.87 vs 0.93), mostly on the label-noise cases named in `error_analysis_lived.md`. The test split is untouched (Plan 5).
+
+## 2026-10-28 · lifecycle on (Plan 3)
+- **Hypothesis:** dormant/archived statuses (7/30 days) cut stale agents' pull without hurting revival.
+- **Change:** cards carry production lifecycle statuses. An offline L1 check first showed that excluding archived cards from `select` dropped recall@shown 1.00 → 0.62 at 200/1000 (every lost case targets an agent idle 30+ days), so archived cards may join the top K on a strong match: `archived_min_score=0.4`, tuned on dev (0.5–0.7 gave 0.95; 0.3–0.4 gave 1.00).
+- **Run:** `20261028-113929-retrieved-lived-dev.json` ($0.42).
+- **Dev result:** lived-10 0.98 / 0.96 / 0.00 · lived-50 0.87 / 0.86 / 0.10 · lived-200 0.99 / 0.96 / 0.00 · lived-1000 0.96 / 0.93 / 0.00. dormant_revival 27/27.
+- **Regression suite:** the same 3 borderline cases as v3, no new failures.
+- **Decision:** keep (default on).
