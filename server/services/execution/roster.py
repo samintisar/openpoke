@@ -1,11 +1,35 @@
 """Simple agent roster management - just a list of agent names."""
 
 import json
-import fcntl
+import sys
 import time
 from pathlib import Path
+from typing import IO
 
 from ...logging_config import logger
+
+if sys.platform == "win32":
+    import msvcrt
+
+    def _try_lock(handle: IO[str]) -> None:
+        """Take a non-blocking lock on the first byte; raise BlockingIOError if held."""
+        try:
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        except OSError as exc:
+            raise BlockingIOError(str(exc)) from exc
+
+    def _unlock(handle: IO[str]) -> None:
+        handle.seek(0)
+        msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+
+else:
+    import fcntl
+
+    def _try_lock(handle: IO[str]) -> None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+
+    def _unlock(handle: IO[str]) -> None:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
 
 
 class AgentRoster:
@@ -42,12 +66,12 @@ class AgentRoster:
 
                 # Open file and acquire exclusive lock
                 with open(self._roster_path, 'w') as f:
-                    fcntl.flock(f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    _try_lock(f)
                     try:
                         json.dump(self._agents, f, indent=2)
                         return
                     finally:
-                        fcntl.flock(f.fileno(), fcntl.LOCK_UN)
+                        _unlock(f)
 
             except BlockingIOError:
                 # Lock is held by another process
