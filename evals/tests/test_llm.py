@@ -11,6 +11,7 @@ from evals.llm import (
     ScriptedLLM,
     cache_key,
     estimate_cost,
+    fake_llm,
     tool_call,
 )
 
@@ -219,5 +220,62 @@ def test_cache_key_covers_the_sent_payload():
     assert cache_key(**KW) == cache_key(**dict(reversed(list(KW.items()))))
 
 
-def test_tool_call_ids_are_unique():
-    assert tool_call("wait", reason="a")["id"] != tool_call("wait", reason="a")["id"]
+def test_tool_call_ids_are_deterministic():
+    assert tool_call("wait", reason="a")["id"] == "call_wait_0"
+    assert tool_call("wait", reason="a")["id"] == "call_wait_0"
+    assert tool_call("wait", index=3, reason="a")["id"] == "call_wait_3"
+
+
+async def test_scripted_llm_numbers_tool_call_ids_within_a_message():
+    calls = [tool_call("wait", reason="a"), tool_call("wait", reason="b"), tool_call("send_message_to_user", message="m")]
+    llm = ScriptedLLM(lambda messages, sample: {"content": "", "tool_calls": calls})
+    data = await llm.complete(**KW)
+    ids = [call["id"] for call in data["choices"][0]["message"]["tool_calls"]]
+    assert ids == ["call_wait_0", "call_wait_1", "call_send_message_to_user_2"]
+
+
+async def test_scripted_llm_keeps_custom_ids():
+    raw = {"id": "raw_x", "type": "function", "function": {"name": "wait", "arguments": "{}"}}
+    llm = ScriptedLLM(lambda messages, sample: {"content": "", "tool_calls": [raw]})
+    data = await llm.complete(**KW)
+    assert data["choices"][0]["message"]["tool_calls"][0]["id"] == "raw_x"
+
+
+async def test_fake_llm_ids_are_numbered_per_message():
+    messages = [{"role": "user", "content": '<agent name="A" />'}]
+    data = await fake_llm().complete(**{**KW, "messages": messages})
+    ids = [call["id"] for call in data["choices"][0]["message"]["tool_calls"]]
+    assert ids == ["call_send_message_to_user_0", "call_send_message_to_agent_1"]
+
+
+async def test_non_json_200_is_retried(tmp_path):
+    responses = [httpx.Response(200, text="<html>gateway</html>"), httpx.Response(200, json=_ok())]
+    sleeps = []
+    llm = _llm_with_sleeps(tmp_path, lambda r: responses.pop(0), sleeps)
+    data = await llm.complete(**KW)
+    await llm.aclose()
+    assert data["choices"][0]["message"]["content"] == "hi"
+    assert len(sleeps) == 1
+
+
+async def test_non_json_200_on_last_attempt_raises(tmp_path):
+    llm = _llm_with_sleeps(tmp_path, lambda r: httpx.Response(200, text="nope"), [], max_retries=1)
+    with pytest.raises(RetryableResponseError, match="not JSON"):
+        await llm.complete(**KW)
+    await llm.aclose()
+
+
+async def test_cache_write_failure_still_returns_paid_data(tmp_path, monkeypatch, caplog):
+    import evals.llm as llm_module
+
+    def broken(path, data):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(llm_module, "_write_cache", broken)
+    llm = _llm(tmp_path, lambda r: httpx.Response(200, json=_ok()))
+    with caplog.at_level("WARNING"):
+        data = await llm.complete(**KW)
+    await llm.aclose()
+    assert data["choices"][0]["message"]["content"] == "hi"
+    assert llm.budget.spent_usd == pytest.approx(0.01)
+    assert "disk full" in caplog.text

@@ -10,8 +10,8 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import html
-import itertools
 import json
+import logging
 import os
 import re
 import time
@@ -28,6 +28,8 @@ DEFAULT_PRICING = (3.0, 15.0)
 RETRY_STATUS = {408, 429, 500, 502, 503, 504}
 MAX_RETRY_AFTER_S = 60.0
 
+logger = logging.getLogger(__name__)
+
 
 class BudgetExceeded(RuntimeError):
     """Raised before an uncached request attempt once spending reaches the cap."""
@@ -43,6 +45,10 @@ class Budget:
     The check happens before a request is sent and the cost is added when it returns, so up
     to about `concurrency` in-flight calls can pass the check together: the cap can be
     overshot by roughly that many calls' cost.
+
+    Only costs reported in a response body are charged. A request that times out on our side
+    (or whose body is lost or unreadable) may still be billed by OpenRouter, but it isn't
+    charged here, so real spend can exceed `spent_usd`.
     """
 
     def __init__(self, cap_usd: float) -> None:
@@ -191,7 +197,10 @@ class OpenRouterLLM:
             "cached": False,
             "cache_key": key,
         }
-        _write_cache(path, data)
+        try:
+            _write_cache(path, data)
+        except OSError as exc:  # the call is paid for; losing the cache entry only costs a rerun
+            logger.warning("could not write LLM cache entry %s: %s", path, exc)
         return data
 
     async def _backoff(self, attempt: int, response: httpx.Response | None = None) -> None:
@@ -216,7 +225,13 @@ class OpenRouterLLM:
                 await self._backoff(attempt, response)
                 continue
             response.raise_for_status()
-            data = response.json()
+            try:
+                data = response.json()
+            except ValueError:  # a 200 with an HTML or truncated body; usage is unknown
+                if last:
+                    raise RetryableResponseError("unusable OpenRouter response: body is not JSON") from None
+                await self._backoff(attempt, response)
+                continue
             if "error" in data:
                 if _error_code(data["error"]) in RETRY_STATUS and not last:
                     await self._backoff(attempt, response)
@@ -236,20 +251,37 @@ class OpenRouterLLM:
 
 
 _ZERO_META = {"cost": 0.0, "latency_s": 0.0, "prompt_tokens": 0, "completion_tokens": 0, "cached": False, "cache_key": ""}
-_CALL_IDS = itertools.count(1)
 
 
-def tool_call(name: str, **arguments: Any) -> dict[str, Any]:
-    """An OpenAI-style tool call with an id unique within the process."""
+def tool_call(name: str, index: int = 0, **arguments: Any) -> dict[str, Any]:
+    """An OpenAI-style tool call with the deterministic id call_{name}_{index}.
+
+    `index` is the call's position in its assistant message; ScriptedLLM renumbers ids of this
+    form by position, so scripts can leave it at 0.
+    """
     return {
-        "id": f"call_{name}_{next(_CALL_IDS)}",
+        "id": f"call_{name}_{index}",
         "type": "function",
         "function": {"name": name, "arguments": json.dumps(arguments)},
     }
 
 
+def _numbered(calls: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Give tool_call()-style ids their position in the message (0..n-1); keep custom ids."""
+    out = []
+    for index, call in enumerate(calls):
+        name = (call.get("function") or {}).get("name", "")
+        if re.fullmatch(rf"call_{re.escape(name)}_\d+", str(call.get("id", ""))):
+            call = {**call, "id": f"call_{name}_{index}"}
+        out.append(call)
+    return out
+
+
 class ScriptedLLM:
-    """Deterministic stand-in: script(messages, sample) returns the assistant message."""
+    """Deterministic stand-in: script(messages, sample) returns the assistant message.
+
+    Tool-call ids made by tool_call() are numbered 0..n-1 within each message.
+    """
 
     def __init__(self, script: Callable[[list[dict[str, Any]], int], dict[str, Any]]) -> None:
         self.script = script
@@ -258,6 +290,8 @@ class ScriptedLLM:
         self, *, model: str, system: str, messages: list[dict[str, Any]], tools: list[dict[str, Any]], sample: int
     ) -> dict[str, Any]:
         message = {"role": "assistant", **self.script(messages, sample)}
+        if message.get("tool_calls"):
+            message["tool_calls"] = _numbered(message["tool_calls"])
         return {"choices": [{"message": message}], "_meta": dict(_ZERO_META)}
 
     async def aclose(self) -> None:
@@ -278,8 +312,8 @@ def fake_llm() -> ScriptedLLM:
         return {
             "content": "",
             "tool_calls": [
-                tool_call("send_message_to_user", message="on it"),
-                tool_call("send_message_to_agent", agent_name=name, instructions="handle it"),
+                tool_call("send_message_to_user", 0, message="on it"),
+                tool_call("send_message_to_agent", 1, agent_name=name, instructions="handle it"),
             ],
         }
 

@@ -20,12 +20,20 @@ from server.agents.interaction_agent.tools import get_tool_schemas
 
 from ..cases import Case
 from ..grading import Decision
-from ..llm import LLMClient
+from ..llm import BudgetExceeded, LLMClient
 from ..systems.base import RoutingSystem
 from ..worlds.model import World
 
-# Production allows 8 iterations; routing decisions happen in the first few.
-MAX_ITERATIONS = 4
+# Same as production's InteractionAgentRuntime.MAX_TOOL_ITERATIONS.
+MAX_ITERATIONS = 8
+
+
+class RoutingCaseError(Exception):
+    """A case that failed mid-run; `decision` holds what it did and cost before failing."""
+
+    def __init__(self, message: str, decision: Decision) -> None:
+        super().__init__(message)
+        self.decision = decision
 
 
 CONTEXT_BASE_TIME = datetime(2026, 10, 24, 10, 0, 0)
@@ -71,22 +79,37 @@ def _parse_arguments(raw: Any) -> tuple[dict[str, Any], str | None]:
     return {}, f"unsupported argument type: {type(raw).__name__}"
 
 
+# No-op shims with the IA tools' signatures and names: calling one with the model's arguments
+# raises the same TypeError, word for word, that production's tool(**args) raises.
+def send_message_to_agent(agent_name: str, instructions: str) -> None:
+    return None
+
+
+def send_message_to_user(message: str) -> None:
+    return None
+
+
+def send_draft(to: str, subject: str, body: str) -> None:
+    return None
+
+
+def wait(reason: str) -> None:
+    return None
+
+
+_SHIMS = {f.__name__: f for f in (send_message_to_agent, send_message_to_user, send_draft, wait)}
+
+
 def _schema_error(name: str, args: dict[str, Any]) -> str | None:
-    """The error production's handle_tool_call gives when calling tool(**args) raises TypeError."""
-    for schema in get_tool_schemas():
-        function = schema["function"]
-        if function["name"] != name:
-            continue
-        parameters = function.get("parameters", {})
-        missing = [key for key in parameters.get("required", []) if key not in args]
-        unknown = [key for key in args if key not in parameters.get("properties", {})]
-        if unknown:
-            return f"Missing required arguments: {name}() got an unexpected keyword argument {unknown[0]!r}"
-        if missing:
-            listed = ", ".join(repr(key) for key in missing)
-            return f"Missing required arguments: {name}() missing {len(missing)} required argument(s): {listed}"
-        return None
-    return f"Unknown tool: {name}"
+    """The error production's handle_tool_call gives for an unknown tool or bad arguments."""
+    shim = _SHIMS.get(name)
+    if shim is None:
+        return f"Unknown tool: {name}"
+    try:
+        shim(**args)
+    except TypeError as exc:
+        return f"Missing required arguments: {exc}"
+    return None
 
 
 def _error_result(name: str, args: dict[str, Any], error: str) -> dict[str, Any]:
@@ -129,10 +152,25 @@ class _Turn:
 async def run_routing_case(
     case: Case, world: World, system: RoutingSystem, llm: LLMClient, *, model: str, sample: int
 ) -> Decision:
+    """Run one IA turn. On failure, the partial Decision (cost so far) rides on the exception:
+    BudgetExceeded propagates with a `.decision` attribute; anything else is wrapped in
+    RoutingCaseError, raised from the original."""
+    decision = Decision()
+    try:
+        return await _run_turn(case, world, system, llm, model=model, sample=sample, decision=decision)
+    except BudgetExceeded as exc:
+        exc.decision = decision  # type: ignore[attr-defined]
+        raise
+    except Exception as exc:
+        raise RoutingCaseError(f"{type(exc).__name__}: {exc}", decision) from exc
+
+
+async def _run_turn(
+    case: Case, world: World, system: RoutingSystem, llm: LLMClient, *, model: str, sample: int, decision: Decision
+) -> Decision:
     messages = build_messages(case, world, system)
     system_prompt = build_system_prompt()
     tools = get_tool_schemas()
-    decision = Decision()
     turn = _Turn(world, system, decision)
     last_assistant_text = ""
 
