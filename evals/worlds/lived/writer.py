@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 
 from evals.llm import LLMClient
@@ -84,10 +85,15 @@ def _clean(content: str | None) -> str:
     return text
 
 
+# The model sometimes appends notes about the rules to the message; a real text never mentions them.
+_META = re.compile(r"must (not )?include|hard rules?|\bthe rules?\b|required words?|\bthe requirement", re.IGNORECASE)
+
+
 def _valid(text: str, intent: Intent) -> bool:
     lowered = text.lower()
     return (
         bool(text)
+        and not _META.search(text)
         and all(m.lower() in lowered for m in intent.mention)
         and not any(f.lower() in lowered for f in intent.forbid)
     )

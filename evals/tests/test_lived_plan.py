@@ -159,7 +159,7 @@ def test_persona_matches_the_contacts():
 
 
 # Pins the exact plan. Any change to plan.py changes it: update deliberately after checking the plan.
-GOLDEN_SHA256 = "9227f764f83144a2041271cfe4fb4273b0b586d493d8fe2896196a699adefc2a"
+GOLDEN_SHA256 = "67351a7a2277475ae0939df1755d8348e351a510f74b869fda4932d9466bceb9"
 
 
 def test_plan_matches_the_golden_hash():

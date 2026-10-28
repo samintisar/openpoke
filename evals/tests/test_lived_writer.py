@@ -76,3 +76,11 @@ async def test_probe_kinds_fall_back_to_the_detail():
     llm = Recorder(["hows that thing going"])
     assert await _write(llm, intent=intent) == "hows that thing going"
     assert "ask how that thing is going, no names" in llm.calls[0]["user"]
+
+
+async def test_messages_with_notes_about_the_rules_are_rejected():
+    leaky = 'ask ben about climbing\n\nWait, the rule: must include "Okafor"'
+    llm = Recorder([leaky, "ask ben okafor about climbing"])
+    intent = Intent(kind="start", thread_ids=("t1",), mention=("ben", "okafor"))
+    assert await _write(llm, intent=intent) == "ask ben okafor about climbing"
+    assert [c["sample"] for c in llm.calls] == [0, 1]

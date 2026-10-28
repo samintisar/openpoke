@@ -150,15 +150,24 @@ ERRAND_THREADS = 80  # errands drawn for threads; the rest of the pool stays unu
 BACKGROUND_ACTIONS = (
     "compare prices for", "read reviews of", "dig up a coupon for", "see shipping times for", "look up the warranty on",
     "track down a refurbished", "set a price alert for", "download the manual for", "see who stocks", "look for a used",
+    "source replacement parts for", "look up recall notices for", "compare the energy use of", "price out renting a",
 )
 BACKGROUND_OBJECTS = (
     "standing desk", "air purifier", "espresso grinder", "robot vacuum", "electric toothbrush", "mesh router",
     "label printer", "cordless drill", "rowing machine", "dehumidifier", "bread maker", "e-reader", "monitor arm",
     "leaf blower", "waffle iron", "bike rack", "smart thermostat", "white noise machine", "yoga mat",
-    "carry-on suitcase",
+    "carry-on suitcase", "pressure sprayer", "chest freezer", "rice cooker", "air fryer", "stand mixer",
+    "mini fridge", "ceiling fan", "garage door opener", "water softener", "sump pump", "snow blower",
+    "hedge trimmer", "lawn mower", "ice maker", "pizza oven", "smoker grill", "kayak rack", "juicer",
+    "sleeping pad", "trekking poles", "headlamp", "drone", "projector", "soundbar", "turntable",
+    "graphing calculator", "drawing tablet", "webcam", "mechanical keyboard", "trackball", "document scanner",
+    "laminator", "paper shredder", "desk lamp", "ergonomic stool", "filing cabinet", "bookshelf", "bunk bed",
+    "toaster oven", "garden hose", "high chair", "stroller", "tool chest", "step ladder", "kids scooter",
+    "balance bike", "trampoline", "sandbox", "dollhouse", "telescope", "microscope", "tile saw",
+    "sewing machine", "embroidery hoop", "bread slicer", "label maker", "hot glue gun", "jigsaw",
 )
 BACKGROUND_QUALIFIERS = ("under three hundred dollars", "in matte black", "with free returns", "that ships by Saturday")
-BACKGROUND_SIZE = 800
+BACKGROUND_SIZE = 1000  # IA names often collapse near-identical errands, so more than the 800 slots needed
 
 THREAD_COUNTS = ((1, 2, 3, 4), (0.15, 0.3, 0.35, 0.2))  # threads per contact (values, weights)
 RESULT_COUNTS = ((0, 1, 2), (0.5, 0.35, 0.15))
@@ -444,10 +453,9 @@ def build_plan(seed: int = 1) -> LifePlan:
 
 
 def _background(rng: random.Random) -> list[Intent]:
-    combos = [
-        (action, obj, qualifier)
-        for action in BACKGROUND_ACTIONS for obj in BACKGROUND_OBJECTS for qualifier in BACKGROUND_QUALIFIERS
-    ]
+    # One errand per (action, object): the IA's agent names drop the qualifier, so pairs that differ only
+    # in qualifier would collapse into one agent.
+    combos = [(action, obj, rng.choice(BACKGROUND_QUALIFIERS)) for action in BACKGROUND_ACTIONS for obj in BACKGROUND_OBJECTS]
     rng.shuffle(combos)
     return [
         Intent(kind="start", thread_ids=(), topic=phrase, detail=f"ask the assistant to {phrase}", mention=(obj,))
