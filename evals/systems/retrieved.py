@@ -68,13 +68,17 @@ def approve_send(action_id: Any) -> None:
     return None
 
 
+def approve_recurring_send(trigger_id: Any, recipients: Any) -> None:
+    return None
+
+
 def wait(reason: str) -> None:
     return None
 
 
 _SHIMS = {
     f.__name__: f
-    for f in (send_message_to_agent, search_agents, send_message_to_user, send_draft, approve_send, wait)
+    for f in (send_message_to_agent, search_agents, send_message_to_user, send_draft, approve_send, approve_recurring_send, wait)
 }
 
 
@@ -121,6 +125,9 @@ class RetrievedTurn:
         elif name == "approve_send":
             # Routing worlds have no pending sends, so production's gate refuses every id.
             return _error(name, args, f"No pending send with action_id {args.get('action_id')!r}")
+        elif name == "approve_recurring_send":
+            # Nor triggers.
+            return _error(name, args, f"Unknown trigger {args.get('trigger_id')!r}.")
         elif name == "send_draft":
             result = {"status": "draft_recorded", "to": args.get("to"), "subject": args.get("subject")}
         else:  # wait; unknown names never reach here

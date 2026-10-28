@@ -78,17 +78,21 @@ _SCHEMAS: List[Dict[str, Any]] = [
             "name": "gmail_execute_draft",
             "description": (
                 "Send a previously created Gmail draft. It sends only if the user approved this exact draft; "
-                "otherwise it returns approval_required with an action_id and sends nothing."
+                "otherwise it returns approval_required with an action_id and sends nothing. After Poke says the "
+                "user approved action N, pass action_id=N (draft_id is then optional)."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "draft_id": {
                         "type": "string",
-                        "description": "Identifier of the Gmail draft to send.",
+                        "description": "Identifier of the Gmail draft to send (required unless action_id is given).",
+                    },
+                    "action_id": {
+                        "type": "integer",
+                        "description": "Id of the approved draft action to send; its draft is sent.",
                     },
                 },
-                "required": ["draft_id"],
                 "additionalProperties": False,
             },
         },
@@ -99,25 +103,29 @@ _SCHEMAS: List[Dict[str, Any]] = [
             "name": "gmail_forward_email",
             "description": (
                 "Forward an existing Gmail message with optional additional context. It sends only if the user "
-                "approved this exact forward; otherwise it returns approval_required with an action_id."
+                "approved this exact forward; otherwise it returns approval_required with an action_id. After Poke "
+                "says the user approved action N, pass action_id=N: the approved forward is sent as stored."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "message_id": {
                         "type": "string",
-                        "description": "Gmail message id to forward.",
+                        "description": "Gmail message id to forward (required unless action_id is given).",
                     },
                     "recipient_email": {
                         "type": "string",
-                        "description": "Email address to receive the forwarded message.",
+                        "description": "Email address to receive the forwarded message (required unless action_id).",
                     },
                     "additional_text": {
                         "type": "string",
                         "description": "Optional text to prepend when forwarding.",
                     },
+                    "action_id": {
+                        "type": "integer",
+                        "description": "Id of the approved forward to send; its stored content is used.",
+                    },
                 },
-                "required": ["message_id", "recipient_email"],
                 "additionalProperties": False,
             },
         },
@@ -128,22 +136,29 @@ _SCHEMAS: List[Dict[str, Any]] = [
             "name": "gmail_reply_to_thread",
             "description": (
                 "Send a reply within an existing Gmail thread. It sends only if the user approved this exact "
-                "reply; otherwise it returns approval_required with an action_id and sends nothing."
+                "reply; otherwise it returns approval_required with an action_id and sends nothing. After Poke says "
+                "the user approved action N, pass action_id=N: the approved reply is sent as stored."
             ),
             "parameters": {
                 "type": "object",
                 "properties": {
                     "thread_id": {
                         "type": "string",
-                        "description": "Gmail thread id to reply to.",
+                        "description": "Gmail thread id to reply to (required unless action_id is given).",
                     },
                     "recipient_email": {
                         "type": "string",
-                        "description": "Primary recipient for the reply (usually the original sender).",
+                        "description": "Primary recipient for the reply, usually the original sender (required "
+                        "unless action_id is given).",
                     },
                     "message_body": {
                         "type": "string",
-                        "description": "Reply body. Use HTML markup when is_html is true.",
+                        "description": "Reply body. Use HTML markup when is_html is true (required unless action_id).",
+                    },
+                    "action_id": {
+                        "type": "integer",
+                        "description": "Id of the approved reply to send; its stored content is used. Pass the same "
+                        "attachment again if the approved reply had one.",
                     },
                     "cc": {
                         "type": "array",
@@ -175,7 +190,6 @@ _SCHEMAS: List[Dict[str, Any]] = [
                         "required": ["s3key", "name", "mimetype"],
                     },
                 },
-                "required": ["thread_id", "recipient_email", "message_body"],
                 "additionalProperties": False,
             },
         },
@@ -571,8 +585,18 @@ def gmail_create_draft(
 
 # Send a previously created Gmail draft using Composio, only if the user approved exactly what it holds now
 def gmail_execute_draft(
-    draft_id: str,
+    draft_id: Optional[str] = None,
+    action_id: Optional[Any] = None,
 ) -> Dict[str, Any]:
+    if action_id is not None:
+        action = _stored_action(action_id, "draft")
+        if isinstance(action, dict):
+            return action
+        if draft_id is not None and str(draft_id) != action.gmail_ref:
+            return _refused(f"action {action.id} is for draft {action.gmail_ref}, not {draft_id}.")
+        draft_id = action.gmail_ref
+    if not draft_id:
+        return _refused("pass draft_id, or the action_id of an approved draft.")
     arguments = {"draft_id": draft_id}
     composio_user_id = get_active_gmail_user_id()
     if not composio_user_id:
@@ -611,10 +635,24 @@ def gmail_execute_draft(
 
 # Forward an existing Gmail message with optional additional context, once the user approved it
 def gmail_forward_email(
-    message_id: str,
-    recipient_email: str,
+    message_id: Optional[str] = None,
+    recipient_email: Optional[str] = None,
     additional_text: Optional[str] = None,
+    action_id: Optional[Any] = None,
 ) -> Dict[str, Any]:
+    if action_id is not None:
+        action = _stored_action(action_id, "forward", message_id)
+        if isinstance(action, dict):
+            return action
+        content = _action_content(action)
+        message_id = action.gmail_ref
+        recipient_email = content.to[0] if content.to else None
+        additional_text = content.body or None
+    elif not message_id or not recipient_email:
+        return _refused("pass message_id and recipient_email, or the action_id of an approved forward.")
+    else:
+        action = None
+        content = SendContent.build(to=[recipient_email], body=additional_text)
     arguments = {
         "message_id": message_id,
         "recipient_email": recipient_email,
@@ -623,8 +661,42 @@ def gmail_forward_email(
     composio_user_id = get_active_gmail_user_id()
     if not composio_user_id:
         return {"error": "Gmail not connected. Please connect Gmail in settings first."}
-    content = SendContent.build(to=[recipient_email], body=additional_text)
-    return _gated_send("forward", message_id, content, "GMAIL_FORWARD_MESSAGE", composio_user_id, arguments)
+    return _gated_send(
+        "forward", message_id, content, "GMAIL_FORWARD_MESSAGE", composio_user_id, arguments, action=action
+    )
+
+
+def _stored_action(action_id: Any, kind: str, gmail_ref: Optional[str] = None) -> Any:
+    """The stored action to send by id, or a refusal: it must exist and be a `kind` on `gmail_ref` (if given)."""
+    parsed = None if isinstance(action_id, bool) else action_id
+    try:
+        parsed = int(str(parsed).strip()) if parsed is not None else None
+    except ValueError:
+        parsed = None
+    if parsed is None:
+        return _refused(f"invalid action_id {action_id!r}; pass the numeric id Poke gave you.")
+    action = gate.get_action(parsed)
+    if action is None:
+        return _refused(f"unknown action_id {parsed}.")
+    if action.kind != kind:
+        return _refused(f"action {parsed} is a {action.kind}, not a {kind}.")
+    if gmail_ref is not None and str(gmail_ref) != action.gmail_ref:
+        return _refused(f"action {parsed} is for {action.gmail_ref}, not {gmail_ref}.")
+    return action
+
+
+def _action_content(action: Any, attachment: Optional[Dict[str, Any]] = None) -> SendContent:
+    """The stored content of a reply or forward action, as a send would deliver it."""
+    recipients = action.recipients
+    return SendContent.build(
+        to=recipients.get("to") or [],
+        cc=recipients.get("cc") or [],
+        bcc=recipients.get("bcc") or [],
+        subject=action.subject or None,
+        body=action.body,
+        is_html=action.body_format == "html",
+        attachments=_attachment_names(attachment),
+    )
 
 
 def _gated_send(
@@ -634,14 +706,30 @@ def _gated_send(
     tool_name: str,
     composio_user_id: str,
     arguments: Dict[str, Any],
+    action: Any = None,
 ) -> Dict[str, Any]:
-    """Send a reply or forward only when the user approved this exact content; else ask for approval."""
+    """Send a reply or forward only when the user approved this exact content; else ask for approval.
+
+    With `action` (the agent passed `action_id`), `content` and `arguments` come from that stored action, and
+    an unapproved send is refused against it instead of recording a new pending action.
+    """
     agent_id = _current_agent_id()
     digest = gate.content_hash(kind, gmail_ref, content)
+    if action is not None and digest != action.content_hash:
+        return _refused(
+            f"the content to send does not match action {action.id} (for an approved attachment, pass the same "
+            "attachment again)."
+        )
     decision = gate.check_send(kind, agent_id, content.all_recipients(), digest, gmail_ref)
     if not decision.allowed:
         if not agent_id:
             return _refused("no agent run is in progress.")
+        if action is not None:
+            if action.agent_id != agent_id:
+                return _refused(f"action {action.id} belongs to another agent.")
+            if action.status == "pending":
+                return _approval_required(action, f"The user has not approved action {action.id} yet.")
+            return _refused(f"action {action.id} is {action.status}; it cannot be sent.")
         action = gate.request_approval(kind, agent_id, gmail_ref, content)
         return _approval_required(action, f"This {kind} needs the user's approval.")
     result = _execute(tool_name, composio_user_id, arguments)
@@ -652,15 +740,40 @@ def _gated_send(
 
 # Send a reply within an existing Gmail thread via Composio
 def gmail_reply_to_thread(
-    thread_id: str,
-    recipient_email: str,
-    message_body: str,
+    thread_id: Optional[str] = None,
+    recipient_email: Optional[str] = None,
+    message_body: Optional[str] = None,
     cc: Optional[List[str]] = None,
     bcc: Optional[List[str]] = None,
     extra_recipients: Optional[List[str]] = None,
     is_html: Optional[bool] = None,
     attachment: Optional[Dict[str, Any]] = None,
+    action_id: Optional[Any] = None,
 ) -> Dict[str, Any]:
+    if action_id is not None:
+        # Send the approved reply exactly as stored; the content arguments are ignored.
+        action = _stored_action(action_id, "reply", thread_id)
+        if isinstance(action, dict):
+            return action
+        content = _action_content(action, attachment)
+        arguments = {
+            "thread_id": action.gmail_ref,
+            "recipient_email": content.to[0] if content.to else None,
+            "message_body": content.body,
+            "cc": content.cc or None,
+            "bcc": content.bcc or None,
+            "extra_recipients": content.to[1:] or None,
+            "is_html": True if content.body_format == "html" else None,
+            "attachment": attachment if content.attachments else None,
+        }
+        composio_user_id = get_active_gmail_user_id()
+        if not composio_user_id:
+            return {"error": "Gmail not connected. Please connect Gmail in settings first."}
+        return _gated_send(
+            "reply", action.gmail_ref, content, "GMAIL_REPLY_TO_THREAD", composio_user_id, arguments, action=action
+        )
+    if not thread_id or not recipient_email or message_body is None:
+        return _refused("pass thread_id, recipient_email and message_body, or the action_id of an approved reply.")
     arguments = {
         "thread_id": thread_id,
         "recipient_email": recipient_email,

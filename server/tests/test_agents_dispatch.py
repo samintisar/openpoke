@@ -135,7 +135,8 @@ def test_search_payload_renders_results():
 def test_schema_shape():
     by_name = {schema["function"]["name"]: schema["function"] for schema in TOOL_SCHEMAS}
     assert list(by_name) == [
-        "send_message_to_agent", "search_agents", "send_message_to_user", "send_draft", "approve_send", "wait"
+        "send_message_to_agent", "search_agents", "send_message_to_user", "send_draft", "approve_send",
+        "approve_recurring_send", "wait",
     ]
     agent = by_name["send_message_to_agent"]["parameters"]
     assert agent["required"] == ["instructions"]

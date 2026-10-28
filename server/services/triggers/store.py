@@ -80,6 +80,11 @@ class TriggerStore:
             ).fetchone()
         return self._row_to_record(row) if row else None
 
+    def fetch_by_id(self, trigger_id: int) -> Optional[TriggerRecord]:
+        with self._lock, self._connect() as conn:
+            row = conn.execute("SELECT * FROM triggers WHERE id = ?", (trigger_id,)).fetchone()
+        return self._row_to_record(row) if row else None
+
     def update(self, trigger_id: int, agent_id: str, fields: Dict[str, Any]) -> bool:
         if not fields:
             return False
@@ -96,6 +101,11 @@ class TriggerStore:
         }
         with self._lock, self._connect() as conn:
             cursor = conn.execute(sql, payload)
+            return cursor.rowcount > 0
+
+    def delete(self, trigger_id: int, agent_id: str) -> bool:
+        with self._lock, self._connect() as conn:
+            cursor = conn.execute("DELETE FROM triggers WHERE id = ? AND agent_id = ?", (trigger_id, agent_id))
             return cursor.rowcount > 0
 
     def list_for_agent(self, agent_id: str) -> List[TriggerRecord]:

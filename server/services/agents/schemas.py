@@ -138,6 +138,31 @@ APPROVE_SEND = {
     },
 }
 
+APPROVE_RECURRING_SEND = {
+    "type": "function",
+    "function": {
+        "name": "approve_recurring_send",
+        "description": (
+            "Approve every future send from one trigger's runs to the named recipients, so they go out without "
+            "asking each time. Call it only when the user's own latest message explicitly asks for that recurring "
+            "send to those recipients. Other recipients still need approve_send."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "trigger_id": {"type": "integer", "description": "Id of the active trigger the agent reported."},
+                "recipients": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Exactly the email addresses the user named for this recurring send.",
+                },
+            },
+            "required": ["trigger_id", "recipients"],
+            "additionalProperties": False,
+        },
+    },
+}
+
 WAIT = {
     "type": "function",
     "function": {
@@ -163,6 +188,7 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
     SEND_MESSAGE_TO_USER,
     SEND_DRAFT,
     APPROVE_SEND,
+    APPROVE_RECURRING_SEND,
     WAIT,
 ]
 
@@ -172,6 +198,7 @@ def get_tool_schemas() -> list[dict[str, Any]]:
 
 
 __all__ = [
+    "APPROVE_RECURRING_SEND",
     "APPROVE_SEND",
     "SEARCH_AGENTS",
     "SEND_DRAFT",

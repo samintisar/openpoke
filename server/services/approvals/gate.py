@@ -9,7 +9,12 @@ Flow:
 - The agent's send goes through `check_send`, which passes only for an `approved` action of the same agent,
   Gmail object and hash. A draft edited after approval is `invalidated`. A successful send marks it `sent`.
 
-`check_send` is the single place that decides whether a send may proceed (standing approvals hook in there).
+Standing approvals cover recurring sends: in a user turn, the interaction agent can approve one trigger's
+sends to a fixed set of recipients (`approve_recurring`). A send from a run of that trigger, by the trigger's
+agent, to a subset of those recipients then passes without a per-action approval. Pausing, completing or
+deleting the trigger revokes it (`revoke_standing`).
+
+`check_send` is the single place that decides whether a send may proceed.
 `enforce = False` is the ablation switch: the gate still decides and reports, but lets every send through.
 """
 
@@ -24,7 +29,7 @@ from email.utils import getaddresses
 from typing import Callable, Dict, Iterable, List, Optional, Sequence
 
 from ...logging_config import logger
-from .store import PendingAction, PendingActionStore
+from .store import PendingAction, PendingActionStore, StandingApproval
 
 # Pending (and approved but unsent) actions older than this expire.
 APPROVAL_TTL = timedelta(days=7)
@@ -232,7 +237,7 @@ class Decision:
 
     allowed: bool
     would_allow: bool
-    reason: str  # "approved", "not_approved", "content_changed", "no_agent"
+    reason: str  # "approved", "standing_approval", "not_approved", "content_changed", "no_agent"
     kind: str
     agent_id: Optional[str]
     gmail_ref: Optional[str]
@@ -240,6 +245,8 @@ class Decision:
     content_hash: str
     action_id: Optional[int] = None
     enforced: bool = True
+    trigger_id: Optional[int] = None  # the trigger run the send came from, if any
+    standing_approval_ids: List[int] = field(default_factory=list)  # the standing approvals that cover it
 
 
 def _report(decision: Decision) -> Decision:
@@ -252,6 +259,8 @@ def _report(decision: Decision) -> Decision:
             "kind": decision.kind,
             "agent_id": decision.agent_id,
             "action_id": decision.action_id,
+            "trigger_id": decision.trigger_id,
+            "standing_approval_ids": decision.standing_approval_ids,
             "enforced": decision.enforced,
         },
     )
@@ -264,6 +273,30 @@ def _report(decision: Decision) -> Decision:
     return decision
 
 
+def _current_trigger_id(agent_id: Optional[str]) -> Optional[int]:
+    """The trigger whose run is sending, when the run in progress is that trigger's fire for `agent_id`."""
+    from ..execution.runner import current_run  # imported late: the runner imports the agent runtime
+
+    run = current_run.get()
+    if run is None or run.trigger_id is None or not agent_id or run.agent_id != agent_id:
+        return None
+    return int(run.trigger_id)
+
+
+def _standing_cover(
+    store: PendingActionStore, trigger_id: int, agent_id: str, recipients: Sequence[str]
+) -> List[int]:
+    """Ids of the standing approvals that together cover every recipient; empty when any is uncovered."""
+    wanted = set(normalize_addresses(recipients))
+    if not wanted:
+        return []
+    standing = store.active_standing(trigger_id, agent_id)
+    approved = {address for approval in standing for address in approval.recipients}
+    if not wanted <= approved:
+        return []
+    return [approval.id for approval in standing if wanted & set(approval.recipients)]
+
+
 def check_send(
     kind: str,
     agent_id: Optional[str],
@@ -273,13 +306,18 @@ def check_send(
 ) -> Decision:
     """Decide whether `agent_id` may send this exact content now: the one place sends are allowed.
 
-    It passes only when an `approved`, unexpired action of the same kind, Gmail object and agent has the same
+    It passes when an `approved`, unexpired action of the same kind, Gmail object and agent has the same
     hash. A draft whose approved action no longer matches what Gmail holds was edited after approval: that
-    action becomes `invalidated`. (Task 4's standing approvals add a second way to pass, here.)
+    action becomes `invalidated`.
+
+    Otherwise it passes when the send comes from a trigger run (`current_run.trigger_id`) of this same agent
+    and every recipient (to, cc and bcc) is covered by that trigger's unrevoked standing approvals.
     """
     store = get_approval_store()
     now = _now()
     action_id: Optional[int] = None
+    trigger_id = _current_trigger_id(agent_id)
+    standing_ids: List[int] = []
     if not agent_id:
         reason = "no_agent"
     else:
@@ -301,7 +339,11 @@ def check_send(
                 for action in approved:
                     store.transition(action.id, ("approved",), "invalidated")
                 reason = "content_changed"
-    would_allow = reason == "approved"
+            if trigger_id is not None:
+                standing_ids = _standing_cover(store, trigger_id, agent_id, recipients)
+                if standing_ids:
+                    reason = "standing_approval"
+    would_allow = reason in {"approved", "standing_approval"}
     decision = Decision(
         allowed=would_allow or not enforce,
         would_allow=would_allow,
@@ -313,6 +355,8 @@ def check_send(
         content_hash=content_hash,
         action_id=action_id,
         enforced=enforce,
+        trigger_id=trigger_id,
+        standing_approval_ids=standing_ids,
     )
     if not would_allow and not enforce:
         logger.warning("send gate off: allowing an unapproved send", extra={"reason": reason, "kind": kind})
@@ -426,6 +470,49 @@ def approve(
     return get_approval_store().get(action.id)  # type: ignore[return-value]
 
 
+def approve_recurring(
+    trigger_id: int,
+    agent_id: str,
+    recipients: Iterable[Optional[str]],
+    *,
+    origin: Optional[str],
+    user_message_at: Optional[datetime],
+    now: Optional[datetime] = None,
+) -> StandingApproval:
+    """Approve every send from `trigger_id`'s runs by `agent_id` to `recipients`, until the trigger stops.
+
+    Same rule as `approve`: only a turn the user started, with their message, can grant it. The caller checks
+    that the trigger exists, is active and belongs to `agent_id`.
+    """
+    now = now or _now()
+    if origin != "user" or user_message_at is None:
+        raise ApprovalError(
+            "Only the user can approve recurring sends, in their own message. This turn was not started by a "
+            "user message."
+        )
+    addresses = normalize_addresses(recipients)
+    if not addresses:
+        raise ApprovalError("Name at least one recipient email address the user approved for this trigger.")
+    if not agent_id:
+        raise ApprovalError(f"Trigger {trigger_id} has no owning agent; it cannot send.")
+    approval = get_approval_store().insert_standing(
+        trigger_id=trigger_id, agent_id=agent_id, recipients=addresses, created_at=now
+    )
+    logger.info(
+        "recurring send approved",
+        extra={"standing_approval_id": approval.id, "trigger_id": trigger_id, "agent_id": agent_id},
+    )
+    return approval
+
+
+def revoke_standing(trigger_id: Optional[int] = None, now: Optional[datetime] = None) -> int:
+    """Revoke the standing approvals of `trigger_id` (None: of every trigger); the count revoked."""
+    revoked = get_approval_store().revoke_standing(now or _now(), trigger_id)
+    if revoked:
+        logger.info("standing send approvals revoked", extra={"trigger_id": trigger_id, "count": revoked})
+    return revoked
+
+
 __all__ = [
     "APPROVAL_TTL",
     "ApprovalError",
@@ -433,6 +520,7 @@ __all__ = [
     "SendContent",
     "agent_ids_with_pending",
     "approve",
+    "approve_recurring",
     "check_send",
     "content_hash",
     "decision_sink",
@@ -447,6 +535,7 @@ __all__ = [
     "pending_shown",
     "render",
     "request_approval",
+    "revoke_standing",
     "set_approval_store",
     "show",
 ]
