@@ -39,6 +39,9 @@ PROTECTED = (
     "evals/worlds/lived/probes.py",
     "evals/worlds/lived/store.py",
     "evals/worlds/lived/world-s1.json",
+    "evals/worlds/memory_gen.py",
+    "evals/layers/memory.py",
+    "evals/memory_run.py",
 )
 _MISSING = b"<missing>"
 

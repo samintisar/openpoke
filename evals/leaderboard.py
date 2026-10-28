@@ -32,7 +32,8 @@ def write_leaderboard(results_dir: Path) -> Path:
             continue
         if not isinstance(data, dict):
             continue
-        if "meta" in data and "summary" in data:
+        # Routing runs only: other evals (e.g. the memory eval) write results here with their own summaries.
+        if "meta" in data and isinstance(data.get("summary"), dict) and "routing" in data["summary"]:
             runs.append((path.stem, data))
     sizes = sorted({size for _, data in runs for size in data["summary"].get("routing", {})}, key=_size_order)
     lines = [
