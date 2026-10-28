@@ -6,11 +6,10 @@ import asyncio
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Optional, Set
 
-from ..agents.execution_agent.batch_manager import ExecutionBatchManager
-from ..agents.execution_agent.runtime import ExecutionResult
 from ..logging_config import logger
 from .agents.lifecycle import sweep
 from .agents.registry import get_agent_directory
+from .execution.runner import get_agent_runner
 from .triggers import TriggerRecord, get_trigger_service
 
 
@@ -134,10 +133,11 @@ class TriggerScheduler:
                 },
             )
             self._revive(trigger, fired_at)
-            execution_manager = ExecutionBatchManager()
-            result = await execution_manager.execute_agent(
+            result = await get_agent_runner().run(
                 trigger.agent_id,
                 instructions,
+                origin="trigger",
+                trigger_id=trigger.id,
                 agent_name=trigger.agent_name,
             )
             if result.success:

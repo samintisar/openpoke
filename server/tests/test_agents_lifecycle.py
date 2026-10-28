@@ -193,11 +193,11 @@ async def test_scheduler_loop_runs_the_sweep_and_survives_its_failure(monkeypatc
     assert len(polls) == 2 and instance._last_sweep is not None
 
 
-class StubBatchManager:
+class StubRunner:
     calls = []
 
-    async def execute_agent(self, agent_id, instructions, agent_name=None, request_id=None):
-        StubBatchManager.calls.append(agent_id)
+    async def run(self, agent_id, instructions, *, origin, trigger_id=None, agent_name=None):
+        StubRunner.calls.append((agent_id, origin, trigger_id))
         return ExecutionResult(agent_name=agent_name or agent_id, agent_id=agent_id, success=True, response="done")
 
 
@@ -210,18 +210,18 @@ async def test_trigger_fire_revives_its_agent(monkeypatch):
     directory = InMemoryDirectory([card("dentist", 40 * DAY, status="archived")])
     service = FakeTriggerService()
     instance = scheduler(service, directory, monkeypatch)
-    monkeypatch.setattr(scheduler_module, "ExecutionBatchManager", StubBatchManager)
+    monkeypatch.setattr(scheduler_module, "get_agent_runner", StubRunner)
     before = utc_now()
     await instance._execute_trigger(trigger("dentist"))
     revived = directory.get("dentist")
     assert revived.status == "active" and revived.last_active_at >= before
-    assert StubBatchManager.calls[-1] == "dentist" and service.scheduled == [7]
+    assert StubRunner.calls[-1] == ("dentist", "trigger", 7) and service.scheduled == [7]
     assert sweep(directory, utc_now()) == {}
 
 
 async def test_trigger_fire_for_unknown_agent_still_runs(monkeypatch):
     service = FakeTriggerService()
     instance = scheduler(service, InMemoryDirectory(), monkeypatch)
-    monkeypatch.setattr(scheduler_module, "ExecutionBatchManager", StubBatchManager)
+    monkeypatch.setattr(scheduler_module, "get_agent_runner", StubRunner)
     await instance._execute_trigger(trigger("legacy-slug"))
-    assert StubBatchManager.calls[-1] == "legacy-slug" and service.scheduled == [7]
+    assert StubRunner.calls[-1] == ("legacy-slug", "trigger", 7) and service.scheduled == [7]

@@ -3,7 +3,7 @@
 import inspect
 import json
 from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .agent import ExecutionAgent
 from .tools import get_tool_schemas, get_tool_registry
@@ -21,6 +21,9 @@ class ExecutionResult:
     error: Optional[str] = None
     tools_executed: List[str] = None
     agent_id: str = ""
+    # Stopped at the iteration limit or a timeout; the runner lists what was already done in `side_effects`
+    partial: bool = False
+    side_effects: List[str] = field(default_factory=list)
 
 
 class ExecutionAgentRuntime:
@@ -122,7 +125,19 @@ class ExecutionAgentRuntime:
                     messages.append(tool_message)
 
             else:
-                raise RuntimeError("Reached tool iteration limit without final response")
+                # Out of iterations: report a partial result (the runner adds what was already done) instead of raising
+                reason = f"Stopped at the tool-call limit ({self.MAX_TOOL_ITERATIONS} iterations) before finishing"
+                logger.warning(f"[{self.agent.name}] {reason}")
+                self.agent.record_response(f"Partial: {reason}")
+                return ExecutionResult(
+                    agent_name=self.agent.name,
+                    agent_id=self.agent.agent_id,
+                    success=False,
+                    response=reason,
+                    error="Iteration limit",
+                    tools_executed=tools_executed,
+                    partial=True,
+                )
 
             if final_response is None:
                 raise RuntimeError("LLM did not return a final response")
