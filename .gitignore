@@ -44,3 +44,7 @@ server/venv/
 # Generated documentation / analysis artifacts
 server/repomix-output.txt
 server/plans/
+
+# Eval harness
+evals/.cache/
+evals/results/*.html
