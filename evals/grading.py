@@ -36,7 +36,10 @@ class Decision:
     user_messages: list[str] = field(default_factory=list)
     tool_calls: list[dict[str, Any]] = field(default_factory=list)
     iterations: int = 0
-    cost: float = 0.0
+    cost: float = 0.0  # attributed cost: what every call cost when first made, cached or not
+    fresh_cost: float = 0.0  # cost of calls actually sent this run (cache misses)
+    cached_calls: int = 0
+    hit_iteration_cap: bool = False
     latency_s: float = 0.0
     prompt_tokens: int = 0
     completion_tokens: int = 0
