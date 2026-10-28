@@ -1,0 +1,62 @@
+"""Checksum of eval files an experiment loop must never edit.
+
+Update only by deliberate human commit:  python -m evals.integrity --update
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+EXPECTED_FILE = "evals/PROTECTED.sha256"
+PROTECTED = (
+    "evals/cases.py",
+    "evals/grading.py",
+    "evals/metrics.py",
+    "evals/layers/retrieval.py",
+    "evals/layers/routing.py",
+    "evals/worlds/model.py",
+    "evals/worlds/generator.py",
+    "evals/worlds/handwritten.py",
+    "evals/worlds/handwritten_cases.yaml",
+    "evals/suites/regression.txt",
+)
+
+
+def compute_checksum(root: Path = REPO_ROOT) -> str:
+    digest = hashlib.sha256()
+    for rel in PROTECTED:
+        digest.update(rel.encode("utf-8") + b"\0")
+        digest.update((root / rel).read_bytes().replace(b"\r\n", b"\n") + b"\0")
+    return digest.hexdigest()
+
+
+def expected_checksum(root: Path = REPO_ROOT) -> str | None:
+    path = root / EXPECTED_FILE
+    return path.read_text(encoding="utf-8").strip() if path.exists() else None
+
+
+def write_expected(root: Path = REPO_ROOT) -> str:
+    value = compute_checksum(root)
+    path = root / EXPECTED_FILE
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(value + "\n", encoding="utf-8")
+    return value
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--update", action="store_true", help="write the current checksum as expected")
+    args = parser.parse_args(argv)
+    if args.update:
+        print(write_expected())
+        return 0
+    current, expected = compute_checksum(), expected_checksum()
+    print(f"current  {current}\nexpected {expected}")
+    return 0 if current == expected else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
