@@ -54,3 +54,15 @@ attributed to them.
 - n=10 scores below n=50 and n=200. With few agents, a person's only agent ("Elena Christmas Gifts") is
   the obvious match for anything about that person, so same-person new topics get reused.
 - The IA sometimes broadcasts to every agent matching a name (six Ben agents at once) rather than asking.
+
+## After Plan 2 (`20261028-111346-retrieved-lived-dev.json`)
+
+| Category | Samples | Note |
+|---|---|---|
+| Same person, new topic, reused | 6 | Includes the debatable Gavin case (role vs signing bonus of one offer) |
+| Vague reference, wrong agent or duplicate | 6 | "house coverage" vs "Amy Mia Coverage Next Week" (name mismatch); "any update on that?" sent to Paul with Monica's card shown first |
+| Typo created a duplicate | 3 | "mraco … ski trip": the muddled-roster label (ski trip filed under "Marco Book Club Note") |
+| Multi-task partial | 2 | Pablo/Prague, where the writer blended the two requests (label noise) |
+| Asked when the answer was clear | 2 | Noah export issue at 1,000 (another person has an export-issue agent) |
+
+Near-duplicates at scale, the Plan 2 target, are gone: the duplicate rate is 0.00 at 200 and 1,000 (was 0.02 and 0.11).
