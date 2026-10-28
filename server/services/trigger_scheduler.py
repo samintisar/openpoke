@@ -3,16 +3,19 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timezone
-from typing import Optional, Set
+from datetime import datetime, timedelta, timezone
+from typing import Dict, Optional, Set
 
 from ..agents.execution_agent.batch_manager import ExecutionBatchManager
 from ..agents.execution_agent.runtime import ExecutionResult
 from ..logging_config import logger
+from .agents.lifecycle import sweep
+from .agents.registry import get_agent_directory
 from .triggers import TriggerRecord, get_trigger_service
 
 
 UTC = timezone.utc
+LIFECYCLE_SWEEP_INTERVAL = timedelta(hours=1)
 
 
 def _utc_now() -> datetime:
@@ -33,6 +36,7 @@ class TriggerScheduler:
         self._running = False
         self._in_flight: Set[int] = set()
         self._lock = asyncio.Lock()
+        self._last_sweep: Optional[datetime] = None
 
     async def start(self) -> None:
         async with self._lock:
@@ -59,11 +63,45 @@ class TriggerScheduler:
         try:
             while self._running:
                 await self._poll_once()
+                self._maybe_sweep(_utc_now())
                 await asyncio.sleep(self._poll_interval)
         except asyncio.CancelledError:  # pragma: no cover - shutdown path
             raise
         except Exception as exc:  # pragma: no cover - defensive
             logger.exception("Trigger scheduler loop crashed", extra={"error": str(exc)})
+
+    def run_lifecycle_sweep(self, now: Optional[datetime] = None) -> Dict[str, str]:
+        """Demote stale agents (open work = a trigger due within 24h); logs failures, never raises."""
+        now = now or _utc_now()
+        self._last_sweep = now
+        try:
+            open_work = self._service.agent_ids_with_triggers_due(now)
+            changed = sweep(get_agent_directory(), now, open_work)
+        except Exception as exc:
+            logger.exception("Agent lifecycle sweep failed", extra={"error": str(exc)})
+            return {}
+        if changed:
+            logger.info("Agent lifecycle sweep", extra={"changed": changed})
+        return changed
+
+    def _maybe_sweep(self, now: datetime) -> None:
+        if self._last_sweep is None or now - self._last_sweep >= LIFECYCLE_SWEEP_INTERVAL:
+            self.run_lifecycle_sweep(now)
+
+    def _revive(self, trigger: TriggerRecord, fired_at: datetime) -> None:
+        """A trigger fire is activity: the agent's card goes active and its last_active_at moves to now."""
+        try:
+            get_agent_directory().touch(trigger.agent_id, trigger.payload, fired_at)
+        except KeyError:
+            logger.warning(
+                "Trigger agent has no registry card",
+                extra={"trigger_id": trigger.id, "agent_id": trigger.agent_id},
+            )
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning(
+                "Failed to revive trigger agent",
+                extra={"trigger_id": trigger.id, "agent_id": trigger.agent_id, "error": str(exc)},
+            )
 
     async def _poll_once(self) -> None:
         now = _utc_now()
@@ -95,6 +133,7 @@ class TriggerScheduler:
                     "scheduled_for": trigger.next_trigger,
                 },
             )
+            self._revive(trigger, fired_at)
             execution_manager = ExecutionBatchManager()
             result = await execution_manager.execute_agent(
                 trigger.agent_id,
@@ -166,4 +205,4 @@ def get_trigger_scheduler() -> TriggerScheduler:
     return _scheduler_instance
 
 
-__all__ = ["TriggerScheduler", "get_trigger_scheduler"]
+__all__ = ["LIFECYCLE_SWEEP_INTERVAL", "TriggerScheduler", "get_trigger_scheduler"]

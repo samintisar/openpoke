@@ -1,5 +1,6 @@
 """Retrieval: BM25, fuzzy entity matching, recency, boosts and selection caps."""
 
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -103,14 +104,16 @@ def test_select_top_k_cap():
     assert len(select("ben", many, NOW, cfg=RetrievalConfig(k=8))) == 8
 
 
-def test_select_min_score_and_archived_exclusion():
+def test_select_min_score_and_archived_threshold():
     cards = CARDS + [
         card("gary-archived", "Gary Whitman Deposit", "Get the lease deposit back from Gary Whitman", ["gary", "whitman"], status="archived"),
     ]
     chosen = names(select("gary whitman lease", cards, NOW))
     assert chosen[0] == "gary-lease"
-    assert "gary-archived" not in chosen
+    assert "gary-archived" in chosen  # archived, but a strong match: it may surface
     assert "kwame-podcast" not in chosen  # irrelevant and 10 days old: below min_score
+    strict = replace(RetrievalConfig(), archived_min_score=1.01)
+    assert "gary-archived" not in names(select("gary whitman lease", cards, NOW, cfg=strict))
     assert "gary-archived" in names(search("gary whitman lease", cards, NOW))
 
 
@@ -139,3 +142,20 @@ def test_pinned_from_agent_message():
         "[SUCCESS] Unknown Agent: done"
     )
     assert names(pinned_from_agent_message(message, CARDS)) == ["beatriz-trivia", "gary-lease"]
+
+
+def test_archived_cards_join_the_top_k_only_on_a_strong_match():
+    from datetime import datetime, timedelta, timezone
+    from server.services.agents.cards import AgentCard
+    from server.services.agents.retrieval import select
+
+    now = datetime(2026, 9, 1, tzinfo=timezone.utc)
+    old = now - timedelta(days=60)
+    lease = AgentCard(id="gary-lease", name="Gary Whitman Lease Renewal Call", purpose="Ask Gary Whitman about the lease renewal",
+                      entities=["gary", "whitman"], status="archived", created_at=old, last_active_at=old)
+    other = AgentCard(id="paul-tax", name="Paul Tax Return", purpose="Ask Paul about the tax return", entities=["paul"],
+                      created_at=now - timedelta(days=2), last_active_at=now - timedelta(days=2))
+    named = select("whatever happened with gary's lease renewal?", [lease, other], now)
+    assert "gary-lease" in [c.id for c in named]
+    unrelated = select("any word on the tax return from paul?", [lease, other], now)
+    assert "gary-lease" not in [c.id for c in unrelated]

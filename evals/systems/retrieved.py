@@ -143,8 +143,10 @@ class RetrievedSystem:
 
     name = "retrieved"
 
-    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
+    def __init__(self, cfg: RetrievalConfig | None = None, lifecycle: bool = True) -> None:
         self.cfg = cfg or RetrievalConfig()
+        # False keeps every card active, to ablate the lifecycle (dormant / archived statuses).
+        self.lifecycle = lifecycle
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
         self._cards_cache: dict[int, tuple[World, list[AgentCard]]] = {}
 
@@ -152,7 +154,7 @@ class RetrievedSystem:
         """The world's cards, built once per world (every case and turn shares them; directories copy)."""
         cached = self._cards_cache.get(id(world))
         if cached is None or cached[0] is not world:
-            cached = self._cards_cache[id(world)] = (world, cards_for(world))
+            cached = self._cards_cache[id(world)] = (world, cards_for(world, self.lifecycle))
         return cached[1]
 
     def selected(self, world: World, case: Case | None) -> list[AgentCard]:
@@ -181,4 +183,13 @@ class RetrievedSystem:
         return RetrievedTurn(world, self.cards(world), self.cfg)
 
 
-__all__ = ["RetrievedSystem", "RetrievedTurn"]
+class RetrievedNoLifecycleSystem(RetrievedSystem):
+    """`retrieved` with every card active: the lifecycle ablation."""
+
+    name = "retrieved_nolife"
+
+    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
+        super().__init__(cfg, lifecycle=False)
+
+
+__all__ = ["RetrievedNoLifecycleSystem", "RetrievedSystem", "RetrievedTurn"]

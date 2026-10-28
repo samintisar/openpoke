@@ -5,11 +5,12 @@ from __future__ import annotations
 from .base import RoutingSystem
 from .baseline import BaselineSystem
 from .full_cards import FullCardsSystem
-from .retrieved import RetrievedSystem
+from .retrieved import RetrievedNoLifecycleSystem, RetrievedSystem
 
 SYSTEMS: dict[str, type] = {
     "baseline": BaselineSystem,
     "retrieved": RetrievedSystem,
+    "retrieved_nolife": RetrievedNoLifecycleSystem,
     "full_cards": FullCardsSystem,
 }
 

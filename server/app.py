@@ -71,6 +71,8 @@ async def _start_trigger_scheduler() -> None:
     # Opening the registry migrates roster.json and backfills trigger agent ids before triggers fire.
     get_agent_directory()
     scheduler = get_trigger_scheduler()
+    # Lifecycle sweep at startup; the scheduler loop repeats it hourly.
+    scheduler.run_lifecycle_sweep()
     await scheduler.start()
     watcher = get_important_email_watcher()
     await watcher.start()

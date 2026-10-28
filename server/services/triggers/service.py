@@ -21,6 +21,8 @@ from .utils import (
 
 
 MISSED_TRIGGER_GRACE_PERIOD = timedelta(minutes=5)
+# An agent whose trigger fires within this window has open work and is never demoted by the lifecycle.
+OPEN_WORK_WINDOW = timedelta(hours=24)
 
 
 class TriggerService:
@@ -191,6 +193,16 @@ class TriggerService:
         iso_cutoff = to_storage_timestamp(before)
         return self._store.fetch_due(agent_id, iso_cutoff)
 
+    def agent_ids_with_triggers_due(
+        self, now: datetime, within: timedelta = OPEN_WORK_WINDOW
+    ) -> set[str]:
+        """Agents with an active trigger due by `now + within` (overdue included): open work for the lifecycle."""
+        return {
+            trigger.agent_id
+            for trigger in self.get_due_triggers(before=now + within)
+            if trigger.agent_id
+        }
+
     def backfill_agent_ids(self, resolve: Callable[[str], Optional[str]]) -> int:
         """Give rows written before agent ids existed an `agent_id`, resolved from their `agent_name`."""
         return self._store.backfill_agent_ids(resolve)
@@ -288,4 +300,4 @@ class TriggerService:
         return next_occurrence.astimezone(tz)
 
 
-__all__ = ["TriggerService", "MISSED_TRIGGER_GRACE_PERIOD"]
+__all__ = ["TriggerService", "MISSED_TRIGGER_GRACE_PERIOD", "OPEN_WORK_WINDOW"]
