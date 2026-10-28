@@ -181,12 +181,15 @@ def test_messages_are_unique_within_each_kind():
 
 # Pins the exact output of generation. Any change to the world generator or case builders
 # changes it: update the constant deliberately, after checking the new cases by hand.
-GOLDEN_SHA256 = "b292c8d0461e4e4d48d8b80c18c3d3def287b3f0462c880113163a47f2f35596"
+GOLDEN_SHA256 = "546d099ae44b267c3c39f1cd15adf7229fb195566a5aa1f11038b6480bad5e67"
 
 
 def test_generation_matches_the_golden_hash():
     world = build_world(1)
-    text = "\n".join(a.name for a in world.agents) + "\n" + "\n".join(c.message for c in generate_cases(world, 4))
+    cases = generate_cases(world, 4)
+    text = "\n".join(a.name for a in world.agents) + "\n" + "\n".join(
+        f"{c.message}|{c.gold_targets}|{c.acceptable_ids}|{c.context}|{c.clarify_ok}" for c in cases
+    )
     assert hashlib.sha256(text.encode("utf-8")).hexdigest() == GOLDEN_SHA256
 
 
