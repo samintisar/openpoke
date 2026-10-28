@@ -49,3 +49,21 @@ def case(kind="follow_up", gold=("a",), **kw):
 )
 def test_grade(the_case, decision, expected):
     assert grade(the_case, decision) == expected
+
+
+@pytest.mark.parametrize(
+    "the_case, possible",
+    [
+        (case(), True),
+        (case(kind="agent_result", dispatch_optional=True), True),
+        (case(kind="new_task", gold=[NEW]), False),
+        (case(kind="multi_task", gold=["a", NEW]), False),
+        (case(kind="same_name_people", gold=[], clarify_ok=True), False),
+    ],
+)
+def test_duplicate_possible_matches_grade(the_case, possible):
+    from evals.grading import duplicate_possible
+
+    assert duplicate_possible(the_case) is possible
+    reachable = grade(the_case, Decision(created_names=["fresh"])) == "duplicate_create"
+    assert reachable is possible
