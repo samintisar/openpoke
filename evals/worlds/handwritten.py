@@ -24,11 +24,11 @@ def _require(entry: dict[str, Any], keys: tuple[str, ...], what: str, index: int
         raise ValueError(f"{label} is missing required key(s) {', '.join(map(repr, missing))}")
 
 
-def _check_unique(ids: list[str], what: str) -> None:
+def _check_unique(ids: list[str], what: str, field: str = "id") -> None:
     seen: set[str] = set()
     for item_id in ids:
         if item_id in seen:
-            raise ValueError(f"duplicate {what} id {item_id!r}")
+            raise ValueError(f"duplicate {what} {field} {item_id!r}")
         seen.add(item_id)
 
 
@@ -73,6 +73,7 @@ def load_handwritten(path: Path = HANDWRITTEN_PATH) -> tuple[World, list[Case]]:
             raise ValueError(f"{path.name} is missing required top-level key {key!r}")
     agents = [_agent(entry, index) for index, entry in enumerate(raw["agents"])]
     _check_unique([agent.id for agent in agents], "agent")
+    _check_unique([agent.name for agent in agents], "agent", field="name")
     cases = [_case(entry, index) for index, entry in enumerate(raw["cases"])]
     _check_unique([case.id for case in cases], "case")
     world = World(seed=0, agents=agents)
@@ -80,6 +81,11 @@ def load_handwritten(path: Path = HANDWRITTEN_PATH) -> tuple[World, list[Case]]:
     for case in cases:
         if not case.gold_targets and not case.clarify_ok:
             raise ValueError(f"{case.id}: empty gold_targets requires clarify_ok")
+        if case.acceptable_ids and len(case.expected_ids) > 1:
+            raise ValueError(
+                f"{case.id}: acceptable_ids substitute for a single gold id, "
+                f"but the case has {len(case.expected_ids)}"
+            )
         for target in [*case.gold_targets, *case.acceptable_ids]:
             if target != NEW and target not in known:
                 raise ValueError(f"{case.id}: unknown agent id {target!r}")

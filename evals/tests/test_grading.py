@@ -30,6 +30,21 @@ def case(kind="follow_up", gold=("a",), **kw):
         (case(kind="agent_result", dispatch_optional=True), Decision(dispatched_ids=["a"]), "correct"),
         (case(kind="agent_result", dispatch_optional=True), Decision(dispatched_ids=["b"]), "wrong_reuse"),
         (case(kind="agent_result", dispatch_optional=True), Decision(created_names=["x"]), "duplicate_create"),
+        # over-creation: more distinct new agents than the case needs
+        (case(kind="new_task", gold=[NEW]), Decision(created_names=["Plumber", "Plumber 2"]), "extra_create"),
+        (case(kind="new_task", gold=[NEW]), Decision(created_names=["Plumber", "Plumber"]), "correct"),
+        (
+            case(kind="multi_task", gold=["a", NEW]),
+            Decision(dispatched_ids=["a"], created_names=["Gift", "Gift ideas"]),
+            "extra_create",
+        ),
+        (
+            case(kind="multi_task", gold=["a", NEW]),
+            Decision(dispatched_ids=["a"], created_names=["Gift", "Gift"]),
+            "correct",
+        ),
+        (case(), Decision(dispatched_ids=["a"], created_names=["x", "y"]), "extra_create"),
+        (case(kind="new_task", gold=[NEW]), Decision(dispatched_ids=["b"], created_names=["P", "Q"]), "missed_create"),
     ],
 )
 def test_grade(the_case, decision, expected):
