@@ -1,0 +1,65 @@
+# Hand-written world and cases (synthetic-validity check). Protected file: edit by hand only.
+agents:
+  - {id: email-to-alice, name: "Email to Alice", purpose: "Contract renewal with Alice Chen at Acme", entities: [alice chen, alice, alice.chen@acme.com], last_active_days: 2, created_days: 9, person: "Alice Chen", topic: "contract renewal"}
+  - {id: email-to-alice-2, name: "email to alice", purpose: "Contract renewal with Alice Chen at Acme", entities: [alice chen, alice, alice.chen@acme.com], last_active_days: 20, created_days: 21, person: "Alice Chen", topic: "contract renewal"}
+  - {id: alice-offsite, name: "Alice offsite", purpose: "Offsite planning with Alice Chen at Acme", entities: [alice chen, alice, alice.chen@acme.com], last_active_days: 12, created_days: 30, person: "Alice Chen", topic: "offsite planning"}
+  - {id: intro-to-alice-wong, name: "Intro to Alice Wong", purpose: "Intro call with Alice Wong at Hooli", entities: [alice wong, alice, alice.wong@hooli.com], last_active_days: 6, created_days: 14, person: "Alice Wong", topic: "intro call"}
+  - {id: bob-pricing, name: "Bob pricing", purpose: "Pricing approval with Bob Diaz at Acme", entities: [bob diaz, bob, bob.diaz@acme.com], last_active_days: 3, created_days: 10, person: "Bob Diaz", topic: "pricing approval"}
+  - {id: priya-job-offer, name: "Priya job offer", purpose: "Job offer negotiation with Priya Shah at Globex", entities: [priya shah, priya, priya.shah@globex.com], last_active_days: 41, created_days: 55, person: "Priya Shah", topic: "job offer"}
+  - {id: marcus-invoice, name: "Marcus invoice", purpose: "Invoice dispute with Marcus Lee at Initech", entities: [marcus lee, marcus, marcus.lee@initech.com], last_active_days: 4, created_days: 18, person: "Marcus Lee", topic: "invoice dispute"}
+  - {id: q3-budget, name: "Q3 Budget", purpose: "Quarterly report with the finance team", entities: [finance], last_active_days: 8, created_days: 40}
+  - {id: flight-to-tokyo, name: "Flight to Tokyo", purpose: "Book a flight to Tokyo", entities: [tokyo], last_active_days: 15, created_days: 16}
+  - {id: tokyo-hotels, name: "Tokyo hotels", purpose: "Find hotels in Tokyo", entities: [tokyo], last_active_days: 15, created_days: 16}
+  - {id: weekly-digest, name: "Weekly digest", purpose: "Weekly inbox digest every Monday", entities: [], last_active_days: 1, created_days: 60}
+  - {id: dentist-appointment, name: "Dentist appointment", purpose: "Book a dentist cleaning", entities: [dentist], last_active_days: 30, created_days: 31}
+
+cases:
+  - id: hw-01-follow-up
+    kind: follow_up
+    message: "add a P.S. to the renewal email to Alice saying I can do Thursday"
+    gold_targets: [email-to-alice]
+    acceptable_ids: [email-to-alice-2]
+  - id: hw-02-new-task
+    kind: new_task
+    message: "find a plumber who can come tomorrow morning"
+    gold_targets: [NEW]
+  - id: hw-03-same-person-new-topic
+    kind: same_person_new_topic
+    message: "email Alice Chen about joining our book club"
+    gold_targets: [NEW]
+  - id: hw-04-vague-reference
+    kind: vague_reference
+    message: "any reply yet?"
+    context:
+      - [user_message, "send the renewal email to Alice Chen"]
+      - [poke_reply, "sent it"]
+    gold_targets: [email-to-alice]
+    acceptable_ids: [email-to-alice-2]
+  - id: hw-05-multi-task
+    kind: multi_task
+    message: "tell Marcus we'll pay the undisputed part of the invoice, and find me a birthday gift for my mom under $50"
+    gold_targets: [marcus-invoice, NEW]
+  - id: hw-06-same-name-people
+    kind: same_name_people
+    message: "did Alice get back to me?"
+    gold_targets: []
+    clarify_ok: true
+  - id: hw-07-cross-agent
+    kind: cross_agent
+    message: "let Alice Chen know Bob signed off on the pricing"
+    gold_targets: [email-to-alice]
+    acceptable_ids: [email-to-alice-2, bob-pricing]
+  - id: hw-08-dormant-revival
+    kind: dormant_revival
+    message: "any news on Priya's offer?"
+    gold_targets: [priya-job-offer]
+  - id: hw-09-typo
+    kind: typo
+    message: "nudge Marcos about the invoice"
+    gold_targets: [marcus-invoice]
+  - id: hw-10-agent-result
+    kind: agent_result
+    message_type: agent
+    message: "[SUCCESS] Bob pricing: Bob replied that pricing is approved through Q2."
+    gold_targets: [bob-pricing]
+    dispatch_optional: true
