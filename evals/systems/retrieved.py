@@ -12,6 +12,7 @@ from datetime import timedelta
 from typing import Any
 
 from server.agents.interaction_agent.agent import build_system_prompt
+from server.agents.interaction_agent.tools import SEND_DRAFT_ARGUMENTS_ERROR
 from server.services.agents.cards import AgentCard, as_utc
 from server.services.agents.directory import InMemoryDirectory
 from server.services.agents.dispatch import dispatch, search_payload
@@ -55,7 +56,15 @@ def send_message_to_user(message: str) -> None:
     return None
 
 
-def send_draft(to: str, subject: str, body: str) -> None:
+def send_draft(
+    to: str | None = None, subject: str | None = None, body: str | None = None, action_id: Any = None
+) -> None:
+    if action_id is None and not (to and subject and body):
+        raise TypeError(SEND_DRAFT_ARGUMENTS_ERROR)
+    return None
+
+
+def approve_send(action_id: Any) -> None:
     return None
 
 
@@ -64,7 +73,8 @@ def wait(reason: str) -> None:
 
 
 _SHIMS = {
-    f.__name__: f for f in (send_message_to_agent, search_agents, send_message_to_user, send_draft, wait)
+    f.__name__: f
+    for f in (send_message_to_agent, search_agents, send_message_to_user, send_draft, approve_send, wait)
 }
 
 
@@ -108,6 +118,9 @@ class RetrievedTurn:
         if name == "send_message_to_user":
             decision.user_messages.append(str(args.get("message", "")))
             result: dict[str, Any] = {"status": "delivered"}
+        elif name == "approve_send":
+            # Routing worlds have no pending sends, so production's gate refuses every id.
+            return _error(name, args, f"No pending send with action_id {args.get('action_id')!r}")
         elif name == "send_draft":
             result = {"status": "draft_recorded", "to": args.get("to"), "subject": args.get("subject")}
         else:  # wait; unknown names never reach here

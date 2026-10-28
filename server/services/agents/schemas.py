@@ -89,24 +89,50 @@ SEND_DRAFT = {
     "type": "function",
     "function": {
         "name": "send_draft",
-        "description": "Record an email draft so the user can review the exact text.",
+        "description": (
+            "Show the user an email so they can review the exact text. For an email an agent reported with an "
+            "action_id, pass only action_id: the stored content is shown as is, and the user can then approve it. "
+            "Otherwise pass to, subject and body (this approves nothing)."
+        ),
         "parameters": {
             "type": "object",
             "properties": {
+                "action_id": {
+                    "type": "integer",
+                    "description": "Id of the pending send an agent reported; shows its stored content.",
+                },
                 "to": {
                     "type": "string",
-                    "description": "Recipient email for the draft.",
+                    "description": "Recipient email for the draft (without action_id).",
                 },
                 "subject": {
                     "type": "string",
-                    "description": "Email subject for the draft.",
+                    "description": "Email subject for the draft (without action_id).",
                 },
                 "body": {
                     "type": "string",
-                    "description": "Email body content (plain text).",
+                    "description": "Email body content, plain text (without action_id).",
                 },
             },
-            "required": ["to", "subject", "body"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+APPROVE_SEND = {
+    "type": "function",
+    "function": {
+        "name": "approve_send",
+        "description": (
+            "Approve one pending send the user was shown with send_draft(action_id). Call it only when the "
+            "user's own latest message explicitly says to send that email. Then tell the owning agent to send it."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action_id": {"type": "integer", "description": "Id of the shown, pending send to approve."},
+            },
+            "required": ["action_id"],
             "additionalProperties": False,
         },
     },
@@ -136,6 +162,7 @@ TOOL_SCHEMAS: list[dict[str, Any]] = [
     SEARCH_AGENTS,
     SEND_MESSAGE_TO_USER,
     SEND_DRAFT,
+    APPROVE_SEND,
     WAIT,
 ]
 
@@ -145,6 +172,7 @@ def get_tool_schemas() -> list[dict[str, Any]]:
 
 
 __all__ = [
+    "APPROVE_SEND",
     "SEARCH_AGENTS",
     "SEND_DRAFT",
     "SEND_MESSAGE_TO_AGENT",

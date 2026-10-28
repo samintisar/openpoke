@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict, Optional, Set
 
 from ..logging_config import logger
+from . import approvals
 from .agents.lifecycle import sweep
 from .agents.registry import get_agent_directory
 from .execution.runner import get_agent_runner
@@ -19,6 +20,16 @@ LIFECYCLE_SWEEP_INTERVAL = timedelta(hours=1)
 
 def _utc_now() -> datetime:
     return datetime.now(UTC)
+
+
+def _agents_with_pending_sends(now: datetime) -> Set[str]:
+    """Expire approvals past their time, then the agents still waiting on one; empty if the store fails."""
+    try:
+        approvals.expire_stale(now)
+        return approvals.agent_ids_with_pending(now)
+    except Exception as exc:
+        logger.exception("Pending send lookup failed", extra={"error": str(exc)})
+        return set()
 
 
 def _isoformat(dt: datetime) -> str:
@@ -70,11 +81,12 @@ class TriggerScheduler:
             logger.exception("Trigger scheduler loop crashed", extra={"error": str(exc)})
 
     def run_lifecycle_sweep(self, now: Optional[datetime] = None) -> Dict[str, str]:
-        """Demote stale agents (open work = a trigger due within 24h); logs failures, never raises."""
+        """Expire stale send approvals and demote stale agents (open work = a trigger due within 24h or a
+        pending send under 7 days old); logs failures, never raises."""
         now = now or _utc_now()
         self._last_sweep = now
         try:
-            open_work = self._service.agent_ids_with_triggers_due(now)
+            open_work = self._service.agent_ids_with_triggers_due(now) | _agents_with_pending_sends(now)
             changed = sweep(get_agent_directory(), now, open_work)
         except Exception as exc:
             logger.exception("Agent lifecycle sweep failed", extra={"error": str(exc)})

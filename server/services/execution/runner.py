@@ -144,6 +144,9 @@ def _find_id(data: Any, keys: tuple[str, ...]) -> Optional[str]:
 def _describe(tool: str, args: str, response: str, data: Any) -> Optional[str]:
     """One side effect in plain words, or None for read-only tools."""
     to = _field(args, "recipient_email")
+    if isinstance(data, dict) and data.get("status") == "approval_required":
+        # The send gate held it: nothing went out, the user has to approve it first.
+        return f"{tool.removeprefix('gmail_')} held for approval (action {data.get('action_id')})"
     if tool == "gmail_create_draft":
         draft_id = _find_id(data, ("draft_id", "id")) or _field(response, "id") or "(id unknown)"
         return f"draft {draft_id} to {to}" if to else f"draft {draft_id}"

@@ -50,7 +50,8 @@ def sweep(
 ) -> dict[str, str]:
     """Apply `next_status` to every card; returns {agent_id: new_status} for the cards that changed.
 
-    `open_work_ids` are agents with an active trigger due soon. Plan 4 adds agents with pending drafts.
+    `open_work_ids` are agents with an active trigger due soon or a send waiting for the user's approval
+    (`approvals.agent_ids_with_pending`); the scheduler's sweep passes both.
     """
     open_ids = set(open_work_ids)
     changed: dict[str, str] = {}
