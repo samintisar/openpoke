@@ -6,11 +6,11 @@ import threading
 from datetime import datetime
 from html import escape, unescape
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Sequence, Tuple
 
 from ....logging_config import logger
 from ....utils.timezones import now_in_user_timezone
-from .state import LogEntry, SummaryState
+from .state import LogEntry, SummaryState, omitted_user_entries
 
 
 _DATA_DIR = Path(__file__).resolve().parent.parent.parent.parent / "data"
@@ -178,16 +178,23 @@ class WorkingMemoryLog:
                     except Exception:  # pragma: no cover - defensive cleanup
                         pass
 
-    def render_transcript(self, state: Optional[SummaryState] = None) -> str:
+    def render_transcript(
+        self, state: Optional[SummaryState] = None, omit_user_messages: Sequence[str] = ()
+    ) -> str:
+        """The summary plus unsummarized entries; `omit_user_messages` drops the last matching user entries."""
         snapshot = state or self.load_summary_state()
         parts: List[str] = []
+        entries = snapshot.unsummarized_entries
+        omitted = omitted_user_entries([(e.tag, e.payload) for e in entries], omit_user_messages)
 
         summary_text = (snapshot.summary_text or "").strip()
         if summary_text:
             safe_summary = escape(summary_text, quote=False)
             parts.append(f"<conversation_summary>{safe_summary}</conversation_summary>")
 
-        for entry in snapshot.unsummarized_entries:
+        for position, entry in enumerate(entries):
+            if position in omitted:
+                continue
             safe_payload = escape(entry.payload, quote=False)
             if entry.timestamp:
                 parts.append(

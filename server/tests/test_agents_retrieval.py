@@ -139,9 +139,10 @@ def test_pinned_from_agent_message():
     message = (
         "[SUCCESS] Beatriz Trivia Night Note: Draft ready.\n"
         "[FAILED] gary whitman lease renewal call: Could not find the thread.\n"
-        "[SUCCESS] Unknown Agent: done"
+        "[SUCCESS] Unknown Agent: done\n"
+        "[PARTIAL] Maya Quarterly OKRs Draft: Timed out. Already done: nothing."
     )
-    assert names(pinned_from_agent_message(message, CARDS)) == ["beatriz-trivia", "gary-lease"]
+    assert names(pinned_from_agent_message(message, CARDS)) == ["beatriz-trivia", "gary-lease", "maya-okrs"]
 
 
 def test_archived_cards_join_the_top_k_only_on_a_strong_match():

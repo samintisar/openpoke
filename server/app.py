@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from .config import get_settings
 from .logging_config import configure_logging, logger
 from .routes import api_router
-from .services import get_agent_directory, get_important_email_watcher, get_trigger_scheduler
+from .services import get_agent_directory, get_important_email_watcher, get_inbox, get_trigger_scheduler
 
 
 # Register global exception handlers for consistent error responses across the API
@@ -66,10 +66,12 @@ app.include_router(api_router)
 
 
 @app.on_event("startup")
-# Initialize background services (trigger scheduler and email watcher) when the app starts
+# Initialize background services (interaction inbox, trigger scheduler, email watcher) when the app starts
 async def _start_trigger_scheduler() -> None:
     # Opening the registry migrates roster.json and backfills trigger agent ids before triggers fire.
     get_agent_directory()
+    # The inbox consumer runs every interaction-agent turn; items left from the last run are processed now.
+    await get_inbox().start()
     scheduler = get_trigger_scheduler()
     # Lifecycle sweep at startup; the scheduler loop repeats it hourly.
     scheduler.run_lifecycle_sweep()
@@ -85,6 +87,7 @@ async def _stop_trigger_scheduler() -> None:
     await scheduler.stop()
     watcher = get_important_email_watcher()
     await watcher.stop()
+    await get_inbox().stop()
 
 
 __all__ = ["app"]

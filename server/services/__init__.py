@@ -10,6 +10,7 @@ from .conversation import (
 from .conversation.chat_handler import handle_chat_request
 from .agents.registry import SqliteAgentDirectory, get_agent_directory
 from .execution import ExecutionAgentLogStore, get_execution_agent_logs
+from .inbox import InteractionInbox, get_inbox
 from .gmail import (
     GmailSeenStore,
     ImportantEmailWatcher,
@@ -37,6 +38,8 @@ __all__ = [
     "SqliteAgentDirectory",
     "get_agent_directory",
     "get_execution_agent_logs",
+    "InteractionInbox",
+    "get_inbox",
     "GmailSeenStore",
     "ImportantEmailWatcher",
     "classify_email_importance",

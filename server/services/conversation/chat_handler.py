@@ -1,13 +1,13 @@
-import asyncio
 from typing import Optional, Union
 
 from fastapi import status
 from fastapi.responses import JSONResponse, PlainTextResponse
 
-from ...agents.interaction_agent.runtime import InteractionAgentRuntime
+from ...config import get_settings
 from ...logging_config import logger
 from ...models import ChatMessage, ChatRequest
 from ...utils import error_response
+from ..inbox import get_inbox
 
 
 # Extract the most recent user message from the chat request payload
@@ -18,9 +18,9 @@ def _extract_latest_user_message(payload: ChatRequest) -> Optional[ChatMessage]:
     return None
 
 
-# Process incoming chat requests by routing them to the interaction agent runtime
+# Accept a chat message: post it to the interaction inbox, whose consumer runs the interaction-agent turn
 async def handle_chat_request(payload: ChatRequest) -> Union[PlainTextResponse, JSONResponse]:
-    """Handle a chat request using the InteractionAgentRuntime."""
+    """Queue the user's message for the interaction agent and return 202 at once; the reply shows up in history."""
 
     # Extract user message
     user_message = _extract_latest_user_message(payload)
@@ -31,19 +31,12 @@ async def handle_chat_request(payload: ChatRequest) -> Union[PlainTextResponse, 
 
     logger.info("chat request", extra={"message_length": len(user_content)})
 
-    try:
-        runtime = InteractionAgentRuntime()
-    except ValueError as ve:
-        # Missing API key error
-        logger.error("configuration error", extra={"error": str(ve)})
-        return error_response(str(ve), status_code=status.HTTP_400_BAD_REQUEST)
+    if not get_settings().openrouter_api_key:
+        # Missing API key error (the turn could never run)
+        error = "OpenRouter API key not configured. Set OPENROUTER_API_KEY environment variable."
+        logger.error("configuration error", extra={"error": error})
+        return error_response(error, status_code=status.HTTP_400_BAD_REQUEST)
 
-    async def _run_interaction() -> None:
-        try:
-            await runtime.execute(user_message=user_content)
-        except Exception as exc:  # pragma: no cover - defensive
-            logger.error("chat task failed", extra={"error": str(exc)})
-
-    asyncio.create_task(_run_interaction())
+    get_inbox().post("user", user_content)
 
     return PlainTextResponse("", status_code=status.HTTP_202_ACCEPTED)

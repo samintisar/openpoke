@@ -80,6 +80,9 @@ class Settings(BaseModel):
     max_concurrent_agents: int = Field(default=4)
     agent_timeout_seconds: int = Field(default=90)
 
+    # Interaction inbox: how long non-user items wait so near-simultaneous results share one turn
+    inbox_debounce_seconds: float = Field(default=2)
+
     @property
     def cors_allow_origins(self) -> List[str]:
         """Parse CORS origins from comma-separated string."""

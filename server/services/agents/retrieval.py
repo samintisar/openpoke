@@ -12,7 +12,7 @@ from typing import Iterable, Optional, Sequence, Union
 from .cards import STOPWORDS, AgentCard, as_utc, is_common, normalize_name
 
 _TOKEN_RE = re.compile(r"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}|[a-z0-9]+")
-_PINNED_RE = re.compile(r"^\s*\[(?:SUCCESS|FAILED)\]\s*([^:\n]+?)\s*:", re.MULTILINE)
+_PINNED_RE = re.compile(r"^\s*\[(?:SUCCESS|FAILED|PARTIAL)\]\s*([^:\n]+?)\s*:", re.MULTILINE)
 
 BM25_K1 = 1.5
 BM25_B = 0.75
