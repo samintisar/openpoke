@@ -1,8 +1,8 @@
 """LLM access for evals: OpenRouter with a response cache and a hard budget cap.
 
-Responses are cached by a hash of (model, system, messages, tools, sample), so reruns are free
+Responses are cached by a hash of the exact request payload plus `sample`, so reruns are free
 and reproducible, and only changed prompts cost money. `sample` separates the k repeated runs
-of one case.
+of one case. Only validated responses are cached.
 """
 
 from __future__ import annotations
@@ -10,10 +10,12 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import html
+import itertools
 import json
+import os
 import re
 import time
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -23,14 +25,26 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 # USD per million tokens (input, output), used only when OpenRouter omits usage.cost.
 FALLBACK_PRICING: dict[str, tuple[float, float]] = {"anthropic/claude-sonnet-4": (3.0, 15.0)}
 DEFAULT_PRICING = (3.0, 15.0)
-RETRY_STATUS = {429, 500, 502, 503, 504}
+RETRY_STATUS = {408, 429, 500, 502, 503, 504}
+MAX_RETRY_AFTER_S = 60.0
 
 
 class BudgetExceeded(RuntimeError):
-    """Raised before an uncached call once spending reaches the cap."""
+    """Raised before an uncached request attempt once spending reaches the cap."""
+
+
+class RetryableResponseError(RuntimeError):
+    """A 200 response that is unusable (no assistant message, or finish_reason "error")."""
 
 
 class Budget:
+    """A spending cap checked before each uncached request attempt.
+
+    The check happens before a request is sent and the cost is added when it returns, so up
+    to about `concurrency` in-flight calls can pass the check together: the cap can be
+    overshot by roughly that many calls' cost.
+    """
+
     def __init__(self, cap_usd: float) -> None:
         self.cap_usd = cap_usd
         self.spent_usd = 0.0
@@ -51,17 +65,78 @@ class LLMClient(Protocol):
     async def aclose(self) -> None: ...
 
 
-def cache_key(*, model: str, system: str, messages: list[dict[str, Any]], tools: list[dict[str, Any]], sample: int) -> str:
-    blob = json.dumps(
-        {"model": model, "system": system, "messages": messages, "tools": tools, "sample": sample},
-        sort_keys=True, ensure_ascii=False, default=str,
-    )
+def build_payload(
+    *, model: str, system: str, messages: list[dict[str, Any]], tools: list[dict[str, Any]]
+) -> dict[str, Any]:
+    """The exact JSON body sent to OpenRouter."""
+    return {
+        "model": model,
+        "messages": [{"role": "system", "content": system}, *messages],
+        "tools": tools,
+        "stream": False,
+        "usage": {"include": True},
+    }
+
+
+def _payload_key(payload: dict[str, Any], sample: int) -> str:
+    blob = json.dumps({"payload": payload, "sample": sample}, sort_keys=True, default=str)
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+
+def cache_key(*, model: str, system: str, messages: list[dict[str, Any]], tools: list[dict[str, Any]], sample: int) -> str:
+    """Hash of the sent payload plus sample, so every request parameter is part of the key."""
+    return _payload_key(build_payload(model=model, system=system, messages=messages, tools=tools), sample)
 
 
 def estimate_cost(model: str, usage: dict[str, Any]) -> float:
     price_in, price_out = FALLBACK_PRICING.get(model, DEFAULT_PRICING)
     return usage.get("prompt_tokens", 0) * price_in / 1e6 + usage.get("completion_tokens", 0) * price_out / 1e6
+
+
+def _validation_error(data: dict[str, Any]) -> str | None:
+    """Why a 200 body is unusable, or None if it carries a proper assistant message."""
+    choices = data.get("choices")
+    if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
+        return "response has no choices"
+    if not isinstance(choices[0].get("message"), dict):
+        return "choices[0].message is not an object"
+    if choices[0].get("finish_reason") == "error":
+        return "finish_reason is 'error'"
+    return None
+
+
+def _error_code(error: Any) -> int | None:
+    code = error.get("code") if isinstance(error, dict) else None
+    try:
+        return int(code)
+    except (TypeError, ValueError):
+        return None
+
+
+def _retry_after(response: httpx.Response | None) -> float | None:
+    """A numeric Retry-After header in seconds, capped; None if absent or not a number."""
+    if response is None or "Retry-After" not in response.headers:
+        return None
+    try:
+        return min(float(response.headers["Retry-After"]), MAX_RETRY_AFTER_S)
+    except ValueError:
+        return None
+
+
+def _read_cache(path: Path) -> dict[str, Any] | None:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return None
+    except json.JSONDecodeError:
+        return None  # a torn or corrupt entry is a miss; the next success overwrites it
+
+
+def _write_cache(path: Path, data: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(json.dumps(data), encoding="utf-8")
+    os.replace(tmp, path)
 
 
 class OpenRouterLLM:
@@ -75,12 +150,14 @@ class OpenRouterLLM:
         transport: httpx.AsyncBaseTransport | None = None,
         max_retries: int = 3,
         retry_delay_s: float = 2.0,
+        sleep: Callable[[float], Awaitable[Any]] = asyncio.sleep,
     ) -> None:
         self.api_key = api_key
         self.cache_dir = cache_dir
         self.budget = budget
         self.max_retries = max_retries
         self.retry_delay_s = retry_delay_s
+        self._sleep = sleep  # every retry wait, backoff or Retry-After, goes through this hook
         self._semaphore = asyncio.Semaphore(concurrency)
         self._client = httpx.AsyncClient(transport=transport, timeout=120.0)
 
@@ -90,63 +167,85 @@ class OpenRouterLLM:
     async def complete(
         self, *, model: str, system: str, messages: list[dict[str, Any]], tools: list[dict[str, Any]], sample: int
     ) -> dict[str, Any]:
-        key = cache_key(model=model, system=system, messages=messages, tools=tools, sample=sample)
+        payload = build_payload(model=model, system=system, messages=messages, tools=tools)
+        key = _payload_key(payload, sample)
         path = self.cache_dir / f"{key}.json"
-        if path.exists():
-            data = json.loads(path.read_text(encoding="utf-8"))
-            data["_meta"] = {**data.get("_meta", {}), "cached": True, "cache_key": key}
-            return data
+        cached = _read_cache(path)
+        if cached is not None:
+            cached["_meta"] = {**cached.get("_meta", {}), "cached": True, "cache_key": key}
+            return cached
 
         async with self._semaphore:
-            self.budget.check()
-            payload = {
-                "model": model,
-                "messages": [{"role": "system", "content": system}, *messages],
-                "tools": tools,
-                "stream": False,
-                "usage": {"include": True},
-            }
             started = time.perf_counter()
-            data = await self._post(payload)
+            data, wasted = await self._post(payload)
             latency = time.perf_counter() - started
 
         usage = data.get("usage") or {}
         cost = float(usage["cost"]) if usage.get("cost") is not None else estimate_cost(model, usage)
         self.budget.add(cost)
         data["_meta"] = {
-            "cost": cost,
+            "cost": cost + wasted,  # includes charged attempts that returned unusable bodies
             "latency_s": round(latency, 3),
             "prompt_tokens": int(usage.get("prompt_tokens", 0)),
             "completion_tokens": int(usage.get("completion_tokens", 0)),
             "cached": False,
             "cache_key": key,
         }
-        self.cache_dir.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(data), encoding="utf-8")
+        _write_cache(path, data)
         return data
 
-    async def _post(self, payload: dict[str, Any]) -> dict[str, Any]:
+    async def _backoff(self, attempt: int, response: httpx.Response | None = None) -> None:
+        retry_after = _retry_after(response)
+        await self._sleep(retry_after if retry_after is not None else self.retry_delay_s * 2**attempt)
+
+    async def _post(self, payload: dict[str, Any]) -> tuple[dict[str, Any], float]:
+        """POST with retries; returns the validated body and the cost charged for unusable bodies."""
         headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
-        delay = self.retry_delay_s
+        wasted = 0.0
         for attempt in range(self.max_retries + 1):
-            response = await self._client.post(OPENROUTER_URL, headers=headers, json=payload)
-            if response.status_code in RETRY_STATUS and attempt < self.max_retries:
-                await asyncio.sleep(delay)
-                delay *= 2
+            last = attempt == self.max_retries
+            self.budget.check()
+            try:
+                response = await self._client.post(OPENROUTER_URL, headers=headers, json=payload)
+            except httpx.TransportError:
+                if last:
+                    raise
+                await self._backoff(attempt)
+                continue
+            if response.status_code in RETRY_STATUS and not last:
+                await self._backoff(attempt, response)
                 continue
             response.raise_for_status()
             data = response.json()
             if "error" in data:
+                if _error_code(data["error"]) in RETRY_STATUS and not last:
+                    await self._backoff(attempt, response)
+                    continue
                 raise RuntimeError(f"OpenRouter error: {data['error']}")
-            return data
+            problem = _validation_error(data)
+            if problem is None:
+                return data, wasted
+            charge = (data.get("usage") or {}).get("cost")
+            if charge is not None:
+                self.budget.add(float(charge))
+                wasted += float(charge)
+            if last:
+                raise RetryableResponseError(f"unusable OpenRouter response: {problem}")
+            await self._backoff(attempt, response)
         raise RuntimeError("unreachable")
 
 
 _ZERO_META = {"cost": 0.0, "latency_s": 0.0, "prompt_tokens": 0, "completion_tokens": 0, "cached": False, "cache_key": ""}
+_CALL_IDS = itertools.count(1)
 
 
 def tool_call(name: str, **arguments: Any) -> dict[str, Any]:
-    return {"id": f"call_{name}", "type": "function", "function": {"name": name, "arguments": json.dumps(arguments)}}
+    """An OpenAI-style tool call with an id unique within the process."""
+    return {
+        "id": f"call_{name}_{next(_CALL_IDS)}",
+        "type": "function",
+        "function": {"name": name, "arguments": json.dumps(arguments)},
+    }
 
 
 class ScriptedLLM:
