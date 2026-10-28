@@ -328,3 +328,42 @@ personality tuning, frontend changes beyond what the new tools require.
   requires a user message newer than the shown draft, but injected text in history can still mislead
   the IA's reasoning inside a genuine user turn. Reduced, not eliminated.
 - **Synthetic data validity.** Mitigated by the handwritten set; no real user traces are available.
+
+## 12. Found during the build (not anticipated above)
+
+Recorded as they came up; each is either fixed (with where) or open (goes into the write-up's known limits).
+
+**Fixed**
+
+| Finding | Fix |
+|---|---|
+| The synthetic world was too clean: tidy names made 1,000 agents easy to route | Lived-in world (§8.1, Plan 1b) is the only reported benchmark |
+| Lived-world generator bugs: repeated openers, full names everywhere, leaked rule notes, background names merging (601 not 800), date clamping making 281 agents "active now" | Writer checks and regrow; day rescaling in `grow.py` |
+| §3's "same person, new topic → `force_new`" rule doubled duplicates | Replaced by "an agent owns a matter" in the IA prompt |
+| Dev-set agent names used as prompt examples | Invented names absent from the world |
+| §4's "archived = search only" dropped L1 recall@shown to 0.62 | Archived cards join top-K at `archived_min_score = 0.4` |
+| §5's bare identifier list: thread-id recall 0.50 | Each identifier annotated with 60 chars of context on each side |
+| Model defaults pointed at a model no longer served | Sonnet 5.5 for IA/EA, Haiku 5.5 for search, summaries, compaction, triage |
+| `[PARTIAL]` results did not pin their agent | `_PINNED_RE` includes `PARTIAL` |
+| Eval tool shims drifted from production tools when the gate changed them | Shims updated; frozen baseline keeps pre-Plan-2 signatures |
+| Approved replies/forwards had to be retyped byte-equivalent | Sends take `action_id` and send the stored content |
+| Free models looped on `wait` (~40% of turns) and hit daily caps | Evals on Haiku 5.5 |
+
+**Open**
+
+- lived-50 trails the baseline (0.87 vs 0.93); 3 borderline regressions kept (journal).
+- Memory eval window tuned on its own logs (no held-out set); history 5.5k tokens vs the 4.5k target.
+- Inbox delivery is at-least-once: a turn cut off by shutdown runs again.
+- The chat UI's poll can end early when a message is sent during another turn; clearing chat does not clear the inbox.
+- Approval relies on the model's reading of "yes"; "ask which one" with several pending is prompt-only.
+- A few seconds between the draft re-fetch and the send in which a Gmail-side edit would go out.
+- Only the matching body part and attachment names are hashed; a reply's subject is not covered.
+- The live `GMAIL_GET_DRAFT` response shape is unverified (fails safe: refuses approved drafts).
+- Standing approvals bound recipients, not content, including after the agent edits its own trigger.
+- A draft sent under a standing approval leaves its pending row (counts as open work for 7 days).
+- A failed one-shot trigger stays `active` and keeps its standing approval.
+- Recipient checks see tool arguments only, not Gmail's reply-all/forward headers.
+- Email headers (subject, sender) are not wrapped as untrusted; the search sub-agent's prompt does not mention the tag.
+- `gate.enforce` and `gate.decision_sink` are process-wide (eval ablation only).
+- L3's scripted user cannot react to unscripted questions; such runs are flagged `off_script`.
+- One persona and one seed; variance across worlds untested.
