@@ -120,9 +120,16 @@ def test_search_limit():
     assert len(search("ben", many, NOW, limit=3)) == 3
 
 
-def test_build_query_uses_last_three_turns():
+def test_build_query_adds_last_three_turns_only_to_contentless_messages():
     query = build_query("did she reply?", ["one", "two", "three", "four"])
     assert query.splitlines() == ["did she reply?", "two", "three", "four"]
+
+
+def test_build_query_keeps_a_contentful_message_alone():
+    recent = ["can you ask beatriz about the big sur road trip", "on it"]
+    assert build_query("how's the quarterly business review coming along?", recent) == (
+        "how's the quarterly business review coming along?"
+    )
 
 
 def test_pinned_from_agent_message():
