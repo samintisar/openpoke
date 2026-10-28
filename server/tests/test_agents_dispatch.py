@@ -134,7 +134,9 @@ def test_search_payload_renders_results():
 
 def test_schema_shape():
     by_name = {schema["function"]["name"]: schema["function"] for schema in TOOL_SCHEMAS}
-    assert list(by_name) == ["send_message_to_agent", "search_agents", "send_message_to_user", "send_draft", "wait"]
+    assert list(by_name) == [
+        "send_message_to_agent", "search_agents", "send_message_to_user", "send_draft", "approve_send", "wait"
+    ]
     agent = by_name["send_message_to_agent"]["parameters"]
     assert agent["required"] == ["instructions"]
     assert set(agent["properties"]) == {"instructions", "agent_id", "name", "purpose", "force_new"}
@@ -143,7 +145,10 @@ def test_schema_shape():
     description = by_name["send_message_to_agent"]["description"]
     assert "agent_id" in description and "name" in description and "purpose" in description
     assert by_name["search_agents"]["parameters"]["required"] == ["query"]
-    assert by_name["send_draft"]["parameters"]["required"] == ["to", "subject", "body"]
+    draft = by_name["send_draft"]["parameters"]
+    assert "required" not in draft  # either action_id, or to/subject/body (checked by the tool)
+    assert set(draft["properties"]) == {"action_id", "to", "subject", "body"}
+    assert by_name["approve_send"]["parameters"]["required"] == ["action_id"]
     assert by_name["wait"]["parameters"]["required"] == ["reason"]
     assert by_name["send_message_to_user"]["parameters"]["required"] == ["message"]
 

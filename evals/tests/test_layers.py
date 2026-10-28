@@ -278,13 +278,19 @@ def send_message_to_agent(agent_name: str, instructions: str) -> None:
     """Production's signature before Plan 2 (tools.py at fa4bf6f), so its TypeError text can be reproduced."""
 
 
+def send_draft(to: str, subject: str, body: str) -> None:
+    """Pre-Plan-4 production signature, which the frozen baseline keeps."""
+
+
 def _pre_plan2_error(name: str, args: dict) -> str:
-    if name != "send_message_to_agent":
+    if name not in ("send_message_to_agent", "send_draft"):
         from server.agents.interaction_agent.tools import handle_tool_call  # unchanged tools
 
         return handle_tool_call(name, json.dumps(args)).payload["error"]
+    # Changed since (Plan 2 dispatch, Plan 4 send_draft action_id): the frozen pre-Plan-2 signature
+    tool = send_message_to_agent if name == "send_message_to_agent" else send_draft
     try:
-        send_message_to_agent(**args)
+        tool(**args)
     except TypeError as exc:
         return f"Missing required arguments: {exc}"
     raise AssertionError("expected a TypeError")

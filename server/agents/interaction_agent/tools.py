@@ -7,11 +7,13 @@ from datetime import datetime, timezone
 from typing import Any, Optional
 
 from ...logging_config import logger
+from ...services import approvals
 from ...services.agents import TOOL_SCHEMAS, dispatch, search_payload
 from ...services.agents.registry import get_agent_directory
 from ...services.conversation import get_conversation_log
 from ...services.execution import get_execution_agent_logs
 from ...services.execution.runner import get_agent_runner
+from .turn import current_turn
 
 
 @dataclass
@@ -91,14 +93,45 @@ def send_message_to_user(message: str) -> ToolResult:
     )
 
 
+SEND_DRAFT_ARGUMENTS_ERROR = "send_draft() needs action_id, or all of to, subject and body"
+
+
 # Format and record email draft for user review
 def send_draft(
-    to: str,
-    subject: str,
-    body: str,
+    to: Optional[str] = None,
+    subject: Optional[str] = None,
+    body: Optional[str] = None,
+    action_id: Optional[Any] = None,
 ) -> ToolResult:
-    """Record a draft update in the conversation log for the interaction agent."""
+    """Record a draft for the user to review.
+
+    With `action_id`, shows exactly the stored content of that pending send (not the arguments) and marks it
+    shown now, so the user's next message can approve it. Without one, records the given text and approves
+    nothing.
+    """
     log = get_conversation_log()
+
+    if action_id is not None:
+        try:
+            action = approvals.show(action_id)
+        except approvals.ApprovalError as exc:
+            return ToolResult(success=False, payload={"error": str(exc)})
+        log.record_reply(approvals.render(action))
+        logger.info(f"Pending action {action.id} shown to the user")
+        return ToolResult(
+            success=True,
+            payload={
+                "status": "draft_recorded",
+                "action_id": action.id,
+                "to": ", ".join(action.recipients.get("to") or []),
+                "subject": action.subject,
+            },
+            recorded_reply=True,
+        )
+
+    if to is None or subject is None or body is None:
+        # Raised like a signature error, so handle_tool_call reports it as one (and eval shims can mirror it).
+        raise TypeError(SEND_DRAFT_ARGUMENTS_ERROR)
 
     message = f"To: {to}\nSubject: {subject}\n\n{body}"
 
@@ -113,6 +146,32 @@ def send_draft(
             "subject": subject,
         },
         recorded_reply=True,
+    )
+
+
+# Approve one pending send; only the user's own message, written after they saw it, can do this
+def approve_send(action_id: Any) -> ToolResult:
+    """Approve a shown, pending send for its owning agent to deliver."""
+    turn = current_turn.get()
+    try:
+        action = approvals.approve(
+            action_id,
+            origin=turn.origin if turn else None,
+            user_message_at=turn.user_message_at if turn else None,
+        )
+    except approvals.ApprovalError as exc:
+        return ToolResult(success=False, payload={"error": str(exc)})
+    return ToolResult(
+        success=True,
+        payload={
+            "status": "approved",
+            "action_id": action.id,
+            "agent_id": action.agent_id,
+            "next": (
+                f"Tell agent {action.agent_id} (send_message_to_agent with agent_id={action.agent_id}) that the "
+                f"user approved action {action.id} and to send it now, unchanged."
+            ),
+        },
     )
 
 
@@ -160,6 +219,8 @@ def handle_tool_call(name: str, arguments: Any) -> ToolResult:
             return send_message_to_user(**args)
         if name == "send_draft":
             return send_draft(**args)
+        if name == "approve_send":
+            return approve_send(**args)
         if name == "wait":
             return wait(**args)
 
