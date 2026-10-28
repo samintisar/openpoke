@@ -1,12 +1,10 @@
 name: baseline
 system: baseline
-model: nvidia/nemotron-3-ultra-550b-a55b:free
+model: anthropic/claude-haiku-5.5
 n_agents: [10, 50, 200, 1000]
 world_seeds: [1]
 k: 3
 cases_per_kind: 3
 include_handwritten: true
-budget_usd: 20.0
-concurrency: 2
-requests_per_minute: 16
-max_retries: 6
+budget_usd: 5.0
+concurrency: 8

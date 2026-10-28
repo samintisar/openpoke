@@ -26,6 +26,7 @@ OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 FALLBACK_PRICING: dict[str, tuple[float, float]] = {
     "anthropic/claude-sonnet-4": (3.0, 15.0),
     "anthropic/claude-sonnet-4.5": (3.0, 15.0),
+    "anthropic/claude-haiku-5.5": (0.10, 0.50),
 }
 DEFAULT_PRICING = (3.0, 15.0)
 RETRY_STATUS = {408, 429, 500, 502, 503, 504}
