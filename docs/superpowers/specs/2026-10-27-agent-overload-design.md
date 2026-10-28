@@ -176,7 +176,8 @@ evals/
   layers/e2e.py         L3 multi-turn, fake Gmail, LLM judge
   llm_cache.py          prompt-hash response cache + budget cap
   run.py                python -m evals.run --config evals/experiments/<x>.yaml
-  experiments/*.yaml
+  view.py               static HTML transcript report per run
+  experiments/*.yaml    + JOURNAL.md
   results/              per-run JSON + leaderboard.md
 ```
 
@@ -209,11 +210,46 @@ company across different deals, dormant agents that should be revived, near-dupl
 | L1 retrieval (no LLM) | recall@K, MRR, hot-set hit rate, prompt tokens |
 | L2 routing (live) | route accuracy (overall and per case kind), duplicate-creation rate, wrong-reuse rate, missed-create rate, duplicate-guard false-block rate, clarify rate, search usage & lift, tokens, latency, $/case |
 | L2 memory | planted-fact recall (compacted vs full), prompt tokens per run |
-| L3 e2e | task success vs fake-Gmail end state, LLM-judge reply score (1–5 rubric, judge ≠ agent model), user messages per event, unauthorized-send rate |
+| L3 e2e | task success vs fake-Gmail end state, LLM-judge binary checks (below), user messages per event, unauthorized-send rate |
 
-**Rigor:** tune on dev only, report test once per candidate; config-driven variants; fixed seeds +
-response cache; ≥3 seeds for LLM layers with variance; runner budget cap. Headline artifact: routing
-accuracy & duplicate rate vs roster size (10/50/200/1000) for the three systems, plus tokens/turn.
+**Grade outcomes, not paths.** Routing is checked against gold ids; L3 checks the end state (which
+agent got the work, which drafts exist in fake Gmail, what was sent). Tool-call sequences are not
+graded, except safety rules, which are checked on every step.
+
+**LLM judge = binary checks, calibrated.** Only for what code cannot check (reply quality). Each check
+is pass/fail (e.g. "draft shown verbatim", "asked before sending", "no internal agent/tool names
+leaked", "one reply, not duplicates"). The judge model differs from the agent model. Calibration: the
+user hand-labels 40 L3 transcripts; judge–human agreement per check is reported, and a check below
+85% agreement is rewritten before its numbers are used.
+
+**Reliability:** LLM layers run each case k=3 times; report pass@1 (mean success) and pass^k (all k
+succeed), plus variance across seeds. A difference inside the seed variance is reported as no change.
+
+**Suites:** `capability` (hard cases being improved; low scores expected) and `regression` (cases
+that pass and must keep passing; every fixed failure is added here). Every experiment runs both; a
+variant that regresses the regression suite is rejected regardless of capability gains.
+
+**Error analysis first.** After the baseline run, review ~60 failing L2 transcripts by hand and sort
+them into failure categories (`results/error_analysis.md`). Experiments target the largest categories;
+the analysis is repeated after each major change.
+
+**Transcript viewer.** Every case result stores its full trace (prompt sent, cards shown, tool calls,
+decision, judge verdicts). `python -m evals.view <run>` renders a static HTML report linking each
+metric cell to its failing transcripts.
+
+**Experiment loop guardrails** (the loop may be run by Claude):
+- One hypothesis per experiment, written to `evals/experiments/JOURNAL.md` with config, dev result and
+  decision (keep/revert) before the next experiment starts.
+- Tuning uses the dev split only; the test split is run once per finalist, by explicit command
+  (`--split test` requires `--final`).
+- The loop may edit only `server/` config, prompts and retrieval code — never `evals/cases`,
+  generator gold-labelling, judge checks or metrics. A checksum of those files is recorded per run;
+  a mismatch marks the run invalid.
+- Per-run and per-session budget caps; models pinned by exact version id.
+
+**Rigor:** config-driven variants, one variable at a time; fixed seeds + response cache keyed by prompt
+hash and model id; cost and latency recorded per run. Headline artifact: routing accuracy (pass@1 and
+pass^k) & duplicate rate vs roster size (10/50/200/1000) for the three systems, plus tokens/turn.
 
 **Unit tests** (`server/tests/`, pytest, offline): registry CRUD + id collisions + migration, entity
 extraction, scoring/selection, fuzzy matching, `last_routed` boost, open-work time bounds and hot-set
@@ -229,7 +265,7 @@ LLM access: OpenRouter (existing client). Default eval model configurable; small
 
 1. Temporary cross-platform lock in `roster.py` (`fcntl` on Unix, `msvcrt` on Windows; removed with
    the roster in step 2), pytest scaffold, world generator, cases, L1 on baseline.
-2. L2 harness + cache → **baseline numbers**. Registry + migration.
+2. L2 harness + cache + transcript viewer → **baseline numbers** → error analysis. Registry + migration.
 3. Retrieval (incl. fuzzy match, `last_routed`, time-bounded open work), `search_agents`, duplicate
    guard, reuse policy in prompt → tune on dev.
 4. Lifecycle, compaction (identifier preservation, failure fallback), memory eval.
