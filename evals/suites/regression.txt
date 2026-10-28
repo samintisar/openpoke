@@ -1,0 +1,2 @@
+# Case ids that pass and must keep passing (one per line).
+# Every fixed failure is added here. Edited by hand only; protected by evals/PROTECTED.sha256.
