@@ -61,7 +61,7 @@ CACHE_DIR = REPO_ROOT / "evals" / ".cache" / "llm"
 class Config:
     name: str
     system: str = "baseline"
-    model: str = "anthropic/claude-sonnet-4"
+    model: str = "anthropic/claude-haiku-5.5"
     layers: list[str] = field(default_factory=lambda: ["retrieval", "routing"])
     n_agents: list[int] = field(default_factory=lambda: [10, 50, 200, 1000])
     world_seeds: list[int] = field(default_factory=lambda: [1])
