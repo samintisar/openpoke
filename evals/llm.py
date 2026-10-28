@@ -47,6 +47,17 @@ class FatalAPIError(RunAborted):
     """OpenRouter refused the account (401/402/403); retrying or moving on would only repeat it."""
 
 
+class DailyQuotaExhausted(RunAborted):
+    """A free model's per-day request cap is used up. Finished calls are cached, so rerunning
+    the same config tomorrow resumes where this run stopped."""
+
+
+def _is_daily_quota(text: str) -> bool:
+    """OpenRouter's 429 for the free-tier daily cap names the limit, e.g. "free-models-per-day"."""
+    lowered = text.lower()
+    return "per-day" in lowered or "per day" in lowered
+
+
 class RetryableResponseError(RuntimeError):
     """A 200 response that is unusable (no assistant message, or finish_reason "error")."""
 
@@ -73,6 +84,31 @@ class Budget:
 
     def add(self, cost: float) -> None:
         self.spent_usd += cost
+
+
+class RateLimiter:
+    """Spaces request starts at least 60/rpm seconds apart (free models are capped per minute)."""
+
+    def __init__(
+        self,
+        requests_per_minute: int,
+        *,
+        sleep: Callable[[float], Awaitable[Any]] = asyncio.sleep,
+        clock: Callable[[], float] = time.monotonic,
+    ) -> None:
+        self.interval_s = 60.0 / requests_per_minute
+        self._sleep = sleep
+        self._clock = clock
+        self._next_start = 0.0
+        self._lock = asyncio.Lock()
+
+    async def acquire(self) -> None:
+        async with self._lock:
+            now = self._clock()
+            start = max(now, self._next_start)
+            self._next_start = start + self.interval_s
+        if start > now:
+            await self._sleep(start - now)
 
 
 class LLMClient(Protocol):
@@ -107,6 +143,8 @@ def cache_key(*, model: str, system: str, messages: list[dict[str, Any]], tools:
 
 
 def estimate_cost(model: str, usage: dict[str, Any]) -> float:
+    if model.endswith(":free"):
+        return 0.0
     price_in, price_out = FALLBACK_PRICING.get(model, DEFAULT_PRICING)
     return usage.get("prompt_tokens", 0) * price_in / 1e6 + usage.get("completion_tokens", 0) * price_out / 1e6
 
@@ -169,6 +207,7 @@ class OpenRouterLLM:
         max_retries: int = 3,
         retry_delay_s: float = 2.0,
         sleep: Callable[[float], Awaitable[Any]] = asyncio.sleep,
+        rate_limiter: RateLimiter | None = None,
     ) -> None:
         self.api_key = api_key
         self.cache_dir = cache_dir
@@ -177,6 +216,7 @@ class OpenRouterLLM:
         self.retry_delay_s = retry_delay_s
         self._sleep = sleep  # every retry wait, backoff or Retry-After, goes through this hook
         self._semaphore = asyncio.Semaphore(concurrency)
+        self._rate_limiter = rate_limiter
         self._client = httpx.AsyncClient(transport=transport, timeout=120.0)
 
     async def aclose(self) -> None:
@@ -226,6 +266,8 @@ class OpenRouterLLM:
         for attempt in range(self.max_retries + 1):
             last = attempt == self.max_retries
             self.budget.check()
+            if self._rate_limiter is not None:
+                await self._rate_limiter.acquire()
             try:
                 response = await self._client.post(OPENROUTER_URL, headers=headers, json=payload)
             except httpx.TransportError:
@@ -235,6 +277,8 @@ class OpenRouterLLM:
                 continue
             if response.status_code in FATAL_STATUS:
                 raise FatalAPIError(f"OpenRouter returned {response.status_code}: {response.text[:200]}")
+            if response.status_code == 429 and _is_daily_quota(response.text):
+                raise DailyQuotaExhausted(f"OpenRouter daily quota reached: {response.text[:200]}")
             if response.status_code in RETRY_STATUS and not last:
                 await self._backoff(attempt, response)
                 continue
@@ -249,6 +293,8 @@ class OpenRouterLLM:
             if "error" in data:
                 if _error_code(data["error"]) in FATAL_STATUS:
                     raise FatalAPIError(f"OpenRouter error: {data['error']}")
+                if _error_code(data["error"]) == 429 and _is_daily_quota(json.dumps(data["error"])):
+                    raise DailyQuotaExhausted(f"OpenRouter daily quota reached: {data['error']}")
                 if _error_code(data["error"]) in RETRY_STATUS and not last:
                     await self._backoff(attempt, response)
                     continue

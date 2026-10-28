@@ -4,7 +4,7 @@ import pytest
 
 from evals.grading import ERROR
 from evals.leaderboard import write_leaderboard
-from evals.llm import Budget, BudgetExceeded, fake_llm
+from evals.llm import Budget, BudgetExceeded, DailyQuotaExhausted, fake_llm
 from evals.run import Config, load_config, main, run_experiment
 from evals.view import render
 
@@ -213,6 +213,8 @@ async def test_exception_in_routing_row_is_contained(tmp_path, monkeypatch):
     ("world_seeds: 3", "world_seeds"),
     ("k: 0", "k"),
     ("concurrency: 1.5", "concurrency"),
+    ("requests_per_minute: 0", "requests_per_minute"),
+    ("max_retries: -1", "max_retries"),
     ("budget_usd: -1", "budget_usd"),
     ("layers: [retrieval, bogus]", "layers"),
     ("suite: everything", "suite"),
@@ -280,3 +282,19 @@ async def test_fatal_api_error_stops_the_run_without_error_rows(tmp_path):
     assert meta["budget_exhausted"] is False
     assert "402" in meta["aborted"]
     assert meta["valid"] is False
+
+
+async def test_daily_quota_stops_the_run_but_keeps_it_valid(tmp_path):
+    class OutOfQuota:
+        budget = Budget(1.0)
+
+        async def complete(self, **kwargs):
+            raise DailyQuotaExhausted("free-models-per-day")
+
+        async def aclose(self):
+            return None
+
+    path = await run_experiment(tiny(), llm=OutOfQuota(), out_dir=tmp_path, split="dev", final=False)
+    meta = json.loads(path.read_text(encoding="utf-8"))["meta"]
+    assert meta["aborted"].startswith("DailyQuotaExhausted") and meta["valid"] is True
+    assert meta["budget_exhausted"] is False

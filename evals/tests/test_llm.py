@@ -6,8 +6,10 @@ import pytest
 from evals.llm import (
     Budget,
     BudgetExceeded,
+    DailyQuotaExhausted,
     FatalAPIError,
     OpenRouterLLM,
+    RateLimiter,
     RunAborted,
     RetryableResponseError,
     ScriptedLLM,
@@ -307,3 +309,72 @@ async def test_credit_error_in_a_200_body_aborts(tmp_path):
 
 def test_budget_and_fatal_errors_both_abort_the_run():
     assert issubclass(BudgetExceeded, RunAborted) and issubclass(FatalAPIError, RunAborted)
+
+
+async def test_daily_quota_429_aborts_without_retry(tmp_path):
+    sent = []
+
+    def handler(request):
+        sent.append(1)
+        return httpx.Response(429, json={"error": {"code": 429, "message": "Rate limit exceeded: free-models-per-day"}})
+
+    llm = _llm(tmp_path, handler)
+    with pytest.raises(DailyQuotaExhausted):
+        await llm.complete(**KW)
+    await llm.aclose()
+    assert len(sent) == 1 and issubclass(DailyQuotaExhausted, RunAborted)
+
+
+async def test_daily_quota_in_a_200_body_aborts(tmp_path):
+    body = {"error": {"code": 429, "message": "Rate limit exceeded: free-models-per-day"}}
+    llm = _llm(tmp_path, lambda r: httpx.Response(200, json=body))
+    with pytest.raises(DailyQuotaExhausted):
+        await llm.complete(**KW)
+    await llm.aclose()
+
+
+async def test_per_minute_429_is_still_retried(tmp_path):
+    minute = {"error": {"code": 429, "message": "Rate limit exceeded: free-models-per-min"}}
+    responses = [httpx.Response(429, json=minute), httpx.Response(200, json=_ok())]
+    llm = _llm(tmp_path, lambda r: responses.pop(0))
+    data = await llm.complete(**KW)
+    await llm.aclose()
+    assert data["choices"][0]["message"]["content"] == "hi"
+
+
+def test_free_models_cost_nothing_when_usage_has_no_cost():
+    assert estimate_cost("nvidia/some-model:free", {"prompt_tokens": 10**6, "completion_tokens": 10**6}) == 0.0
+
+
+async def test_rate_limiter_spaces_request_starts():
+    now = {"t": 100.0}
+    sleeps = []
+
+    async def fake_sleep(seconds):
+        sleeps.append(seconds)
+
+    limiter = RateLimiter(30, sleep=fake_sleep, clock=lambda: now["t"])  # one start every 2 s
+    for _ in range(3):
+        await limiter.acquire()
+    assert sleeps == [pytest.approx(2.0), pytest.approx(4.0)]
+    now["t"] = 200.0  # long idle: no wait
+    await limiter.acquire()
+    assert len(sleeps) == 2
+
+
+async def test_rate_limiter_runs_before_every_attempt(tmp_path):
+    calls = []
+
+    class Counting(RateLimiter):
+        async def acquire(self):
+            calls.append(1)
+
+    responses = [httpx.Response(429, json={}), httpx.Response(200, json=_ok())]
+    llm = OpenRouterLLM(
+        api_key="k", cache_dir=tmp_path, budget=Budget(1.0), transport=httpx.MockTransport(lambda r: responses.pop(0)),
+        retry_delay_s=0, rate_limiter=Counting(60),
+    )
+    await llm.complete(**KW)
+    await llm.complete(**KW)  # cached: no request, no wait
+    await llm.aclose()
+    assert len(calls) == 2

@@ -8,7 +8,8 @@ If the budget runs out, scheduling stops: the case that hit the cap and every ca
 started are left out of routing_rows (they count as incomplete, not as errors), and
 meta.budget_exhausted is true. If OpenRouter refuses the account (401/402/403: bad key, no
 credits), the run stops the same way, meta.aborted names the reason, the run is invalid, and
-the CLI exits 1. A case that fails for any other reason is an ERROR row that keeps the cost it
+the CLI exits 1. A free model's daily quota running out also stops the run and exits 1, but the
+rows it finished stay valid; finished calls are cached, so rerunning later resumes it. A case that fails for any other reason is an ERROR row that keeps the cost it
 ran up before failing.
 """
 
@@ -33,7 +34,17 @@ from .integrity import REPO_ROOT, compute_checksum, expected_checksum, expected_
 from .layers.retrieval import run_retrieval_case
 from .layers.routing import RoutingCaseError, run_routing_case
 from .leaderboard import write_leaderboard
-from .llm import Budget, BudgetExceeded, FatalAPIError, LLMClient, OpenRouterLLM, RunAborted, fake_llm
+from .llm import (
+    Budget,
+    BudgetExceeded,
+    DailyQuotaExhausted,
+    FatalAPIError,
+    LLMClient,
+    OpenRouterLLM,
+    RateLimiter,
+    RunAborted,
+    fake_llm,
+)
 from .metrics import summarize_retrieval, summarize_routing
 from .systems import get_system
 from .worlds.generator import build_world, generate_cases
@@ -58,6 +69,8 @@ class Config:
     suite: str = "all"
     budget_usd: float = 15.0
     concurrency: int = 8
+    requests_per_minute: int | None = None  # set for free models, which OpenRouter caps per minute
+    max_retries: int = 3
     include_handwritten: bool = True
 
 
@@ -83,6 +96,11 @@ def _validate(cfg: Config) -> None:
         v = getattr(cfg, key)
         if not isinstance(v, list) or not all(_is_int(x) for x in v):
             raise bad(key, "must be a list of ints")
+    rpm = cfg.requests_per_minute
+    if rpm is not None and (not _is_int(rpm) or rpm <= 0):
+        raise bad("requests_per_minute", "must be null or a positive int")
+    if not _is_int(cfg.max_retries) or cfg.max_retries < 0:
+        raise bad("max_retries", "must be a non-negative int")
     for key in ("k", "cases_per_kind", "concurrency"):
         v = getattr(cfg, key)
         if not _is_int(v) or v <= 0:
@@ -287,7 +305,11 @@ def main(argv: list[str] | None = None) -> int:
         if not key:
             print("OPENROUTER_API_KEY is not set. Add it to .env at the repo root.", file=sys.stderr)
             return 2
-        llm = OpenRouterLLM(api_key=key, cache_dir=CACHE_DIR, budget=Budget(cfg.budget_usd), concurrency=cfg.concurrency)
+        limiter = RateLimiter(cfg.requests_per_minute) if cfg.requests_per_minute else None
+        llm = OpenRouterLLM(
+            api_key=key, cache_dir=CACHE_DIR, budget=Budget(cfg.budget_usd), concurrency=cfg.concurrency,
+            max_retries=cfg.max_retries, rate_limiter=limiter,
+        )
 
     async def go() -> Path:
         try:
@@ -311,6 +333,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     if meta.get("aborted"):
         print(f"RUN ABORTED: {meta['aborted']}", file=sys.stderr)
+        if meta["aborted"].startswith(DailyQuotaExhausted.__name__):
+            print("Finished calls are cached: rerun the same command after the quota resets to resume.", file=sys.stderr)
         return 1
     return 0
 
