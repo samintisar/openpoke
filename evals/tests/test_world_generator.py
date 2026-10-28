@@ -1,5 +1,5 @@
 from evals.cases import NEW, ROUTING_KINDS
-from evals.worlds.generator import MAX_AGENTS, NEW_PEOPLE, build_world, generate_cases
+from evals.worlds.generator import CROSS_TOPIC, MAX_AGENTS, NEW_PEOPLE, build_world, generate_cases
 
 
 def test_world_is_deterministic():
@@ -57,3 +57,38 @@ def test_create_cases_really_have_no_existing_agent():
     main = world.role_people["main"]
     reserved = world.reserved_topic[0]
     assert not any(a.person == main.full and a.topic == reserved for a in world.agents)
+
+
+def test_reserved_topic_and_prefix_do_not_depend_on_max_agents():
+    for seed in range(1, 6):
+        full, small = build_world(seed), build_world(seed, max_agents=200)
+        assert full.reserved_topic == small.reserved_topic
+        assert full.roles == small.roles
+        prefix = [(a.id, a.name, a.purpose, a.last_active_days) for a in full.agents[:200]]
+        assert prefix == [(a.id, a.name, a.purpose, a.last_active_days) for a in small.agents]
+
+
+def test_cross_agent_gold_is_the_main_persons_pricing_agent():
+    for seed in range(1, 6):
+        world = build_world(seed)
+        agents = world.by_id()
+        main, colleague = world.role_people["main"], world.role_people["colleague"]
+        cross = agents[world.roles["main_cross"]]
+        assert world.role_people["main_cross"] == main
+        assert (cross.person, cross.topic, cross.core) == (main.full, CROSS_TOPIC[0], True)
+        assert colleague.full in cross.purpose
+        for case in generate_cases(world, per_kind=4):
+            if case.kind == "cross_agent":
+                assert case.gold_targets == [cross.id]
+                assert case.acceptable_ids == [world.roles["colleague"]]
+
+
+def test_filler_never_uses_a_core_topic_for_a_core_person():
+    for seed in range(1, 6):
+        world = build_world(seed)
+        core_people = {a.person for a in world.agents if a.core and a.person}
+        core_topics = {a.topic for a in world.agents if a.core and a.topic}
+        assert CROSS_TOPIC[0] in core_topics
+        for agent in world.agents:
+            if not agent.core and agent.person in core_people:
+                assert agent.topic not in core_topics, agent.name
