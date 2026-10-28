@@ -4,8 +4,14 @@ from __future__ import annotations
 
 from .base import RoutingSystem
 from .baseline import BaselineSystem
+from .full_cards import FullCardsSystem
+from .retrieved import RetrievedSystem
 
-SYSTEMS: dict[str, type] = {"baseline": BaselineSystem}
+SYSTEMS: dict[str, type] = {
+    "baseline": BaselineSystem,
+    "retrieved": RetrievedSystem,
+    "full_cards": FullCardsSystem,
+}
 
 
 def get_system(name: str) -> RoutingSystem:
