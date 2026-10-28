@@ -5,8 +5,10 @@ Logs are keyed by agent id (the registry card id), so two agents whose names slu
 
 from __future__ import annotations
 
+import json
 import re
 import threading
+from dataclasses import dataclass, field
 from html import escape, unescape
 from pathlib import Path
 from typing import Dict, Iterator, List, Optional, Tuple
@@ -41,6 +43,18 @@ def _decode_payload(payload: str) -> str:
 
 _ATTR_PATTERN = re.compile(r"(\w+)\s*=\s*\"([^\"]*)\"")
 
+MEMORY_TAG = "agent_memory"
+
+
+@dataclass
+class AgentMemory:
+    """A compacted memory: the summary of the first `upto` raw entries plus the identifiers seen in them."""
+
+    memory: str
+    identifiers: List[str] = field(default_factory=list)
+    upto: int = 0
+    timestamp: str = ""
+
 
 class ExecutionAgentLogStore:
     """Append-only journal for execution agents with XML-style tags."""
@@ -69,11 +83,12 @@ class ExecutionAgentLogStore:
         """Get log file path for an agent."""
         return self._base_dir / f"{_slugify(agent_name)}.log"
 
-    def _append(self, agent_name: str, tag: str, payload: str) -> None:
-        """Append an entry with the given tag."""
+    def _append(self, agent_name: str, tag: str, payload: str, attrs: Optional[Dict[str, str]] = None) -> None:
+        """Append an entry with the given tag (plus optional extra attributes)."""
         encoded = _encode_payload(str(payload))
         timestamp = now_in_user_timezone("%Y-%m-%d %H:%M:%S")
-        entry = f"<{tag} timestamp=\"{timestamp}\">{encoded}</{tag}>\n"
+        extra = "".join(f" {key}=\"{escape(str(value))}\"" for key, value in (attrs or {}).items())
+        entry = f"<{tag} timestamp=\"{timestamp}\"{extra}>{encoded}</{tag}>\n"
 
         with self._lock_for(agent_name):
             try:
@@ -128,8 +143,38 @@ class ExecutionAgentLogStore:
         """Record the agent's final response."""
         self._append(agent_name, "agent_response", response)
 
+    def record_memory(self, agent_name: str, memory: str, identifiers: List[str], upto: int) -> None:
+        """Record a compacted memory covering the first `upto` raw entries; raw entries are never rewritten."""
+        payload = json.dumps({"memory": memory, "identifiers": list(identifiers), "upto": int(upto)}, ensure_ascii=False)
+        self._append(agent_name, MEMORY_TAG, payload, {"upto": str(int(upto))})
+
+    def latest_memory(self, agent_name: str) -> Optional[AgentMemory]:
+        """The most recent compacted memory, or None when there is none (or it is unreadable)."""
+        latest: Optional[AgentMemory] = None
+        for tag, timestamp, payload in self._iter_all(agent_name):
+            if tag != MEMORY_TAG:
+                continue
+            try:
+                # Stored newlines come back raw (see `_decode_payload`), so allow control characters.
+                data = json.loads(payload, strict=False)
+                latest = AgentMemory(
+                    memory=str(data["memory"]),
+                    identifiers=[str(item) for item in data.get("identifiers") or []],
+                    upto=int(data.get("upto", 0)),
+                    timestamp=timestamp,
+                )
+            except (ValueError, KeyError, TypeError, AttributeError) as exc:
+                logger.warning(f"Skipping unreadable memory entry: {exc}")
+        return latest
+
     def iter_entries(self, agent_name: str) -> Iterator[Tuple[str, str, str]]:
-        """Iterate over all log entries for an agent."""
+        """Iterate over the raw log entries for an agent (compacted memories are skipped)."""
+        for entry in self._iter_all(agent_name):
+            if entry[0] != MEMORY_TAG:
+                yield entry
+
+    def _iter_all(self, agent_name: str) -> Iterator[Tuple[str, str, str]]:
+        """Iterate over every log entry, memories included."""
         path = self._log_path(agent_name)
         with self._lock_for(agent_name):
             try:

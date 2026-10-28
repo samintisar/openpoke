@@ -10,6 +10,7 @@ from typing import Dict, List, Optional
 
 from .runtime import ExecutionAgentRuntime, ExecutionResult
 from ...logging_config import logger
+from ...services.agents.memory import maybe_compact
 from ...services.agents.registry import get_agent_directory
 
 
@@ -29,6 +30,20 @@ def _record_status(agent_id: str, response: str) -> None:
         get_agent_directory().record_status(agent_id, response or "")
     except Exception as exc:  # pragma: no cover - defensive
         logger.warning(f"[{agent_id}] Failed to record status: {exc}")
+
+
+_COMPACTION_TASKS: set[asyncio.Task] = set()  # strong refs so background tasks are not collected
+
+
+def _schedule_compaction(agent_id: str) -> None:
+    """Compact the agent's history in the background; never blocks or fails the run."""
+    try:
+        task = asyncio.get_running_loop().create_task(maybe_compact(agent_id))
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning(f"[{agent_id}] Could not schedule memory compaction: {exc}")
+        return
+    _COMPACTION_TASKS.add(task)
+    task.add_done_callback(_COMPACTION_TASKS.discard)
 
 
 @dataclass
@@ -115,6 +130,7 @@ class ExecutionBatchManager:
             self._pending.pop(request_id, None)
 
         _record_status(agent_id, result.response)
+        _schedule_compaction(agent_id)
 
         await self._complete_execution(batch_id, result, agent_name)
         return result

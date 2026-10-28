@@ -3,6 +3,8 @@
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 
+from ...services.agents.memory import load_entries, render_history
+from ...services.agents.registry import get_agent_directory
 from ...services.execution import get_execution_agent_logs
 from ...logging_config import logger
 
@@ -37,7 +39,8 @@ class ExecutionAgent:
         self,
         agent_id: str,
         name: Optional[str] = None,
-        conversation_limit: Optional[int] = None
+        conversation_limit: Optional[int] = None,
+        directory: Optional[Any] = None,
     ):
         """
         Initialize an execution agent.
@@ -46,20 +49,30 @@ class ExecutionAgent:
             agent_id: Registry id; keys the agent's log
             name: Human-readable agent name for prompts (e.g., 'conversation with keith'); defaults to the id
             conversation_limit: Optional limit on past conversations to include (None = all)
+            directory: Agent directory for the card's purpose; defaults to the registry
         """
         self.agent_id = agent_id
         self.name = name or agent_id
         self.conversation_limit = conversation_limit
         self._log_store = get_execution_agent_logs()
+        self._directory = directory
 
-    # Generate system prompt template with agent name and purpose derived from name
+    def _purpose(self) -> str:
+        """The card's purpose (refreshed by compaction), falling back to the agent name."""
+        try:
+            card = (self._directory or get_agent_directory()).get(self.agent_id)
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning(f"[{self.agent_id}] Registry lookup failed: {exc}")
+            card = None
+        purpose = (card.purpose or "").strip() if card else ""
+        return purpose or self.name
+
+    # Generate system prompt template with agent name and the card's purpose
     def build_system_prompt(self) -> str:
         """Build the system prompt for this agent."""
-        agent_purpose = f"Handle tasks related to: {self.name}"
-
         return SYSTEM_PROMPT_TEMPLATE.format(
             agent_name=self.name,
-            agent_purpose=agent_purpose
+            agent_purpose=self._purpose()
         )
 
     # Combine base system prompt with conversation history, applying conversation limits
@@ -71,6 +84,13 @@ class ExecutionAgent:
             System prompt with embedded history transcript
         """
         base_prompt = self.build_system_prompt()
+
+        # With a compacted memory: memory + identifiers + the raw entries after it
+        memory = self._log_store.latest_memory(self.agent_id)
+        if memory is not None:
+            tail = load_entries(self._log_store, self.agent_id)[memory.upto:]
+            history = render_history(memory.memory, memory.identifiers, tail)
+            return f"{base_prompt}\n\n# Execution History\n\n{history}"
 
         # Load history transcript
         transcript = self._log_store.load_transcript(self.agent_id)
