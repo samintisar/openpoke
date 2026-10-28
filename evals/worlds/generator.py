@@ -150,7 +150,9 @@ class _Builder:
         days: float,
         core: bool = False,
         month: str | None = None,
+        purpose: str | None = None,
     ) -> AgentSpec | None:
+        """Add an agent for person on topic; purpose overrides the default description."""
         phrase, short = topic
         key = (person.full, phrase, month)
         if key in self._pairs:
@@ -166,7 +168,7 @@ class _Builder:
             suffix = f" ({month} thread)" if month else ""
             agent = self.add(
                 name=name,
-                purpose=f"{phrase.capitalize()} with {person.full} at {person.company}{suffix}",
+                purpose=purpose or f"{phrase.capitalize()} with {person.full} at {person.company}{suffix}",
                 entities=[person.full.lower(), person.first.lower(), person.email],
                 days=days,
                 person=person.full,
@@ -180,7 +182,10 @@ class _Builder:
 
 
 def build_world(seed: int, max_agents: int = MAX_AGENTS) -> World:
+    """The seeded world; build_world(s, n) is the first n agents of build_world(s)."""
     rng = random.Random(seed)
+    # Drawn first so it never depends on how many filler agents follow.
+    reserved_topic = rng.choice(RESERVED_TOPICS)
     twin_a, twin_b = rng.choice(TWIN_PAIRS)
     companies = list(COMPANIES)
     rng.shuffle(companies)
@@ -203,8 +208,10 @@ def build_world(seed: int, max_agents: int = MAX_AGENTS) -> World:
     builder = _Builder(rng)
     roles: dict[str, str] = {}
 
-    def core(role: str, person: Person, topic: tuple[str, str], low: float, high: float) -> None:
-        agent = builder.add_person_agent(person, topic, days=rng.uniform(low, high), core=True)
+    def core(
+        role: str, person: Person, topic: tuple[str, str], low: float, high: float, purpose: str | None = None
+    ) -> None:
+        agent = builder.add_person_agent(person, topic, days=rng.uniform(low, high), core=True, purpose=purpose)
         assert agent is not None
         roles[role] = agent.id
 
@@ -212,9 +219,15 @@ def build_world(seed: int, max_agents: int = MAX_AGENTS) -> World:
     core("main_neg", main, t_main_neg, 5, 20)
     core("twin", twin, t_twin, 1, 10)
     core("colleague", colleague, CROSS_TOPIC, 1, 6)
+    # The main person's side of the colleague's deal: where "let main know colleague approved" goes.
+    core(
+        "main_cross", main, CROSS_TOPIC, 1, 6,
+        purpose=f"{CROSS_TOPIC[0].capitalize()} for {colleague.full}'s deal with {main.full} at {main.company}",
+    )
     core("dormant", dormant, t_dormant, 35, 60)
     core("typo", typo, t_typo, 1, 8)
     core("other", other, t_other, 0.5, 6)
+    # Not a gold target of any case kind: a core distractor every roster size keeps.
     city = rng.choice(CITIES)
     flight = builder.add(
         name=f"Flight to {city}", purpose=f"Book a flight to {city}", entities=[city.lower()],
@@ -263,10 +276,10 @@ def build_world(seed: int, max_agents: int = MAX_AGENTS) -> World:
         agents=builder.agents,
         roles=roles,
         role_people={
-            "main": main, "main_neg": main, "twin": twin, "colleague": colleague,
+            "main": main, "main_neg": main, "main_cross": main, "twin": twin, "colleague": colleague,
             "dormant": dormant, "typo": typo, "other": other,
         },
-        reserved_topic=rng.choice(RESERVED_TOPICS),
+        reserved_topic=reserved_topic,
     )
 
 
@@ -333,12 +346,12 @@ def generate_cases(world: World, per_kind: int) -> list[Case]:
         else:
             add("same_name_people", i, rng.choice(TWIN_VAGUE).format(first=person.first), [], clarify_ok=True)
 
-        main_agent, main_person = target("main")
+        cross_agent, main_person = target("main_cross")
         colleague_agent, colleague_person = target("colleague")
         add(
             "cross_agent", i,
             rng.choice(CROSS).format(main=main_person.full, colleague=colleague_person.first),
-            [main_agent.id], acceptable_ids=[colleague_agent.id],
+            [cross_agent.id], acceptable_ids=[colleague_agent.id],
         )
 
         agent, person = target("dormant")
