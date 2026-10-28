@@ -29,13 +29,22 @@ FALLBACK_PRICING: dict[str, tuple[float, float]] = {
 }
 DEFAULT_PRICING = (3.0, 15.0)
 RETRY_STATUS = {408, 429, 500, 502, 503, 504}
+FATAL_STATUS = {401, 402, 403}  # bad key, no credits, forbidden: no later call can succeed
 MAX_RETRY_AFTER_S = 60.0
 
 logger = logging.getLogger(__name__)
 
 
-class BudgetExceeded(RuntimeError):
+class RunAborted(RuntimeError):
+    """Stops the whole run: continuing with other cases cannot succeed."""
+
+
+class BudgetExceeded(RunAborted):
     """Raised before an uncached request attempt once spending reaches the cap."""
+
+
+class FatalAPIError(RunAborted):
+    """OpenRouter refused the account (401/402/403); retrying or moving on would only repeat it."""
 
 
 class RetryableResponseError(RuntimeError):
@@ -224,6 +233,8 @@ class OpenRouterLLM:
                     raise
                 await self._backoff(attempt)
                 continue
+            if response.status_code in FATAL_STATUS:
+                raise FatalAPIError(f"OpenRouter returned {response.status_code}: {response.text[:200]}")
             if response.status_code in RETRY_STATUS and not last:
                 await self._backoff(attempt, response)
                 continue
@@ -236,6 +247,8 @@ class OpenRouterLLM:
                 await self._backoff(attempt, response)
                 continue
             if "error" in data:
+                if _error_code(data["error"]) in FATAL_STATUS:
+                    raise FatalAPIError(f"OpenRouter error: {data['error']}")
                 if _error_code(data["error"]) in RETRY_STATUS and not last:
                     await self._backoff(attempt, response)
                     continue

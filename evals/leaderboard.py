@@ -57,6 +57,8 @@ def write_leaderboard(results_dir: Path) -> Path:
         valid = "yes" if meta.get("valid") else "**no**"
         if meta.get("budget_exhausted"):
             valid += " (budget hit)"
+        elif meta.get("aborted"):
+            valid += " (aborted)"
         lines.append(
             f"| {stem} | {meta.get('system', '?')} | {meta.get('split', '?')} | {valid} | " + " | ".join(cells)
             + f" | {errors} | {incomplete} | ${cost:.2f} | ${fresh:.2f} |"

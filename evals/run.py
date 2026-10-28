@@ -6,8 +6,10 @@
 
 If the budget runs out, scheduling stops: the case that hit the cap and every case not yet
 started are left out of routing_rows (they count as incomplete, not as errors), and
-meta.budget_exhausted is true. A case that fails for any other reason is an ERROR row that
-keeps the cost it ran up before failing.
+meta.budget_exhausted is true. If OpenRouter refuses the account (401/402/403: bad key, no
+credits), the run stops the same way, meta.aborted names the reason, the run is invalid, and
+the CLI exits 1. A case that fails for any other reason is an ERROR row that keeps the cost it
+ran up before failing.
 """
 
 from __future__ import annotations
@@ -31,7 +33,7 @@ from .integrity import REPO_ROOT, compute_checksum, expected_checksum, expected_
 from .layers.retrieval import run_retrieval_case
 from .layers.routing import RoutingCaseError, run_routing_case
 from .leaderboard import write_leaderboard
-from .llm import Budget, BudgetExceeded, LLMClient, OpenRouterLLM, fake_llm
+from .llm import Budget, BudgetExceeded, FatalAPIError, LLMClient, OpenRouterLLM, RunAborted, fake_llm
 from .metrics import summarize_retrieval, summarize_routing
 from .systems import get_system
 from .worlds.generator import build_world, generate_cases
@@ -150,17 +152,17 @@ def _git(*args: str) -> str:
 
 async def _run_routing(
     cfg: Config, units: list[Unit], system: Any, llm: LLMClient
-) -> tuple[list[dict[str, Any]], bool]:
-    """Run every (case, sample) with cfg.concurrency workers; stop scheduling once the budget is hit."""
+) -> tuple[list[dict[str, Any]], RunAborted | None]:
+    """Run every (case, sample) with cfg.concurrency workers; stop scheduling once the run is aborted."""
     jobs = [(label, world, case, s) for label, world, cases in units for case in cases for s in range(cfg.k)]
     results: list[dict[str, Any] | None] = [None] * len(jobs)
     pending = iter(enumerate(jobs))
-    exhausted = False
+    aborted: RunAborted | None = None
 
     async def worker() -> None:
-        nonlocal exhausted
+        nonlocal aborted
         for index, (label, world, case, sample) in pending:  # shared iterator: each job runs once
-            if exhausted:
+            if aborted is not None:
                 return
             try:
                 decision = await run_routing_case(case, world, system, llm, model=cfg.model, sample=sample)
@@ -169,8 +171,8 @@ async def _run_routing(
                 except Exception as exc:  # recorded as a failing sample, never silently dropped
                     outcome, error = ERROR, f"grading failed: {type(exc).__name__}: {exc}"
                 results[index] = _routing_row(label, world, case, sample, decision, outcome, system.name, error)
-            except BudgetExceeded:
-                exhausted = True  # this in-flight case is dropped, not recorded as an error
+            except RunAborted as exc:
+                aborted = aborted or exc  # this in-flight case is dropped, not recorded as an error
                 return
             except RoutingCaseError as exc:
                 results[index] = _fallback_row(label, world, case, sample, system.name, str(exc), exc.decision)
@@ -180,7 +182,7 @@ async def _run_routing(
                 )
 
     await asyncio.gather(*(worker() for _ in range(max(1, cfg.concurrency))))
-    return [row for row in results if row is not None], exhausted
+    return [row for row in results if row is not None], aborted
 
 
 async def run_experiment(cfg: Config, *, llm: LLMClient, out_dir: Path, split: str, final: bool) -> Path:
@@ -199,12 +201,12 @@ async def run_experiment(cfg: Config, *, llm: LLMClient, out_dir: Path, split: s
                 })
 
     routing_rows: list[dict[str, Any]] = []
-    budget_exhausted = False
+    aborted: RunAborted | None = None
     planned: dict[str, set[tuple]] = {}
     if "routing" in cfg.layers:
         for label, world, cases in units:
             planned.setdefault(str(label), set()).update((world.seed, case.id) for case in cases)
-        routing_rows, budget_exhausted = await _run_routing(cfg, units, system, llm)
+        routing_rows, aborted = await _run_routing(cfg, units, system, llm)
 
     budget = getattr(llm, "budget", None)
     spent = budget.spent_usd if budget is not None else None
@@ -220,13 +222,18 @@ async def run_experiment(cfg: Config, *, llm: LLMClient, out_dir: Path, split: s
             "finished_at": datetime.now(timezone.utc).isoformat(),
             "checksum": checksum,
             "expected_checksum": expected,
-            "valid": expected is not None and checksum == expected and expected_file_committed(),
+            # A run the API refused (no credits, bad key) is never valid: its numbers are not results.
+            "valid": (
+                expected is not None and checksum == expected and expected_file_committed()
+                and not isinstance(aborted, FatalAPIError)
+            ),
             # spent: everything the client charged; fresh: what finished rows account for;
             # unattributed: the rest (cases dropped when the budget ran out).
             "budget_spent_usd": None if spent is None else round(spent, 4),
             "fresh_cost_usd": round(fresh, 4),
             "unattributed_cost_usd": None if spent is None else round(spent - fresh, 4),
-            "budget_exhausted": budget_exhausted,
+            "budget_exhausted": isinstance(aborted, BudgetExceeded),
+            "aborted": None if aborted is None else f"{type(aborted).__name__}: {aborted}",
         },
         "summary": {
             "retrieval": summarize_retrieval(retrieval_rows),
@@ -302,6 +309,9 @@ def main(argv: list[str] | None = None) -> int:
         f"unattributed {_usd(meta['unattributed_cost_usd'])}  budget_exhausted={meta['budget_exhausted']}  "
         f"valid={meta['valid']}  wrote {path}"
     )
+    if meta.get("aborted"):
+        print(f"RUN ABORTED: {meta['aborted']}", file=sys.stderr)
+        return 1
     return 0
 
 
