@@ -6,6 +6,7 @@ import json
 from typing import Any, Dict, Optional
 
 from .processing import ProcessedEmail
+from .untrusted import wrap_untrusted_email
 from ...config import get_settings
 from ...logging_config import logger
 from ...openrouter_client import OpenRouterError, request_chat_completion
@@ -73,7 +74,7 @@ def _format_email_payload(email: ProcessedEmail) -> str:
         "Email Metadata:\n"
         + "\n".join(header_lines)
         + "\n\nCleaned Body:\n"
-        + (email.clean_text or "(empty body)")
+        + wrap_untrusted_email(email.clean_text or "(empty body)", sender=email.sender, thread_id=email.thread_id)
     )
 
 

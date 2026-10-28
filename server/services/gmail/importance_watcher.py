@@ -11,6 +11,7 @@ from .client import execute_gmail_tool, get_active_gmail_user_id
 from .processing import EmailTextCleaner, ProcessedEmail, parse_gmail_fetch_response
 from .seen_store import GmailSeenStore
 from .importance_classifier import classify_email_importance
+from .untrusted import wrap_untrusted_email
 from ...logging_config import logger
 from ...utils.timezones import convert_to_user_timezone
 
@@ -29,6 +30,15 @@ DEFAULT_POLL_INTERVAL_SECONDS = 60.0
 DEFAULT_LOOKBACK_MINUTES = 10
 DEFAULT_MAX_RESULTS = 50
 DEFAULT_SEEN_LIMIT = 300
+
+
+WATCHER_ALERT_PREFIX = "Important email watcher notification:"
+
+
+# The summary is written from the email's text, so it is as untrusted as the email itself
+def format_watcher_alert(summary: str, email: ProcessedEmail) -> str:
+    wrapped = wrap_untrusted_email(summary, sender=email.sender, thread_id=email.thread_id)
+    return f"{WATCHER_ALERT_PREFIX}\n{wrapped}"
 
 
 _DATA_DIR = Path(__file__).resolve().parent.parent.parent / "data"
@@ -204,7 +214,7 @@ class ImportantEmailWatcher:
                 continue
 
             summaries_sent += 1
-            await self._dispatch_summary(summary)
+            await self._dispatch_summary(summary, email)
 
         if processed_ids:
             self._seen_store.mark_seen(processed_ids)
@@ -219,10 +229,10 @@ class ImportantEmailWatcher:
         )
         self._complete_poll(user_now)
 
-    async def _dispatch_summary(self, summary: str) -> None:
+    async def _dispatch_summary(self, summary: str, email: ProcessedEmail) -> None:
         runtime = _resolve_interaction_runtime()
         try:
-            contextualized = f"Important email watcher notification:\n{summary}"
+            contextualized = format_watcher_alert(summary, email)
             await runtime.handle_agent_message(contextualized)
         except Exception as exc:  # pragma: no cover - defensive
             logger.error(
@@ -241,4 +251,4 @@ def get_important_email_watcher() -> ImportantEmailWatcher:
     return _watcher_instance
 
 
-__all__ = ["ImportantEmailWatcher", "get_important_email_watcher"]
+__all__ = ["ImportantEmailWatcher", "format_watcher_alert", "get_important_email_watcher"]
