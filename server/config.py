@@ -71,6 +71,9 @@ class Settings(BaseModel):
     conversation_summary_threshold: int = Field(default=100)
     conversation_summary_tail_size: int = Field(default=10)
 
+    # Execution-agent memory: verbatim history kept in the prompt before older entries are compacted
+    history_token_budget: int = Field(default=4000)
+
     @property
     def cors_allow_origins(self) -> List[str]:
         """Parse CORS origins from comma-separated string."""
