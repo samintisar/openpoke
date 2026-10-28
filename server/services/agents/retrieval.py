@@ -234,7 +234,14 @@ def search(
 
 
 def build_query(message: str, recent_texts: Sequence[str] = ()) -> str:
-    """The new message plus the last 3 conversation turns."""
+    """The new message alone; the last 3 conversation turns only when it has no content words.
+
+    Names and topics from earlier turns otherwise outrank the request itself (on the lived world,
+    adding context dropped recall@shown at 1,000 agents from 1.00 to 0.76). A contentless follow-up
+    ("any update?") still needs context, and the last-routed agents reach it through the hot set.
+    """
+    if content_tokens(message):
+        return message
     parts = [message, *list(recent_texts)[-3:]]
     return "\n".join(part for part in parts if part)
 
