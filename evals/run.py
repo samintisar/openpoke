@@ -159,7 +159,8 @@ def _routing_row(
         "user_messages": d.user_messages, "tool_calls": d.tool_calls, "iterations": d.iterations,
         "hit_iteration_cap": d.hit_iteration_cap, "cost": d.cost, "fresh_cost": d.fresh_cost,
         "cached_calls": d.cached_calls, "latency_s": d.latency_s, "prompt_tokens": d.prompt_tokens,
-        "completion_tokens": d.completion_tokens, "cache_keys": d.cache_keys,
+        "completion_tokens": d.completion_tokens,
+        "cached_prompt_tokens": d.cached_prompt_tokens, "cache_keys": d.cache_keys,
     }
 
 

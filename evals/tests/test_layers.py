@@ -401,7 +401,7 @@ def mixed_script(world, case):
 
 # Decisions and payload cache keys for these runs, as produced by the routing layer at fa4bf6f, before
 # systems supplied the prompt, tools and handler. Equal hashes mean the baseline's payloads are unchanged.
-BASELINE_GOLDEN_SHA256 = "b8815b161431bbdcc707c84579a137d87cc96505a79fa35506b14560023b44eb"
+BASELINE_GOLDEN_SHA256 = "be2bed4cc79d1f3dd6719af2955014b52d7f70e577abf4b70d49c26410c69ddb"
 
 
 async def test_baseline_decisions_and_payloads_match_pre_refactor():
@@ -463,3 +463,14 @@ async def test_layer_uses_the_systems_prompt_tools_shims_and_handler():
     assert seen["results"][0]["result"] == {"pong": True}
     assert seen["results"][1]["error"]["error"].startswith("Missing required arguments: ")
     assert seen["results"][2]["error"]["error"] == "Unknown tool: send_message_to_agent"
+
+
+async def test_cached_prompt_tokens_are_summed():
+    world, case = setup()
+    llm = MetaLLM([
+        {"cost": 0.01, "cached": False, "cache_key": "a", "prompt_tokens": 1000, "cached_tokens": 800},
+        {"cost": 0.01, "cached": False, "cache_key": "b", "prompt_tokens": 1200, "cached_tokens": 1000},
+    ])
+    decision = await run_routing_case(case, world, BaselineSystem(), llm, model="m", sample=0)
+    assert decision.prompt_tokens == 2200
+    assert decision.cached_prompt_tokens == 1800

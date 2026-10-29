@@ -298,3 +298,12 @@ async def test_daily_quota_stops_the_run_but_keeps_it_valid(tmp_path):
     meta = json.loads(path.read_text(encoding="utf-8"))["meta"]
     assert meta["aborted"].startswith("DailyQuotaExhausted") and meta["valid"] is True
     assert meta["budget_exhausted"] is False
+
+
+def test_routing_rows_carry_cached_prompt_tokens(tmp_path):
+    config = tmp_path / "c.yaml"
+    config.write_text("name: cached\nn_agents: [10]\nk: 1\ncases_per_kind: 1\ninclude_handwritten: false\n", encoding="utf-8")
+    assert main(["--config", str(config), "--fake-llm", "--out-dir", str(tmp_path)]) == 0
+    data = json.loads(next(tmp_path.glob("*-cached-dev.json")).read_text(encoding="utf-8"))
+    assert data["routing_rows"]
+    assert all(row["cached_prompt_tokens"] == 0 for row in data["routing_rows"])

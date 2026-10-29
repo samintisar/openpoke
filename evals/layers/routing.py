@@ -134,6 +134,7 @@ async def _run_turn(
             decision.fresh_cost += cost
         decision.latency_s += float(meta.get("latency_s", 0.0))
         decision.prompt_tokens += int(meta.get("prompt_tokens", 0))
+        decision.cached_prompt_tokens += int(meta.get("cached_tokens", 0))
         decision.completion_tokens += int(meta.get("completion_tokens", 0))
         if meta.get("cache_key"):
             decision.cache_keys.append(meta["cache_key"])
