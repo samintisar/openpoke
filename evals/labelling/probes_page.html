@@ -225,6 +225,23 @@ function renderSheet() {
     seg.append(b);
   });
   sh.append(seg);
+  if (rv.decision !== "fixed") {
+    // Read-only lookup: check for a better agent without switching to "Fix it" first.
+    const look = el("input", { type: "search", placeholder: `Look up other agents: search ${rosterOf(p).length} by name or purpose`, "aria-label": "Look up agents" });
+    look.value = filter;
+    const found = el("div", { class: "roster" });
+    const fillLook = () => {
+      found.replaceChildren();
+      const f = filter.trim().toLowerCase();
+      if (!f) return;
+      const hits = rosterOf(p).filter(a => a.name.toLowerCase().includes(f) || (a.purpose || "").toLowerCase().includes(f));
+      if (!hits.length) found.append(el("small", { text: "No agents match." }));
+      hits.slice(0, 60).forEach(a => found.append(el("div", { class: "ritem" }, el("span", { text: a.name }), el("small", { text: a.purpose || "" }))));
+    };
+    look.oninput = () => { filter = look.value; fillLook(); };
+    fillLook();
+    sh.append(look, found);
+  }
   if (rv.decision === "reject") sh.append(el("div", { class: "h", text: "Rejected probes never run. Say why in the note (unclear, unrealistic, two right answers…)." }));
 
   if (rv.decision === "fixed") {
