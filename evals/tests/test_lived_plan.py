@@ -167,3 +167,19 @@ def test_plan_matches_the_golden_hash():
         repr(b) for b in PLAN.background
     )
     assert hashlib.sha256(text.encode("utf-8")).hexdigest() == GOLDEN_SHA256
+
+
+def _plan_digest(seed: int) -> str:
+    from dataclasses import asdict
+    import json
+
+    blob = json.dumps(asdict(build_plan(seed)), sort_keys=True, default=str).encode("utf-8")
+    return hashlib.sha256(blob).hexdigest()
+
+
+# Life 1's world (world-s1.json) was grown from this exact plan; any change to it would invalidate the world.
+LIFE1_PLAN_SHA256 = "7dfd8cedeb968d8038ee0dea08b440ee711d1f16df85ac05e11fe62311819bb5"
+
+
+def test_life1_plan_is_frozen():
+    assert _plan_digest(1) == LIFE1_PLAN_SHA256
