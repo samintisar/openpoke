@@ -8,6 +8,7 @@ the server's `build_system_prompt()` and the tool schemas are `schemas.TOOL_SCHE
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import replace
 from datetime import timedelta
 from typing import Any
 
@@ -34,6 +35,7 @@ from .cards_from_world import cards_for
 QUERY_CONTEXT_ENTRIES = 6
 # Stand-in for the previous turn's routing: agents active this recently.
 LAST_ROUTED_WINDOW = timedelta(hours=1)
+SEARCH_TOOL = "search_agents"
 
 
 # No-op shims with the new tools' signatures and names: calling one with the model's arguments
@@ -82,6 +84,11 @@ _SHIMS = {
 }
 
 
+def without_tool_lines(prompt: str, tool: str) -> str:
+    """The prompt minus every line that names `tool`: strips a removed tool's rule, nothing else."""
+    return "\n".join(line for line in prompt.split("\n") if f"`{tool}`" not in line)
+
+
 def _query(case: Case | None) -> str:
     if case is None:
         return ""
@@ -106,9 +113,10 @@ def _error(name: str, args: dict[str, Any], payload: Any) -> dict[str, Any]:
 class RetrievedTurn:
     """Per-run tool state: a fresh directory over the world's cards, so creates are seen within the turn."""
 
-    def __init__(self, world: World, cards: list[AgentCard], cfg: RetrievalConfig) -> None:
+    def __init__(self, world: World, cards: list[AgentCard], cfg: RetrievalConfig, guard: bool = True) -> None:
         self.world = world
         self.cfg = cfg
+        self.guard = guard
         self.directory = InMemoryDirectory(cards, last_routed=_last_routed(cards, world))
         self.created_ids: set[str] = set()
 
@@ -141,7 +149,8 @@ class RetrievedTurn:
             agent_id=args.get("agent_id"),
             name=args.get("name"),
             purpose=args.get("purpose"),
-            force_new=bool(args.get("force_new", False)),
+            # No guard: every create goes through as if force_new, so none returns possible_duplicate.
+            force_new=bool(args.get("force_new", False)) or not self.guard,
             now=self.world.now,
             cfg=self.cfg,
         )
@@ -163,10 +172,15 @@ class RetrievedSystem:
 
     name = "retrieved"
 
-    def __init__(self, cfg: RetrievalConfig | None = None, lifecycle: bool = True) -> None:
+    def __init__(
+        self, cfg: RetrievalConfig | None = None, lifecycle: bool = True, guard: bool = True, search: bool = True
+    ) -> None:
         self.cfg = cfg or RetrievalConfig()
         # False keeps every card active, to ablate the lifecycle (dormant / archived statuses).
         self.lifecycle = lifecycle
+        # Eval-only ablation switches; the defaults are production behaviour.
+        self.guard = guard  # False: creates skip the duplicate guard
+        self.search = search  # False: no search_agents tool and no prompt rule for it
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
         self._cards_cache: dict[int, tuple[World, list[AgentCard]]] = {}
 
@@ -191,16 +205,23 @@ class RetrievedSystem:
         return [card.id for card in self.selected(world, case)]
 
     def system_prompt(self) -> str:
+        if not self.search:
+            return without_tool_lines(build_system_prompt(), SEARCH_TOOL)
         return build_system_prompt()
 
     def tool_schemas(self) -> list[dict[str, Any]]:
+        if not self.search:
+            return [schema for schema in TOOL_SCHEMAS if schema["function"]["name"] != SEARCH_TOOL]
         return TOOL_SCHEMAS
 
     def tool_signatures(self) -> dict[str, Callable[..., Any]]:
+        if not self.search:
+            # Without its shim the routing layer treats a search_agents call as an unknown tool.
+            return {name: f for name, f in _SHIMS.items() if name != SEARCH_TOOL}
         return _SHIMS
 
     def new_turn(self, world: World, case: Case) -> RetrievedTurn:
-        return RetrievedTurn(world, self.cards(world), self.cfg)
+        return RetrievedTurn(world, self.cards(world), self.cfg, self.guard)
 
 
 class RetrievedNoLifecycleSystem(RetrievedSystem):
@@ -212,4 +233,49 @@ class RetrievedNoLifecycleSystem(RetrievedSystem):
         super().__init__(cfg, lifecycle=False)
 
 
-__all__ = ["RetrievedNoLifecycleSystem", "RetrievedSystem", "RetrievedTurn"]
+class RetrievedNoGuardSystem(RetrievedSystem):
+    """`retrieved` without the duplicate guard: creates never return possible_duplicate."""
+
+    name = "retrieved_noguard"
+
+    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
+        super().__init__(cfg, guard=False)
+
+
+class RetrievedNoSearchSystem(RetrievedSystem):
+    """`retrieved` without `search_agents`: no tool schema, no shim, no prompt rule."""
+
+    name = "retrieved_nosearch"
+
+    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
+        super().__init__(cfg, search=False)
+
+
+class RetrievedNoFuzzySystem(RetrievedSystem):
+    """`retrieved` with exact-only entity matching: no typo matching in retrieval, search or dedup."""
+
+    name = "retrieved_nofuzzy"
+
+    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
+        super().__init__(replace(cfg or RetrievalConfig(), fuzzy=False))
+
+
+class RetrievedNoLastRoutedSystem(RetrievedSystem):
+    """`retrieved` without the last-routed boost."""
+
+    name = "retrieved_nolastrouted"
+
+    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
+        super().__init__(replace(cfg or RetrievalConfig(), last_routed_boost=0.0))
+
+
+__all__ = [
+    "RetrievedNoFuzzySystem",
+    "RetrievedNoGuardSystem",
+    "RetrievedNoLastRoutedSystem",
+    "RetrievedNoLifecycleSystem",
+    "RetrievedNoSearchSystem",
+    "RetrievedSystem",
+    "RetrievedTurn",
+    "without_tool_lines",
+]

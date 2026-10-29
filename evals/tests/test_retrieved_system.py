@@ -1,4 +1,5 @@
 import json
+from dataclasses import replace
 from datetime import timedelta
 
 import pytest
@@ -7,14 +8,23 @@ from evals.cases import Case
 from evals.grading import Decision, grade
 from evals.layers.retrieval import run_retrieval_case
 from evals.layers.routing import build_messages, run_routing_case
-from evals.llm import ScriptedLLM, tool_call
+from evals.llm import ScriptedLLM, cache_key, tool_call
 from evals.systems import get_system
 from evals.systems.cards_from_world import cards_for
 from evals.systems.full_cards import FullCardsSystem
-from evals.systems.retrieved import RetrievedNoLifecycleSystem, RetrievedSystem
+from evals.systems.retrieved import (
+    RetrievedNoFuzzySystem,
+    RetrievedNoGuardSystem,
+    RetrievedNoLastRoutedSystem,
+    RetrievedNoLifecycleSystem,
+    RetrievedNoSearchSystem,
+    RetrievedSystem,
+    _last_routed,
+    without_tool_lines,
+)
 from evals.worlds.model import WORLD_NOW, AgentSpec, World
 from server.agents.interaction_agent.agent import build_system_prompt
-from server.services.agents.retrieval import RetrievalConfig
+from server.services.agents.retrieval import RetrievalConfig, score_cards
 from server.services.agents.schemas import TOOL_SCHEMAS
 
 GARY = "gary-whitman-lease-renewal"
@@ -431,3 +441,146 @@ def test_render_roster_without_a_case():
     assert RetrievedSystem().render_roster(World(seed=0, agents=[]), None) == (
         '<active_agents shown="0" total="0">None</active_agents>'
     )
+
+
+# Plan 5 ablations: each switch changes one behaviour; the defaults are `retrieved` exactly.
+
+ABLATIONS = {
+    "retrieved_noguard": RetrievedNoGuardSystem,
+    "retrieved_nosearch": RetrievedNoSearchSystem,
+    "retrieved_nofuzzy": RetrievedNoFuzzySystem,
+    "retrieved_nolastrouted": RetrievedNoLastRoutedSystem,
+}
+
+
+def switches(system):
+    return {"cfg": system.cfg, "lifecycle": system.lifecycle, "guard": system.guard, "search": system.search}
+
+
+def test_ablations_are_registered_and_each_flips_one_switch():
+    default = switches(RetrievedSystem())
+    expected = {
+        "retrieved_noguard": {"guard": False},
+        "retrieved_nosearch": {"search": False},
+        "retrieved_nofuzzy": {"cfg": replace(RetrievalConfig(), fuzzy=False)},
+        "retrieved_nolastrouted": {"cfg": replace(RetrievalConfig(), last_routed_boost=0.0)},
+    }
+    for name, cls in ABLATIONS.items():
+        system = get_system(name)
+        assert type(system) is cls and system.name == name
+        assert switches(system) == {**default, **expected[name]}
+
+
+def test_ablations_keep_a_passed_config_apart_from_their_switch():
+    cfg = RetrievalConfig(k=4)
+    assert RetrievedNoFuzzySystem(cfg).cfg == replace(cfg, fuzzy=False)
+    assert RetrievedNoLastRoutedSystem(cfg).cfg == replace(cfg, last_routed_boost=0.0)
+    assert RetrievedNoGuardSystem(cfg).cfg is cfg
+
+
+def test_only_nosearch_changes_the_prompt_and_tools():
+    for name in ("retrieved_noguard", "retrieved_nofuzzy", "retrieved_nolastrouted"):
+        system = get_system(name)
+        assert system.system_prompt() == build_system_prompt()
+        assert system.tool_schemas() is TOOL_SCHEMAS
+        assert system.tool_signatures() == RetrievedSystem().tool_signatures()
+    system = RetrievedNoSearchSystem()
+    names = [s["function"]["name"] for s in system.tool_schemas()]
+    assert names == [s["function"]["name"] for s in TOOL_SCHEMAS if s["function"]["name"] != "search_agents"]
+    assert sorted(system.tool_signatures()) == sorted(names)
+    prompt, full = system.system_prompt().split("\n"), build_system_prompt().split("\n")
+    assert "search_agents" not in system.system_prompt()
+    removed = [line for line in full if line not in prompt]
+    assert len(removed) == 1 and "call `search_agents` before creating" in removed[0]
+    assert len(full) - len(prompt) == 1
+
+
+def test_without_tool_lines_drops_only_lines_naming_the_tool():
+    assert without_tool_lines("a\n- use `x` here\nb `y`\nx alone", "x") == "a\nb `y`\nx alone"
+
+
+async def test_nosearch_treats_search_agents_as_an_unknown_tool():
+    world = toy_world()
+    c = case("what did the dentist say?", [DENTIST], kind="dormant_revival")
+    _, results = await run(RetrievedNoSearchSystem(), world, c, [tool_call("search_agents", query="dentist")])
+    assert results[0]["status"] == "error"
+    _, results = await run(RetrievedSystem(), world, c, [tool_call("search_agents", query="dentist")])
+    assert results[0]["status"] == "success"
+
+
+async def test_noguard_creates_what_the_guard_would_flag():
+    world = toy_world()
+    args = {"name": "Gary Whitman Lease Renewal", "purpose": "Lease call with Gary Whitman.", "instructions": "x"}
+    c = case("gary lease", [GARY])
+    _, results = await run(RetrievedSystem(), world, c, [agent_call(**args)])
+    assert results[0]["error"]["status"] == "possible_duplicate"
+    decision, results = await run(RetrievedNoGuardSystem(), world, c, [agent_call(**args)])
+    assert results[0]["status"] == "success" and results[0]["result"]["new_agent_created"] is True
+    assert decision.created_names == ["Gary Whitman Lease Renewal"]
+    # Reuse and unknown-id errors are untouched.
+    decision, _ = await run(RetrievedNoGuardSystem(), world, c, [agent_call(agent_id=GARY, instructions="x")])
+    assert decision.dispatched_ids == [GARY]
+    _, results = await run(RetrievedNoGuardSystem(), world, c, [agent_call(agent_id="nobody", instructions="x")])
+    assert results[0]["status"] == "error" and "nearest_agents" in results[0]["error"]
+
+
+def test_nofuzzy_loses_the_typo_match_only():
+    world = toy_world()
+    plain = case("any word back from Gary on the lease?", [GARY])
+    assert RetrievedNoFuzzySystem().shown_ids(world, plain) == RetrievedSystem().shown_ids(world, plain)
+    entity_only = RetrievalConfig(w_kw=0.0, w_rec=0.0, last_routed_boost=0.0)
+    typo = case("baetriz", [BEATRIZ])
+    assert BEATRIZ in RetrievedSystem(entity_only).shown_ids(world, typo)
+    assert BEATRIZ not in RetrievedNoFuzzySystem(entity_only).shown_ids(world, typo)
+
+
+def test_nolastrouted_drops_the_boost_only():
+    world = toy_world()
+    cards = RetrievedSystem().cards(world)
+    routed = _last_routed(cards, world)
+    assert routed == [HOT]
+    for system, boost in ((RetrievedSystem(), RetrievalConfig().last_routed_boost), (RetrievedNoLastRoutedSystem(), 0.0)):
+        boosted = dict((c.id, s) for c, s in score_cards("lease", cards, world.now, routed, system.cfg))
+        plain = dict((c.id, s) for c, s in score_cards("lease", cards, world.now, (), system.cfg))
+        assert boosted[HOT] - plain[HOT] == pytest.approx(boost)
+        assert boosted[GARY] == plain[GARY]
+
+
+class KeyedLLM(ScriptedLLM):
+    """ScriptedLLM that records each request's production cache key."""
+
+    def __init__(self, script):
+        super().__init__(script)
+        self.keys = []
+
+    async def complete(self, *, model, system, messages, tools, sample):
+        self.keys.append(cache_key(model=model, system=system, messages=messages, tools=tools, sample=sample))
+        return await super().complete(model=model, system=system, messages=messages, tools=tools, sample=sample)
+
+
+async def keys_for(system, world, c, *steps):
+    llm, _ = scripted(*steps)
+    keyed = KeyedLLM(llm.script)
+    await run_routing_case(c, world, system, keyed, model="m", sample=0)
+    return keyed.keys
+
+
+async def test_default_switches_reproduce_retrieved_cache_keys():
+    world = toy_world()
+    steps = (
+        [tool_call("send_message_to_user", message="on it"), agent_call(1, agent_id=GARY, instructions="x")],
+        [tool_call("search_agents", query="gary lease")],
+        [agent_call(name="Gary Whitman Lease Renewal", purpose="Lease call with Gary Whitman.", instructions="x")],
+    )
+    c = case("any word back from Gary on the lease?", [GARY])
+    retrieved = await keys_for(get_system("retrieved"), world, c, *steps)
+    explicit = await keys_for(
+        RetrievedSystem(RetrievalConfig(), lifecycle=True, guard=True, search=True), world, c, *steps
+    )
+    assert len(retrieved) == 4 and explicit == retrieved
+    # The guard fires on the last call, so noguard matches until the request carrying that result.
+    noguard = await keys_for(RetrievedNoGuardSystem(), world, c, *steps)
+    assert noguard[:3] == retrieved[:3] and noguard[3] != retrieved[3]
+    # Without the tool and its rule, the very first request differs.
+    nosearch = await keys_for(RetrievedNoSearchSystem(), world, c, *steps)
+    assert nosearch[0] != retrieved[0]

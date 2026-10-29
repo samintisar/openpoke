@@ -71,6 +71,15 @@ def test_fuzzy_needs_min_length_and_counts_half():
     assert score_cards("bem", short, NOW, cfg=cfg)[0][1] == 0.0
 
 
+def test_fuzzy_off_matches_entities_exactly_only():
+    cfg = RetrievalConfig(w_kw=0.0, w_rec=0.0, fuzzy=False)
+    exact = dict((c.id, s) for c, s in score_cards("maya", CARDS, NOW, cfg=cfg))
+    typo = dict((c.id, s) for c, s in score_cards("mayo", CARDS, NOW, cfg=cfg))
+    assert exact["maya-okrs"] == 0.40
+    assert typo["maya-okrs"] == 0.0
+    assert RetrievalConfig().fuzzy is True
+
+
 def test_recency_and_last_routed_boost():
     twins = [
         card("old", "Ben Okafor Ski Trip Reply", "Reply to Ben about the ski trip", ["ben"], days=30),

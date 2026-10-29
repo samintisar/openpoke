@@ -29,6 +29,7 @@ class RetrievalConfig:
     hot_max: int = 5
     hot_window_hours: float = 1.0
     min_score: float = 0.1
+    fuzzy: bool = True  # False: entity matching is exact only (the typo-matching ablation)
     fuzzy_min_len: int = 4
     fuzzy_weight: float = 0.5
     archived_min_score: float = 0.4  # an archived card joins the top K only on a strong match (tuned on lived dev)
@@ -120,7 +121,7 @@ def _entity_overlap(query_terms: set[str], card_terms: list[set[str]], cfg: Retr
     idf = {term: math.log(1 + n / count) for term, count in df.items()}
     # Fuzzy partners per query term, computed once over the vocabulary rather than per card.
     fuzzy: dict[str, set[str]] = {}
-    for q in query_terms:
+    for q in query_terms if cfg.fuzzy else ():
         if len(q) < cfg.fuzzy_min_len or q in df:
             continue
         fuzzy[q] = {t for t in df if len(t) >= cfg.fuzzy_min_len and edit_distance_le1(q, t)}

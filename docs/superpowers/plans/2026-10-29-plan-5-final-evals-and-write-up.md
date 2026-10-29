@@ -37,6 +37,13 @@
 - **Decision rule:** a sweep only changes a default if it beats the current value by more than 0.01 recall@shown at 200 or 1,000 agents without adding more than 10% tokens. Any change is then confirmed with one live dev run in Task 2.
 - **Tests:** grid expansion, normalization of the weights, determinism.
 
+## Task 1b: the 50-agent dip (dev, $0)
+
+`retrieved` trails the baseline at 50 agents on dev: pass@1 0.87–0.90 against 0.93, with a duplicate rate of 0.10 against 0.06. Every other size improved, so the dip needs an explanation before the test split.
+- **Classify** each failing lived-50 sample in the latest `retrieved` dev run with the same categories as `error_analysis_lived.md`.
+- **Check retrieval:** was the right card in the shown set (L1 recall@shown at 50)? This separates retrieval misses from IA choices.
+- **Fix only if it's real:** a fix that isn't label noise gets one dev experiment in the journal, like any other change. Otherwise the analysis goes into `error_analysis_lived.md` and the write-up as a known limit.
+
 ## Task 2: live ablations (L2 dev, about $5)
 
 All of these are variants of `retrieved`. Eval-only switches are added to `RetrievedSystem`, with one config per variant.
