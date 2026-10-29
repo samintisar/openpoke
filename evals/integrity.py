@@ -34,6 +34,7 @@ PROTECTED = (
     "evals/systems/retrieved.py",
     "evals/systems/full_cards.py",
     "evals/worlds/lived/model.py",
+    "evals/worlds/lived/personas.py",  # life 1's people are frozen with its world
     "evals/worlds/lived/plan.py",
     "evals/worlds/lived/writer.py",
     "evals/worlds/lived/grow.py",

@@ -174,7 +174,7 @@ async def _follow_up(p: _Probes, want: int) -> list[_Draft]:
     for thread in p.shuffled(t for t in p.backed if (p.idle(t) is not None and p.idle(t) <= ACTIVE_DAYS)):
         if len(out) == want:
             break
-        detail = p.rng.choice(FOLLOW_UP_DETAILS[_group(thread.domain)])
+        detail = personalize(p.rng.choice(FOLLOW_UP_DETAILS[_group(thread.domain)]), p.persona)
         text = await p.write(p.thread_intent(thread, "follow_up", detail))
         if text:
             gold, acceptable = p.gold(thread)
@@ -283,7 +283,7 @@ async def _multi_task(p: _Probes, want: int) -> list[_Draft]:
         if thread.id in used:
             continue
         agents_a = set(p.snapshot.thread_agents[thread.id])
-        detail_a = p.rng.choice(FOLLOW_UP_DETAILS[_group(thread.domain)])
+        detail_a = personalize(p.rng.choice(FOLLOW_UP_DETAILS[_group(thread.domain)]), p.persona)
         gold_a, acceptable_a = p.gold(thread)
         if len(out) % 2 == 0:
             other = next((
@@ -294,7 +294,7 @@ async def _multi_task(p: _Probes, want: int) -> list[_Draft]:
             ), None)
             if other is None:
                 continue
-            detail_b = p.rng.choice(FOLLOW_UP_DETAILS[_group(other.domain)])
+            detail_b = personalize(p.rng.choice(FOLLOW_UP_DETAILS[_group(other.domain)]), p.persona)
             gold_b, acceptable_b = p.gold(other)
             second, mention_b, forbid_b = other.id, p.thread_mention(other), p.thread_forbid(other)
             topic_b, contacts_b = other.topic, ((other.contact,) if other.contact else ())
@@ -379,7 +379,7 @@ async def _typo(p: _Probes, want: int) -> list[_Draft]:
         first = p.contact(thread).first
         if typo_name(first).lower() in firsts:
             continue  # the misspelling would name someone else
-        detail = p.rng.choice(FOLLOW_UP_DETAILS[_group(thread.domain)])
+        detail = personalize(p.rng.choice(FOLLOW_UP_DETAILS[_group(thread.domain)]), p.persona)
         text = await p.write(p.thread_intent(thread, "typo", detail))
         if not text:
             continue

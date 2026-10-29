@@ -219,3 +219,8 @@ def test_service_roles_for_both_lives():
     two = build_plan(2)
     landlord = next(c for c in two.contacts if c.relation == "service" and service_role(c) == "landlord")
     assert landlord.full == "Dennis Varga"
+
+
+def test_life2_details_use_its_own_spouse():
+    details = " ".join(e.intent.detail for e in build_plan(2).events)
+    assert "Jamie" not in details and "Mia" not in details

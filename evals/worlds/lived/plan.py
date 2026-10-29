@@ -207,8 +207,8 @@ ERRANDS = _errand_pool()
 
 
 def personalize(text: str, persona: Persona) -> str:
-    """Topic and detail text with the persona's child in place of life 1's ("Mia")."""
-    return text.replace("Mia", persona.child)
+    """Topic and detail text with the persona's child and spouse in place of life 1's ("Mia", "Jamie")."""
+    return text.replace("Mia", persona.child).replace("Jamie", persona.spouse)
 
 
 TOPIC_KEYWORDS: dict[str, str] = {
@@ -289,8 +289,9 @@ def _geometric(rng: random.Random) -> int:
 class _Mentions:
     """Builds the mention, forbid and detail fields of a thread's intents."""
 
-    def __init__(self, contacts: list[Contact], threads: list[Thread], rng: random.Random) -> None:
+    def __init__(self, contacts: list[Contact], threads: list[Thread], rng: random.Random, persona: Persona) -> None:
         self.rng = rng
+        self.persona = persona
         self.by_full = {c.full: c for c in contacts}
         self.thread_count: dict[str, int] = {}
         for thread in threads:
@@ -330,7 +331,7 @@ class _Mentions:
         if kind == "start":
             return self.rng.choice(START_DETAILS[group])
         if kind == "follow_up":
-            return self.rng.choice(FOLLOW_UP_DETAILS[group])
+            return personalize(self.rng.choice(FOLLOW_UP_DETAILS[group]), self.persona)
         if kind == "revival":
             return self.rng.choice(REVIVAL_DETAILS)
         if thread.contact is None:
@@ -395,7 +396,7 @@ def build_plan(seed: int = 1) -> LifePlan:
     rng = random.Random(seed)
     contacts, pools = _contacts(persona)
     threads = _threads(contacts, pools, rng, persona)
-    mentions = _Mentions(contacts, threads, rng)
+    mentions = _Mentions(contacts, threads, rng, persona)
 
     # (day, sequence, intent): the sequence keeps same-day ordering stable.
     raw: list[tuple[float, int, Intent]] = []

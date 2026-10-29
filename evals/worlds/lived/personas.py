@@ -10,6 +10,7 @@ class Persona:
     name: str
     text: str
     child: str
+    spouse: str  # replaces "Jamie" in detail text
     work_company: str
     colliding_firsts: tuple[str, ...]
     shared_surname: str
@@ -31,6 +32,7 @@ JORDAN = Persona(
         "through an AI assistant, mostly from their phone."
     ),
     child="Mia",
+    spouse="Jamie",
     work_company="Northwind Labs",
     colliding_firsts=("Alice", "Ben"),
     shared_surname="Doyle",  # colleague Kevin Doyle and cousin Nora Doyle
@@ -80,6 +82,7 @@ RILEY = Persona(
         "through an AI assistant, mostly from their phone."
     ),
     child="Lena",
+    spouse="Sam",
     work_company="Bluefin Logistics",
     colliding_firsts=("Nina", "Max"),
     shared_surname="Holm",  # colleague Ingrid Holm and cousins Erik and Ada Holm

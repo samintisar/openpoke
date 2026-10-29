@@ -284,7 +284,7 @@ def test_calibrate_writes_agreement_report(tmp_path):
 
 
 def test_cli_fake_llm_judges_l3_rows(tmp_path, capsys):
-    results = sorted((Path(__file__).resolve().parents[1] / "results").glob("*-e2e-dev.json"))
+    results = sorted(p for p in (Path(__file__).resolve().parents[1] / "results").glob("*-e2e-dev.json") if "model-gate" not in p.name)
     if not results:
         pytest.skip("no L3 result file")
     assert judge.main(["--rows", str(results[-1]), "--checks", "consent,one_reply", "--fake-llm",
