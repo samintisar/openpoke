@@ -204,6 +204,23 @@ class TriggerScheduler:
             f"Scheduled occurrence time: {scheduled_for}.\n\n"
             f"Metadata:\n{metadata}\n\n"
             f"Payload:\n{trigger.payload}"
+            f"{self._standing_note(trigger)}"
+        )
+
+    def _standing_note(self, trigger: TriggerRecord) -> str:
+        """Tell the agent which recipients the user pre-approved for this trigger, so it sends instead of asking."""
+        try:
+            standing = approvals.get_approval_store().active_standing(trigger.id, trigger.agent_id)
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning(f"Standing approval lookup failed for trigger {trigger.id}: {exc}")
+            return ""
+        recipients = sorted({address for approval in standing for address in approval.recipients})
+        if not recipients:
+            return ""
+        return (
+            "\n\nStanding approval: the user pre-approved sends from this trigger to exactly "
+            f"{', '.join(recipients)}. Create the draft and send it with gmail_execute_draft in this run; "
+            "no further approval is needed for these recipients. Any other recipient still needs approval."
         )
 
 

@@ -342,3 +342,14 @@ def test_approve_send_tells_the_agent_to_send_with_the_action_id(gmail, log, run
     shown_at = gate.get_action(held["action_id"]).shown_at
     result = in_turn("user", shown_at + MICRO, ia_tools.approve_send, held["action_id"])
     assert f"gmail_reply_to_thread with action_id={held['action_id']}" in result.payload["next"]
+
+
+def test_trigger_instructions_name_the_standing_recipients(triggers):
+    from server.services.trigger_scheduler import TriggerScheduler
+
+    scheduler = TriggerScheduler.__new__(TriggerScheduler)  # only the formatter is used
+    plain = weekly(triggers)
+    assert "Standing approval" not in scheduler._format_instructions(plain, NOW)
+    covered = standing(triggers)
+    note = scheduler._format_instructions(covered, NOW)
+    assert "Standing approval" in note and "bob@example.com" in note
