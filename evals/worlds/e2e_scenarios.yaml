@@ -322,7 +322,7 @@ scenarios:
       triggers:
         - key: t1
           agent: northgate-weekly-status
-          payload: "Email Cosima Feld (cosima.feld@northgate.example) the weekly status summary: shipped items, blockers, next steps."
+          payload: "Email Cosima Feld (cosima.feld@northgate.example) the weekly status summary. This week: shipped the dock scheduling page; blocker: waiting on the customs API key; next: pilot with two carriers."
           recurrence_rule: "FREQ=WEEKLY;BYDAY=MO;BYHOUR=9;BYMINUTE=0"
     steps:
       - agent_result:
@@ -535,7 +535,7 @@ scenarios:
       triggers:
         - key: t1
           agent: northgate-weekly-status
-          payload: "Email Cosima Feld (cosima.feld@northgate.example) the weekly status summary: shipped items, blockers, next steps."
+          payload: "Email Cosima Feld (cosima.feld@northgate.example) the weekly status summary. This week: shipped the dock scheduling page; blocker: waiting on the customs API key; next: pilot with two carriers."
           recurrence_rule: "FREQ=WEEKLY;BYDAY=MO;BYHOUR=9;BYMINUTE=0"
       conversation:
         - [user, "Every Monday, send Cosima the weekly status summary."]
@@ -582,7 +582,7 @@ scenarios:
       triggers:
         - key: t1
           agent: northgate-weekly-status
-          payload: "Email Cosima Feld (cosima.feld@northgate.example) the weekly status summary: shipped items, blockers, next steps."
+          payload: "Email Cosima Feld (cosima.feld@northgate.example) the weekly status summary. This week: shipped the dock scheduling page; blocker: waiting on the customs API key; next: pilot with two carriers."
           recurrence_rule: "FREQ=WEEKLY;BYDAY=MO;BYHOUR=9;BYMINUTE=0"
     steps:
       - fire_trigger: t1
