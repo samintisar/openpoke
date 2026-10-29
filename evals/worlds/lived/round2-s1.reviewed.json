@@ -5643,6 +5643,252 @@
     "clarify_ok": false,
     "dispatch_optional": false
    }
+  },
+  {
+   "labels": [
+    "lived-200",
+    "lived-1000"
+   ],
+   "decision": "accept",
+   "note": "",
+   "case": {
+    "id": "lived-s1-200-r2-vague_reference-01",
+    "kind": "vague_reference",
+    "world_seed": 1,
+    "message": "how's the phone screen going? did they actually show up",
+    "gold_targets": [
+     "wendy-phone-screen-calendar-slot"
+    ],
+    "message_type": "user",
+    "context": [
+     [
+      "agent_message",
+      "[SUCCESS] Laura Cleaning Appointment: Laura replied asking whether the cleaning appointment can happen earlier in the week than planned.",
+      "2026-07-28T13:24:57.600000+00:00"
+     ],
+     [
+      "poke_reply",
+      "laura's in. she's asking whether the cleaning can happen earlier in the week than planned. what day works for you? I'll draft a reply once you tell me.",
+      "2026-07-28T13:24:57.600000+00:00"
+     ],
+     [
+      "agent_message",
+      "[SUCCESS] Karaoke Room Saturday Night Search: The first karaoke room choice is full, but the same venue has an opening at 9:30pm on Saturday. Want me to book that one?",
+      "2026-07-28T17:09:36+00:00"
+     ],
+     [
+      "poke_reply",
+      "The first karaoke room is full, but the same place has a 9:30pm slot Saturday. Want me to book it?",
+      "2026-07-28T17:09:36+00:00"
+     ],
+     [
+      "user_message",
+      "hey can you let beatriz know i'm excited about trivia night and ask how i can help",
+      "2026-07-28T19:07:40.800000+00:00"
+     ],
+     [
+      "poke_reply",
+      "on it. drafting a note to beatriz saying you're excited about trivia night and asking how you can help. you'll see it before anything goes out.",
+      "2026-07-28T19:07:40.800000+00:00"
+     ],
+     [
+      "agent_message",
+      "[SUCCESS] Chloe Demo Day Slides Request: Chloe replied that she needs an answer by Monday on the demo day slides. Her message is waiting for your decision, and I can draft a reply once you tell me what you want to say.",
+      "2026-07-28T19:48:00+00:00"
+     ],
+     [
+      "poke_reply",
+      "chloe needs an answer by monday on the demo day slides. what do you want to tell her? I can draft a reply once you decide.",
+      "2026-07-28T19:48:00+00:00"
+     ],
+     [
+      "user_message",
+      "hey can you let marcus know i'd like to wrap up the demo day slides before the end of the month",
+      "2026-07-28T20:09:36+00:00"
+     ],
+     [
+      "poke_reply",
+      "on it. drafting a note to marcus saying you'd like to wrap up the demo day slides before the end of the month. you'll see it before anything goes out.",
+      "2026-07-28T20:09:36+00:00"
+     ],
+     [
+      "user_message",
+      "hey can you let dmitri know i want to set up 30 min this week to go over the q3 roadmap",
+      "2026-07-28T23:18:14.400000+00:00"
+     ],
+     [
+      "poke_reply",
+      "on it. drafting a note to dmitri asking for 30 min this week to go over the q3 roadmap. you'll see it before anything goes out.",
+      "2026-07-28T23:18:14.400000+00:00"
+     ],
+     [
+      "agent_message",
+      "[SUCCESS] Beatriz Trivia Night Note: Beatriz replied asking what time trivia night starts and whether she should bring a team of four or just herself.",
+      "2026-07-29T05:38:24+00:00"
+     ],
+     [
+      "poke_reply",
+      "beatriz replied about trivia night. she wants to know what time it starts and whether to bring a team of four or just herself. what should I tell her?",
+      "2026-07-29T05:38:24+00:00"
+     ],
+     [
+      "agent_message",
+      "[SUCCESS] Karaoke Room Saturday Night Search: Found three karaoke rooms open for your Saturday group; please reply with the one you want and I'll book it.",
+      "2026-07-29T07:01:55.200000+00:00"
+     ],
+     [
+      "poke_reply",
+      "three karaoke rooms are open saturday night. pulling up the details and my pick now.",
+      "2026-07-29T07:01:55.200000+00:00"
+     ],
+     [
+      "user_message",
+      "hey can you ask petra to loop in her manager about the export issue. and separately tell yusuf the statement of work draft looks good but cut the second paragraph",
+      "2026-07-29T14:36:57.600000+00:00"
+     ],
+     [
+      "poke_reply",
+      "on it. drafting both now. you'll see them before anything goes out.",
+      "2026-07-29T14:36:57.600000+00:00"
+     ],
+     [
+      "user_message",
+      "tell Alice Chen i need one more day on the on-call rotation. and separately ask Beatriz if we can push the Big Sur road trip back a week",
+      "2026-07-29T17:03:50.400000+00:00"
+     ],
+     [
+      "poke_reply",
+      "on it. drafting a note to alice asking for one more day on the on-call rotation, and a separate note to beatriz asking if the big sur trip can move back a week. you'll see both before anything goes out.",
+      "2026-07-29T17:03:50.400000+00:00"
+     ]
+    ],
+    "acceptable_ids": [],
+    "clarify_ok": false,
+    "dispatch_optional": false
+   }
+  },
+  {
+   "labels": [
+    "lived-200",
+    "lived-1000"
+   ],
+   "decision": "accept",
+   "note": "",
+   "case": {
+    "id": "lived-s1-200-r2-vague_reference-02",
+    "kind": "vague_reference",
+    "world_seed": 1,
+    "message": "how's the brake repair going? did they say when it'll be done",
+    "gold_targets": [
+     "steve-brake-issue-status"
+    ],
+    "message_type": "user",
+    "context": [
+     [
+      "agent_message",
+      "[SUCCESS] Laura Cleaning Appointment: Laura replied asking whether the cleaning appointment can happen earlier in the week than planned.",
+      "2026-07-28T13:24:57.600000+00:00"
+     ],
+     [
+      "poke_reply",
+      "laura's in. she's asking whether the cleaning can happen earlier in the week than planned. what day works for you? I'll draft a reply once you tell me.",
+      "2026-07-28T13:24:57.600000+00:00"
+     ],
+     [
+      "agent_message",
+      "[SUCCESS] Karaoke Room Saturday Night Search: The first karaoke room choice is full, but the same venue has an opening at 9:30pm on Saturday. Want me to book that one?",
+      "2026-07-28T17:09:36+00:00"
+     ],
+     [
+      "poke_reply",
+      "The first karaoke room is full, but the same place has a 9:30pm slot Saturday. Want me to book it?",
+      "2026-07-28T17:09:36+00:00"
+     ],
+     [
+      "user_message",
+      "hey can you let beatriz know i'm excited about trivia night and ask how i can help",
+      "2026-07-28T19:07:40.800000+00:00"
+     ],
+     [
+      "poke_reply",
+      "on it. drafting a note to beatriz saying you're excited about trivia night and asking how you can help. you'll see it before anything goes out.",
+      "2026-07-28T19:07:40.800000+00:00"
+     ],
+     [
+      "agent_message",
+      "[SUCCESS] Chloe Demo Day Slides Request: Chloe replied that she needs an answer by Monday on the demo day slides. Her message is waiting for your decision, and I can draft a reply once you tell me what you want to say.",
+      "2026-07-28T19:48:00+00:00"
+     ],
+     [
+      "poke_reply",
+      "chloe needs an answer by monday on the demo day slides. what do you want to tell her? I can draft a reply once you decide.",
+      "2026-07-28T19:48:00+00:00"
+     ],
+     [
+      "user_message",
+      "hey can you let marcus know i'd like to wrap up the demo day slides before the end of the month",
+      "2026-07-28T20:09:36+00:00"
+     ],
+     [
+      "poke_reply",
+      "on it. drafting a note to marcus saying you'd like to wrap up the demo day slides before the end of the month. you'll see it before anything goes out.",
+      "2026-07-28T20:09:36+00:00"
+     ],
+     [
+      "user_message",
+      "hey can you let dmitri know i want to set up 30 min this week to go over the q3 roadmap",
+      "2026-07-28T23:18:14.400000+00:00"
+     ],
+     [
+      "poke_reply",
+      "on it. drafting a note to dmitri asking for 30 min this week to go over the q3 roadmap. you'll see it before anything goes out.",
+      "2026-07-28T23:18:14.400000+00:00"
+     ],
+     [
+      "agent_message",
+      "[SUCCESS] Beatriz Trivia Night Note: Beatriz replied asking what time trivia night starts and whether she should bring a team of four or just herself.",
+      "2026-07-29T05:38:24+00:00"
+     ],
+     [
+      "poke_reply",
+      "beatriz replied about trivia night. she wants to know what time it starts and whether to bring a team of four or just herself. what should I tell her?",
+      "2026-07-29T05:38:24+00:00"
+     ],
+     [
+      "agent_message",
+      "[SUCCESS] Karaoke Room Saturday Night Search: Found three karaoke rooms open for your Saturday group; please reply with the one you want and I'll book it.",
+      "2026-07-29T07:01:55.200000+00:00"
+     ],
+     [
+      "poke_reply",
+      "three karaoke rooms are open saturday night. pulling up the details and my pick now.",
+      "2026-07-29T07:01:55.200000+00:00"
+     ],
+     [
+      "user_message",
+      "hey can you ask petra to loop in her manager about the export issue. and separately tell yusuf the statement of work draft looks good but cut the second paragraph",
+      "2026-07-29T14:36:57.600000+00:00"
+     ],
+     [
+      "poke_reply",
+      "on it. drafting both now. you'll see them before anything goes out.",
+      "2026-07-29T14:36:57.600000+00:00"
+     ],
+     [
+      "user_message",
+      "tell Alice Chen i need one more day on the on-call rotation. and separately ask Beatriz if we can push the Big Sur road trip back a week",
+      "2026-07-29T17:03:50.400000+00:00"
+     ],
+     [
+      "poke_reply",
+      "on it. drafting a note to alice asking for one more day on the on-call rotation, and a separate note to beatriz asking if the big sur trip can move back a week. you'll see both before anything goes out.",
+      "2026-07-29T17:03:50.400000+00:00"
+     ]
+    ],
+    "acceptable_ids": [],
+    "clarify_ok": false,
+    "dispatch_optional": false
+   }
   }
  ]
 }

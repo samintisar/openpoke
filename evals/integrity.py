@@ -25,6 +25,7 @@ PROTECTED = (
     "evals/suites/regression.txt",
     "evals/run.py",
     "evals/llm.py",
+    "evals/judge.py",  # calibrated against the human labels (20261029-091906-judge-dev.json); frozen since
     "evals/integrity.py",
     "evals/systems/baseline.py",
     "evals/systems/frozen/baseline_system_prompt.md",
