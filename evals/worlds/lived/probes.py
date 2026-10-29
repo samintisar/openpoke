@@ -41,6 +41,16 @@ CROSS_DETAIL = "ask the assistant to let {a} know that {b} {verb} the {topic}"
 NEW_TOPIC_DETAIL = "a new request about the {topic}: {detail}"
 MULTI_DETAIL = "two requests in one message: {a} (about: {a_topic}); and {b} (about: {b_topic})"
 NEW_ERRAND_DETAIL = "a brand-new request to {topic}: {detail}"
+STATUS_DETAILS = (
+    "ask how the {topic} is going",
+    "ask if there's any word back on the {topic}",
+)
+STATUS_PERSON_DETAIL = "ask whether {first} got back to you about the {topic}"
+UNKNOWN_STATUS_DETAIL = "ask how the {topic} is going, as if you had asked the assistant about it before"
+PARAPHRASE_DETAIL = (
+    "ask for an update on it without using the words {forbidden}: refer to the person only as "
+    "{handle} and describe the topic in other words"
+)
 
 
 def _group(domain: str) -> str:
@@ -416,6 +426,74 @@ async def _agent_result(p: _Probes, want: int) -> list[_Draft]:
     return out
 
 
+async def _status_question(p: _Probes, want: int) -> list[_Draft]:
+    """About two thirds ask after an agent-backed matter; the rest after an errand never started."""
+    out: list[_Draft] = []
+    unknown_want = want // 3
+    for thread in p.shuffled(p.backed):
+        if len(out) == want - unknown_want:
+            break
+        contact = p.contact(thread)
+        topic = topic_keyword(thread.topic)
+        if contact and p.rng.random() < 0.5:
+            detail = STATUS_PERSON_DETAIL.format(first=contact.first, topic=topic)
+            intent = p.thread_intent(thread, "status_question", detail)
+        else:
+            if not p.keyword_unique(thread):
+                continue  # the topic alone must point at one thread
+            detail = p.rng.choice(STATUS_DETAILS).format(topic=topic)
+            intent = p.thread_intent(thread, "status_question", detail, contacts=(), mention=(topic,), forbid=())
+        text = await p.write(intent)
+        if text:
+            gold, acceptable = p.gold(thread)
+            out.append((text, gold, {"acceptable_ids": acceptable}))
+    while p.reserve and len(out) < want:
+        errand = p.reserve.pop(0)
+        keyword = topic_keyword(errand)
+        intent = Intent(
+            kind="status_question", thread_ids=(), topic=errand,
+            detail=UNKNOWN_STATUS_DETAIL.format(topic=keyword), mention=(keyword,),
+        )
+        text = await p.write(intent)
+        if text:
+            out.append((text, [], {"clarify_ok": True}))
+    return out
+
+
+def _paraphrase_handle(p: _Probes, contact: Contact) -> str | None:
+    """How a paraphrase names the person: 'my <role>' for a service, the company for a unique client."""
+    role = service_role(contact)
+    if contact.relation == "service" and role:
+        return f"my {role}"
+    if contact.relation == "client" and contact.company:
+        if sum(1 for c in p.plan.contacts if c.company == contact.company) == 1:
+            return f"the person at {contact.company}"
+    return None
+
+
+async def _paraphrase(p: _Probes, want: int) -> list[_Draft]:
+    out: list[_Draft] = []
+    for thread in p.shuffled(p.backed):
+        if len(out) == want:
+            break
+        contact = p.contact(thread)
+        handle = _paraphrase_handle(p, contact) if contact else None
+        if not handle:
+            continue
+        forbidden = (contact.first, contact.last, topic_keyword(thread.topic))
+        if any(f.lower() in handle.lower() for f in forbidden):
+            continue  # the handle itself would break the rule
+        detail = PARAPHRASE_DETAIL.format(forbidden=", ".join(forbidden), handle=handle)
+        mention = (handle.split()[-1],)  # the role word or the company name
+        intent = p.thread_intent(thread, "paraphrase", detail, mention=mention, forbid=forbidden)
+        text = await p.write(intent)
+        if text:
+            gold, acceptable = p.gold(thread)
+            siblings = [t for t in p.backed if t.contact == thread.contact and t.id != thread.id]
+            out.append((text, gold, {"acceptable_ids": acceptable, "clarify_ok": bool(siblings)}))
+    return out
+
+
 _BUILDERS = {
     "follow_up": _follow_up,
     "new_task": _new_task,
@@ -427,6 +505,9 @@ _BUILDERS = {
     "dormant_revival": _dormant_revival,
     "typo": _typo,
     "agent_result": _agent_result,
+    # v2 families run last so the v1 families above see the same rng draws and reserve.
+    "status_question": _status_question,
+    "paraphrase": _paraphrase,
 }
 
 

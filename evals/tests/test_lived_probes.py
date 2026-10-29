@@ -1,7 +1,7 @@
 import re
 from collections import Counter
 
-from evals.cases import NEW
+from evals.cases import NEW, ROUTING_KINDS
 from evals.llm import ScriptedLLM
 from evals.worlds.lived.model import Contact, LifePlan, Snapshot, Thread
 from evals.worlds.lived.plan import topic_keyword
@@ -215,7 +215,7 @@ async def test_agent_result_fields():
 async def test_per_kind_is_respected():
     counts = Counter(c.kind for c in await _probes(per_kind=1))
     assert counts and max(counts.values()) == 1
-    assert len(counts) == 10
+    assert len(counts) == len(ROUTING_KINDS)
 
 
 async def test_same_seed_gives_the_same_probes():
@@ -226,3 +226,69 @@ async def test_same_seed_gives_the_same_probes():
 
 async def test_probes_whose_writer_fails_are_skipped():
     assert await _probes(llm=MentionWriter(fail=True)) == []
+
+
+# --- v2 families: status_question and paraphrase -------------------------------------------------
+
+def _life1_200():
+    import json
+
+    from evals.worlds.lived.plan import build_plan
+    from evals.worlds.lived.round2 import rebuild_snapshot
+    from evals.worlds.lived.store import DEFAULT_PATH
+
+    world = json.loads(DEFAULT_PATH.read_text(encoding="utf-8"))
+    entry = next(e for e in world["sizes"] if e["size"] == 200)
+    plan = build_plan(1)
+    return rebuild_snapshot(entry, plan, skipped=world["meta"]["skipped"]), plan
+
+
+async def _life1_probes(per_kind=6, rng_seed=5):
+    from evals.worlds.lived.round2 import fake_writer
+
+    snapshot, plan = _life1_200()
+    cases = await build_probes(snapshot, plan, llm=fake_writer(), model="m", per_kind=per_kind, rng_seed=rng_seed)
+    return snapshot, plan, _by_kind(cases)
+
+
+async def test_status_question_has_known_and_never_started_probes():
+    snapshot, _, kinds = await _life1_probes()
+    served = {a for ids in snapshot.thread_agents.values() for a in ids}
+    cases = kinds["status_question"]
+    known = [c for c in cases if c.gold_targets]
+    unknown = [c for c in cases if not c.gold_targets]
+    assert len(cases) == 6 and len(known) == 4 and len(unknown) == 2
+    assert all(set(c.gold_targets + c.acceptable_ids) <= served for c in known)
+    assert all(c.clarify_ok and c.acceptable_ids == [] for c in unknown)
+
+
+async def test_status_question_unknown_names_a_topic_no_thread_has():
+    _, plan, kinds = await _life1_probes()
+    for case in (c for c in kinds["status_question"] if not c.gold_targets):
+        words = case.message.lower()
+        assert not any(topic_keyword(t.topic).lower() in words for t in plan.threads)
+
+
+async def test_paraphrase_names_no_contact_names_or_topic_keyword():
+    snapshot, plan, kinds = await _life1_probes()
+    cases = kinds["paraphrase"]
+    assert cases
+    by_agent = {ids[0]: tid for tid, ids in snapshot.thread_agents.items()}
+    backed = {t.id for t in plan.threads if snapshot.thread_agents.get(t.id)}
+    for case in cases:
+        assert case.gold_targets and case.gold_targets[0] != NEW
+        thread = plan.thread(by_agent[case.gold_targets[0]])
+        contact = plan.contact(thread.contact)
+        assert contact.relation in ("service", "client")
+        words = case.message.lower()
+        for forbidden in (contact.first, contact.last, topic_keyword(thread.topic)):
+            assert forbidden.lower() not in words, (case.message, forbidden)
+        siblings = [t for t in plan.threads if t.contact == thread.contact and t.id in backed and t.id != thread.id]
+        assert case.clarify_ok == bool(siblings)
+
+
+async def test_paraphrase_uses_the_service_role_or_the_unique_client_company():
+    cases = {c.gold_targets[0]: c for c in _by_kind(await _probes())["paraphrase"]}
+    assert set(cases) == {"contract-renewal", "deep-clean"}  # Ben (client at Globex), Rita (the cleaner)
+    assert "Globex" in cases["contract-renewal"].message and "cleaner" in cases["deep-clean"].message
+    assert not any(c.clarify_ok for c in cases.values())
