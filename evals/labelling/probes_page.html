@@ -258,7 +258,7 @@ function renderSheet() {
   }
 
   const note = el("textarea", { id: "note", placeholder: "Why? (optional for Right, helpful for Fix and Reject)" }); note.value = rv.note || "";
-  note.oninput = () => { const r = reviews[id] || {}; r.note = note.value; reviews[id] = r; clearTimeout(saveTimer); saveTimer = setTimeout(() => save(p), 700); };
+  note.oninput = () => { reviews[id] = { ...(reviews[id] || {}), note: note.value }; clearTimeout(saveTimer); saveTimer = setTimeout(() => save(p), 700); };
   sh.append(el("label", { for: "note", class: "h", text: "Note" }), note);
   const prev = el("button", { type: "button", class: "ghost", text: "Previous" }); prev.disabled = current === 0; prev.onclick = () => go(current - 1);
   const next = el("button", { type: "button", text: current === P.length - 1 ? "Last one" : "Next" }); next.disabled = current === P.length - 1; next.onclick = () => go(current + 1);
@@ -279,16 +279,27 @@ function setReview(p, patch) {
   reviews[id] = r; save(p); renderSheet(); renderQueue();
 }
 
+// One write at a time per document: changes during a write are folded into one follow-up write of the latest
+// decision. While a document has a write queued or in flight, snapshots for it are ignored so an older server
+// echo can't undo a newer click.
+const saving = {};          // doc id -> { again }
 async function save(p) {
   if (!db) return;
-  const id = docId(p), r = reviews[id] || {};
-  const st = document.getElementById("status");
-  const doc = { probe: p.id, size: p.size, kind: p.kind, decision: r.decision || null, note: r.note || "", updatedAt: new Date().toISOString(), source_sha256: DATA.source_sha256 };
-  if (r.decision === "fixed") { doc.gold_targets = r.gold_targets || []; doc.acceptable_ids = r.acceptable_ids || []; doc.clarify_ok = !!r.clarify_ok; }
+  const id = docId(p), st = document.getElementById("status");
+  if (saving[id]) { saving[id].again = true; return; }
+  saving[id] = { again: false };
   try {
-    await db.collection("reviews").doc(id).set(doc);
+    do {
+      saving[id].again = false;
+      const r = reviews[id] || {};
+      const doc = { probe: p.id, size: p.size, kind: p.kind, decision: r.decision || null, note: r.note || "", updatedAt: new Date().toISOString(), source_sha256: DATA.source_sha256 };
+      if (r.decision === "fixed") { doc.gold_targets = [...(r.gold_targets || [])]; doc.acceptable_ids = [...(r.acceptable_ids || [])]; doc.clarify_ok = !!r.clarify_ok; }
+      st.className = "status"; st.textContent = "Saving…";
+      await db.collection("reviews").doc(id).set(doc);
+    } while (saving[id].again);
     st.className = "status"; st.textContent = "Saved";
-  } catch (e) { st.className = "status err"; st.textContent = `Couldn't save: ${e && e.message ? e.message : e}. Your decision stays on screen; try again.`; }
+  } catch (e) { st.className = "status err"; st.textContent = `Couldn't save: ${e && e.message ? e.message : e}. Your decision stays on screen; click again to retry.`; }
+  finally { delete saving[id]; }
 }
 
 function go(i) {
@@ -307,7 +318,11 @@ renderQueue(); renderConvo(); renderSheet();
   db = window.claude ? await window.claude.use("db") : null;
   if (!db) { st.className = "status err"; st.textContent = "Review store unavailable: decisions won't be saved."; renderSheet(); return; }
   db.collection("reviews").onSnapshot(snap => {
-    snap.docs.forEach(d => { const v = d.data() || {}; reviews[d.id] = { decision: v.decision || null, gold_targets: v.gold_targets, acceptable_ids: v.acceptable_ids, clarify_ok: v.clarify_ok, note: v.note || "" }; });
+    snap.docs.forEach(d => {
+      if (saving[d.id]) return;
+      const v = d.data() || {};  // frozen: copy the arrays before keeping them
+      reviews[d.id] = { decision: v.decision || null, gold_targets: v.gold_targets ? [...v.gold_targets] : undefined, acceptable_ids: v.acceptable_ids ? [...v.acceptable_ids] : undefined, clarify_ok: v.clarify_ok, note: v.note || "" };
+    });
     st.className = "status"; st.textContent = "Connected. Decisions save automatically.";
     renderQueue(); if (document.activeElement && ["note"].includes(document.activeElement.id)) return; if (document.activeElement && document.activeElement.type === "search") return; renderSheet();
   }, e => { st.className = "status err"; st.textContent = `Review store error: ${e.message}`; });

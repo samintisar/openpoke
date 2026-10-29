@@ -216,13 +216,18 @@ function renderSheet() {
     [["pass", "Yes"], ["fail", "No"], ...(ch.na ? [["na", "N/A"]] : [])].forEach(([v, label]) => {
       const b = el("button", { type: "button", "data-v": v, id: `${ch.id}-${v}`, text: label });
       b.setAttribute("aria-pressed", String(lab.answers[ch.id] === v));
-      b.onclick = () => { lab.answers[ch.id] = lab.answers[ch.id] === v ? undefined : v; if (!lab.answers[ch.id]) delete lab.answers[ch.id]; labels[id] = lab; save(t); renderSheet(); renderQueue(); };
+      b.onclick = () => {
+        // Build a new answers object: snapshot data is frozen, so mutating it in place silently does nothing.
+        const answers = { ...(labels[id] || lab).answers };
+        if (answers[ch.id] === v) delete answers[ch.id]; else answers[ch.id] = v;
+        labels[id] = { ...(labels[id] || lab), answers }; save(t); renderSheet(); renderQueue();
+      };
       seg.append(b);
     });
     sh.append(el("div", { class: "check" }, el("div", { class: "q", text: ch.q }), el("div", { class: "h", text: ch.h }), seg));
   });
   const notes = el("textarea", { id: "notes", placeholder: "Anything odd? (optional)" }); notes.value = lab.notes || "";
-  notes.oninput = () => { lab.notes = notes.value; labels[id] = lab; clearTimeout(saveTimer); saveTimer = setTimeout(() => save(t), 700); };
+  notes.oninput = () => { labels[id] = { ...(labels[id] || lab), notes: notes.value }; clearTimeout(saveTimer); saveTimer = setTimeout(() => save(t), 700); };
   sh.append(el("label", { for: "notes", class: "h", text: "Notes" }), notes);
   const prev = el("button", { type: "button", class: "ghost", text: "Previous" }); prev.disabled = current === 0; prev.onclick = () => go(current - 1);
   const next = el("button", { type: "button", text: current === T.length - 1 ? "Last one" : "Next" }); next.disabled = current === T.length - 1; next.onclick = () => go(current + 1);
@@ -234,14 +239,25 @@ function renderSheet() {
   }
 }
 
+// One write at a time per document: clicks during a write are folded into one follow-up write of the latest
+// marks. While a document has a write queued or in flight, snapshots for it are ignored so an older server
+// echo can't undo a newer click.
+const saving = {};          // doc id -> { again }
 async function save(t) {
   if (!db) return;
-  const id = docId(t), lab = labels[id] || { answers: {}, notes: "" };
-  const st = document.getElementById("status");
+  const id = docId(t), st = document.getElementById("status");
+  if (saving[id]) { saving[id].again = true; return; }
+  saving[id] = { again: false };
   try {
-    await db.collection("labels").doc(id).set({ transcript: t.id, scenario: t.scenario, answers: lab.answers, notes: lab.notes || "", updatedAt: new Date().toISOString(), run: DATA.run });
+    do {
+      saving[id].again = false;
+      const lab = labels[id] || { answers: {}, notes: "" };
+      st.className = "status"; st.textContent = "Saving…";
+      await db.collection("labels").doc(id).set({ transcript: t.id, scenario: t.scenario, answers: { ...lab.answers }, notes: lab.notes || "", updatedAt: new Date().toISOString(), run: DATA.run });
+    } while (saving[id].again);
     st.className = "status"; st.textContent = "Saved";
-  } catch (e) { st.className = "status err"; st.textContent = `Couldn't save: ${e && e.message ? e.message : e}. Your marks stay on screen; try again.`; }
+  } catch (e) { st.className = "status err"; st.textContent = `Couldn't save: ${e && e.message ? e.message : e}. Your marks stay on screen; click again to retry.`; }
+  finally { delete saving[id]; }
 }
 
 function go(i) {
@@ -260,7 +276,7 @@ renderQueue(); renderConvo(); renderSheet();
   db = window.claude ? await window.claude.use("db") : null;
   if (!db) { st.className = "status err"; st.textContent = "Label store unavailable: marks won't be saved."; renderSheet(); return; }
   db.collection("labels").onSnapshot(snap => {
-    snap.docs.forEach(d => { const v = d.data() || {}; labels[d.id] = { answers: v.answers || {}, notes: v.notes || "" }; });
+    snap.docs.forEach(d => { if (saving[d.id]) return; const v = d.data() || {}; labels[d.id] = { answers: { ...(v.answers || {}) }, notes: v.notes || "" }; });
     st.className = "status"; st.textContent = "Connected. Marks save automatically.";
     renderQueue(); if (document.activeElement && document.activeElement.id === "notes") return; renderSheet();
   }, e => { st.className = "status err"; st.textContent = `Label store error: ${e.message}`; });
