@@ -119,10 +119,9 @@ def _decisions(body):
 
 def test_reviewed_probes_join_their_sizes_as_test_only(world, body):
     p50, p200, other, decisions = _decisions(body)
+    base = {label: cases for label, _, cases in load_lived(world)}  # before the reviewed file exists
     _reviewed(world, body, decisions)
-    data = json.loads(world.read_text(encoding="utf-8"))
-    units = {label: cases for label, _, cases in add_reviewed(world, data, load_lived(world))}
-    base = {label: cases for label, _, cases in load_lived(world)}
+    units = {label: cases for label, _, cases in load_lived(world)}  # load_lived adds the reviewed probes
     added = {label: units[label][len(base[label]):] for label in units}
     assert units["lived-10"] == base["lived-10"] and not added["lived-10"]
     assert [c.id for c in added["lived-50"]] == [p50[0]["id"]]  # the rejected one is left out

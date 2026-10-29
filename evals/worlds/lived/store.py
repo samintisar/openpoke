@@ -55,4 +55,6 @@ def load_lived(path: Path = DEFAULT_PATH) -> list[tuple[str, World, list[Case]]]
             seed=data["seed"], agents=[_agent(a) for a in entry["agents"]], now=day_to_datetime(entry["day"])
         )
         units.append((entry["label"], world, [_case(c) for c in entry["cases"]]))
-    return units
+    from .round2 import add_reviewed  # lazy: round2 imports this module
+
+    return add_reviewed(Path(path), data, units)  # reviewed round-2 probes, test-only; none without the file

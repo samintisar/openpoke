@@ -39,6 +39,7 @@ PROTECTED = (
     "evals/worlds/lived/probes.py",
     "evals/worlds/lived/store.py",
     "evals/worlds/lived/world-s1.json",
+    "evals/worlds/lived/round2-s1.reviewed.json",
     "evals/worlds/memory_gen.py",
     "evals/layers/memory.py",
     "evals/memory_run.py",
