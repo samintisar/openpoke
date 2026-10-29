@@ -111,3 +111,23 @@ Template:
 - **Why:** an agent routed to in the previous turn was active moments ago, so it is already in the hot set (active within the last hour), and hot cards are always shown. The boost can only change what is shown when more than `hot_max` (5) agents are hot; the sweep found at most 3 on lived dev.
 - **Decision:** the boost is unproven: no measurable effect on this set. It stays (it is one term in the score and costs nothing), and the write-up lists it as untested beyond 5 hot agents rather than claiming it helps.
 - **Infrastructure note:** the first attempt at the five ablations (02:35) hit OpenRouter's 402 (out of credits) during `full_cards` (which had spent $3.75 by then); the following three aborted at once. All five were also invalid because a protected file was uncommitted. Moved to `evals/.cache/aborted-runs/`; `full_cards`, `noguard`, `nosearch` and `nofuzzy` rerun once credits are added.
+
+## 2026-10-29 · ablations: guard, search, typo matching, full cards (Plan 5 Task 2)
+- **Runs** (all lived dev, k=3, against `20261029-022629-retrieved-lived-dev.json`): `20261029-031805-retrieved-noguard-lived-dev.json` ($0.04), `20261029-031827-retrieved-nosearch-lived-dev.json` ($0.79), `20261029-032644-retrieved-nofuzzy-lived-dev.json` ($0.12), `20261029-032808-full-cards-lived-dev.json` ($0.05 fresh; 10/50/200 only, see below). Cheap runs reused cached `retrieved` requests up to the point their switch changed one.
+- **pass@1 / duplicate rate, lived-10 · 50 · 200 · 1000:**
+  - retrieved: 0.98/0.00 · 0.93/0.10 · 0.99/0.00 · 0.93/0.00
+  - noguard: 0.98/0.00 · 0.93/0.10 · **0.92/0.11** · **0.87/0.12**
+  - nosearch: 0.99/0.00 · 0.92/0.10 · 0.95/0.05 · 0.95/0.02
+  - nofuzzy: 0.98/0.00 · 0.93/0.10 · 0.99/0.00 · 0.94/0.00
+  - full_cards: 0.99/0.00 · 0.91/0.10 · 0.99/0.00 · not run
+- **Per kind (correct samples, all lived sizes):** noguard loses cross_agent 42→38, dormant_revival 24→20, multi_task 41→35 and gains same_person_new_topic 30→33 (the guard sometimes holds back a legitimate new agent). nosearch: vague_reference 23→21, agent_result 36→35, same_person_new_topic 30→32. nofuzzy: typo 41→42, nothing else moves.
+- **Prompt tokens per call at 200:** retrieved 21k, full_cards 69k (3.3×). At 1,000, full_cards measured 265–269k on the 11 + 18 samples of the two aborted runs; at about $0.14 per sample (about $11 per split) it was not rerun.
+- **Decisions:**
+  - **Duplicate guard: proven.** Off, duplicates return at scale (0.11–0.12) and pass@1 drops 0.07 at 200 and 0.06 at 1,000. Its cost is a few same-person new topics nudged towards reuse.
+  - **search_agents: marginal.** Duplicates rise slightly without it (0.05 / 0.02) and vague references lose 2 samples, but pass@1 moves within seed variance. Kept, reported as a small effect.
+  - **Typo matching in retrieval: unproven.** The IA resolves typos from the shown cards and the prompt rule; exact matching changes nothing measurable. Kept (it is cheap), reported as unproven.
+  - **Last-routed boost: unproven** (earlier entry).
+  - **Retrieval vs full cards:** same accuracy at 10–200 agents, at a third of the tokens at 200 and about a thirteenth at 1,000. Retrieval's case rests on cost and on the 1,000 size, where full cards is impractical.
+
+## 2026-10-29 · held-out memory set, setup check (Plan 5 Task 4)
+- **Run:** `20261029-032848-memory-heldout-check-heldout.json` ($0.06): seed 2, the first 3 agents. Compacted recall 1.00 on every fact type, stale 0.00, history about 5.6k tokens (full 9.0–9.6k). The setup works; the full 12-agent seed-2 run is part of the test runs.
