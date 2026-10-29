@@ -149,7 +149,7 @@ const ROLE = { user_message: "You", poke_reply: "Assistant", agent_message: "Age
 const reviews = {};          // doc id -> { decision, gold_targets, acceptable_ids, clarify_ok, note }
 let current = 0, db = null, saveTimer = null, showAll = false, filter = "";
 const docId = (p) => p.id.replace(/[^A-Za-z0-9_-]/g, "~");
-const rosterOf = (p) => DATA.rosters["lived-" + p.size] || [];
+const rosterOf = (p) => DATA.rosters[p.roster_key || ("lived-" + p.size)] || [];
 
 function el(tag, attrs = {}, ...kids) {
   const n = document.createElement(tag);
@@ -167,7 +167,7 @@ function renderQueue() {
   const picker = document.getElementById("picker"); picker.replaceChildren();
   let group = null, done = 0;
   P.forEach((p, i) => {
-    const g = `${p.size} agents`;
+    const g = (p.world_seed != null && p.roster_key ? `Life ${p.world_seed} · ` : "") + `${p.size} agents`;
     if (g !== group) { group = g; q.append(el("div", { class: "qgroup", text: g })); }
     const d = decided(p); if (d) done++;
     const b = el("button", { class: "qitem" + (d ? " " + d : ""), type: "button" }, el("i", { class: "dot" }), el("span", { text: `${p.kind.replace(/_/g, " ")} · ${p.message}` }));
@@ -214,6 +214,14 @@ function renderSheet() {
   if (p.clarify_ok) flags.push("Asking you which one is also fine.");
   if (p.dispatch_optional) flags.push("Just relaying it without dispatching is also fine.");
   flags.forEach(f => gold.append(el("div", { class: "flag", text: f })));
+  if (p.check) {
+    // What the independent checker models answered, by their short names.
+    const said = (a) => a === "NEW" ? "New agent" : a === "ASK" ? "Ask the user" : (byId[a] ? byId[a].name : "Unclear");
+    const parts = Object.entries(p.check.answers || {}).map(([m, a]) => `${m.split("/").pop()}: ${said(a)}`);
+    const why = { audit: "Random check: the checkers agreed.", disagree: "The checkers disagreed with this answer." }[p.check.flag];
+    if (why) gold.append(el("div", { class: "flag", text: why }));
+    gold.append(el("div", { class: "flag", text: "Checkers said: " + parts.join("; ") }));
+  }
   sh.append(gold);
 
   sh.append(el("div", { class: "h", text: "Is that the right answer for this message, in this chat?" }));

@@ -65,3 +65,182 @@ def test_cli_build_single_seed_writes_unbalanced_file(tmp_path, capsys):
     assert body["meta"]["seed"] == 1 and body["probes"]
     assert all(p["id"].startswith("v2-s1-") for p in body["probes"])
     assert "unbalanced" in capsys.readouterr().out
+
+
+# --- review and finalize ------------------------------------------------------------------------
+
+import pytest
+
+
+def _checked(pid, flag, *, size=10, gold=("a1",), acceptable=(), clarify=False):
+    return {"id": pid, "size": size, "kind": "typo", "message": f"msg {pid}", "context": [],
+            "labels": [f"lived-{size}"], "gold_targets": list(gold), "acceptable_ids": list(acceptable),
+            "clarify_ok": clarify, "gold_agents": [],
+            "check": {"answers": {"x/m1": "a1", "y/m2": "NEW"}, "agree": flag != "disagree", "flag": flag,
+                      "candidates": ["a1", "a2"]}}
+
+
+def _bench(seed=1, fake=False):
+    roster = [{"id": "a1", "name": "Ann", "purpose": "ski"}, {"id": "a2", "name": "Bob", "purpose": "tax"},
+              {"id": "a3", "name": "Cy", "purpose": "car"}]
+    return {
+        "meta": {"seed": seed, "fake_llm": fake, "format": 1},
+        "rosters": {"lived-10": roster, "lived-50": roster[:1]},
+        "probes": [_checked(f"v2-s{seed}-10-typo-00", "disagree"), _checked(f"v2-s{seed}-10-typo-01", "audit"),
+                   _checked(f"v2-s{seed}-10-typo-02", "audit"), _checked(f"v2-s{seed}-10-typo-03", None)],
+    }
+
+
+def _all(seed=1, **over):
+    ids = [f"v2-s{seed}-10-typo-0{i}" for i in range(3)]
+    out = [{"id": i, "decision": "accept"} for i in ids]
+    for i, patch in over.items():
+        out[int(i)] = {"id": ids[int(i)], **patch}
+    return out
+
+
+def test_finalize_needs_a_decision_for_every_flagged_probe():
+    from evals.worlds.lived.bench_v2 import finalize
+    with pytest.raises(ValueError, match="undecided: v2-s1-10-typo-02"):
+        finalize(_bench(), _all()[:2], allow_fake=True)
+
+
+def test_finalize_reject_drops_and_unflagged_kept_auto():
+    from evals.worlds.lived.bench_v2 import finalize
+    bench = _bench()
+    out = finalize(bench, _all(**{"0": {"decision": "reject", "note": "unclear"}}), allow_fake=True)
+    ids = [p["id"] for p in out["probes"]]
+    assert ids == ["v2-s1-10-typo-01", "v2-s1-10-typo-02", "v2-s1-10-typo-03"]
+    auto = out["probes"][-1]
+    assert auto["review"] == "auto"
+    assert {k: v for k, v in auto.items() if k != "review"} == bench["probes"][3]
+    assert out["probes"][0]["review"] == {"decision": "accept", "note": ""}
+    r = out["meta"]["review"]
+    assert (r["kept"], r["auto_kept"], r["accepted"], r["fixed"], r["rejected"]) == (3, 1, 2, 0, 1)
+    assert r["audit"] == 2 and r["audit_changed"] == 0 and r["label_error_rate"] == 0.0
+    assert len(r["decisions_sha256"]) == 64 and out["meta"]["seed"] == 1
+    assert out["rosters"] == bench["rosters"]
+    assert bench["probes"][0].get("review") is None  # input untouched
+
+
+def test_finalize_fixed_replaces_gold_acceptable_and_clarify_ok():
+    from evals.worlds.lived.bench_v2 import finalize
+    fix = {"decision": "fixed", "gold_targets": ["a2"], "acceptable_ids": ["a3"], "clarify_ok": True, "note": "Bob"}
+    out = finalize(_bench(), _all(**{"0": fix}), allow_fake=True)
+    p = out["probes"][0]
+    assert p["gold_targets"] == ["a2"] and p["acceptable_ids"] == ["a3"] and p["clarify_ok"] is True
+    assert [(a["id"], a["role"]) for a in p["gold_agents"]] == [("a2", "gold"), ("a3", "acceptable")]
+    assert p["review"]["decision"] == "fixed" and p["review"]["note"] == "Bob"
+    out = finalize(_bench(), _all(**{"0": {"decision": "fixed", "gold_targets": ["NEW"]}}), allow_fake=True)
+    assert out["probes"][0]["gold_targets"] == ["NEW"] and out["probes"][0]["gold_agents"] == []
+
+
+def test_finalize_label_error_rate_counts_audit_probes_only():
+    from evals.worlds.lived.bench_v2 import finalize
+    out = finalize(_bench(), _all(**{"0": {"decision": "reject"}, "1": {"decision": "reject"}}), allow_fake=True)
+    r = out["meta"]["review"]
+    assert r["audit"] == 2 and r["audit_changed"] == 1 and r["label_error_rate"] == 0.5
+    bench = _bench()
+    bench["probes"] = [p for p in bench["probes"] if p["check"]["flag"] != "audit"]
+    out = finalize(bench, _all()[:1], allow_fake=True)
+    assert out["meta"]["review"]["label_error_rate"] is None
+
+
+@pytest.mark.parametrize("decisions, match", [
+    (_all() + [{"id": "v2-s1-10-typo-99", "decision": "accept"}], "unknown"),
+    (_all() + [{"id": "v2-s1-10-typo-03", "decision": "accept"}], "not flagged"),
+    (_all() + [{"id": "v2-s1-10-typo-00", "decision": "reject"}], "twice"),
+    (_all(**{"0": {"decision": "maybe"}}), "decision must be"),
+    (_all(**{"0": {"decision": "fixed"}}), "gold_targets"),
+    (_all(**{"0": {"decision": "fixed", "gold_targets": ["zz"]}}), "not in its roster"),
+    (_all(**{"0": {"decision": "fixed", "gold_targets": ["a1"], "acceptable_ids": ["zz"]}}), "not in its roster"),
+    (_all(**{"0": {"decision": "accept", "gold_targets": ["a2"]}}), "only a fixed"),
+    (_all(**{"0": {"decision": "reject", "clarify_ok": True}}), "only a fixed"),
+])
+def test_finalize_rejects_bad_decisions(decisions, match):
+    from evals.worlds.lived.bench_v2 import finalize
+    with pytest.raises(ValueError, match=match):
+        finalize(_bench(), decisions, allow_fake=True)
+
+
+def test_finalize_checks_gold_against_the_probes_own_size_roster():
+    from evals.worlds.lived.bench_v2 import finalize
+    bench = _bench()
+    bench["probes"][0]["size"] = 50
+    with pytest.raises(ValueError, match="not in its roster"):
+        finalize(bench, _all(**{"0": {"decision": "fixed", "gold_targets": ["a2"]}}), allow_fake=True)
+
+
+def test_finalize_refuses_fake_bench_and_unchecked_bench():
+    from evals.worlds.lived.bench_v2 import finalize
+    with pytest.raises(ValueError, match="fake"):
+        finalize(_bench(fake=True), _all())
+    assert finalize(_bench(fake=True), _all(), allow_fake=True)["probes"]
+    bench = _bench()
+    del bench["probes"][3]["check"]
+    with pytest.raises(ValueError, match="check"):
+        finalize(bench, _all(), allow_fake=True)
+
+
+def test_split_decisions_routes_by_life_prefix():
+    from evals.worlds.lived.bench_v2 import split_decisions
+    out = split_decisions(_all(1) + _all(2), [1, 2])
+    assert [x["id"] for x in out[1]] == [x["id"] for x in _all(1)]
+    assert [x["id"] for x in out[2]] == [x["id"] for x in _all(2)]
+    with pytest.raises(ValueError, match="no life"):
+        split_decisions([{"id": "v2-s3-10-typo-00", "decision": "accept"}], [1, 2])
+
+
+def _write_benches(directory, fake=False):
+    from evals.worlds.lived.bench_v2 import bench_path
+    for seed in (1, 2):
+        bench = _bench(seed, fake=fake)
+        bench["probes"][0]["message"] = "evil </script><script>alert(1)</script>"
+        bench_path(seed, directory=directory).write_text(json.dumps(bench), encoding="utf-8")
+
+
+_DATA_TAG = '<script id="data" type="application/json">'
+
+
+def test_review_data_embeds_only_flagged_probes(tmp_path, capsys):
+    import hashlib
+    from evals.worlds.lived.bench_v2 import bench_path, main
+    _write_benches(tmp_path)
+    out = tmp_path / "review.html"
+    assert main(["review-data", "--seed", "1", "--seed", "2", "--bench-dir", str(tmp_path), "--out", str(out)]) == 0
+    html = out.read_text(encoding="utf-8")
+    start = html.index(_DATA_TAG) + len(_DATA_TAG)
+    raw = html[start:html.index("</script>", start)]
+    assert "</script" not in raw and "</" not in raw and "__PROBES__" not in html
+    data = json.loads(raw)  # "<\/" is a valid JSON escape for "/"
+    ids = [p["id"] for p in data["probes"]]
+    assert ids == [f"v2-s{s}-10-typo-0{i}" for s in (1, 2) for i in range(3)]
+    assert data["probes"][0]["message"].startswith("evil </script>")
+    assert {p["roster_key"] for p in data["probes"]} == {"s1:lived-10", "s2:lived-10"}
+    assert set(data["rosters"]) == {"s1:lived-10", "s2:lived-10"}
+    joined = bench_path(1, directory=tmp_path).read_bytes() + bench_path(2, directory=tmp_path).read_bytes()
+    assert data["source_sha256"] == hashlib.sha256(joined).hexdigest()
+    printed = capsys.readouterr().out
+    assert "life 1" in printed and "disagree=1" in printed and "audit=2" in printed
+
+
+def test_cli_finalize_writes_reviewed_files(tmp_path):
+    from evals.worlds.lived.bench_v2 import bench_path, main
+    _write_benches(tmp_path)
+    decisions = tmp_path / "decisions.json"
+    decisions.write_text(json.dumps(_all(1) + _all(2, **{"1": {"decision": "reject"}})), encoding="utf-8")
+    assert main(["finalize", "--seed", "1", "--seed", "2", "--decisions", str(decisions),
+                 "--bench-dir", str(tmp_path)]) == 0
+    two = json.loads(bench_path(2, reviewed=True, directory=tmp_path).read_text(encoding="utf-8"))
+    assert two["meta"]["review"]["label_error_rate"] == 0.5
+    one = json.loads(bench_path(1, reviewed=True, directory=tmp_path).read_text(encoding="utf-8"))
+    assert len(one["probes"]) == 4
+
+
+def test_cli_finalize_refuses_fake_benches(tmp_path):
+    from evals.worlds.lived.bench_v2 import main
+    _write_benches(tmp_path, fake=True)
+    decisions = tmp_path / "decisions.json"
+    decisions.write_text(json.dumps(_all(1) + _all(2)), encoding="utf-8")
+    with pytest.raises(ValueError, match="fake"):
+        main(["finalize", "--seed", "1", "--seed", "2", "--decisions", str(decisions), "--bench-dir", str(tmp_path)])

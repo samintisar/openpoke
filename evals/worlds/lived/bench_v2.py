@@ -2,6 +2,8 @@
 
     python -m evals.worlds.lived.bench_v2 build --seed 1 --seed 2 --budget 2   # bench-v2-s1/s2.json
     python -m evals.worlds.lived.bench_v2 build --seed 1 --fake-llm            # one life, offline, unbalanced
+    python -m evals.worlds.lived.bench_v2 review-data --seed 1 --seed 2         # page of the flagged probes
+    python -m evals.worlds.lived.bench_v2 finalize --seed 1 --seed 2 --decisions decisions.json
 
 For each life (seed) the 10-, 50- and 200-agent snapshots are rebuilt from world-s{seed}.json
 (round2.rebuild_snapshot) and probed with build_probes at QUOTA[size] per kind. The 200 probes also
@@ -15,12 +17,20 @@ threads), and the probe is ambiguous if any of them is.
 
 Balancing: with two lives, each (size, kind) keeps min(count_a, count_b) probes in each life, the
 first ones in build order, renumbered v2-s{seed}-{size}-{kind}-{i:02d}.
+
+Review: after checkers.py, only flagged probes ("disagree" or "audit") go to a human, on the round-2
+review page (review-data, which also shows each checker's answer). finalize applies the decisions per
+life: rejected probes are dropped, fixed ones take the reviewer's gold, accepted ones are kept as they
+are, and unflagged probes are kept untouched with review "auto". The label error rate is the share of
+audit probes (a random sample of those every checker agreed with) that the reviewer fixed or rejected.
 """
 
 from __future__ import annotations
 
 import argparse
 import asyncio
+import copy
+import hashlib
 import json
 import sys
 from dataclasses import asdict, replace
@@ -32,9 +42,11 @@ from ...llm import LLMClient
 from .model import LifePlan, Snapshot
 from .plan import build_plan, topic_words
 from .probes import build_probes
-from .round2 import _sha256, fake_writer, rebuild_snapshot
+from .round2 import DECISIONS, _sha256, fake_writer, rebuild_snapshot
 
 HERE = Path(__file__).resolve().parent
+PAGE = HERE.parents[1] / "labelling" / "probes_page.html"
+REVIEW_PAGE = HERE.parents[1] / "labelling" / "bench_v2_review.html"
 QUOTA = {10: 3, 50: 5, 200: 10}
 FULL_SIZE = 1000  # reuses the 200 snapshot's probes
 DEFAULT_MODEL = "deepseek/deepseek-v4.1-flash"
@@ -169,7 +181,180 @@ async def build_life(seed: int, *, llm: LLMClient, model: str = DEFAULT_MODEL, d
     }
 
 
+# --- review -------------------------------------------------------------------------------------
+
+
+def _flagged(probe: dict[str, Any]) -> bool:
+    return probe["check"]["flag"] is not None
+
+
+def review_data(benches: dict[int, dict[str, Any]], source_sha256: str) -> dict[str, Any]:
+    """The page data: the flagged probes of every life, each pointing at its life's roster."""
+    probes, rosters = [], {}
+    for seed in sorted(benches):
+        bench = benches[seed]
+        for probe in bench["probes"]:
+            if "check" not in probe:
+                raise ValueError(f"life {seed}: probe {probe['id']} has no check; run checkers.py first")
+            if not _flagged(probe):
+                continue
+            label = f"lived-{probe['size']}"
+            key = f"s{seed}:{label}"
+            rosters[key] = bench["rosters"][label]
+            probes.append({**probe, "roster_key": key, "world_seed": seed})
+    probes.sort(key=lambda p: (p["world_seed"], p["size"], p["kind"], p["id"]))
+    return {"source_sha256": source_sha256, "rosters": rosters, "probes": probes}
+
+
+def render_page(data: dict[str, Any], template: Path = PAGE) -> str:
+    """The review page with `data` embedded; "</" is escaped so no string can close the script tag."""
+    payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+    return template.read_text(encoding="utf-8").replace("__PROBES__", payload)
+
+
+def split_decisions(decisions: list[dict[str, Any]], seeds: list[int]) -> dict[int, list[dict[str, Any]]]:
+    """Decisions per life, by the v2-s{seed}- id prefix."""
+    out: dict[int, list[dict[str, Any]]] = {seed: [] for seed in seeds}
+    for item in decisions:
+        probe_id = str(item.get("id"))
+        seed = next((s for s in seeds if probe_id.startswith(f"v2-s{s}-")), None)
+        if seed is None:
+            raise ValueError(f"decision for {probe_id!r} belongs to no life in {seeds}")
+        out[seed].append(item)
+    return out
+
+
+def _canonical_sha256(value: Any) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+
+
+def _check_decision(item: dict[str, Any], probe: dict[str, Any], roster: dict[str, Any]) -> None:
+    probe_id, decision = probe["id"], item.get("decision")
+    if decision not in DECISIONS:
+        raise ValueError(f"{probe_id}: decision must be one of {DECISIONS}, not {decision!r}")
+    fixes = {k: item[k] for k in ("gold_targets", "acceptable_ids", "clarify_ok") if k in item}
+    if decision != "fixed":
+        if fixes:
+            raise ValueError(f"{probe_id}: only a fixed decision may change gold")
+        return
+    gold, acceptable = fixes.get("gold_targets"), fixes.get("acceptable_ids", [])
+    if not isinstance(gold, list) or not gold:
+        raise ValueError(f"{probe_id}: a fixed decision needs gold_targets")
+    if not isinstance(acceptable, list):
+        raise ValueError(f"{probe_id}: acceptable_ids must be a list")
+    bad = [a for a in [*gold, *acceptable] if a != NEW and a not in roster]
+    if bad:
+        raise ValueError(f"{probe_id}: gold names agents not in its roster: {bad}")
+    if not isinstance(fixes.get("clarify_ok", False), bool):
+        raise ValueError(f"{probe_id}: clarify_ok must be true or false")
+
+
+def _apply_fix(probe: dict[str, Any], item: dict[str, Any], roster: dict[str, Any]) -> None:
+    probe["gold_targets"] = list(item["gold_targets"])
+    probe["acceptable_ids"] = list(item.get("acceptable_ids", []))
+    probe["clarify_ok"] = item.get("clarify_ok", probe["clarify_ok"])
+    probe["gold_agents"] = [
+        {"id": a, "name": roster[a]["name"], "purpose": roster[a]["purpose"], "role": role}
+        for role, ids in (("gold", probe["gold_targets"]), ("acceptable", probe["acceptable_ids"]))
+        for a in ids if a != NEW
+    ]
+
+
+def finalize(bench: dict[str, Any], decisions: list[dict[str, Any]], *, allow_fake: bool = False,
+             decisions_sha256: str | None = None) -> dict[str, Any]:
+    """One life's reviewed bench: flagged probes decided by a human, unflagged ones kept as "auto".
+
+    A decision is {id, decision: accept|fixed|reject, note?, gold_targets?, acceptable_ids?, clarify_ok?};
+    fixed needs gold_targets (NEW allowed) and only fixed may carry the gold fields; a fix without
+    acceptable_ids clears them, one without clarify_ok keeps the probe's. Every flagged probe needs
+    exactly one decision. decisions_sha256 defaults to a hash of `decisions` as given."""
+    if bench.get("meta", {}).get("fake_llm") and not allow_fake:
+        raise ValueError("refusing to finalize a bench built with the fake writer (--fake-llm)")
+    missing = [p["id"] for p in bench["probes"] if "check" not in p]
+    if missing:
+        raise ValueError(f"probes without a check (run checkers.py first): {missing}")
+    by_id = {p["id"]: p for p in bench["probes"]}
+    rosters = {label: {a["id"]: a for a in agents} for label, agents in bench["rosters"].items()}
+    roster_of = lambda probe: rosters.get(f"lived-{probe['size']}", {})  # noqa: E731
+    chosen: dict[str, dict[str, Any]] = {}
+    for item in decisions:
+        probe_id = item.get("id")
+        if probe_id not in by_id:
+            raise ValueError(f"unknown probe id {probe_id!r}")
+        if not _flagged(by_id[probe_id]):
+            raise ValueError(f"probe {probe_id} was not flagged for review")
+        if probe_id in chosen:
+            raise ValueError(f"probe {probe_id} decided twice")
+        _check_decision(item, by_id[probe_id], roster_of(by_id[probe_id]))
+        chosen[probe_id] = item
+    undecided = [p["id"] for p in bench["probes"] if _flagged(p) and p["id"] not in chosen]
+    if undecided:
+        raise ValueError(f"undecided: {', '.join(undecided)}")
+
+    kept: list[dict[str, Any]] = []
+    tally = {"accept": 0, "fixed": 0, "reject": 0}
+    audit = audit_changed = auto = 0
+    for source in bench["probes"]:
+        probe = copy.deepcopy(source)
+        if not _flagged(probe):
+            auto += 1
+            kept.append({**probe, "review": "auto"})
+            continue
+        item = chosen[probe["id"]]
+        decision = item["decision"]
+        tally[decision] += 1
+        if probe["check"]["flag"] == "audit":
+            audit += 1
+            audit_changed += decision != "accept"
+        if decision == "reject":
+            continue
+        review: dict[str, Any] = {"decision": decision, "note": item.get("note", "")}
+        if decision == "fixed":
+            review["original"] = {k: probe[k] for k in ("gold_targets", "acceptable_ids", "clarify_ok")}
+            _apply_fix(probe, item, roster_of(probe))
+        kept.append({**probe, "review": review})
+    summary = {
+        "kept": len(kept), "auto_kept": auto, "accepted": tally["accept"], "fixed": tally["fixed"],
+        "rejected": tally["reject"], "audit": audit, "audit_changed": audit_changed,
+        "label_error_rate": audit_changed / audit if audit else None,
+        "decisions_sha256": decisions_sha256 or _canonical_sha256(decisions),
+    }
+    return {"meta": {**copy.deepcopy(bench.get("meta", {})), "review": summary},
+            "rosters": copy.deepcopy(bench["rosters"]), "probes": kept}
+
+
 # --- CLI ----------------------------------------------------------------------------------------
+
+
+def _review_data_cli(seeds: list[int], bench_dir: Path, out: Path) -> int:
+    seeds = sorted(seeds)
+    raw = {seed: bench_path(seed, directory=bench_dir).read_bytes() for seed in seeds}
+    benches = {seed: json.loads(raw[seed].decode("utf-8")) for seed in seeds}
+    data = review_data(benches, hashlib.sha256(b"".join(raw[s] for s in seeds)).hexdigest())
+    for seed in seeds:
+        flags = [p["check"]["flag"] for p in data["probes"] if p["world_seed"] == seed]
+        print(f"life {seed}: {len(flags)} flagged  disagree={flags.count('disagree')} audit={flags.count('audit')}")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(render_page(data), encoding="utf-8")
+    print(f"{len(data['probes'])} probes for review  wrote {out}")
+    return 0
+
+
+def _finalize_cli(seeds: list[int], decisions_file: Path, bench_dir: Path) -> int:
+    raw = decisions_file.read_bytes()
+    per_life = split_decisions(json.loads(raw.decode("utf-8")), seeds)
+    digest = hashlib.sha256(raw).hexdigest()
+    bodies = {seed: finalize(json.loads(bench_path(seed, directory=bench_dir).read_text(encoding="utf-8")),
+                             per_life[seed], decisions_sha256=digest) for seed in seeds}
+    for seed, body in bodies.items():  # all lives validated before anything is written
+        out = bench_path(seed, reviewed=True, directory=bench_dir)
+        out.write_text(json.dumps(body, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+        r = body["meta"]["review"]
+        rate = "n/a" if r["label_error_rate"] is None else f"{r['label_error_rate']:.3f}"
+        print(f"life {seed}: kept {r['kept']} ({r['auto_kept']} auto, {r['accepted']} accepted, {r['fixed']} fixed), "
+              f"rejected {r['rejected']}; audit {r['audit_changed']}/{r['audit']} changed, label error rate {rate}  "
+              f"wrote {out}")
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -182,7 +367,19 @@ def main(argv: list[str] | None = None) -> int:
     build.add_argument("--fake-llm", action="store_true", help="offline scripted writer; no API calls")
     build.add_argument("--world-dir", type=Path, default=HERE, help="where world-s{seed}.json live")
     build.add_argument("--out-dir", type=Path, help="default: next to the world files")
+    page = sub.add_parser("review-data", help="write the review page of the flagged probes")
+    page.add_argument("--seed", type=int, action="append", required=True)
+    page.add_argument("--bench-dir", type=Path, default=HERE, help="where bench-v2-s{seed}.json live")
+    page.add_argument("--out", type=Path, default=REVIEW_PAGE)
+    fin = sub.add_parser("finalize", help="apply review decisions; writes bench-v2-s{seed}.reviewed.json")
+    fin.add_argument("--seed", type=int, action="append", required=True)
+    fin.add_argument("--decisions", type=Path, required=True, help="JSON list of decisions, both lives")
+    fin.add_argument("--bench-dir", type=Path, default=HERE, help="where bench-v2-s{seed}.json live")
     args = parser.parse_args(argv)
+    if args.command == "review-data":
+        return _review_data_cli(args.seed, args.bench_dir, args.out)
+    if args.command == "finalize":
+        return _finalize_cli(args.seed, args.decisions, args.bench_dir)
     if len(args.seed) not in (1, 2) or len(set(args.seed)) != len(args.seed):
         parser.error("give one --seed, or two different ones")
     out_dir = args.out_dir or args.world_dir
