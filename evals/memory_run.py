@@ -27,6 +27,7 @@ from .layers.memory import CONDITIONS, fake_memory_llm, run_memory_agent, summar
 from .llm import (
     Budget,
     BudgetExceeded,
+    DEFAULT_MAX_PROMPT_TOKENS,
     DailyQuotaExhausted,
     FatalAPIError,
     LLMClient,
@@ -54,6 +55,7 @@ class MemoryConfig:
     concurrency: int = 4
     requests_per_minute: int | None = None
     max_retries: int = 3
+    allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (priced higher by several providers)
 
 
 def load_config(path: Path) -> MemoryConfig:
@@ -74,6 +76,8 @@ def load_config(path: Path) -> MemoryConfig:
         raise ValueError(f"config key 'runs': must be at least {MIN_RUNS}")
     if not _is_int(cfg.max_retries) or cfg.max_retries < 0:
         raise ValueError("config key 'max_retries': must be a non-negative int")
+    if not isinstance(cfg.allow_long_prompts, bool):
+        raise ValueError("config key 'allow_long_prompts': must be true or false")
     rpm = cfg.requests_per_minute
     if rpm is not None and (not _is_int(rpm) or rpm <= 0):
         raise ValueError("config key 'requests_per_minute': must be null or a positive int")
@@ -175,6 +179,7 @@ def main(argv: list[str] | None = None) -> int:
         llm = OpenRouterLLM(
             api_key=key, cache_dir=CACHE_DIR, budget=Budget(cfg.budget_usd), concurrency=cfg.concurrency,
             max_retries=cfg.max_retries, rate_limiter=limiter,
+            max_prompt_tokens=None if cfg.allow_long_prompts else DEFAULT_MAX_PROMPT_TOKENS,
         )
 
     async def go() -> Path:

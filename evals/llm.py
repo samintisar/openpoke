@@ -54,6 +54,20 @@ class DailyQuotaExhausted(RunAborted):
     the same config tomorrow resumes where this run stopped."""
 
 
+class LongPromptRefused(RunAborted):
+    """A request's estimated prompt is over the run's limit. Long prompts are priced higher by several
+    providers (Haiku 5x above 100k tokens), so a run that needs them must say so (`allow_long_prompts: true`)."""
+
+
+DEFAULT_MAX_PROMPT_TOKENS = 100_000
+
+
+def estimate_prompt_tokens(payload: dict[str, Any]) -> int:
+    """A deliberately rough size of the prompt: about 4 characters per token over messages and tools."""
+    text = json.dumps(payload.get("messages", []), default=str) + json.dumps(payload.get("tools", []), default=str)
+    return len(text) // 4
+
+
 def _is_daily_quota(text: str) -> bool:
     """OpenRouter's 429 for the free-tier daily cap names the limit, e.g. "free-models-per-day"."""
     lowered = text.lower()
@@ -218,6 +232,7 @@ class OpenRouterLLM:
         retry_delay_s: float = 2.0,
         sleep: Callable[[float], Awaitable[Any]] = asyncio.sleep,
         rate_limiter: RateLimiter | None = None,
+        max_prompt_tokens: int | None = DEFAULT_MAX_PROMPT_TOKENS,
     ) -> None:
         self.api_key = api_key
         self.cache_dir = cache_dir
@@ -227,6 +242,7 @@ class OpenRouterLLM:
         self._sleep = sleep  # every retry wait, backoff or Retry-After, goes through this hook
         self._semaphore = asyncio.Semaphore(concurrency)
         self._rate_limiter = rate_limiter
+        self.max_prompt_tokens = max_prompt_tokens
         self._client = httpx.AsyncClient(transport=transport, timeout=120.0)
 
     async def aclose(self) -> None:
@@ -242,6 +258,14 @@ class OpenRouterLLM:
         if cached is not None:
             cached["_meta"] = {**cached.get("_meta", {}), "cached": True, "cache_key": key}
             return cached
+
+        if self.max_prompt_tokens is not None:
+            estimate = estimate_prompt_tokens(payload)
+            if estimate > self.max_prompt_tokens:
+                raise LongPromptRefused(
+                    f"prompt of ~{estimate} tokens is over the {self.max_prompt_tokens}-token limit; "
+                    "set allow_long_prompts: true in the config to send it"
+                )
 
         async with self._semaphore:
             started = time.perf_counter()

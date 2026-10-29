@@ -37,6 +37,7 @@ from .leaderboard import write_leaderboard
 from .llm import (
     Budget,
     BudgetExceeded,
+    DEFAULT_MAX_PROMPT_TOKENS,
     DailyQuotaExhausted,
     FatalAPIError,
     LLMClient,
@@ -76,6 +77,7 @@ class Config:
     include_handwritten: bool = True
     world: str = "synthetic"  # synthetic, or lived (the frozen lived-in world; n_agents picks its sizes)
     lived_path: str | None = None
+    allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (priced higher by several providers)
 
 
 def load_config(path: Path) -> Config:
@@ -118,6 +120,8 @@ def _validate(cfg: Config) -> None:
         raise bad("world", "must be synthetic or lived")
     if cfg.lived_path is not None and not isinstance(cfg.lived_path, str):
         raise bad("lived_path", "must be null or a path string")
+    if not isinstance(cfg.allow_long_prompts, bool):
+        raise bad("allow_long_prompts", "must be true or false")
     if cfg.suite not in ("all", "capability", "regression"):
         raise bad("suite", "must be one of all, capability, regression")
     if cfg.kinds is not None and (
@@ -323,6 +327,7 @@ def main(argv: list[str] | None = None) -> int:
         llm = OpenRouterLLM(
             api_key=key, cache_dir=CACHE_DIR, budget=Budget(cfg.budget_usd), concurrency=cfg.concurrency,
             max_retries=cfg.max_retries, rate_limiter=limiter,
+            max_prompt_tokens=None if cfg.allow_long_prompts else DEFAULT_MAX_PROMPT_TOKENS,
         )
 
     async def go() -> Path:

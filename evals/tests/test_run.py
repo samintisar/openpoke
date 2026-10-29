@@ -307,3 +307,10 @@ def test_routing_rows_carry_cached_prompt_tokens(tmp_path):
     data = json.loads(next(tmp_path.glob("*-cached-dev.json")).read_text(encoding="utf-8"))
     assert data["routing_rows"]
     assert all(row["cached_prompt_tokens"] == 0 for row in data["routing_rows"])
+
+
+def test_allow_long_prompts_is_a_known_config_key(tmp_path):
+    from evals.run import load_config
+    path = tmp_path / "c.yaml"
+    path.write_text("name: x\nallow_long_prompts: true\n", encoding="utf-8")
+    assert load_config(path).allow_long_prompts is True

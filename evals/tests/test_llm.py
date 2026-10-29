@@ -8,6 +8,7 @@ from evals.llm import (
     BudgetExceeded,
     DailyQuotaExhausted,
     FatalAPIError,
+    LongPromptRefused,
     OpenRouterLLM,
     RateLimiter,
     RunAborted,
@@ -16,6 +17,7 @@ from evals.llm import (
     build_payload,
     cache_key,
     estimate_cost,
+    estimate_prompt_tokens,
     fake_llm,
     tool_call,
 )
@@ -419,3 +421,28 @@ async def test_cached_tokens_default_to_zero(tmp_path):
 def test_deepseek_fallback_price():
     usage = {"prompt_tokens": 1_000_000, "completion_tokens": 1_000_000}
     assert estimate_cost("deepseek/deepseek-v4.1-flash", usage) == pytest.approx(0.045 + 0.50)
+
+
+def test_prompt_estimate_counts_system_messages_and_tools():
+    payload = build_payload(model="m", system="a" * 400, messages=[{"role": "user", "content": "b" * 400}],
+                            tools=[{"type": "function", "function": {"name": "t", "description": "c" * 400}}])
+    assert 300 <= estimate_prompt_tokens(payload) <= 400
+
+
+async def test_long_prompt_is_refused_before_sending(tmp_path):
+    sent = []
+    llm = OpenRouterLLM(api_key="k", cache_dir=tmp_path, budget=Budget(1.0), max_prompt_tokens=100,
+                        transport=httpx.MockTransport(lambda r: sent.append(r) or httpx.Response(200, json=_ok())))
+    with pytest.raises(LongPromptRefused, match="allow_long_prompts"):
+        await llm.complete(**{**KW, "messages": [{"role": "user", "content": "x" * 2000}]})
+    assert sent == []
+
+
+async def test_no_limit_when_max_prompt_tokens_is_none(tmp_path):
+    llm = OpenRouterLLM(api_key="k", cache_dir=tmp_path, budget=Budget(1.0), max_prompt_tokens=None,
+                        transport=httpx.MockTransport(lambda r: httpx.Response(200, json=_ok())))
+    await llm.complete(**{**KW, "messages": [{"role": "user", "content": "x" * 2000}]})
+
+
+def test_long_prompt_refusal_stops_the_run():
+    assert issubclass(LongPromptRefused, RunAborted)

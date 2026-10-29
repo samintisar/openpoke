@@ -48,6 +48,7 @@ from .layers.e2e import (
 from .llm import (
     Budget,
     BudgetExceeded,
+    DEFAULT_MAX_PROMPT_TOKENS,
     DailyQuotaExhausted,
     FatalAPIError,
     LLMClient,
@@ -75,6 +76,7 @@ class E2EConfig:
     requests_per_minute: Optional[int] = None
     max_retries: int = 3
     scenarios: Optional[List[str]] = None  # ids to run; None runs every scenario of the split
+    allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (priced higher by several providers)
 
 
 def _gate_flag(value: Any) -> bool:
@@ -103,6 +105,8 @@ def load_config(path: Path) -> E2EConfig:
     rpm = cfg.requests_per_minute
     if rpm is not None and (not _is_int(rpm) or rpm <= 0):
         raise ValueError("config key 'requests_per_minute': must be null or a positive int")
+    if not isinstance(cfg.allow_long_prompts, bool):
+        raise ValueError("config key 'allow_long_prompts': must be true or false")
     for key in ("budget_usd", "debounce_seconds", "idle_timeout_seconds", "agent_timeout_seconds"):
         value = getattr(cfg, key)
         if isinstance(value, bool) or not isinstance(value, (int, float)) or value <= 0:
@@ -195,6 +199,7 @@ def _live_llm(cfg: E2EConfig, cache_dir: Path) -> Optional[LLMClient]:
     return OpenRouterLLM(
         api_key=key, cache_dir=cache_dir, budget=Budget(cfg.budget_usd), concurrency=cfg.concurrency,
         max_retries=cfg.max_retries, rate_limiter=limiter,
+        max_prompt_tokens=None if cfg.allow_long_prompts else DEFAULT_MAX_PROMPT_TOKENS,
     )
 
 
