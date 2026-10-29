@@ -55,7 +55,7 @@ class MemoryConfig:
     concurrency: int = 4
     requests_per_minute: int | None = None
     max_retries: int = 3
-    allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (priced higher by several providers)
+    allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (the guard prevents accidentally huge runs)
 
 
 def load_config(path: Path) -> MemoryConfig:

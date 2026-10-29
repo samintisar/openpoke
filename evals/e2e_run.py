@@ -76,7 +76,7 @@ class E2EConfig:
     requests_per_minute: Optional[int] = None
     max_retries: int = 3
     scenarios: Optional[List[str]] = None  # ids to run; None runs every scenario of the split
-    allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (priced higher by several providers)
+    allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (the guard prevents accidentally huge runs)
 
 
 def _gate_flag(value: Any) -> bool:

@@ -55,8 +55,8 @@ class DailyQuotaExhausted(RunAborted):
 
 
 class LongPromptRefused(RunAborted):
-    """A request's estimated prompt is over the run's limit. Long prompts are priced higher by several
-    providers (Haiku 5x above 100k tokens), so a run that needs them must say so (`allow_long_prompts: true`)."""
+    """A request's estimated prompt is over the run's limit. Prevents accidentally huge runs: a run that
+    really needs prompts this long must say so (`allow_long_prompts: true`)."""
 
 
 DEFAULT_MAX_PROMPT_TOKENS = 100_000

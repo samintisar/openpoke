@@ -77,7 +77,7 @@ class Config:
     include_handwritten: bool = True
     world: str = "synthetic"  # synthetic, or lived (the frozen lived-in world; n_agents picks its sizes)
     lived_path: str | None = None
-    allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (priced higher by several providers)
+    allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (the guard prevents accidentally huge runs)
 
 
 def load_config(path: Path) -> Config:
