@@ -297,17 +297,18 @@ def test_approve_refuses_an_action_never_shown(gmail, log, run_as):
     assert not result.success and "has not been shown" in result.payload["error"]
 
 
-def test_reshowing_moves_shown_at_forward(gmail, log, run_as, monkeypatch):
+def test_reshowing_keeps_the_first_shown_at(gmail, log, run_as, monkeypatch):
     run_as("alice")
     action_id = create_draft()["action_id"]
     first = datetime.now(timezone.utc) + timedelta(minutes=1)
     monkeypatch.setattr(gate, "_now", lambda: first)
     ia_tools.send_draft(action_id=action_id)
+    # The IA re-shows the same content in the approving turn (seen in L3): the user's reply to the first
+    # showing still approves, since the content cannot have changed.
     monkeypatch.setattr(gate, "_now", lambda: first + timedelta(minutes=1))
     ia_tools.send_draft(action_id=action_id)
-    # A reply to the first showing does not approve what was shown again after it.
-    assert not in_turn("user", first + timedelta(seconds=30), ia_tools.approve_send, action_id).success
-    assert in_turn("user", first + timedelta(minutes=2), ia_tools.approve_send, action_id).success
+    assert not in_turn("user", first - timedelta(seconds=1), ia_tools.approve_send, action_id).success
+    assert in_turn("user", first + timedelta(seconds=30), ia_tools.approve_send, action_id).success
 
 
 def test_unknown_and_ambiguous_ids_error(gmail, log, run_as):

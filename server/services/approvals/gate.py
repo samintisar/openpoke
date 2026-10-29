@@ -424,11 +424,18 @@ def render(action: PendingAction) -> str:
 
 
 def show(action_id: object, now: Optional[datetime] = None) -> PendingAction:
-    """Mark a pending action shown to the user now; returns it. Errors unless it is pending."""
+    """Mark a pending action shown to the user now; returns it. Errors unless it is pending.
+
+    An action's content never changes (an edit is a new action), so showing it again keeps the first
+    `shown_at`: the user already saw exactly this, and re-showing it in the approving turn must not
+    push `shown_at` past the message that approves it.
+    """
     now = now or _now()
     action = _lookup(action_id, now)
     if action.status != "pending":
         raise ApprovalError(f"Action {action.id} is {action.status}; only pending actions can be shown.")
+    if action.shown_at is not None:
+        return action
     if not get_approval_store().set_shown(action.id, now):  # pragma: no cover - raced with a status change
         raise ApprovalError(f"Action {action.id} is no longer pending.")
     return get_approval_store().get(action.id)  # type: ignore[return-value]
