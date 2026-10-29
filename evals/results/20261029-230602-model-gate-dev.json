@@ -1,0 +1,5679 @@
+{
+ "meta": {
+  "name": "model-gate",
+  "system": "retrieved",
+  "model": "deepseek/deepseek-v4.1-flash",
+  "layers": [
+   "retrieval",
+   "routing"
+  ],
+  "n_agents": [
+   10,
+   50,
+   200
+  ],
+  "world_seeds": [
+   1
+  ],
+  "k": 1,
+  "cases_per_kind": 3,
+  "kinds": null,
+  "suite": "all",
+  "budget_usd": 1.0,
+  "concurrency": 4,
+  "requests_per_minute": null,
+  "max_retries": 3,
+  "include_handwritten": false,
+  "world": "lived",
+  "lived_path": null,
+  "allow_long_prompts": false,
+  "split": "dev",
+  "final": false,
+  "git_sha": "c6b0657",
+  "git_dirty": false,
+  "started_at": "2026-10-29T23:06:02.705974+00:00",
+  "finished_at": "2026-10-29T23:07:36.960489+00:00",
+  "checksum": "9c135966e9248fa7214a1e043b2194322dd9b3bf2e94dad9ab55e0e4b5ed0d04",
+  "expected_checksum": "9c135966e9248fa7214a1e043b2194322dd9b3bf2e94dad9ab55e0e4b5ed0d04",
+  "valid": true,
+  "budget_spent_usd": 0.0755,
+  "fresh_cost_usd": 0.0755,
+  "unattributed_cost_usd": -0.0,
+  "budget_exhausted": false,
+  "aborted": null
+ },
+ "summary": {
+  "retrieval": {
+   "lived-10": {
+    "cases": 28,
+    "recall": 1.0,
+    "mrr": 0.675,
+    "mean_shown": 8.0,
+    "mean_roster_tokens": 560.1
+   },
+   "lived-50": {
+    "cases": 29,
+    "recall": 1.0,
+    "mrr": 0.5233,
+    "mean_shown": 10.0,
+    "mean_roster_tokens": 721.7
+   },
+   "lived-200": {
+    "cases": 28,
+    "recall": 1.0,
+    "mrr": 0.3865,
+    "mean_shown": 10.1,
+    "mean_roster_tokens": 753.2
+   }
+  },
+  "routing": {
+   "lived-10": {
+    "cases": 28,
+    "planned_cases": 28,
+    "samples": 28,
+    "k": 1,
+    "incomplete_cases": 0,
+    "pass_at_1": 0.8929,
+    "macro_pass_at_1": 0.8958,
+    "pass_hat_k": 0.8929,
+    "sample_std": 0.0,
+    "error_count": 0,
+    "error_rate": 0.0,
+    "duplicate_rate": 0,
+    "duplicate_rate_all": 0,
+    "outcome_rates": {
+     "correct": 0.8929,
+     "missed_create": 0.0357,
+     "partial": 0.0357,
+     "unnecessary_clarify": 0.0357
+    },
+    "hit_cap_rate": 0,
+    "by_kind": {
+     "agent_result": 1,
+     "cross_agent": 1,
+     "follow_up": 1,
+     "multi_task": 0.6667,
+     "new_task": 0.5,
+     "same_person_new_topic": 1,
+     "typo": 1,
+     "vague_reference": 1
+    },
+    "mean_prompt_tokens": 14591.0,
+    "total_cost_usd": 0.0207,
+    "fresh_cost_usd": 0.0207,
+    "cache_hit_rate": 0.0,
+    "mean_latency_s": 3.609
+   },
+   "lived-50": {
+    "cases": 29,
+    "planned_cases": 29,
+    "samples": 29,
+    "k": 1,
+    "incomplete_cases": 0,
+    "pass_at_1": 0.931,
+    "macro_pass_at_1": 0.9167,
+    "pass_hat_k": 0.931,
+    "sample_std": 0.0,
+    "error_count": 0,
+    "error_rate": 0.0,
+    "duplicate_rate": 0.0476,
+    "duplicate_rate_all": 0.0435,
+    "outcome_rates": {
+     "correct": 0.931,
+     "duplicate_create": 0.0345,
+     "missed_create": 0.0345
+    },
+    "hit_cap_rate": 0,
+    "by_kind": {
+     "agent_result": 1,
+     "cross_agent": 1,
+     "dormant_revival": 1,
+     "follow_up": 1,
+     "multi_task": 1,
+     "new_task": 1,
+     "same_person_new_topic": 0.5,
+     "typo": 0.75,
+     "vague_reference": 1
+    },
+    "mean_prompt_tokens": 14511.3,
+    "total_cost_usd": 0.0074,
+    "fresh_cost_usd": 0.0074,
+    "cache_hit_rate": 0.0,
+    "mean_latency_s": 4.826
+   },
+   "lived-200": {
+    "cases": 28,
+    "planned_cases": 28,
+    "samples": 28,
+    "k": 1,
+    "incomplete_cases": 0,
+    "pass_at_1": 0.9286,
+    "macro_pass_at_1": 0.95,
+    "pass_hat_k": 0.9286,
+    "sample_std": 0.0,
+    "error_count": 0,
+    "error_rate": 0.0,
+    "duplicate_rate": 0,
+    "duplicate_rate_all": 0,
+    "outcome_rates": {
+     "correct": 0.9286,
+     "no_action": 0.0357,
+     "wrong_reuse": 0.0357
+    },
+    "hit_cap_rate": 0,
+    "by_kind": {
+     "agent_result": 1,
+     "cross_agent": 1,
+     "dormant_revival": 1,
+     "follow_up": 1,
+     "multi_task": 0.75,
+     "new_task": 1,
+     "same_name_people": 1,
+     "same_person_new_topic": 1,
+     "typo": 0.75,
+     "vague_reference": 1
+    },
+    "mean_prompt_tokens": 20096.2,
+    "total_cost_usd": 0.0474,
+    "fresh_cost_usd": 0.0474,
+    "cache_hit_rate": 0.0,
+    "mean_latency_s": 4.243
+   }
+  }
+ },
+ "retrieval_rows": [
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-follow_up-00",
+   "kind": "follow_up",
+   "shown_count": 7,
+   "roster_tokens": 493,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-follow_up-01",
+   "kind": "follow_up",
+   "shown_count": 7,
+   "roster_tokens": 493,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-follow_up-02",
+   "kind": "follow_up",
+   "shown_count": 7,
+   "roster_tokens": 497,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-new_task-00",
+   "kind": "new_task",
+   "shown_count": 8,
+   "roster_tokens": 564,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-new_task-01",
+   "kind": "new_task",
+   "shown_count": 9,
+   "roster_tokens": 632,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-new_task-02",
+   "kind": "new_task",
+   "shown_count": 8,
+   "roster_tokens": 564,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-new_task-03",
+   "kind": "new_task",
+   "shown_count": 9,
+   "roster_tokens": 632,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-same_person_new_topic-00",
+   "kind": "same_person_new_topic",
+   "shown_count": 8,
+   "roster_tokens": 561,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-same_person_new_topic-01",
+   "kind": "same_person_new_topic",
+   "shown_count": 9,
+   "roster_tokens": 626,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-same_person_new_topic-02",
+   "kind": "same_person_new_topic",
+   "shown_count": 8,
+   "roster_tokens": 564,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-same_person_new_topic-03",
+   "kind": "same_person_new_topic",
+   "shown_count": 9,
+   "roster_tokens": 628,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-vague_reference-00",
+   "kind": "vague_reference",
+   "shown_count": 7,
+   "roster_tokens": 499,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-vague_reference-02",
+   "kind": "vague_reference",
+   "shown_count": 8,
+   "roster_tokens": 561,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-vague_reference-03",
+   "kind": "vague_reference",
+   "shown_count": 8,
+   "roster_tokens": 561,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-multi_task-00",
+   "kind": "multi_task",
+   "shown_count": 8,
+   "roster_tokens": 564,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-multi_task-02",
+   "kind": "multi_task",
+   "shown_count": 8,
+   "roster_tokens": 564,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-multi_task-03",
+   "kind": "multi_task",
+   "shown_count": 8,
+   "roster_tokens": 564,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-cross_agent-00",
+   "kind": "cross_agent",
+   "shown_count": 8,
+   "roster_tokens": 558,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-cross_agent-01",
+   "kind": "cross_agent",
+   "shown_count": 8,
+   "roster_tokens": 564,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-cross_agent-02",
+   "kind": "cross_agent",
+   "shown_count": 7,
+   "roster_tokens": 493,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-cross_agent-03",
+   "kind": "cross_agent",
+   "shown_count": 8,
+   "roster_tokens": 561,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-typo-01",
+   "kind": "typo",
+   "shown_count": 7,
+   "roster_tokens": 493,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-typo-02",
+   "kind": "typo",
+   "shown_count": 7,
+   "roster_tokens": 499,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-typo-03",
+   "kind": "typo",
+   "shown_count": 8,
+   "roster_tokens": 564,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-agent_result-00",
+   "kind": "agent_result",
+   "shown_count": 8,
+   "roster_tokens": 561,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-agent_result-01",
+   "kind": "agent_result",
+   "shown_count": 9,
+   "roster_tokens": 632,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-agent_result-02",
+   "kind": "agent_result",
+   "shown_count": 9,
+   "roster_tokens": 632,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-agent_result-03",
+   "kind": "agent_result",
+   "shown_count": 8,
+   "roster_tokens": 558,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-follow_up-00",
+   "kind": "follow_up",
+   "shown_count": 10,
+   "roster_tokens": 726,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-follow_up-01",
+   "kind": "follow_up",
+   "shown_count": 10,
+   "roster_tokens": 716,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-follow_up-02",
+   "kind": "follow_up",
+   "shown_count": 10,
+   "roster_tokens": 720,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-follow_up-03",
+   "kind": "follow_up",
+   "shown_count": 10,
+   "roster_tokens": 715,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-new_task-02",
+   "kind": "new_task",
+   "shown_count": 10,
+   "roster_tokens": 722,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-new_task-03",
+   "kind": "new_task",
+   "shown_count": 10,
+   "roster_tokens": 710,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-same_person_new_topic-02",
+   "kind": "same_person_new_topic",
+   "shown_count": 10,
+   "roster_tokens": 718,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-same_person_new_topic-03",
+   "kind": "same_person_new_topic",
+   "shown_count": 10,
+   "roster_tokens": 715,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-vague_reference-00",
+   "kind": "vague_reference",
+   "shown_count": 10,
+   "roster_tokens": 719,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-vague_reference-01",
+   "kind": "vague_reference",
+   "shown_count": 10,
+   "roster_tokens": 729,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-vague_reference-02",
+   "kind": "vague_reference",
+   "shown_count": 10,
+   "roster_tokens": 719,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-vague_reference-03",
+   "kind": "vague_reference",
+   "shown_count": 10,
+   "roster_tokens": 712,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-multi_task-00",
+   "kind": "multi_task",
+   "shown_count": 10,
+   "roster_tokens": 718,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-multi_task-01",
+   "kind": "multi_task",
+   "shown_count": 10,
+   "roster_tokens": 728,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-multi_task-03",
+   "kind": "multi_task",
+   "shown_count": 10,
+   "roster_tokens": 739,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-cross_agent-00",
+   "kind": "cross_agent",
+   "shown_count": 10,
+   "roster_tokens": 718,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-cross_agent-01",
+   "kind": "cross_agent",
+   "shown_count": 10,
+   "roster_tokens": 720,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-cross_agent-02",
+   "kind": "cross_agent",
+   "shown_count": 10,
+   "roster_tokens": 728,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-cross_agent-03",
+   "kind": "cross_agent",
+   "shown_count": 10,
+   "roster_tokens": 726,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-dormant_revival-01",
+   "kind": "dormant_revival",
+   "shown_count": 10,
+   "roster_tokens": 716,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-dormant_revival-03",
+   "kind": "dormant_revival",
+   "shown_count": 10,
+   "roster_tokens": 719,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-typo-00",
+   "kind": "typo",
+   "shown_count": 10,
+   "roster_tokens": 718,
+   "recall": 1.0,
+   "mrr": 0.25
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-typo-01",
+   "kind": "typo",
+   "shown_count": 10,
+   "roster_tokens": 717,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-typo-02",
+   "kind": "typo",
+   "shown_count": 10,
+   "roster_tokens": 708,
+   "recall": 1.0,
+   "mrr": 0.5
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-typo-03",
+   "kind": "typo",
+   "shown_count": 10,
+   "roster_tokens": 712,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-agent_result-00",
+   "kind": "agent_result",
+   "shown_count": 11,
+   "roster_tokens": 792,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-agent_result-01",
+   "kind": "agent_result",
+   "shown_count": 11,
+   "roster_tokens": 770,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-agent_result-02",
+   "kind": "agent_result",
+   "shown_count": 11,
+   "roster_tokens": 795,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-agent_result-03",
+   "kind": "agent_result",
+   "shown_count": 8,
+   "roster_tokens": 584,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-follow_up-00",
+   "kind": "follow_up",
+   "shown_count": 10,
+   "roster_tokens": 748,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-follow_up-01",
+   "kind": "follow_up",
+   "shown_count": 10,
+   "roster_tokens": 761,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-follow_up-02",
+   "kind": "follow_up",
+   "shown_count": 10,
+   "roster_tokens": 742,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-follow_up-03",
+   "kind": "follow_up",
+   "shown_count": 10,
+   "roster_tokens": 736,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-new_task-00",
+   "kind": "new_task",
+   "shown_count": 10,
+   "roster_tokens": 746,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-new_task-01",
+   "kind": "new_task",
+   "shown_count": 10,
+   "roster_tokens": 751,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-new_task-03",
+   "kind": "new_task",
+   "shown_count": 10,
+   "roster_tokens": 759,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-same_person_new_topic-00",
+   "kind": "same_person_new_topic",
+   "shown_count": 10,
+   "roster_tokens": 748,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-same_person_new_topic-02",
+   "kind": "same_person_new_topic",
+   "shown_count": 10,
+   "roster_tokens": 760,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-same_person_new_topic-03",
+   "kind": "same_person_new_topic",
+   "shown_count": 10,
+   "roster_tokens": 762,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-vague_reference-03",
+   "kind": "vague_reference",
+   "shown_count": 10,
+   "roster_tokens": 746,
+   "recall": 1.0,
+   "mrr": 0.2
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-multi_task-00",
+   "kind": "multi_task",
+   "shown_count": 10,
+   "roster_tokens": 753,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-multi_task-01",
+   "kind": "multi_task",
+   "shown_count": 10,
+   "roster_tokens": 766,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-multi_task-02",
+   "kind": "multi_task",
+   "shown_count": 10,
+   "roster_tokens": 734,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-multi_task-03",
+   "kind": "multi_task",
+   "shown_count": 10,
+   "roster_tokens": 759,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-same_name_people-00",
+   "kind": "same_name_people",
+   "shown_count": 10,
+   "roster_tokens": 766,
+   "recall": null,
+   "mrr": null
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-cross_agent-00",
+   "kind": "cross_agent",
+   "shown_count": 10,
+   "roster_tokens": 737,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-cross_agent-02",
+   "kind": "cross_agent",
+   "shown_count": 10,
+   "roster_tokens": 748,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-cross_agent-03",
+   "kind": "cross_agent",
+   "shown_count": 10,
+   "roster_tokens": 742,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-dormant_revival-00",
+   "kind": "dormant_revival",
+   "shown_count": 10,
+   "roster_tokens": 744,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-dormant_revival-02",
+   "kind": "dormant_revival",
+   "shown_count": 10,
+   "roster_tokens": 744,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-dormant_revival-03",
+   "kind": "dormant_revival",
+   "shown_count": 10,
+   "roster_tokens": 740,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-typo-00",
+   "kind": "typo",
+   "shown_count": 10,
+   "roster_tokens": 748,
+   "recall": 1.0,
+   "mrr": 0.25
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-typo-01",
+   "kind": "typo",
+   "shown_count": 10,
+   "roster_tokens": 747,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-typo-02",
+   "kind": "typo",
+   "shown_count": 10,
+   "roster_tokens": 736,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-typo-03",
+   "kind": "typo",
+   "shown_count": 10,
+   "roster_tokens": 739,
+   "recall": 1.0,
+   "mrr": 0.3333333333333333
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-agent_result-00",
+   "kind": "agent_result",
+   "shown_count": 11,
+   "roster_tokens": 812,
+   "recall": 1.0,
+   "mrr": 1.0
+  },
+  {
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-agent_result-03",
+   "kind": "agent_result",
+   "shown_count": 11,
+   "roster_tokens": 815,
+   "recall": 1.0,
+   "mrr": 1.0
+  }
+ ],
+ "routing_rows": [
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-follow_up-00",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "hey can you ask paul if he can come earlier for the tax return thing",
+   "gold": [
+    "paul-tax-return"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "paul-tax-return"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. asking paul if he can come earlier for the tax return. i'll show you the message before it goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. asking paul if he can come earlier for the tax return. i'll show you the message before it goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "paul-tax-return",
+      "instructions": "The user wants to ask Paul whether he can come earlier for the tax return appointment. Find the relevant recent correspondence with Paul to get his email and details of the current appointment time, then draft a short, friendly email asking if he could come earlier instead. Show the draft for the user's approval before sending anything."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000969494,
+   "fresh_cost": 0.000969494,
+   "cached_calls": 0,
+   "latency_s": 2.367,
+   "prompt_tokens": 11833,
+   "completion_tokens": 234,
+   "cached_prompt_tokens": 5632,
+   "cache_keys": [
+    "04aab99cc4432d9a729d6344fc3d40d3304a2b92ead20c2af7469b3d7e41c1b8",
+    "9d93530013daa8e3a85e314870c28255b9b7444f1847be865fe89c1b18020eba"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-follow_up-01",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "hey any update on the seattle flight? still waiting to hear if they confirmed",
+   "gold": [
+    "seattle-flight-search"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "seattle-flight-search"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "checking on the seattle flight status now \u2014 one sec."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "checking on the seattle flight status now \u2014 one sec."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "seattle-flight-search",
+      "instructions": "Status check for the user: what's the latest on the Seattle flight for next Thursday? Have flights been found, is anything booked or awaiting confirmation, and what are the current prices and options? Note the user never gave a budget \u2014 flag anything that's still blocked on that. Also clarify whether any booking/confirmation is actually pending, since the user thinks they're waiting on a confirmation."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Status check dispatched to the flight agent; awaiting its reply before telling the user any details."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Already acknowledged the user and dispatched the status check; no further message needed until the agent replies."
+     }
+    }
+   ],
+   "iterations": 4,
+   "hit_iteration_cap": false,
+   "cost": 0.0006608499999999999,
+   "fresh_cost": 0.0006608499999999999,
+   "cached_calls": 0,
+   "latency_s": 4.891,
+   "prompt_tokens": 24514,
+   "completion_tokens": 651,
+   "cached_prompt_tokens": 23040,
+   "cache_keys": [
+    "8432b5572a9b373ec1e04e0bc9c69b08b38280cc866ea676385223d804fbeec7",
+    "e4caf7db780586529702b6adf82dc1139dc203e9a0d70b7f9f8ad58226ddfc67",
+    "f58495fc992de27e6125b63e5da6879fe04774db8d4af84022f13e01e98ce720",
+    "4a45d52304b0f0b4cd335ac3b48309a108bd183d9c84aa8b9a32390023781bf9"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-follow_up-02",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "hey can you tell elena i can bring anything she needs for christmas, like dessert or gifts to wrap",
+   "gold": [
+    "elena-christmas-gifts"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "elena-christmas-gifts"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to elena offering to bring dessert or help wrap gifts \u2014 i'll show it to you before it goes anywhere."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "elena-christmas-gifts",
+      "instructions": "The user wants to message Elena: tell her they can bring anything she needs for Christmas \u2014 for example a dessert or gifts to wrap. Find Elena's contact details (inbox/contacts) if not already found, and draft a short, friendly message to her along those lines. Do not send it \u2014 report the draft back so the user can review and approve it first."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to elena offering to bring dessert or help wrap gifts \u2014 i'll show it to you before it goes anywhere."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.001048404,
+   "fresh_cost": 0.001048404,
+   "cached_calls": 0,
+   "latency_s": 2.886,
+   "prompt_tokens": 11905,
+   "completion_tokens": 341,
+   "cached_prompt_tokens": 5632,
+   "cache_keys": [
+    "ac9c1e5f4a0e219a784751cb19425429a827a29841448f9a3b1b913f9a1c58cf",
+    "a1a169264e57fe5339da01acbfb7223c8e7be3cee842f1530e26cea6d330488c"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-new_task-00",
+   "kind": "new_task",
+   "sample": 0,
+   "message": "hey can you look up a few flights to oslo and send me the options",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "unnecessary_clarify",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": true,
+   "user_messages": [
+    "happy to. what dates are you thinking, and one-way or round trip?"
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "happy to. what dates are you thinking, and one-way or round trip?"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.00127044,
+   "fresh_cost": 0.00127044,
+   "cached_calls": 0,
+   "latency_s": 3.681,
+   "prompt_tokens": 11699,
+   "completion_tokens": 749,
+   "cached_prompt_tokens": 5760,
+   "cache_keys": [
+    "71b6024773319528ce301cb49a21ec3c895bc940f7176a7d317b96bd12814e42",
+    "0fe028f2e55c58a2420cb9a15448caa6994f44a2a37f6989bd24c9deb51b3852"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-new_task-01",
+   "kind": "new_task",
+   "sample": 0,
+   "message": "hey can you check if there are coldplay tickets for jamie's birthday weekend and grab them if they're under budget",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "missed_create",
+   "error": null,
+   "dispatched_ids": [
+    "jamie-cooking-class"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. one thing \u2014 what's the ticket budget i'm working with? i'll start hunting for Coldplay tickets on Jamie's birthday weekend now and hold off on buying until you give me the number."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. one thing \u2014 what's the ticket budget i'm working with? i'll start hunting for Coldplay tickets on Jamie's birthday weekend now and hold off on buying until you give me the number."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "jamie-cooking-class",
+      "instructions": "New task on the same matter (Jamie's birthday weekend): look for Coldplay concert tickets for Jamie's birthday weekend \u2014 the same weekend the cooking class is booked for. Find out the exact dates of that weekend first, then search for available Coldplay tickets for those dates (any night in that weekend window). Report back the options you find with dates, seat/section and total price, including fees. The user wants to buy if the tickets are under their budget, but they haven't told us the budget number yet \u2014 so do NOT purchase anything yet. Just come back with the best options and prices so we can get the user's budget and go-ahead."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.00086468,
+   "fresh_cost": 0.00086468,
+   "cached_calls": 0,
+   "latency_s": 6.185,
+   "prompt_tokens": 12314,
+   "completion_tokens": 1010,
+   "cached_prompt_tokens": 10880,
+   "cache_keys": [
+    "6c0f8567fbe68202476e4b4333caa6164b127b7e983b0cd44df10a885c81b882",
+    "18cd0d5ef92aa7931500e1711c8b6d30afbc8977a47d3f9f8a1df985ed706020"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-new_task-02",
+   "kind": "new_task",
+   "sample": 0,
+   "message": "hey can you find a wine tasting in napa for me and jamie this saturday afternoon and tell me the best option",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Napa Wine Tasting Saturday"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. hunting down napa wine tastings for this saturday afternoon and i'll tell you which one's worth it."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. hunting down napa wine tastings for this saturday afternoon and i'll tell you which one's worth it."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Napa Wine Tasting Saturday",
+      "purpose": "Find and recommend a Napa wine tasting for the user and Jamie this Saturday afternoon, then book/reserve the best option the user picks.",
+      "instructions": "The user wants a wine tasting in Napa for themselves and Jamie this Saturday afternoon (the coming Saturday relative to today). Search for good options, focusing on Saturday afternoon availability for two people. Compare them and tell the user the single best option, with the reason (e.g. quality, price, availability, ambiance). Include price per person and the time slot. Do not book anything yet \u2014 just report the best option and a couple of alternatives."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.00044698599999999997,
+   "fresh_cost": 0.00044698599999999997,
+   "cached_calls": 0,
+   "latency_s": 2.073,
+   "prompt_tokens": 12137,
+   "completion_tokens": 428,
+   "cached_prompt_tokens": 11008,
+   "cache_keys": [
+    "f93cb65717d962848a31db4eb545c72f232caae6a3e1a7fc70ead5012c2a0678",
+    "7180ad89d2f2299b8284538fd4763ca1b8645c65a81a9ffa5717f3a39f6a9945"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-new_task-03",
+   "kind": "new_task",
+   "sample": 0,
+   "message": "hey can you find a few tables at nightbird for this saturday around 7 for 4 and send me the options",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Nightbird Saturday Reservation Options"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "I'll ping you as soon as I have the times."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Nightbird Saturday Reservation Options",
+      "purpose": "Find available tables at Nightbird restaurant for this Saturday around 7pm for 4 people and report the options to the user.",
+      "instructions": "Find a few available tables at Nightbird (the restaurant) for this Saturday (the upcoming Saturday relative to today's date) around 7:00 PM for a party of 4. Check reservation availability (website, booking platforms like OpenTable/Resy, or by phone). Gather a handful of options, ideally a range of times around 7 PM, and report back the specific times available along with any relevant details (party size, deposit/booking requirements). Do not book anything yet \u2014 the user just wants to see the options first. Report the options so they can be sent to the user."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000542016,
+   "fresh_cost": 0.000542016,
+   "cached_calls": 0,
+   "latency_s": 3.495,
+   "prompt_tokens": 12233,
+   "completion_tokens": 555,
+   "cached_prompt_tokens": 11008,
+   "cache_keys": [
+    "f6cbb9b95aa18240fd388174a9ac40a3d59636beec4efd81d96ce915a1e6d13d",
+    "0708ebe82a3d3b485778af099f9fb65ec2e9e11786ed7351539e4278d04bb3c5"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-same_person_new_topic-00",
+   "kind": "same_person_new_topic",
+   "sample": 0,
+   "message": "hey can you tell elena i'm excited about the moving help and ask what i can do to help",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Elena Moving Help"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to elena about the moving help \u2014 i'll show it to you before it goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Elena moving help"
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to elena about the moving help \u2014 i'll show it to you before it goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Draft a short, friendly message to Elena telling her the user is excited about the moving help, and asking what the user can do to help. Find Elena's contact details in the user's contacts or inbox if needed. Do not send it \u2014 prepare the draft and report back to me with the exact recipient, subject and body.",
+      "name": "Elena Moving Help",
+      "purpose": "Tell Elena the user is excited about the moving help and ask what the user can do to help."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.000649712,
+   "fresh_cost": 0.000649712,
+   "cached_calls": 0,
+   "latency_s": 2.911,
+   "prompt_tokens": 19244,
+   "completion_tokens": 604,
+   "cached_prompt_tokens": 17536,
+   "cache_keys": [
+    "3709fde521884a39d79eff5fe32b65501a7f0135bcfb0104ef41fbfaf203f495",
+    "84d478b0a9a8d0f6a70f2507937a03693695070810496f72872135910901619e",
+    "67ca09409745c916be0173b554176303584ca3e8e94082044ff372fdfcde3c6e"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-same_person_new_topic-01",
+   "kind": "same_person_new_topic",
+   "sample": 0,
+   "message": "hey can you ask ethan ward what dates work for him for the podcast guest spot? i'm flexible next two weeks",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Ethan Ward Podcast Guest Spot"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. finding ethan's contact and asking which dates work for the podcast spot. i'll show you the message before it goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. finding ethan's contact and asking which dates work for the podcast spot. i'll show you the message before it goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Ethan Ward Podcast Guest Spot",
+      "purpose": "Ask Ethan Ward which dates work for him for the podcast guest spot, given the user is flexible over the next two weeks.",
+      "instructions": "The user wants to ask Ethan Ward what dates work for him for the podcast guest spot. The user is flexible over the next two weeks (from today, 2026-04-07). Find Ethan Ward's contact details in the user's inbox or contacts. Draft an email to him asking which dates work for the podcast guest spot, noting the user is flexible over the next two weeks. Do not send anything \u2014 draft it and report back with the draft and its action_id so the user can review."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Acknowledgement already sent to the user; awaiting the Ethan Ward draft before replying again."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.0007879460000000001,
+   "fresh_cost": 0.0007879460000000001,
+   "cached_calls": 0,
+   "latency_s": 3.542,
+   "prompt_tokens": 18831,
+   "completion_tokens": 622,
+   "cached_prompt_tokens": 16128,
+   "cache_keys": [
+    "3111387c0f69c627f906dd8badf2d0ca72836e235436183068763eddfbe4c1b1",
+    "e81c6b921847db10a0bf0abb0b11ba4ea50f2d8840bb2b15a716f54db73f02aa",
+    "71fabeef2e7aca9e50ab707477bdffe9e79092489e631f864fd8b1b3c7807a39"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-same_person_new_topic-02",
+   "kind": "same_person_new_topic",
+   "sample": 0,
+   "message": "hey can you ask maya to set up 30 min this week to go over the budget forecast? need the forecast walkthrough before friday",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Maya Budget Forecast Meeting"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. asking maya to find 30 min this week for the budget forecast walkthrough \u2014 before friday."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. asking maya to find 30 min this week for the budget forecast walkthrough \u2014 before friday."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Maya Budget Forecast Meeting",
+      "purpose": "Ask Maya to set up a 30-minute meeting this week to walk the user through the budget forecast, which the user needs before Friday.",
+      "instructions": "Email Maya asking her to set up 30 minutes this week to go over the budget forecast \u2014 the user needs the forecast walkthrough before Friday. Find Maya's email address in the user's inbox or contacts if needed. Keep the message short and friendly. Draft the email and show it to the user for approval before sending anything."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000600776,
+   "fresh_cost": 0.000600776,
+   "cached_calls": 0,
+   "latency_s": 3.827,
+   "prompt_tokens": 12090,
+   "completion_tokens": 674,
+   "cached_prompt_tokens": 11008,
+   "cache_keys": [
+    "4e46508c5bab0de81345248524ea8be9129d6d971a4f003ad462202c86148b08",
+    "67777c9d1462adb68529a9aeda18fdbafe26961a1c33b29c0d3884c21b0fcf5f"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-same_person_new_topic-03",
+   "kind": "same_person_new_topic",
+   "sample": 0,
+   "message": "hey can you ask zoe turner to send me the latest draft of the hiring loop feedback by friday",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Zoe Turner Hiring Loop Feedback"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. asking zoe turner for the latest hiring loop feedback draft by friday \u2014 i'll show you the note before it goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Zoe Turner Hiring Loop Feedback",
+      "purpose": "Ask Zoe Turner to send the latest draft of the hiring loop feedback by Friday; find her contact details if needed and draft the message for the user's approval.",
+      "instructions": "Ask Zoe Turner to send the latest draft of the hiring loop feedback by Friday. Find her email address from the user's contacts or inbox if needed. Keep it short and friendly. Draft the message and show it to the user for approval before sending \u2014 do not send it yet."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. asking zoe turner for the latest hiring loop feedback draft by friday \u2014 i'll show you the note before it goes out."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.000543644,
+   "fresh_cost": 0.000543644,
+   "cached_calls": 0,
+   "latency_s": 3.416,
+   "prompt_tokens": 18440,
+   "completion_tokens": 526,
+   "cached_prompt_tokens": 17152,
+   "cache_keys": [
+    "2a89624bee20d42a5b71d9886ca137a39dd5c320089ba31fd4b2dbab26291c94",
+    "0b6f5fdece47f841636282c863fb6590d9c1f17985903bf6560c6075a2db3e5d",
+    "952f11a95640292af844c864cd6b4162aff4d4f489b276562c18bd9aa47b217c"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-vague_reference-00",
+   "kind": "vague_reference",
+   "sample": 0,
+   "message": "any update on that? did it go out or are you still waiting on me to okay it",
+   "gold": [
+    "gary-whitman-lease-renewal-call"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "gary-whitman-lease-renewal-call"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "checking on the gary whitman note right now \u2014 one sec."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "checking on the gary whitman note right now \u2014 one sec."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "gary-whitman-lease-renewal-call",
+      "instructions": "Status check: the user is asking whether the message to Gary Whitman (asking if next Tuesday morning works for the lease renewal call) has gone out yet, or whether it is still waiting on their okay. Reply with the current status: either it was sent (say when and to whom), or it is a pending draft awaiting approval (include the exact draft text and its action_id)."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Acknowledged to the user that I'm checking the Gary Whitman status; awaiting the agent's reply before summarizing."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.000770514,
+   "fresh_cost": 0.000770514,
+   "cached_calls": 0,
+   "latency_s": 4.41,
+   "prompt_tokens": 18195,
+   "completion_tokens": 798,
+   "cached_prompt_tokens": 16512,
+   "cache_keys": [
+    "24a594528b86d6ccb5f003f57c0b17b5259f470614c85ff740488e9078aff6be",
+    "31cd0362963453d16dd652fd830da0c115c65f2605c54ded69785e14fc1e9e45",
+    "6e5577c16c26b30e95663fd416e0d54e5abc1f27cb96281554f57e8764556514"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-vague_reference-02",
+   "kind": "vague_reference",
+   "sample": 0,
+   "message": "how's the christmas gift stuff going? did you get anywhere on those",
+   "gold": [
+    "elena-christmas-gifts"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "elena-christmas-gifts"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "digging back through the Elena gift thread now \u2014 give me a sec."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "digging back through the Elena gift thread now \u2014 give me a sec."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "elena-christmas-gifts",
+      "instructions": "The user is asking for a status update on the Christmas gifts for Elena. Report back concisely: what you have found so far (any gift ideas, budget, deadlines, people involved), what is still outstanding, and what you need from the user. If the user had said they'd help over the weekend, note what was waiting on them."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Acknowledged the request to the user and dispatched the update request to the Elena gifts agent; awaiting its reply."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Waiting for the Elena Christmas gifts agent to report the current status before replying to the user."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Already acknowledged to the user; no new information to add until the Elena gifts agent reports back."
+     }
+    }
+   ],
+   "iterations": 5,
+   "hit_iteration_cap": false,
+   "cost": 0.0008101380000000001,
+   "fresh_cost": 0.0008101380000000001,
+   "cached_calls": 0,
+   "latency_s": 5.790000000000001,
+   "prompt_tokens": 31392,
+   "completion_tokens": 841,
+   "cached_prompt_tokens": 29824,
+   "cache_keys": [
+    "2261d45963548e9af457c0377c30a258375d1cde60e2cda7225d7ab7aee4a22b",
+    "9cdffe3d4cbbdcfda1cbef2c11b2199f9d1d5f2693f808abf65b21a7267051b7",
+    "c126f7579be6ad43ca7c6d3efb36001ba6eb4beedfc6f044381efe1bbbf1965f",
+    "8c3053b02e12620bc15e1627bcbfb2511fb454e57a67a073d28793a7025be4e3",
+    "14b90ebac0b12c9cd8ce877b54f46697bbef3cbebd51ca8563fee56a4d1781b5"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-vague_reference-03",
+   "kind": "vague_reference",
+   "sample": 0,
+   "message": "hey how's the housewarming going? anything i need to handle before it starts",
+   "gold": [
+    "beatriz-housewarming"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "beatriz-housewarming"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Ha \u2014 last I checked I wasn't the one hosting. Checking where things stand with Beatriz's housewarming and whether anything's waiting on you."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "Ha \u2014 last I checked I wasn't the one hosting. Checking where things stand with Beatriz's housewarming and whether anything's waiting on you."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "beatriz-housewarming",
+      "instructions": "Give the user a status update on Beatriz's housewarming. Report: (1) whether the message to Beatriz has actually been sent yet, and what it said; (2) whether Beatriz has replied, and any details from her reply (date/time, location, what to bring); (3) anything still outstanding for the user to handle before the event \u2014 e.g. a draft still sitting unapproved, an RSVP to make, or something to bring/set up. If you have a reply from Beatriz confirming Saturday works, include the confirmed date. Do not send anything to Beatriz without the user's explicit approval."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.0009506060000000001,
+   "fresh_cost": 0.0009506060000000001,
+   "cached_calls": 0,
+   "latency_s": 5.768000000000001,
+   "prompt_tokens": 12116,
+   "completion_tokens": 1207,
+   "cached_prompt_tokens": 11008,
+   "cache_keys": [
+    "31dc131102ee77428b24c5e2a8fb09dcfa1a64bb4478a68a4b7670b5030a5795",
+    "5b36c7e608866fb9817b691ab9d6c00f9d82c9336c3cc271ff55422135aa2b77"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-multi_task-00",
+   "kind": "multi_task",
+   "sample": 0,
+   "message": "ok also ask gary to send the invoice for the lease renewal when he gets a sec. and for the seattle flight just go with the cheaper option, don't need the fancy one",
+   "gold": [
+    "seattle-flight-search",
+    "gary-whitman-lease-renewal-call"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "gary-whitman-lease-renewal-call",
+    "seattle-flight-search"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it \u2014 adding the invoice ask to the gary email, and telling the flight folks to grab the cheaper fare.",
+    "one thing: you never gave me the number, so I'm taking \"cheaper option\" as the green light. if the cheaper fare still looks steep, say the word and I'll cancel."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it \u2014 adding the invoice ask to the gary email, and telling the flight folks to grab the cheaper fare."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "gary-whitman-lease-renewal-call",
+      "instructions": "Add one more ask to the email you're drafting to Gary Whitman: ask him to send over the invoice for the lease renewal when he gets a sec. Keep the whole thing short and friendly, and still ask whether next Tuesday morning works for the lease renewal call. Show me the draft before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "seattle-flight-search",
+      "instructions": "The user says to go with the cheaper option for the Seattle flight \u2014 no need for the fancy one. Book the cheaper of the options you found for next Thursday, as long as it stays reasonable, and send the confirmation to the user."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "one thing: you never gave me the number, so I'm taking \"cheaper option\" as the green light. if the cheaper fare still looks steep, say the word and I'll cancel."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.00197959,
+   "fresh_cost": 0.00197959,
+   "cached_calls": 0,
+   "latency_s": 4.231999999999999,
+   "prompt_tokens": 18916,
+   "completion_tokens": 791,
+   "cached_prompt_tokens": 10880,
+   "cache_keys": [
+    "e97dd00941033462d75926da032c9d6f79ea67b8451a81506002960d4e74aebc",
+    "674c6a345f1b3f97034ace84317ca5266a216faee73a0a10912c40613db8bc22",
+    "a0bd7647f3a1e82c5ccd7e5a1d7b714607eed3bff970c3f27b830ec282ca668d"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-multi_task-02",
+   "kind": "multi_task",
+   "sample": 0,
+   "message": "hey also tell maya the OKRs budget is capped at 20k. and can you let beatriz know saturday works better for the housewarming",
+   "gold": [
+    "maya-quarterly-okrs-draft",
+    "beatriz-housewarming"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "maya-quarterly-okrs-draft",
+    "beatriz-housewarming"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Got it \u2014 passing the 20k cap to Maya, and asking for a Beatriz draft (Saturday) you can okay before it goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "Got it \u2014 passing the 20k cap to Maya, and asking for a Beatriz draft (Saturday) you can okay before it goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "maya-quarterly-okrs-draft",
+      "instructions": "Add this to the Maya OKRs thread: let Maya know the OKRs budget is capped at 20k. If the message asking Maya for the latest quarterly OKRs draft by Friday hasn't gone out yet, include the 20k budget cap in that same message; otherwise draft a short separate note to Maya conveying the 20k cap. Show the user the draft before anything is sent."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "beatriz-housewarming",
+      "instructions": "The user wants to let Beatriz know that Saturday works better for them for the housewarming. Prepare a short, friendly message to Beatriz saying Saturday works better for the housewarming, and show the user the draft to approve before sending. If a draft for this same Saturday note was already prepared, don't duplicate it \u2014 just surface it."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.001156006,
+   "fresh_cost": 0.001156006,
+   "cached_calls": 0,
+   "latency_s": 5.908,
+   "prompt_tokens": 12346,
+   "completion_tokens": 1477,
+   "cached_prompt_tokens": 11008,
+   "cache_keys": [
+    "5523cafdd986f84cf59101c5b76d9fe0ab73bd57302280f8379e6288bc1baec8",
+    "c0ebbbe66ef733cb11ed1c1ae2940eec8f2e8305e676d3b8084984da296cf2a0"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-multi_task-03",
+   "kind": "multi_task",
+   "sample": 0,
+   "message": "hey can you tell pablo i need one more day on the export issue, and also ask him if the prague hotel is still under our name or if we need to rebook",
+   "gold": [
+    "pablo-export-issue-meeting",
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": false,
+   "outcome": "partial",
+   "error": null,
+   "dispatched_ids": [
+    "pablo-export-issue-meeting"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to pablo about needing an extra day, plus asking whether the prague hotel is still under your name or needs rebooking. i'll show you before it goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to pablo about needing an extra day, plus asking whether the prague hotel is still under your name or needs rebooking. i'll show you before it goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "pablo-export-issue-meeting",
+      "instructions": "Draft a short message to Pablo with two points: (1) the user needs one more day on the export issue, and (2) ask whether the Prague hotel reservation is still under their name or whether they need to rebook. Keep it brief and friendly. Find the relevant details (which hotel, dates) from the user's inbox/correspondence if available, but don't guess. Report back with an action_id for the draft so the user can review exact text before anything is sent. Do not send anything."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.0015192299999999999,
+   "fresh_cost": 0.0015192299999999999,
+   "cached_calls": 0,
+   "latency_s": 4.649,
+   "prompt_tokens": 12147,
+   "completion_tokens": 436,
+   "cached_prompt_tokens": 0,
+   "cache_keys": [
+    "808816009a1628b8ba6f374949aec6258482ae69ce0cde41115b803b2de7a0b4",
+    "a2b964949c3ed09f1d2572c3ce156ecc446b85b12c7bb88ddea3e5ce5478910e"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-cross_agent-00",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "hey can you let paul know beatriz approved the tax return",
+   "gold": [
+    "paul-tax-return"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "paul-tax-return"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. i'll draft a note to paul saying beatriz approved the tax return, and you can okay it before it goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. i'll draft a note to paul saying beatriz approved the tax return, and you can okay it before it goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "paul-tax-return",
+      "instructions": "Draft a short, friendly message to Paul letting him know that Beatriz approved the tax return. Use the existing correspondence with Paul to find his email and match the tone. Show the draft to the user for approval before sending \u2014 do not send it yet."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000425796,
+   "fresh_cost": 0.000425796,
+   "cached_calls": 0,
+   "latency_s": 2.21,
+   "prompt_tokens": 11944,
+   "completion_tokens": 434,
+   "cached_prompt_tokens": 11008,
+   "cache_keys": [
+    "e7db1633fbc6361766c3c039553a1b79994a3cf7dbf1acb8aebdf54c7093a49c",
+    "68f75774b643ed43486fcb9df5f68212a1183e512e9fe08e088334628d1e8419"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-cross_agent-01",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "hey can you let pablo know gary approved the export issue fix",
+   "gold": [
+    "pablo-export-issue-meeting"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "pablo-export-issue-meeting"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to pablo that gary approved the export issue fix \u2014 i'll show it to you before it goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to pablo that gary approved the export issue fix \u2014 i'll show it to you before it goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "pablo-export-issue-meeting",
+      "instructions": "Draft a short message to Pablo letting him know that Gary approved the export issue fix. Keep it brief and friendly. Do not send it \u2014 get the draft ready and report it back to me with the recipient, subject, and body so the user can review it first."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.00045673599999999996,
+   "fresh_cost": 0.00045673599999999996,
+   "cached_calls": 0,
+   "latency_s": 2.068,
+   "prompt_tokens": 11987,
+   "completion_tokens": 473,
+   "cached_prompt_tokens": 11008,
+   "cache_keys": [
+    "1929c2a84b8cd964d00dd2a5de309bd967ad71769f2f03db26808b88e7787dd6",
+    "2b09f9a8cdc83c7ff37b0a0b8402eb43a2825ae038eaae331b2872e198d22d47"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-cross_agent-02",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "hey can you let ethan know zoe signed off on the ski trip",
+   "gold": [
+    "ethan-ski-trip"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "ethan-ski-trip"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "On it \u2014 I'll have a note to Ethan ready for you to okay before it goes anywhere."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "ethan-ski-trip",
+      "instructions": "The user wants to let Ethan know that Zoe signed off on the ski trip. Draft a short, friendly message to Ethan telling him Zoe has signed off on the ski trip (use the dates previously discussed with him if they're known). Show the draft to the user for approval before anything is sent \u2014 do not send it."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.00033441,
+   "fresh_cost": 0.00033441,
+   "cached_calls": 0,
+   "latency_s": 2.089,
+   "prompt_tokens": 11730,
+   "completion_tokens": 311,
+   "cached_prompt_tokens": 10880,
+   "cache_keys": [
+    "0e7ede3dd2d94736904942c4a3f51ae806ad2f88063229319bf2c9eb391954c3",
+    "d0578fc2a34939243c9db0cf8ed517cf1834407dda9c679e506e9943d03b9cf6"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-cross_agent-03",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "hey can you let elena know zoe approved the christmas gifts",
+   "gold": [
+    "elena-christmas-gifts"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "elena-christmas-gifts"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to elena that zoe signed off on the christmas gifts \u2014 i'll show it to you before it goes anywhere.",
+    "on it \u2014 drafting a note to elena that zoe signed off on the christmas gifts. i'll show it to you before it goes anywhere."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to elena that zoe signed off on the christmas gifts \u2014 i'll show it to you before it goes anywhere."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "elena-christmas-gifts",
+      "instructions": "Let Elena know that Zoe approved the Christmas gifts. Keep it short and friendly. Find Elena's contact details from the user's inbox/contacts if you don't already have them, and draft the message/email for the user to review before anything is sent \u2014 do not send it."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it \u2014 drafting a note to elena that zoe signed off on the christmas gifts. i'll show it to you before it goes anywhere."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Acknowledgement to the user already sent; awaiting the Elena draft before showing it."
+     }
+    }
+   ],
+   "iterations": 4,
+   "hit_iteration_cap": false,
+   "cost": 0.0009534960000000001,
+   "fresh_cost": 0.0009534960000000001,
+   "cached_calls": 0,
+   "latency_s": 5.459,
+   "prompt_tokens": 24801,
+   "completion_tokens": 943,
+   "cached_prompt_tokens": 22528,
+   "cache_keys": [
+    "240f5b77368fc2545c83fc6525459412ad40ba3370e6c546658247513ef96ed7",
+    "bf256c85364ed5956615c5b294c0f538fd4c0ddb13f7e9cf51b247d0ff8d2bea",
+    "30b1efad9b4df9929d0c1a3f0945a3d1df7d7fd39ebf65877a23a5a10d37041b",
+    "59423fd2bb94c380e7497f19de9ee0f01362eb25b5bc8bc99708345c8ba5f736"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-typo-01",
+   "kind": "typo",
+   "sample": 0,
+   "message": "hey any update on the ski trip with ehtan?",
+   "gold": [
+    "ethan-ski-trip"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "ethan-ski-trip"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "checking in on the ski trip with ethan now \u2014 one sec."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "checking in on the ski trip with ethan now \u2014 one sec."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "ethan-ski-trip",
+      "instructions": "The user is asking for an update on the ski trip with Ethan. Please report back on the current status: whether you've reached Ethan, whether he's still up for the ski trip, and the dates discussed. If you haven't gotten a reply yet or the work is incomplete, say so clearly and tell me what's still pending."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000328724,
+   "fresh_cost": 0.000328724,
+   "cached_calls": 0,
+   "latency_s": 2.2270000000000003,
+   "prompt_tokens": 11862,
+   "completion_tokens": 292,
+   "cached_prompt_tokens": 10496,
+   "cache_keys": [
+    "03fdceb91da8b2f3c4b79d54c533a50c750f389e448290f18f139f975ac0201d",
+    "6a73d1728ed5890b97470e54a345bb2ac2073107be9bead65ad8fd5eaf751e9a"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-typo-02",
+   "kind": "typo",
+   "sample": 0,
+   "message": "hey can you tell baetriz that saturday works better for us for the housewarming",
+   "gold": [
+    "beatriz-housewarming"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "beatriz-housewarming"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. i'll get a message to beatriz ready saying saturday works better \u2014 you'll see the draft before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. i'll get a message to beatriz ready saying saturday works better \u2014 you'll see the draft before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "beatriz-housewarming",
+      "instructions": "The user wants to let Beatriz know that Saturday works better for them for the housewarming. Find Beatriz's email, and prepare a short, friendly message saying Saturday works better for us for the housewarming. Show me the draft for the user's approval before anything is sent \u2014 do not send it."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000583126,
+   "fresh_cost": 0.000583126,
+   "cached_calls": 0,
+   "latency_s": 3.731,
+   "prompt_tokens": 11901,
+   "completion_tokens": 715,
+   "cached_prompt_tokens": 10368,
+   "cache_keys": [
+    "348779168cb0b4dc46530d2e47fa49f8a9008c9c021a5d49eea090a9078e73ce",
+    "2b9f9b930b72bd3af35772fcb13254c8689d19910403e749ac491329e80e1c89"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-typo-03",
+   "kind": "typo",
+   "sample": 0,
+   "message": "hey did gray get back yet about the lease? any update on the renewal call",
+   "gold": [
+    "gary-whitman-lease-renewal-call"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "gary-whitman-lease-renewal-call"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "checking with gary now \u2014 one sec."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_you_placeholder",
+     "arguments": {
+      "reason": "noop"
+     },
+     "error": "Unknown tool: send_message_to_you_placeholder"
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "gary-whitman-lease-renewal-call",
+      "instructions": "User is asking for an update: has Gary Whitman replied yet about whether next Tuesday morning works for the lease renewal call? Check the inbox for any reply from Gary, report whether he's responded and what he said, and if there's a pending draft email to Gary, show it for the user's review."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "checking with gary now \u2014 one sec."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.000447799,
+   "fresh_cost": 0.000447799,
+   "cached_calls": 0,
+   "latency_s": 3.469,
+   "prompt_tokens": 17997,
+   "completion_tokens": 386,
+   "cached_prompt_tokens": 16256,
+   "cache_keys": [
+    "31d2b92f09b5123fe2813daaf523a72a6f4b1f428e4534c298d115f28b170046",
+    "e8c80182f9ee1939bd0dfa2e969403b3e2b580ffece2526a92323a6248bce5f7",
+    "7460ce681ca897df17a43a95859bbcb8636b70579cb01f848cafff8d83a38fa6"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-agent_result-00",
+   "kind": "agent_result",
+   "sample": 0,
+   "message": "[SUCCESS] Elena Christmas Gifts: Elena replied asking for the final numbers on the Christmas gift budget, so she can finalize her part before the group buys.",
+   "gold": [
+    "elena-christmas-gifts"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": true,
+   "user_messages": [
+    "Elena got back to you on the Christmas gifts \u2014 she's asking for the final numbers on the group gift budget so she can finalize her part before the group buys. What should I tell her it is?"
+   ],
+   "tool_calls": [],
+   "iterations": 1,
+   "hit_iteration_cap": false,
+   "cost": 0.000184435,
+   "fresh_cost": 0.000184435,
+   "cached_calls": 0,
+   "latency_s": 1.825,
+   "prompt_tokens": 5847,
+   "completion_tokens": 242,
+   "cached_prompt_tokens": 5120,
+   "cache_keys": [
+    "fe4366fa3493c55ac4bb91b9e3a0c9419e1915a7ed20710393ff104508811d12"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-agent_result-01",
+   "kind": "agent_result",
+   "sample": 0,
+   "message": "[SUCCESS] Seattle Flight Search: I found three flights to Seattle and need you to pick one before I book.",
+   "gold": [
+    "seattle-flight-search"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "seattle-flight-search"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Flights to Seattle are in \u2014 three options for next Thursday. Pulling the details now.\n\nOne thing: I never got your budget number, so I can't tell which ones qualify as \"under budget.\" What's the cap?"
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "seattle-flight-search",
+      "instructions": "Please list the three flight options you found in a short, scannable form: airline, departure and return (or outbound) times and dates, and total price for each. Don't book anything yet \u2014 I'm getting the budget from the user first."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "Flights to Seattle are in \u2014 three options for next Thursday. Pulling the details now.\n\nOne thing: I never got your budget number, so I can't tell which ones qualify as \"under budget.\" What's the cap?"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.00068489,
+   "fresh_cost": 0.00068489,
+   "cached_calls": 0,
+   "latency_s": 3.675,
+   "prompt_tokens": 12186,
+   "completion_tokens": 759,
+   "cached_prompt_tokens": 10880,
+   "cache_keys": [
+    "911bcf0c4cf506cb16bb22c897ed6dbc984c5fd6e28457a8708e12ec6b031193",
+    "790630108c64b76306ec01e89067a8eb0a1f2f8f2012e5bce90e37c15bd601c7"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-agent_result-02",
+   "kind": "agent_result",
+   "sample": 0,
+   "message": "[SUCCESS] Pablo Export Issue Meeting: Pablo replied that Thursday at 3 works for the data export issue.",
+   "gold": [
+    "pablo-export-issue-meeting"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "pablo-export-issue-meeting"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Pablo's in for Thursday at 3 for the export issue. I'll have it put on your calendar as a 30-min slot."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "Pablo's in for Thursday at 3 for the export issue. I'll have it put on your calendar as a 30-min slot."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "pablo-export-issue-meeting",
+      "instructions": "Pablo confirmed Thursday at 3 works. Book the 30-minute meeting with Pablo on the user's calendar for Thursday at 3:00pm and send the invite. Confirm back once it's on the calendar."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.0005282150000000001,
+   "fresh_cost": 0.0005282150000000001,
+   "cached_calls": 0,
+   "latency_s": 3.3890000000000002,
+   "prompt_tokens": 12150,
+   "completion_tokens": 606,
+   "cached_prompt_tokens": 10240,
+   "cache_keys": [
+    "b8db9e41203fb5b9be17b77b6f1493f827578cfcfdad9b2429d85aae3b8bcd48",
+    "6f625aae38308e02d2351a00fe7a05c860f59112fcdd92f0822f858b21d14fa2"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-10",
+   "world_seed": 1,
+   "case_id": "lived-s1-10-agent_result-03",
+   "kind": "agent_result",
+   "sample": 0,
+   "message": "[SUCCESS] Paul Tax Return: Paul replied asking for the final numbers for the tax return.",
+   "gold": [
+    "paul-tax-return"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": true,
+   "user_messages": [
+    "Paul got back to you on the tax return \u2014 he needs the final numbers before he can move ahead. Want me to pull them together for him?"
+   ],
+   "tool_calls": [],
+   "iterations": 1,
+   "hit_iteration_cap": false,
+   "cost": 0.00017495,
+   "fresh_cost": 0.00017495,
+   "cached_calls": 0,
+   "latency_s": 0.872,
+   "prompt_tokens": 5792,
+   "completion_tokens": 119,
+   "cached_prompt_tokens": 5120,
+   "cache_keys": [
+    "678f199910398288386851aae8572f8dfe0ca23ce136119cb587f35614779595"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-follow_up-00",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "need you to follow up with harriet about the sheet music, the problem's back again",
+   "gold": [
+    "harriet-sheet-music-pickup"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "harriet-sheet-music-pickup"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "i'll show you the note to harriet before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Follow up with Harriet about the sheet music \u2014 the problem is back again. Picking up from the earlier sheet music thread: find the most recent relevant exchange with Harriet about the sheet music, and draft a short, friendly follow-up letting her know the issue has resurfaced and asking how she'd like to handle it. Do NOT send \u2014 show me the draft first.",
+      "agent_id": "harriet-sheet-music-pickup"
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Already told the user I'm picking the Harriet thread back up; awaiting the draft before saying more."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "i'll show you the note to harriet before anything goes out."
+     }
+    }
+   ],
+   "iterations": 4,
+   "hit_iteration_cap": false,
+   "cost": 0.000367232,
+   "fresh_cost": 0.000367232,
+   "cached_calls": 0,
+   "latency_s": 7.706,
+   "prompt_tokens": 25009,
+   "completion_tokens": 492,
+   "cached_prompt_tokens": 23040,
+   "cache_keys": [
+    "f84654a19f069ef4d8fa309924fcda80f254f1011733af7f0dbac215d50fb5bd",
+    "1cd1ae14be0c775f054e174dae4ba44a42ab1c193267d130c84ffad398dc723e",
+    "a3cbf44a9bcfb983082094e93b5d9bcd6d5791d86b0a2e8286112b94b9a6c175",
+    "86197e2d96cc921b79fcf1bd582b178cbaddbae780ccabf901e3a84906b970c2"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-follow_up-01",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "ask carl if he can send the invoice for the deck repair when he gets a chance",
+   "gold": [
+    "carl-deck-fix-earliest-slot"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "carl-deck-fix-earliest-slot"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Draft's on the way \u2014 I'll flag it once it's ready for your eyes."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Draft (do NOT send) a short, friendly email/message to Carl asking if he can send over the invoice for the deck repair when he gets a chance. Find Carl's contact details from the existing thread with him if needed. Show the draft to the user for review before anything is sent.",
+      "agent_id": "carl-deck-fix-earliest-slot"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.00022609599999999998,
+   "fresh_cost": 0.00022609599999999998,
+   "cached_calls": 0,
+   "latency_s": 3.031,
+   "prompt_tokens": 12102,
+   "completion_tokens": 216,
+   "cached_prompt_tokens": 9728,
+   "cache_keys": [
+    "e3b7d5dc699f1dc91751d45c2dad357d62e882af61f6e9ea2bb7a5062b5cabdd",
+    "731899a0a4e1c8d63deac9d8637e52eb420fd9c648dc4e0637493f19f54dce58"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-follow_up-02",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "ask ben carter if there's any update on the export issue",
+   "gold": [
+    "ben-carter-export-deadline-note"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "ben-carter-export-deadline-note"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. asking ben carter for an update on the export issue \u2014 i'll show you the draft first."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. asking ben carter for an update on the export issue \u2014 i'll show you the draft first."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Draft (do NOT send) a short, casual email to Ben Carter asking if there's any update on the export issue. Use the existing Ben Carter thread about the export work if you can find it, and reply in that thread; otherwise compose a fresh email to his address. Show me the draft for review before anything goes out.",
+      "agent_id": "ben-carter-export-deadline-note"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000229795,
+   "fresh_cost": 0.000229795,
+   "cached_calls": 0,
+   "latency_s": 3.636,
+   "prompt_tokens": 12203,
+   "completion_tokens": 321,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "51b92041a62767b388cd1003c4f0543eeeda021269e00d840a5cfc24976ff6d7",
+    "07ec079bdc8867c576b6ba428af92d8f288cf4014aa0cfe1b14ac1cce0d62b90"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-follow_up-03",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "ask if there's any update on the contact lenses order",
+   "gold": [
+    "contact-lens-order-options"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "contact-lens-order-options"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. digging up the contact lens order thread and drafting a nudge asking for an update."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "contact lenses order"
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. digging up the contact lens order thread and drafting a nudge asking for an update."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "The user wants to ask whoever they've been dealing with about the contact lens order for an update on its status. Find the most recent relevant thread about the contact lens order (who the user placed/plans to place the order with, or any supplier/optician conversation \u2014 check the inbox for recent messages about contact lenses). Draft a short, friendly email asking for an update on the order. Do NOT send it \u2014 report the draft back with the recipient address, subject, and body so the user can review it first.",
+      "agent_id": "contact-lens-order-options"
+     }
+    }
+   ],
+   "iterations": 4,
+   "hit_iteration_cap": false,
+   "cost": 0.000438407,
+   "fresh_cost": 0.000438407,
+   "cached_calls": 0,
+   "latency_s": 8.559999999999999,
+   "prompt_tokens": 26748,
+   "completion_tokens": 585,
+   "cached_prompt_tokens": 24064,
+   "cache_keys": [
+    "373054f6c46ecef3ba60f77e474e8c9b0dcbe88e99285920c6a5ce8e3189affa",
+    "54820bae7d51be619b2b7c0fd3cd850fe25dbdd4e175ee42c98cc9adbcc2c087",
+    "30a71206948942cb393300cc5da5f11ae503c03579c1058fb649b9226d112677",
+    "3e2f6797267068d67aa8c42c84d8495c6c2d35f1faed9cd3333a9f8d0bdf5e82"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-new_task-02",
+   "kind": "new_task",
+   "sample": 0,
+   "message": "order mia's uniform for school, look into it and tell me the best option. has to be a uniform",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Mia School Uniform Order"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "finding mia's school's official uniform requirements and supplier. i'll come back with the best option \u2014 and anything i still need from you (like her size or the school name). nothing gets ordered without your ok."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "The user wants to order Mia's school uniform. Look into it and find the best option \u2014 it has to be an actual school uniform (the uniform required by Mia's school), not generic clothing.\n\nSteps: figure out which school Mia attends and whether there's an official uniform supplier/policy (check the user's email/contacts for school communications, uniform order forms, dress code notices, or prior uniform orders). If a specific school or supplier isn't identifiable, list the likely school uniform requirements and the official supplier options with prices and shipping times, and ask the user which school Mia attends.\n\nReport back the best option (supplier, items, sizes needed, price, delivery timeline) and flag anything you still need from the user (sizes, school name). Do NOT place any order or send any email without the user's explicit approval \u2014 show a draft first.",
+      "name": "Mia School Uniform Order",
+      "purpose": "Research and set up the best school uniform order for Mia, identifying her school's uniform requirements and official supplier, then get the user's approval before ordering."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "finding mia's school's official uniform requirements and supplier. i'll come back with the best option \u2014 and anything i still need from you (like her size or the school name). nothing gets ordered without your ok."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.00035622,
+   "fresh_cost": 0.00035622,
+   "cached_calls": 0,
+   "latency_s": 8.439,
+   "prompt_tokens": 19034,
+   "completion_tokens": 508,
+   "cached_prompt_tokens": 16896,
+   "cache_keys": [
+    "5a87ef93a11a2afacb6c636c491ebd41d86efcf9eba0e49df4068a03e0e181a6",
+    "6a91fb0f38059b72eae2ff347def8c97c8cbf3fd9b816088cd18552e3acc549b",
+    "42308848e325d37e0682d383aa5c03148131f5ec3e048c8c5bf894ac24e52f52"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-new_task-03",
+   "kind": "new_task",
+   "sample": 0,
+   "message": "book a table at delfina for jamie and me this friday, 7:30 if you can get it. book it if it's under budget, otherwise just tell me what's available",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Delfina Friday Reservation"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it \u2014 checking delfina for friday at 7:30 for two. what's the budget cap i should hold to? want to be sure before i book anything."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Check availability at Delfina (the San Francisco restaurant) for a table for 2 this Friday at 7:30pm. Report back the available time slots near 7:30, and any pricing details (prix fixe, deposit, per-person minimum, typical spend). Do NOT book anything yet \u2014 just report what's available and the cost.",
+      "name": "Delfina Friday Reservation",
+      "purpose": "Find Friday 7:30pm availability for two at Delfina and report times and pricing before booking."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it \u2014 checking delfina for friday at 7:30 for two. what's the budget cap i should hold to? want to be sure before i book anything."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000329596,
+   "fresh_cost": 0.000329596,
+   "cached_calls": 0,
+   "latency_s": 6.976,
+   "prompt_tokens": 12356,
+   "completion_tokens": 564,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "9e7af32b01b62cf22efab2b4b9da184f1cf4b116eec28c44d86a2de775f6793e",
+    "c47bad63ef5ecb41290b00286054b02e1bc9c875f4f0ceb71ed43b38baa7c222"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-same_person_new_topic-02",
+   "kind": "same_person_new_topic",
+   "sample": 0,
+   "message": "ethan's wedding rsvp, can you ask him what dates work for everyone",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Ethan Wedding RSVP Dates"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "draft's in the works \u2014 i'll show it to you once it's ready."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Draft an email to Ethan asking what dates work for everyone for his wedding RSVP. Find Ethan's email address in the user's contacts or inbox. Keep it short and casual. Do NOT send anything \u2014 draft only and report back for the user to review.",
+      "name": "Ethan Wedding RSVP Dates",
+      "purpose": "Draft an email to Ethan asking what dates work for everyone regarding his wedding RSVP."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000212055,
+   "fresh_cost": 0.000212055,
+   "cached_calls": 0,
+   "latency_s": 4.281,
+   "prompt_tokens": 12148,
+   "completion_tokens": 281,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "e1d10d06668fd2af5deb00d1201be4a62a42eb088ad4bf292049afc6adfb5c35",
+    "89963fd25e3d91898f7927700690e9dc4736015da9a04c8d55437b946d6f90a4"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-same_person_new_topic-03",
+   "kind": "same_person_new_topic",
+   "sample": 0,
+   "message": "rafael's got grandma's recipes?? i'm so excited, how can i help with those?",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "missed_create",
+   "error": null,
+   "dispatched_ids": [
+    "rafael-moreno-anniversary-dinner"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "digging up what rafael said about the recipes, then i'll draft a reply offering to help \u2014 you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Rafael grandma recipes"
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Find the most recent thread with Rafael Moreno about his grandma's recipes (check email/messages). Report what he actually said \u2014 did he offer or share the recipes, is there a question or request pending, and what's still outstanding. Then draft (do NOT send) a short, warm reply to Rafael saying I'm excited about grandma's recipes and asking how I can help \u2014 e.g. whether he wants me to type them up, organize them, test any, or bring anything. Use the existing thread if there is one.",
+      "name": "Rafael Grandma's Recipes",
+      "purpose": "Find Rafael Moreno's thread about his grandma's recipes and draft a reply offering to help with them."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Separate item from the anniversary dinner: find the most recent thread with Rafael Moreno about his grandma's recipes (check email/messages). Report what he actually said \u2014 did he offer or share the recipes, is there a question or request pending, what's still outstanding. Then draft (do NOT send) a short, warm reply to Rafael saying I'm excited about grandma's recipes and asking how I can help \u2014 e.g. typing them up, organizing them, testing some, or bringing something. Use the existing thread if there is one.",
+      "agent_id": "rafael-moreno-anniversary-dinner"
+     }
+    }
+   ],
+   "iterations": 4,
+   "hit_iteration_cap": false,
+   "cost": 0.000546773,
+   "fresh_cost": 0.000546773,
+   "cached_calls": 0,
+   "latency_s": 11.199000000000002,
+   "prompt_tokens": 27535,
+   "completion_tokens": 831,
+   "cached_prompt_tokens": 24576,
+   "cache_keys": [
+    "c166d00f86cb0868f5fce5f032885d3311ab79a9cfc06c16bebe66dee8b47a7a",
+    "3c9a34cbd23e443aaf9c52baa6cfcdded36b613b30f1f98b9eb5637a3b5e94bc",
+    "cb33ad053f15193ae26f37302603e4833caf7b9275676f78cd72590a8dd0e26b",
+    "bb02e1a4730c0d11b996e76269396a7088ded9aea4036fa3a10b3cfc69db8f2a"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-vague_reference-00",
+   "kind": "vague_reference",
+   "sample": 0,
+   "message": "any update on that? did they get back yet",
+   "gold": [
+    "monica-flea-meds-pickup"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "monica-flea-meds-pickup"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "checking on monica now \u2014 I'll let you know as soon as I hear back."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Any update on the flea meds pickup with Monica \u2014 did she reply about whether next Tuesday morning works? If you've drafted the email but not sent it, show me the draft. If it was already sent, report whether she has responded yet.",
+      "agent_id": "monica-flea-meds-pickup"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000206656,
+   "fresh_cost": 0.000206656,
+   "cached_calls": 0,
+   "latency_s": 3.7159999999999997,
+   "prompt_tokens": 12034,
+   "completion_tokens": 280,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "f8b4db4e81bdbf8836e28a20f656f315233848ee53c32efe64c689cd37c7d293",
+    "3345646dce1336e1711d1335b7981e34ec0b7bf17120a897b4916d8f05fa9a90"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-vague_reference-01",
+   "kind": "vague_reference",
+   "sample": 0,
+   "message": "how's the lease renewal going? did you hear back on it yet",
+   "gold": [
+    "gary-whitman-lease-renewal-call"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "gary-whitman-lease-renewal-call"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Checking the Gary thread now \u2014 I'll tell you where it stands as soon as I hear back."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Status check on the lease renewal: has the user heard back from Gary Whitman yet? Look back through the user's email thread with Gary for the latest on the lease renewal call and any reply, and report back what the current state is (e.g. waiting on Gary, call scheduled, etc.). Do not send anything.",
+      "agent_id": "gary-whitman-lease-renewal-call"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.00021918399999999998,
+   "fresh_cost": 0.00021918399999999998,
+   "cached_calls": 0,
+   "latency_s": 4.106999999999999,
+   "prompt_tokens": 12075,
+   "completion_tokens": 308,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "ebe0df118577afc3951d4321bdb26272f2ccde5325a8237f693a0c40a64dc492",
+    "e201190e1690b349d70be645bceec1c53c9ec0df2617f7f4f12b02e78c4c08d2"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-vague_reference-02",
+   "kind": "vague_reference",
+   "sample": 0,
+   "message": "how's the coverage going for the house this week? didn't catch if it's sorted yet",
+   "gold": [
+    "amy-mia-coverage-next-week"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "amy-mia-coverage-next-week"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "checking the Amy thread on Mia's coverage now."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "coverage house Amy Mia"
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Any update on coverage for Mia next week with Amy? Has she replied about whether she has coverage, and what the earliest time she's free is? Report back what you have so far.",
+      "agent_id": "amy-mia-coverage-next-week"
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.000272992,
+   "fresh_cost": 0.000272992,
+   "cached_calls": 0,
+   "latency_s": 4.352,
+   "prompt_tokens": 19697,
+   "completion_tokens": 268,
+   "cached_prompt_tokens": 17408,
+   "cache_keys": [
+    "3f4075181c484f58ffc2620b09f03701c9dc3bf996e06f8cbc97eb8a4c8296a9",
+    "af953f96f87f127db96239d3521416e10e52b6b587c674aba326eba7c84a3644",
+    "677056986b95c697b393bb3b3ff5d6a9c8e0a31e3e1bf9eb963193c6a9db7ace"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-vague_reference-03",
+   "kind": "vague_reference",
+   "sample": 0,
+   "message": "how's the biweekly thing looking? did it go through or is there a snag",
+   "gold": [
+    "rita-biweekly-schedule"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "rita-biweekly-schedule"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Digging through the Rita thread now \u2014 I'll report back the moment I know whether it cleared or snagged."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Quick status update request: the user is asking whether the biweekly schedule matter went through or if there's a snag. Please review the latest state of the Rita biweekly schedule thread \u2014 any confirmation, outstanding blockers, or replies from Rita \u2014 and report back concisely with what's resolved and what's still pending (include any draft that needs the user's review).",
+      "agent_id": "rita-biweekly-schedule"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000194711,
+   "fresh_cost": 0.000194711,
+   "cached_calls": 0,
+   "latency_s": 4.743,
+   "prompt_tokens": 12102,
+   "completion_tokens": 241,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "2e7489e0825fa37cea46b003c9fc34226d2b872df3a088a8b8fc2e01168b2cdc",
+    "9e744fcd1b510be0039ba20e1a1ca0283b04d951a197572ea4340be47ae346bf"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-multi_task-00",
+   "kind": "multi_task",
+   "sample": 0,
+   "message": "any update on the septime table? also can monica do the flea med pickup earlier than tues if possible",
+   "gold": [
+    "septime-next-weekend-availability",
+    "monica-flea-meds-pickup"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "septime-next-weekend-availability",
+    "monica-flea-meds-pickup"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "digging into septime now, and i'll rework the monica note to ask if she can do it earlier than tuesday. you'll see the draft before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Any update on the Septime table? The user is asking whether there's news on the reservation/availability for next weekend. Report back what you found and whether anything is still outstanding.",
+      "agent_id": "septime-next-weekend-availability"
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Update the Monica flea meds pickup note: in addition to next Tuesday morning, ask whether she could do the pickup earlier than Tuesday if at all possible. Draft only \u2014 do not send; show me the draft for the user's review.",
+      "agent_id": "monica-flea-meds-pickup"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000227896,
+   "fresh_cost": 0.000227896,
+   "cached_calls": 0,
+   "latency_s": 4.835,
+   "prompt_tokens": 12273,
+   "completion_tokens": 308,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "65dddebb2737ef0ec4000479f14bd491f8a5d67d0d825d46208b82129e53f161",
+    "9ffac8851fdaaabeafe7461cc043da34f03860039e6b107151603687c74cd2ad"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-multi_task-01",
+   "kind": "multi_task",
+   "sample": 0,
+   "message": "beatriz's housewarming is saturday, add to her thread: ask if she needs me to bring anything. also can you order flowers for the office monday, nothing huge, just something for the front desk",
+   "gold": [
+    "beatriz-housewarming",
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "beatriz-housewarming"
+   ],
+   "created_names": [
+    "Office Flowers Monday"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "Both are in motion. I'll show you the beatriz note before it goes out, and come back with a few flower options to pick from."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Add to the existing Beatriz housewarming thread: ask Beatriz if she needs me to bring anything to the housewarming this Saturday. Show me the draft before anything goes out.",
+      "agent_id": "beatriz-housewarming"
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Order flowers for the office (front desk) for delivery Monday. Nothing huge \u2014 just a modest, tasteful arrangement appropriate for a reception desk. Look up my delivery details/saved addresses and payment on file, find a few suitable options with prices, and show me the options before placing any order.",
+      "name": "Office Flowers Monday",
+      "purpose": "Order a modest front-desk flower arrangement for office delivery on Monday."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.00024091899999999997,
+   "fresh_cost": 0.00024091899999999997,
+   "cached_calls": 0,
+   "latency_s": 4.962,
+   "prompt_tokens": 12421,
+   "completion_tokens": 325,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "11cf7790df9a56eb27c5784c33a2cb152e8c4220d325d58db0f4c7ed96934707",
+    "953e90b6460c2a746238680e0ea610748a3301e2e9fdd4623d8571e03d3e6a12"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-multi_task-03",
+   "kind": "multi_task",
+   "sample": 0,
+   "message": "renew the library books for the following weekend instead, and also can you look up a flight to athens for me? need to see options before i commit to anything",
+   "gold": [
+    "library-books-renewal-options",
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "library-books-renewal-options"
+   ],
+   "created_names": [
+    "Athens Flight Options"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on both \u2014 renewing the books to cover the following weekend, and pulling up Athens flight options. nothing books or renews without your say-so. any rough dates/departure city for Athens, or should i assume PDX and ~2 weekends out?"
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "The user now wants to renew the library books so the new due date covers the following weekend (i.e. the weekend after the one originally targeted) instead. Check the current due dates, renewal limits, and holds, then renew the books for that later weekend if renewal is possible. If a renewal isn't possible or would need the user's login/confirmation, tell me exactly what's blocking it. Report back what was renewed and the new due dates.",
+      "agent_id": "library-books-renewal-options"
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Find flight options from the user's home airport (Portland, PDX, unless their profile/emails say otherwise) to Athens, Greece (ATH). The user hasn't given exact dates yet \u2014 assume a departure about two weekends out and a roughly one-week stay, and present a few representative options. For each option include airline, routing/connections, departure and arrival times, total travel time, and price. Also note which date ranges give the cheapest fares. Do NOT book anything \u2014 the user just wants to see options.",
+      "name": "Athens Flight Options",
+      "purpose": "Look up and compare flight options from Portland (PDX) to Athens (ATH) for the user so they can review before committing; nothing gets booked."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Find flight options from the user's home airport (Portland, PDX, unless their profile/emails say otherwise) to Athens, Greece (ATH). This is unrelated to the earlier Honolulu search. The user hasn't given exact dates yet \u2014 assume a departure about two weekends out and a roughly one-week stay, and present a few representative options. For each option include airline, routing/connections, departure and arrival times, total travel time, and price. Also note which date ranges give the cheapest fares. Do NOT book anything \u2014 the user just wants to see options.",
+      "name": "Athens Flight Options",
+      "purpose": "Look up and compare flight options from Portland (PDX) to Athens (ATH) for the user so they can review before committing; nothing gets booked.",
+      "force_new": true
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on both \u2014 renewing the books to cover the following weekend, and pulling up Athens flight options. nothing books or renews without your say-so. any rough dates/departure city for Athens, or should i assume PDX and ~2 weekends out?"
+     }
+    }
+   ],
+   "iterations": 4,
+   "hit_iteration_cap": false,
+   "cost": 0.000621573,
+   "fresh_cost": 0.000621573,
+   "cached_calls": 0,
+   "latency_s": 11.558,
+   "prompt_tokens": 27703,
+   "completion_tokens": 1007,
+   "cached_prompt_tokens": 24576,
+   "cache_keys": [
+    "843e03db8a876edd1644d566c75e25c76ebad224a7988040ccfab2ba6a05bd4c",
+    "fb4b984ec4e5eaa6c198ef04efef5a4339331376eb38585c19f8776ebc0ddae4",
+    "ce9db99080b62d4a56c0b3fd0b8506e38871984f179c87a6bd68a5cdad88bb5b",
+    "687fba654ab4a4f2608a4e827e784cdaea8907a95dfce9f095f7abdd439fdf36"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-cross_agent-00",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "let Hana know Ben Okafor signed off on the performance review",
+   "gold": [
+    "hana-performance-review-check-in"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "hana-performance-review-check-in"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to Hana letting her know Ben Okafor signed off \u2014 you'll see it before it goes anywhere."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Draft (do NOT send) a short, friendly email to Hana letting her know that Ben Okafor has signed off on her performance review. Find her contact details if needed. Show me the draft before anything goes out.",
+      "agent_id": "hana-performance-review-check-in"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000202487,
+   "fresh_cost": 0.000202487,
+   "cached_calls": 0,
+   "latency_s": 3.3890000000000002,
+   "prompt_tokens": 12035,
+   "completion_tokens": 269,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "300576c669abef74324c28374caa373f882590f734ba268acda661f35ae89bb2",
+    "b60134dc7893aeebcdd6ca73aff4a9b0c9089a91de15e402cccad43d59782b7f"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-cross_agent-01",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "hey can you let gary know jake approved the lease renewal",
+   "gold": [
+    "gary-whitman-lease-renewal-call"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "gary-whitman-lease-renewal-call"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Draft's in the works \u2014 I'll show it to you the moment it's ready."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Draft (do NOT send) a short email to Gary Whitman letting him know that Jake has approved the lease renewal. Reuse the existing thread/contact details already found for Gary. Keep it brief and professional. Report back the draft along with the action_id if there is one.",
+      "agent_id": "gary-whitman-lease-renewal-call"
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Draft request sent to agent; awaiting draft before replying further."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.00028044400000000003,
+   "fresh_cost": 0.00028044400000000003,
+   "cached_calls": 0,
+   "latency_s": 5.803999999999999,
+   "prompt_tokens": 18426,
+   "completion_tokens": 380,
+   "cached_prompt_tokens": 16896,
+   "cache_keys": [
+    "9b3c934e21fa6e2e349f09de8ff8bb40f65fb4dd285d49ad8ed2a968bf7d4f03",
+    "0fcc9116fd36f381c6a8360f8b7447a0a8a16c6f01a72a3513d78ab0c9f05ba1",
+    "49308735ed0b88b0239cac5c408e262d079c153960dbb82bd136381d552c850a"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-cross_agent-02",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "ok so helen and gary are both fine with the babysitting schedule now. can you let helen know gary approved it?",
+   "gold": [
+    "helen-babysitting-schedule"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "helen-babysitting-schedule"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Drafting now \u2014 I'll have it in front of you shortly."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "The user says both Helen and Gary are fine with the babysitting schedule now, and Gary has approved it. Draft a short, friendly email to Helen letting her know that Gary approved the babysitting schedule. Do NOT send it \u2014 draft it and report back with the exact recipient, subject, and body so the user can review it first.",
+      "agent_id": "helen-babysitting-schedule"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000207767,
+   "fresh_cost": 0.000207767,
+   "cached_calls": 0,
+   "latency_s": 4.367,
+   "prompt_tokens": 12155,
+   "completion_tokens": 269,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "7995af4b51840abb027afe8aef2517a3ab78e3b986f477016d5c3eb8e78a9ca6",
+    "0c417d2551c8d933b160874f2b922024fcf074576f40d282ddccddd5155d946c"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-cross_agent-03",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "tell noah gary signed off on the statement of work. send it to him from my thread so he has it before the call",
+   "gold": [
+    "noah-fraser-sow-wrap-up-draft"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "noah-fraser-sow-wrap-up-draft"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting that note to noah in the existing SOW thread so he has it before the call \u2014 you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting that note to noah in the existing SOW thread so he has it before the call \u2014 you'll see it before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "In the existing statement-of-work email thread with Noah Fraser, draft a short email from the user telling Noah that Gary has signed off on the statement of work, and that the user wanted him to have it ahead of the call. Attach/include the signed-off statement of work from that thread if it's available there. Do NOT send it \u2014 report back the draft with an action_id so the user can review and approve it first.",
+      "agent_id": "noah-fraser-sow-wrap-up-draft"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000255907,
+   "fresh_cost": 0.000255907,
+   "cached_calls": 0,
+   "latency_s": 4.754,
+   "prompt_tokens": 12309,
+   "completion_tokens": 377,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "27a461e8088aff2e6e1ae753b053f67d9ff3de2bc808645daac7d241dbd44aec",
+    "cd8f07566128974986f0039e4a0492af3b1a383de1944619a1a95450d84bfda8"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-dormant_revival-01",
+   "kind": "dormant_revival",
+   "sample": 0,
+   "message": "whats the status on the seattle flight? did it get booked or did something fall through",
+   "gold": [
+    "seattle-flight-search"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "seattle-flight-search"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "digging into the seattle thread now \u2014 checking whether it ever got booked or just stalled. one sec."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "The user is asking for a status update on the Seattle flight search: did it get booked, or did something fall through? Check the email/booking thread for the Seattle (SEA) flights we searched for and report back what the current state is \u2014 whether a booking was ever confirmed, and if not, why it stalled (no reply, user never picked an option, expired fare, etc.). Give me the specific facts: dates, flight options, airline/price if known, and anything still pending.",
+      "agent_id": "seattle-flight-search"
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "digging into the seattle thread now \u2014 checking whether it ever got booked or just stalled. one sec."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.000261344,
+   "fresh_cost": 0.000261344,
+   "cached_calls": 0,
+   "latency_s": 5.149,
+   "prompt_tokens": 18549,
+   "completion_tokens": 316,
+   "cached_prompt_tokens": 16896,
+   "cache_keys": [
+    "debc0307724340efece05bb8d0e39850da168115786c8a6d8d0ec138edb552fa",
+    "fe6e3b9df4322f37020c08d7a6988b3b66bfd218f14da5dc80b7713a7d46ce79",
+    "31574237365720e2b98ec59f500b08baae53bc2a49e8979f7ce672e7f34a25fe"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-dormant_revival-03",
+   "kind": "dormant_revival",
+   "sample": 0,
+   "message": "elena's christmas gift thing, where did that end up? did she ever answer about the list or did it get dropped",
+   "gold": [
+    "elena-christmas-gifts"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "elena-christmas-gifts"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Digging through the Elena thread now \u2014 will tell you what she said, if anything."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "The user asks: where did the Elena Christmas gift thing end up? Did Elena ever answer about the list, or did it get dropped? Please check the email/thread history with Elena about the Christmas gift list and report back: whether she replied, what she said, and the current status (open, dropped, resolved).",
+      "agent_id": "elena-christmas-gifts"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000168372,
+   "fresh_cost": 0.000168372,
+   "cached_calls": 0,
+   "latency_s": 2.931,
+   "prompt_tokens": 12104,
+   "completion_tokens": 172,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "1efe7d9ed135743a38f2ec180174f97f31ff6fb42a8cd5305afd3ba54be353e5",
+    "3fc8b035ee760452e84a889aab0b9e4dd19d61a195b4a26f810cf13df5fd0ccc"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-typo-00",
+   "kind": "typo",
+   "sample": 0,
+   "message": "need to tell ferya saturday works better for game night",
+   "gold": [
+    "freya-game-night"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "freya-game-night"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to freya that saturday works better \u2014 you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Follow up in the game night thread with Freya: let her know Saturday works better for game night. Find the most recent game night thread with Freya and draft a short, casual email saying Saturday works better on our end. Do NOT send \u2014 return the draft for me to show the user.",
+      "agent_id": "freya-game-night"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000202068,
+   "fresh_cost": 0.000202068,
+   "cached_calls": 0,
+   "latency_s": 3.1500000000000004,
+   "prompt_tokens": 12069,
+   "completion_tokens": 264,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "0ad1f1495d1c22e924575a208c1f0bd161d2efee241d7587d0055a98644d432d",
+    "6e304d963d3c495b83e5b23cf748c67794e85f536ab2ff9362269270e13da1e1"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-typo-01",
+   "kind": "typo",
+   "sample": 0,
+   "message": "ask dnaa if there's any update on the budget forecast",
+   "gold": [
+    "dana-forecast-budget-request"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "dana-forecast-budget-request"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. checking with dana on the budget forecast \u2014 i'll show you the draft before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "The user wants to ask Dana if there's any update on the budget forecast. Find the most recent thread with Dana about the budget forecast and draft a short, friendly reply/message asking if there's any update on it. Show the draft to the user \u2014 do not send anything without approval.",
+      "agent_id": "dana-forecast-budget-request"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000171045,
+   "fresh_cost": 0.000171045,
+   "cached_calls": 0,
+   "latency_s": 2.317,
+   "prompt_tokens": 12069,
+   "completion_tokens": 183,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "ff7b5cb02ec04f0a7d8742bbde23a42e822e960f423f8207638026d57179ea1d",
+    "2e0cfc1ac2e3f37ce6bf9d339e5417d6055f08463b9f9a7b31238ad71463e86a"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-typo-02",
+   "kind": "typo",
+   "sample": 0,
+   "message": "ask mraco if there's any update on the ski trip",
+   "gold": [
+    "marco-book-club-note"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "duplicate_create",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Marco Ski Trip Update"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. checking with marco on the ski trip."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Marco ski trip"
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. checking with marco on the ski trip."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Draft (do NOT send) an email to Marco asking if there's any update on the ski trip. Find Marco's email address and any existing thread about ski trip plans in the user's email/contacts. Keep it short and casual. Show the draft to the user for approval before anything goes out.",
+      "name": "Marco Ski Trip Update",
+      "purpose": "Ask Marco for an update on the ski trip plans, drafting the message for the user's approval first."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.000353537,
+   "fresh_cost": 0.000353537,
+   "cached_calls": 0,
+   "latency_s": 5.071,
+   "prompt_tokens": 19865,
+   "completion_tokens": 459,
+   "cached_prompt_tokens": 17408,
+   "cache_keys": [
+    "0ccbc4a3f8ceff7ed060d206f011bfb68645621ba6a17f044268a5f742ac1432",
+    "405ae61fcaacf46d51d00286447c85de7f45b4ef2f521cb9c41e4481f6822092",
+    "9f01c2150c1b91484061109782b8cf60afe5c165ee975067e69566c355957f36"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-typo-03",
+   "kind": "typo",
+   "sample": 0,
+   "message": "ask mnoica if there's any update on the flea med thing",
+   "gold": [
+    "monica-flea-meds-pickup"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "monica-flea-meds-pickup"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. asking monica for an update on the flea meds."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "instructions": "Ask Monica for any update on the flea meds pickup (the flea med thing). Check the existing thread/draft first \u2014 if there's already a pending draft asking her about next Tuesday morning, fold this update question into it or send a brief follow-up note. Show the user a draft before anything goes out.",
+      "agent_id": "monica-flea-meds-pickup"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.000183671,
+   "fresh_cost": 0.000183671,
+   "cached_calls": 0,
+   "latency_s": 3.12,
+   "prompt_tokens": 12060,
+   "completion_tokens": 217,
+   "cached_prompt_tokens": 10752,
+   "cache_keys": [
+    "41ccce84758c70ad01dabae409bc4d99095ac3d030391005e19f0b24a407acb0",
+    "a57b4941e4dac34e96e5303ccb286ef78a63679f44326e8294dc4c9f42878dc5"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-agent_result-00",
+   "kind": "agent_result",
+   "sample": 0,
+   "message": "[SUCCESS] Adele Tickets Research: Found three Adele tickets: two seat options in the lower bowl and one upper-level seat, all for the same date. Please pick one and I'll hold it; nothing will be purchased until you choose.",
+   "gold": [
+    "adele-tickets-research"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": true,
+   "user_messages": [
+    "Adele tickets: found three options for the same date \u2014 two in the lower bowl and one upper-level seat. Want me to pull them up so you can pick? Nothing gets held until you do."
+   ],
+   "tool_calls": [],
+   "iterations": 1,
+   "hit_iteration_cap": false,
+   "cost": 8.9959e-05,
+   "fresh_cost": 8.9959e-05,
+   "cached_calls": 0,
+   "latency_s": 1.209,
+   "prompt_tokens": 5994,
+   "completion_tokens": 81,
+   "cached_prompt_tokens": 5120,
+   "cache_keys": [
+    "5a31324dff81fd945828f979f997bcbdf7f432760b43f8ab5756cea97924ae75"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-agent_result-01",
+   "kind": "agent_result",
+   "sample": 0,
+   "message": "[SUCCESS] Jake Big Sur Road Trip: Jake replied asking if we can push the Big Sur road trip to next week. I haven't responded yet and will wait for your decision.",
+   "gold": [
+    "jake-big-sur-road-trip"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": true,
+   "user_messages": [
+    "Jake's up for the Big Sur trip but wants to push it to next week. Want me to say yes, or check whether those dates work first?"
+   ],
+   "tool_calls": [],
+   "iterations": 1,
+   "hit_iteration_cap": false,
+   "cost": 9.7562e-05,
+   "fresh_cost": 9.7562e-05,
+   "cached_calls": 0,
+   "latency_s": 2.476,
+   "prompt_tokens": 5984,
+   "completion_tokens": 102,
+   "cached_prompt_tokens": 5120,
+   "cache_keys": [
+    "9102544b81943ced64c3ddb24ad6916630cdf687fd16868b4f7a8b4a887ae6ff"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-agent_result-02",
+   "kind": "agent_result",
+   "sample": 0,
+   "message": "[SUCCESS] Harriet Sheet Music Pickup: Harriet replied that she'd like to push the sheet music to next week, and asked if that works.",
+   "gold": [
+    "harriet-sheet-music-pickup"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": true,
+   "user_messages": [
+    "Harriet got back: she'd like to push the sheet music pickup to next week and wants to know if that works for you. Want me to say yes?"
+   ],
+   "tool_calls": [],
+   "iterations": 1,
+   "hit_iteration_cap": false,
+   "cost": 9.9578e-05,
+   "fresh_cost": 9.9578e-05,
+   "cached_calls": 0,
+   "latency_s": 1.859,
+   "prompt_tokens": 5995,
+   "completion_tokens": 106,
+   "cached_prompt_tokens": 5120,
+   "cache_keys": [
+    "bae4696f8ad5ea639d851ff6bd81c9c15b3d8d08821c0b4b85eb23c8657874ee"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-50",
+   "world_seed": 1,
+   "case_id": "lived-s1-50-agent_result-03",
+   "kind": "agent_result",
+   "sample": 0,
+   "message": "[SUCCESS] Dana Forecast Budget Request: Dana replied asking for the final numbers on the incident postmortem before Thursday's review.",
+   "gold": [
+    "dana-forecast-budget-request"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": true,
+   "user_messages": [
+    "Dana got back: she needs the final numbers on the incident postmortem before Thursday's review. Want me to send them over, or are they still being finalized?"
+   ],
+   "tool_calls": [],
+   "iterations": 1,
+   "hit_iteration_cap": false,
+   "cost": 0.000110963,
+   "fresh_cost": 0.000110963,
+   "cached_calls": 0,
+   "latency_s": 2.253,
+   "prompt_tokens": 5775,
+   "completion_tokens": 161,
+   "cached_prompt_tokens": 5120,
+   "cache_keys": [
+    "440f7ddfe9e1d748e67ea088e65f5a5cbc477d555339fcd091e1f4969543f69d"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-follow_up-00",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "ask kwame if they need me to bring anything to book club",
+   "gold": [
+    "kwame-book-club-dates"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "kwame-book-club-dates"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to kwame asking if you should bring anything to book club. you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to kwame asking if you should bring anything to book club. you'll see it before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "kwame-book-club-dates",
+      "instructions": "Draft a short, casual, friendly email to Kwame asking whether they need the user to bring anything to book club. Do NOT send it. Return the draft recipient address, subject and body, and an action_id if available."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.002316864,
+   "fresh_cost": 0.002316864,
+   "cached_calls": 0,
+   "latency_s": 1.865,
+   "prompt_tokens": 12664,
+   "completion_tokens": 270,
+   "cached_prompt_tokens": 6144,
+   "cache_keys": [
+    "6308d868daaaf4d7882b72411edc99b22877b5e5edb24b8ccfa292bd71403e28",
+    "f9cf025fcfb12f2e8ae13a75fcd8b72b26099716c3a6f550d7bba21ac84f4cc0"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-follow_up-01",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "hey can you ask seth to loop in his manager on the case study approval, same as the export thing with petra",
+   "gold": [
+    "seth-case-study-approval-draft"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "seth-case-study-approval-draft"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to seth asking him to loop in his manager on the case study approval, same as petra. you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to seth asking him to loop in his manager on the case study approval, same as petra. you'll see it before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "seth-case-study-approval-draft",
+      "instructions": "Draft an email to Seth asking him to loop in his manager on the case study approval \u2014 same approach as the request we sent Petra about the export issue. Pull up the existing case study approval thread with Seth first to get the context right, then draft a short, friendly email in that thread asking Seth to loop in his manager on the case study approval. Report back with the draft and, if you have it, an action_id so the user can review the exact text."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Acknowledgment already sent to the user and the Seth case study agent dispatched; waiting for the draft to show."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.003249588,
+   "fresh_cost": 0.003249588,
+   "cached_calls": 0,
+   "latency_s": 3.678,
+   "prompt_tokens": 19607,
+   "completion_tokens": 660,
+   "cached_prompt_tokens": 11648,
+   "cache_keys": [
+    "e3b842265ad73299f00748bf17c17b6f6487543414d828cdc93072b48132184a",
+    "74d04216b16bee222b16529e7c795f830458c5224b81ee1ac0b9943a6e8ad6b9",
+    "a1eaadc699931b4fe994311456de593a1a2d2e34abe92c6db1e25105f6b6fffc"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-follow_up-02",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "hey tell beatriz i'll call her tonight about trivia night",
+   "gold": [
+    "beatriz-trivia-night-note"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "beatriz-trivia-night-note"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to beatriz saying you'll call her tonight about trivia night. you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "beatriz-trivia-night-note",
+      "instructions": "The user wants to tell Beatriz: \"I'll call you tonight about trivia night.\" Draft a short, friendly reply to Beatriz saying the user will call her tonight about trivia night. Do NOT send it \u2014 show the draft for the user to review first. Reply with the draft or its action_id."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to beatriz saying you'll call her tonight about trivia night. you'll see it before anything goes out."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.00086622,
+   "fresh_cost": 0.00086622,
+   "cached_calls": 0,
+   "latency_s": 2.4770000000000003,
+   "prompt_tokens": 19093,
+   "completion_tokens": 339,
+   "cached_prompt_tokens": 17920,
+   "cache_keys": [
+    "4e86c930b825b1b3016e9d7d3e12958c0c0b4d28f2c39ff471cb27218a22f2d1",
+    "8847969b4f291616c2231c1d135f1b63bd9bfceddb81ae553725839797155749",
+    "991ffa0f5a0a0d644a47e5139d4ee828b036a445c6ca7db861d2e40f90be3ea3"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-follow_up-03",
+   "kind": "follow_up",
+   "sample": 0,
+   "message": "tell Wendy i need one more day on the phone screen. draft it and i'll look before it goes out",
+   "gold": [
+    "wendy-phone-screen-calendar-slot"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "wendy-phone-screen-calendar-slot"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Draft's in the works \u2014 I'll show it to you as soon as it's ready."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "wendy-phone-screen-calendar-slot",
+      "instructions": "Draft a short, friendly email to Wendy letting her know the user needs one more day on the phone screen. Do NOT send it. Return the exact recipient email address, the subject, the full body, and the action_id of the pending draft."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.0008059199999999999,
+   "fresh_cost": 0.0008059199999999999,
+   "cached_calls": 0,
+   "latency_s": 2.16,
+   "prompt_tokens": 12568,
+   "completion_tokens": 352,
+   "cached_prompt_tokens": 11520,
+   "cache_keys": [
+    "de511351ec3fa6234036640a1f89d4a11e2c89c136e474d1d30f43748f206627",
+    "59a88e6cce3537ec83fb4d8a1d8e07d0c42a13d3e72438d55c9635975bcf3831"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-new_task-00",
+   "kind": "new_task",
+   "sample": 0,
+   "message": "find me a few flights to montreal, ideally thursday out and sunday back. send me the options when you have them",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Montreal Flight Search"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. hunting down montreal options, thursday out and sunday back. I'll send them over when I have them."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Montreal flight"
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. hunting down montreal options, thursday out and sunday back. I'll send them over when I have them."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Montreal Flight Search",
+      "purpose": "Find a few flight options to Montreal (YUL) for the user, ideally departing Thursday and returning Sunday, and report them back to the user.",
+      "instructions": "The user wants a few flight options to Montreal (YUL), ideally departing Thursday and returning Sunday. Use the user's home airport from their records. Assume the upcoming Thursday and Sunday relative to today. Provide several options with airline, departure/arrival times, price, and whether nonstop. Report the options back \u2014 do not book anything."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.001256196,
+   "fresh_cost": 0.001256196,
+   "cached_calls": 0,
+   "latency_s": 2.875,
+   "prompt_tokens": 20851,
+   "completion_tokens": 444,
+   "cached_prompt_tokens": 18816,
+   "cache_keys": [
+    "dac8de973eb86dd366942d5d520dab8d444e2c204c5bb861b7f27d672856f776",
+    "21f75554d7017f849b87e0cf2c90d03da1e77b04bc5aa49b3981ecc6ce62a7bc",
+    "a4c2d73d3692d493e4dcb1c671ac2075c3dea004a4fc6742ee94d2ad975c1d50"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-new_task-01",
+   "kind": "new_task",
+   "sample": 0,
+   "message": "hey can you look into hotels in savannah for the weekend and tell me the best choice",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Savannah Hotel Search This Weekend"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "Got a few searches running \u2014 I'll report back with the options and my pick."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Savannah Hotel Search This Weekend",
+      "purpose": "Research hotels in Savannah for the user's upcoming weekend trip and recommend the best choice.",
+      "instructions": "Find hotel options in Savannah for the upcoming weekend (Friday and Saturday nights, two nights). Check the user's emails and calendar for any details about the trip (dates, travelers, budget, neighborhood preference). Report the best available options with prices per night including fees, location, and amenities, plus a clear recommendation of the best choice. Do NOT book anything."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Acknowledged the Savannah hotel request to the user and dispatched the search; waiting for the agent result before sending another user-facing message."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.0008258880000000001,
+   "fresh_cost": 0.0008258880000000001,
+   "cached_calls": 0,
+   "latency_s": 2.1369999999999996,
+   "prompt_tokens": 19272,
+   "completion_tokens": 292,
+   "cached_prompt_tokens": 18048,
+   "cache_keys": [
+    "2866ca2372899c8f0e1ea113633a209f1b6ff2022bb67f1914007037c98d97d3",
+    "e97e888175024e420ab6d1b7ca5af137cde246230f2d573acd495d521300e091",
+    "b03ca20ff04b056cb0a00fb3af7c5953bcf577db1deab6c5ea60a8b1a4196d5b"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-new_task-03",
+   "kind": "new_task",
+   "sample": 0,
+   "message": "can you get me a solar panel quote? checking what's available next weekend works best for me",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Solar Panel Quote Options"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. hunting down solar panel quote options and checking who can come out next weekend. you'll see the options before anything's booked."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. hunting down solar panel quote options and checking who can come out next weekend. you'll see the options before anything's booked."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Solar Panel Quote Options",
+      "purpose": "Find solar panel installation quote options for the user and check which installers have availability for an assessment/consultation next weekend.",
+      "instructions": "The user wants a solar panel quote. Find several solar panel installation companies that offer free quotes/assessments, and check which ones have availability next weekend (the upcoming Saturday and Sunday relative to today, July 29, 2026) for a site visit or consultation \u2014 next weekend works best for the user.\n\nFor each option, report: company name, contact info, what the quote/assessment includes, pricing or cost structure if available, whether they have next-weekend availability, and any scheduling steps needed. Pick 3-5 solid choices across a mix of price points if possible.\n\nAlso check the user's email/calendar/notes for any existing solar-related threads or prior quotes from installers so we don't duplicate outreach. Report back with the options; do not book or send anything yet."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.001280148,
+   "fresh_cost": 0.001280148,
+   "cached_calls": 0,
+   "latency_s": 3.069,
+   "prompt_tokens": 12959,
+   "completion_tokens": 524,
+   "cached_prompt_tokens": 11008,
+   "cache_keys": [
+    "fac26a99b881e51047d2beb2de40e344529d5fbe9c0b6f40ba1f53f3b7cabea7",
+    "5fa7e413053e4d81f4ceb4ead9bc41559a89db3d4a8432b849e570dfc57ab3fb"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-same_person_new_topic-00",
+   "kind": "same_person_new_topic",
+   "sample": 0,
+   "message": "hey can you ask noah to send over his notes on the export issue and get comments back by wednesday",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Noah Export Issue Notes"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to noah asking for his notes on the export issue with comments back by wednesday. you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Noah export issue notes comments"
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to noah asking for his notes on the export issue with comments back by wednesday. you'll see it before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Noah Export Issue Notes",
+      "purpose": "The user wants to ask Noah to send over his notes on the export issue and to get comments back by Wednesday. Find Noah's email address from the user's contacts or recent threads.",
+      "instructions": "Draft a short, friendly email to Noah asking him to send over his notes on the export issue, and to get comments back by Wednesday. Find Noah's email address from the user's contacts or recent email threads. Do not send anything \u2014 draft it for the user's review and report the draft back with an action_id."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "force_new": true,
+      "name": "Noah Export Issue Notes",
+      "purpose": "The user wants to ask Noah to send over his notes on the export issue and to get comments back by Wednesday. Find Noah's email address from the user's contacts or recent threads.",
+      "instructions": "Draft a short, friendly email to Noah asking him to send over his notes on the export issue, and to get comments back by Wednesday. Find Noah's email address from the user's contacts or recent email threads. Do not send anything \u2014 draft it for the user's review and report the draft back with an action_id."
+     }
+    }
+   ],
+   "iterations": 4,
+   "hit_iteration_cap": false,
+   "cost": 0.0027586679999999997,
+   "fresh_cost": 0.0027586679999999997,
+   "cached_calls": 0,
+   "latency_s": 8.24,
+   "prompt_tokens": 29069,
+   "completion_tokens": 1335,
+   "cached_prompt_tokens": 25728,
+   "cache_keys": [
+    "1c81ef84807cb8ed3e21e167a4b9b03eef96df828070e25d8d97f4eabb0587c6",
+    "453c8834c2e0af4c1a74d9cfc5a4564588e603d9245a6b82760ad6727d116504",
+    "e6bc90c116e87a1f257225d104640704099e8bdc8c7f5c3e8ea9cc8e88e2ce94",
+    "c0f0de25f078f6a89f98f3872eaeefec6eac58003028276274356bd35b35f6e5"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-same_person_new_topic-02",
+   "kind": "same_person_new_topic",
+   "sample": 0,
+   "message": "hey can you set up 30 min with hugo this week to go over the procurement paperwork",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Hugo Procurement Paperwork 30min Meeting"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. finding a 30-min slot this week that's open and drafting the invite to hugo for the procurement paperwork. you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Hugo procurement paperwork"
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. finding a 30-min slot this week that's open and drafting the invite to hugo for the procurement paperwork. you'll see it before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Hugo Procurement Paperwork 30min Meeting",
+      "purpose": "The user wants a 30-minute meeting with Hugo this week to go over the procurement paperwork.",
+      "instructions": "The user wants to set up a 30-minute meeting with Hugo this week to go over the procurement paperwork. Check the user's calendar for this week (today is 2026-07-29) and find an open 30-minute slot that works. Find Hugo's email address from the user's contacts or recent threads. Then draft a short email/invite to Hugo proposing the meeting for the procurement paperwork. Do not send anything \u2014 report the draft (with an action_id if available) and the proposed slot back to me."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.002193912,
+   "fresh_cost": 0.002193912,
+   "cached_calls": 0,
+   "latency_s": 4.529999999999999,
+   "prompt_tokens": 20918,
+   "completion_tokens": 801,
+   "cached_prompt_tokens": 17152,
+   "cache_keys": [
+    "b914f9c916cc80c83efdabded8393553aaed3837282e9d6c0dd262e335ace61d",
+    "57568e09e964f5996fea4b5e78a3a766f0a24156cea2b738677bfa7f196d1f6f",
+    "69b52bfd9569248842d2515f7e1888dcd5d17dd4db644e71b8460b669971bc26"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-same_person_new_topic-03",
+   "kind": "same_person_new_topic",
+   "sample": 0,
+   "message": "hey can you tell gavin i'd like to wrap up the director of product thing before the end of the month",
+   "gold": [
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [
+    "Gavin Director of Product Wrap-up Draft"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to gavin saying you'd like to wrap up the director of product thing before the end of the month. you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Gavin director of product"
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to gavin saying you'd like to wrap up the director of product thing before the end of the month. you'll see it before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Gavin Director of Product Wrap-up Draft",
+      "purpose": "Draft an email to Gavin letting him know the user would like to wrap up the director of product matter before the end of the month.",
+      "instructions": "Draft an email to Gavin saying the user would like to wrap up the director of product thing before the end of the month. Find Gavin's email address from the user's contacts or recent email threads with him. Keep it short and friendly. Do NOT send it \u2014 report the draft back with recipient, subject, and body.",
+      "force_new": true
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.001482828,
+   "fresh_cost": 0.001482828,
+   "cached_calls": 0,
+   "latency_s": 3.5469999999999997,
+   "prompt_tokens": 20829,
+   "completion_tokens": 607,
+   "cached_prompt_tokens": 18688,
+   "cache_keys": [
+    "704e5b84262b811818e41ccaacc994dd110ff9257efa1315a72fe18e9b63e89b",
+    "08dc6a49cd49720bae0ed3301237c7e5c9c92447ebcacd1279565e966f6bc698",
+    "28fc768b3ae0aba2d670c94e5b4cae40c2d7bd63f74d046eacecd03fcffac497"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-vague_reference-03",
+   "kind": "vague_reference",
+   "sample": 0,
+   "message": "how's the quarterly business review coming along? any notes back yet",
+   "gold": [
+    "leo-costa-qbr-check"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "leo-costa-qbr-check"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "checking on the QBR now \u2014 give me a sec."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "quarterly business review QBR"
+     }
+    },
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Leo Costa QBR notes"
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "checking on the QBR now \u2014 give me a sec."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "leo-costa-qbr-check",
+      "instructions": "The user is asking for a status update on the quarterly business review (QBR) and specifically whether any notes have come back yet. Search the inbox and recent threads for anything QBR-related (including Leo Costa and anyone else on the thread) from the last few days. Report: the latest state of the QBR, who has replied and with what, what notes/comments have come back, anything still outstanding or blocking, and any deadlines. Be concise and concrete, and note dates. If there is nothing new since the last check, say so plainly."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.002360736,
+   "fresh_cost": 0.002360736,
+   "cached_calls": 0,
+   "latency_s": 6.57,
+   "prompt_tokens": 22488,
+   "completion_tokens": 1112,
+   "cached_prompt_tokens": 19456,
+   "cache_keys": [
+    "2a51c77b25f854bdb72d4eaba88f6562fa7c8eec128a8e1b02893e43661099f6",
+    "3e939a80c1c031881d789b39e2c821b8221dcd37b7ba38aecedbe8b492949511",
+    "e460623a9e363f54970ea5675ac64f73213f7aff9e98275ced3caf44c4bbf0bf"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-multi_task-00",
+   "kind": "multi_task",
+   "sample": 0,
+   "message": "hey can you tell luis jamie can come too about grandma's recipes, and separately ask omar if we can move the dashboard call to thursday",
+   "gold": [
+    "luis-grandma-recipes-check",
+    "omar-analytics-dashboard-notes-follow-up"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "luis-grandma-recipes-check",
+    "omar-analytics-dashboard-notes-follow-up"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to luis letting him know jamie can come too for the grandma's recipes thing, and a separate one to omar about moving the dashboard call to thursday. you'll see both before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to luis letting him know jamie can come too for the grandma's recipes thing, and a separate one to omar about moving the dashboard call to thursday. you'll see both before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "luis-grandma-recipes-check",
+      "instructions": "The user wants to let Luis know that Jamie can come too, regarding grandma's recipes. Draft a short, friendly message to Luis saying Jamie can come too. Do NOT send it. Show the draft for the user's review, and report back the recipient, subject, and body (or an action_id if stored)."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "omar-analytics-dashboard-notes-follow-up",
+      "instructions": "The user wants to ask Omar whether the dashboard call can be moved to Thursday. Draft a short, friendly message to Omar asking if the analytics dashboard call can be moved to Thursday. Do NOT send it. Show the draft for the user's review, and report back the recipient, subject, and body (or an action_id if stored)."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Acknowledgement already sent to user; awaiting agent drafts to show."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.001641792,
+   "fresh_cost": 0.001641792,
+   "cached_calls": 0,
+   "latency_s": 5.165,
+   "prompt_tokens": 20024,
+   "completion_tokens": 878,
+   "cached_prompt_tokens": 18432,
+   "cache_keys": [
+    "baa04ffe0fc4c331dc537e684f2607f426d0020bea8f4df1b00be4de77066327",
+    "a75270a3597babed8f4395c6568f8e0eb3e4c89ffb77feac1121719bba86b230",
+    "4638ced411e5602839bbd5e9d29eb3be768406cb21ff6951681042b31904cfdf"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-multi_task-01",
+   "kind": "multi_task",
+   "sample": 0,
+   "message": "hey can you tell teresa saturday works better for us for the reunion. and separately order flowers for the office, same budget as last time",
+   "gold": [
+    "teresa-alvarez-reunion-dates",
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "teresa-alvarez-reunion-dates"
+   ],
+   "created_names": [
+    "Office Flowers Order"
+   ],
+   "clarified": false,
+   "user_messages": [
+    "on both. drafting the note to teresa \u2014 you'll see it before anything goes out \u2014 and getting the office flowers ordered at the same budget as last time."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Teresa Alvarez reunion dates"
+     }
+    },
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "flowers office order budget"
+     }
+    },
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "office flowers delivery"
+     }
+    },
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "flowers"
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "teresa-alvarez-reunion-dates",
+      "instructions": "Draft a short, friendly email to Teresa letting her know that Saturday works better for the user for the reunion. Find Teresa's email address from the user's contacts or the prior reunion thread. Do NOT send it. Report back the exact recipient address, subject, and body so the user can review it, plus the action_id if you have one."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Office Flowers Order",
+      "purpose": "Order flowers for the user's office at the same budget as last time.",
+      "instructions": "The user wants flowers ordered for their office, at the same budget as last time. Find the last office flower order (check email/order history for the florist, arrangement, delivery address, and the amount spent). Then place the order at that same budget and report back the details: florist, arrangement, delivery date, total cost against budget, and the order confirmation. If the same budget can't buy the same arrangement, report the closest options first instead of ordering. Do not send anything to another person; this is a purchase only."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on both. drafting the note to teresa \u2014 you'll see it before anything goes out \u2014 and getting the office flowers ordered at the same budget as last time."
+     }
+    }
+   ],
+   "iterations": 6,
+   "hit_iteration_cap": false,
+   "cost": 0.0030521400000000005,
+   "fresh_cost": 0.0030521400000000005,
+   "cached_calls": 0,
+   "latency_s": 6.712999999999999,
+   "prompt_tokens": 54181,
+   "completion_tokens": 915,
+   "cached_prompt_tokens": 48640,
+   "cache_keys": [
+    "bf2931a90bc905604130eb20ff0ccfd769415005ffbe36067f058212518abfc7",
+    "f894e923173ac90373b89b44768b014f292cfea5a47d217c67c8a8bfbc9f5aef",
+    "aa8c9db7e543f8ce6bdabc7cacd7ca6047ed7ec88c9b40f11c87d2ab86c7c64f",
+    "ec429be92bc117f7720e71d0150394027389aa19096d74c41e3bebf5d1b92891",
+    "2f8012bbdd94cd75a144ead02de0414b8886766b2be1a4957fa509b72f38719b",
+    "86c94e4271ce7ada981a9e3317fbc0c00d6c9891d7ef8bf5694e64276acd6176"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-multi_task-02",
+   "kind": "multi_task",
+   "sample": 0,
+   "message": "hey can you tell owen saturday works better for the camera he's lending, and separately tell owen to go with the cheaper option on the denver flight",
+   "gold": [
+    "owen-borrowed-camera-pickup-draft",
+    "denver-flight-search-and-booking"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "owen-borrowed-camera-pickup-draft",
+    "denver-flight-search-and-booking"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. telling owen saturday works better for the camera, and a separate note telling him to go with the cheaper denver flight. you'll see both before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Owen Denver flight cheaper option"
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. telling owen saturday works better for the camera, and a separate note telling him to go with the cheaper denver flight. you'll see both before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "owen-borrowed-camera-pickup-draft",
+      "instructions": "Draft a short, friendly reply to Owen in the existing camera thread letting him know that Saturday works better for the user for the camera handoff/pickup. Show the draft to the user for review before anything is sent."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "denver-flight-search-and-booking",
+      "instructions": "Draft a short message to Owen about the Denver flight, telling him to go with the cheaper option. Show the draft to the user for review before anything is sent."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Acknowledgment for both Owen notes already sent to the user; waiting for the draft results."
+     }
+    }
+   ],
+   "iterations": 4,
+   "hit_iteration_cap": false,
+   "cost": 0.002469708,
+   "fresh_cost": 0.002469708,
+   "cached_calls": 0,
+   "latency_s": 8.489,
+   "prompt_tokens": 28837,
+   "completion_tokens": 1309,
+   "cached_prompt_tokens": 26368,
+   "cache_keys": [
+    "7db4fe709d2c892f40b277eb56befd5857bc5a176ff3878123084595af07d13d",
+    "8f49053bddd6ff0bce1ee40da923a80e4ed64d1a5fcfd7502fb941a891c117d8",
+    "384edbf9295dcc3090d752baadd1b3c1a87a7188a4003efbc35b3436943ab9b1",
+    "07d7191f6d2bbe5b3e19e718e3bfd0c48e92210b601c48fd047086a219505bc5"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-multi_task-03",
+   "kind": "multi_task",
+   "sample": 0,
+   "message": "hey can you tell megan i'll call her tonight about the fantasy league stuff. also can you order mia's uniform from the school site, the usual size is fine",
+   "gold": [
+    "megan-fantasy-football-note",
+    "NEW"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": false,
+   "outcome": "wrong_reuse",
+   "error": null,
+   "dispatched_ids": [
+    "megan-fantasy-football-note",
+    "teresa-alvarez-mia-school-pickup-dates"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting the note to megan about calling tonight, and pulling up the school uniform site for mia's order in her usual size. I'll show you both before anything goes through."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "megan-fantasy-football-note",
+      "instructions": "Draft a short, casual email to Megan (the fantasy football league thread) saying the user will call her tonight about the fantasy league stuff. Report the draft back with an action_id so the user can review it."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "name": "Mia School Uniform Order",
+      "purpose": "Order Mia's school uniform from the school site in her usual size.",
+      "instructions": "Find the school's online uniform shop (check the user's email for any order confirmations, account details or links from previous uniform orders to identify the site, login and the item/size they usually order). Then prepare an order for Mia's uniform in the usual size. Do not place the order yet \u2014 report back what site, item, size, price and shipping details you found, and flag anything you need (logins, size confirmation, payment) so the user can approve it first."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "teresa-alvarez-mia-school-pickup-dates",
+      "instructions": "New task, same Mia/school matter: order Mia's school uniform from the school site. Find the school's online uniform shop (check the user's email for previous uniform order confirmations, account details, and links to identify the site, the login, and the item and size they usually order). Then prepare the order in Mia's usual size. Do NOT place the order yet \u2014 report back the site, item, size, price, and shipping details, plus anything you need (login, size confirmation, payment), so the user can approve it first."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting the note to megan about calling tonight, and pulling up the school uniform site for mia's order in her usual size. I'll show you both before anything goes through."
+     }
+    }
+   ],
+   "iterations": 4,
+   "hit_iteration_cap": false,
+   "cost": 0.0019043040000000001,
+   "fresh_cost": 0.0019043040000000001,
+   "cached_calls": 0,
+   "latency_s": 5.999999999999999,
+   "prompt_tokens": 27968,
+   "completion_tokens": 961,
+   "cached_prompt_tokens": 25984,
+   "cache_keys": [
+    "2c8380073f9f35688ea05c1fc9053d1835627989316f1c91de122a370df916b4",
+    "dd55247669cbbdfa0a691a17d52ae4cdda6a6823150ebb288ea48abd9f4defe4",
+    "fa9199ef9f36ec41a3684f94a0178dadeb8422ad7a7187cb2109c59ea27d5071",
+    "92c44049874d49c67db42f8c70254c59c415f310aa03f4f944586e7d6ae1f971"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-same_name_people-00",
+   "kind": "same_name_people",
+   "sample": 0,
+   "message": "hey need to check in with ben, can you see where things stand on that",
+   "gold": [],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": false,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": true,
+   "user_messages": [
+    "Two Bens in your orbit \u2014 Carter and Okafor. Which one, and what's the thread? Then I'll pull where it stands."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Ben"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.0023009880000000003,
+   "fresh_cost": 0.0023009880000000003,
+   "cached_calls": 0,
+   "latency_s": 8.559000000000001,
+   "prompt_tokens": 13289,
+   "completion_tokens": 1449,
+   "cached_prompt_tokens": 11648,
+   "cache_keys": [
+    "03951efd7ad8859e1f1e42c55a2e22a75aeae7cfa3084f748c498602c172cc2d",
+    "3ace3056363ecb0a78d2dfd93e42a0e86647acb69f78907fb7f54c8c0235abb8"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-cross_agent-00",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "hey can you tell maya that nora signed off on the OKRs for the quarter",
+   "gold": [
+    "maya-quarterly-okrs-draft"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "maya-quarterly-okrs-draft"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "Draft's in the works \u2014 I'll show it to you as soon as it's ready."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "Maya quarterly OKRs Nora sign off"
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "maya-quarterly-okrs-draft",
+      "instructions": "New task: draft a short, friendly email to Maya (look up her email address in the user's contacts or recent threads). Tell her that Nora has signed off on the OKRs for the quarter. Do NOT send it \u2014 just prepare the draft and report it back with the recipient, subject and body (and an action_id if available)."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.00143856,
+   "fresh_cost": 0.00143856,
+   "cached_calls": 0,
+   "latency_s": 4.605,
+   "prompt_tokens": 20576,
+   "completion_tokens": 602,
+   "cached_prompt_tokens": 18560,
+   "cache_keys": [
+    "8e5de663e4e86bd6eaae85a97c08bf1237dc0e2a1c6d750bfa8ebe007f0ef8fc",
+    "7f33a8a37f8aa5e6337ff7bdb5ca2bc9ac77035e5b0f4ece09335e0c55f020c3",
+    "118ac949ee96ac6af078a88d6595036264d7e16bbe481cf072473d2d3f9c5ea8"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-cross_agent-02",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "sorry to bug you again but can you let simon know quinn signed off on the reference check",
+   "gold": [
+    "simon-reference-check-comments-draft"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "simon-reference-check-comments-draft"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "not bugging at all. drafting a note to simon letting him know quinn signed off on the reference check. you'll see it before it goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "not bugging at all. drafting a note to simon letting him know quinn signed off on the reference check. you'll see it before it goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "simon-reference-check-comments-draft",
+      "instructions": "Draft a short, friendly email to Simon letting him know that Quinn has signed off on the reference check. Use the correct email thread/address for Simon from the previous reference check correspondence. Show me the draft for the user's review before anything is sent."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.00077322,
+   "fresh_cost": 0.00077322,
+   "cached_calls": 0,
+   "latency_s": 2.847,
+   "prompt_tokens": 12639,
+   "completion_tokens": 307,
+   "cached_prompt_tokens": 11520,
+   "cache_keys": [
+    "0cb4a3cba55fe70f46a82bfa6611c7163adfe3e476038ea5d57533865c93b32a",
+    "a79c889e5f7abc720dfc0488695079544fcceb3b737b6c8f22e4da52dbb07431"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-cross_agent-03",
+   "kind": "cross_agent",
+   "sample": 0,
+   "message": "hey can you let kenji know dmitri signed off on the postmortem",
+   "gold": [
+    "kenji-postmortem-draft-request"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "kenji-postmortem-draft-request"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to kenji letting him know dmitri signed off on the postmortem. you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "kenji-postmortem-draft-request",
+      "instructions": "Draft an email to Kenji letting him know that Dmitri has signed off on the postmortem. Find Kenji's email address from existing threads if needed. Keep it short and friendly. Do not send it \u2014 return the draft for the user to review, with the recipient, subject and body."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to kenji letting him know dmitri signed off on the postmortem. you'll see it before anything goes out."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.001001388,
+   "fresh_cost": 0.001001388,
+   "cached_calls": 0,
+   "latency_s": 2.965,
+   "prompt_tokens": 19197,
+   "completion_tokens": 457,
+   "cached_prompt_tokens": 18048,
+   "cache_keys": [
+    "07102009656a1d0d13ef1b8933951a448e7a94220a0c46b6763498a9e1cceb9f",
+    "a0abb2ee031b03f0bb4d9f168561cbccd0dc0b29b020d1c61421b6d74758fc7b",
+    "ca46fce55858584abf11c9aba1d3f3a83333a41d64e1d237131da58950e94003"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-dormant_revival-00",
+   "kind": "dormant_revival",
+   "sample": 0,
+   "message": "luis and i should pick up the grandma recipes thing again, can you set something up with him for this week",
+   "gold": [
+    "luis-grandma-recipes-check"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "luis-grandma-recipes-check"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. reaching out to luis to get the grandma recipes thing going again this week. you'll see the note before it goes anywhere."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. reaching out to luis to get the grandma recipes thing going again this week. you'll see the note before it goes anywhere."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "luis-grandma-recipes-check",
+      "instructions": "The user wants to pick up the grandma's recipes thing with Luis again and wants something set up with him for this week.\n\nFind Luis's email address from the user's contacts or recent threads, and look at the latest exchange about grandma's recipes so the note is consistent with where they left off.\n\nDraft a short, friendly email to Luis saying the user wants to pick the grandma's recipes project back up, and proposing a time this week to go through them together (offer a couple of options or ask what works for him).\n\nDo NOT send it \u2014 just report back with the draft and an action_id so the user can review it."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.0026281919999999997,
+   "fresh_cost": 0.0026281919999999997,
+   "cached_calls": 0,
+   "latency_s": 1.905,
+   "prompt_tokens": 12832,
+   "completion_tokens": 362,
+   "cached_prompt_tokens": 5632,
+   "cache_keys": [
+    "21602792ed15a2941ff3f32278a465bbe5d4021168293845207dc6ed70285bd1",
+    "abc7dffcd4d1daca67a8333408f5b8673e31dc3e52324a865c727506c0da69a3"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-dormant_revival-02",
+   "kind": "dormant_revival",
+   "sample": 0,
+   "message": "hey can you check if the pumpkin patch trip with mia is still on for sunday? if it's open, go ahead and book it for 2 adults and mia",
+   "gold": [
+    "mia-pumpkin-patch-next-weekend"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "mia-pumpkin-patch-next-weekend"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. checking whether sunday's still on and the patch is open \u2014 will book for 2 adults + mia if it's clear, and flag it if anything looks off."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "pumpkin patch Mia trip Sunday"
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "mia-pumpkin-patch-next-weekend",
+      "instructions": "Check whether the pumpkin patch trip with Mia is still on for this Sunday. First, look through recent emails, texts and threads for anything confirming or changing the plan (who's going, which patch, what time). Then confirm the venue's availability/hours for Sunday and whether it's still open for the booking.\n\nIf it's still open and nothing in the threads says the plan changed or was cancelled, go ahead and book it for 2 adults plus Mia for Sunday, using the time that matches whatever the thread says. If anything is unclear \u2014 the date moved, someone else was going to book, the slot is full, or the plan appears cancelled \u2014 do NOT book; report back what you found and what needs deciding.\n\nDo not send any messages or emails to anyone without showing me a draft first. Report back with: whether the trip is still on for Sunday, what the threads say, the availability, and the booking confirmation (or the blocker)."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. checking whether sunday's still on and the patch is open \u2014 will book for 2 adults + mia if it's clear, and flag it if anything looks off."
+     }
+    }
+   ],
+   "iterations": 4,
+   "hit_iteration_cap": false,
+   "cost": 0.002829192,
+   "fresh_cost": 0.002829192,
+   "cached_calls": 0,
+   "latency_s": 7.4559999999999995,
+   "prompt_tokens": 28658,
+   "completion_tokens": 1277,
+   "cached_prompt_tokens": 24832,
+   "cache_keys": [
+    "4657ad06be0ee7b03432eb8cfe84a39cd76993056dd1d9dad6e4b935c12589fd",
+    "5aecba32d67e21a61ec04ddfe515767549161a48ca00c4f6f3dba8c57a07d10f",
+    "c84b6f0f2a4596c48970e3c8aabd1726d05180a6b62104ddaa9ddbf55628c653",
+    "4918cd82436aa1b3f5edf9ed6a2c2907c07f3f82458a9df4bcc5c4b3597eedd2"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-dormant_revival-03",
+   "kind": "dormant_revival",
+   "sample": 0,
+   "message": "whatever happened with the massage thing? did it get booked or did it fall through",
+   "gold": [
+    "massage-spots-near-office-thursday"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "massage-spots-near-office-thursday"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "digging into the massage thread now \u2014 I'll tell you whether it got booked or died on the vine."
+   ],
+   "tool_calls": [
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "massage booking"
+     }
+    },
+    {
+     "name": "search_agents",
+     "arguments": {
+      "query": "massage spa appointment Thursday"
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "massage-spots-near-office-thursday",
+      "instructions": "The user is asking what happened with the massage appointment near their office for Thursday. Report back whether it ever got booked, or whether it fell through / was never booked. Check the email and message threads with any massage or spa provider, plus the user's calendar for any massage appointment, and summarize the outcome in a few lines: which place, what date/time if booked, or why it stalled."
+     }
+    },
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "digging into the massage thread now \u2014 I'll tell you whether it got booked or died on the vine."
+     }
+    }
+   ],
+   "iterations": 5,
+   "hit_iteration_cap": false,
+   "cost": 0.001960392,
+   "fresh_cost": 0.001960392,
+   "cached_calls": 0,
+   "latency_s": 5.121,
+   "prompt_tokens": 37666,
+   "completion_tokens": 653,
+   "cached_prompt_tokens": 34432,
+   "cache_keys": [
+    "2bfab68e2befd2332c077caa5338b7d82202ec6db64f79c8a66dff8c4a560105",
+    "853f2b680f88bf49ba31f4321af3c5a7589ffd98c90598efece131abbba1b8cd",
+    "557dacef0270ca3f9e4937dae19b5cfff8b6b8fb907e6b95469da70c7529af76",
+    "6fc016933162efa8c52daa82dfeb1ae65c58e9b4e31ee9472ae9d67f84587587",
+    "87a8c481c20924196ad0905c2d1b2f750b417a3cde32f8390221d02114f18482"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-typo-00",
+   "kind": "typo",
+   "sample": 0,
+   "message": "ask ptera to get her manager looped in on the export issue and tell her i need one more day on it",
+   "gold": [
+    "petra-data-export-stuck"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "petra-data-export-stuck"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "on it. drafting a note to petra asking her to loop in her manager on the export issue, plus letting her know you need one more day on it. you'll see it before anything goes out."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "on it. drafting a note to petra asking her to loop in her manager on the export issue, plus letting her know you need one more day on it. you'll see it before anything goes out."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "petra-data-export-stuck",
+      "instructions": "Draft a short, friendly email to Petra asking her to loop in her manager on the export issue, and letting her know the user needs one more day on it. Do not send it. Return the drafted recipient, subject, and body, and the action_id if a pending send is created."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Already acknowledged the request and dispatched the draft task to the Petra agent; awaiting the drafted email before showing it to the user."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.0010411560000000001,
+   "fresh_cost": 0.0010411560000000001,
+   "cached_calls": 0,
+   "latency_s": 3.3049999999999997,
+   "prompt_tokens": 19451,
+   "completion_tokens": 458,
+   "cached_prompt_tokens": 18176,
+   "cache_keys": [
+    "ed6d209f86775bd9f9545330f1968f9f60759b845c7b29cfc16b12b47be4984c",
+    "b34831e223b8454c7fe465749db68ead37acbd4f19f93d06614851c38de4780e",
+    "a65c427d8125c8df15b66e4cc3fd76307ac09e43fb6bae0b30d241d668548bc3"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-typo-01",
+   "kind": "typo",
+   "sample": 0,
+   "message": "hey any update from baetriz on trivia night? did she confirm the team or the venue yet",
+   "gold": [
+    "beatriz-trivia-night-note"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "beatriz-trivia-night-note"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "nothing confirmed yet \u2014 last I heard she was asking what time it starts and whether to bring a team of four or just herself. I'll double-check the thread in case something came in after that."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "nothing confirmed yet \u2014 last I heard she was asking what time it starts and whether to bring a team of four or just herself. I'll double-check the thread in case something came in after that."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "beatriz-trivia-night-note",
+      "instructions": "Check the latest on the Beatriz trivia night thread: has Beatriz replied again since her last message (asking what time trivia night starts and whether she should bring a team of four or just herself)? Specifically report whether she has confirmed the team size or the venue, and pass along anything else she said. Do not send anything \u2014 just report back."
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.001209756,
+   "fresh_cost": 0.001209756,
+   "cached_calls": 0,
+   "latency_s": 3.8880000000000003,
+   "prompt_tokens": 12737,
+   "completion_tokens": 709,
+   "cached_prompt_tokens": 11776,
+   "cache_keys": [
+    "f503d6bd8859eb9a387d622634dba9a7373fb040c134a507a55160b740c27198",
+    "6bbe878d855bc29b5bdb6edcde2f4e2cda821b09529227207a6058544bfb54d2"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-typo-02",
+   "kind": "typo",
+   "sample": 0,
+   "message": "ok any update from mracus on the demo day slides?",
+   "gold": [
+    "marcus-demo-day-slides-wrap-up-draft"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [
+    "marcus-demo-day-slides-wrap-up-draft"
+   ],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [
+    "checking with marcus now \u2014 one sec."
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "checking with marcus now \u2014 one sec."
+     }
+    },
+    {
+     "name": "send_message_to_agent",
+     "arguments": {
+      "agent_id": "marcus-demo-day-slides-wrap-up-draft",
+      "instructions": "Any update from Marcus on the demo day slides? Check the email/message threads with Marcus for any reply or news about the demo day slides (including the note about wrapping them up before the end of the month), and report back what you find. If there's a reply waiting, summarize what Marcus said."
+     }
+    },
+    {
+     "name": "wait",
+     "arguments": {
+      "reason": "Already told the user I'm checking with Marcus; awaiting the agent's reply before responding further."
+     }
+    }
+   ],
+   "iterations": 3,
+   "hit_iteration_cap": false,
+   "cost": 0.001375044,
+   "fresh_cost": 0.001375044,
+   "cached_calls": 0,
+   "latency_s": 3.282,
+   "prompt_tokens": 19327,
+   "completion_tokens": 485,
+   "cached_prompt_tokens": 17024,
+   "cache_keys": [
+    "e328e407025168b566a58e02e1bd8574221e7d9947a40bb204e36087c546b46b",
+    "65e3f5606622125cde671b49aea8ca0e4ce8a1746f5c4bfe13ac4dc9551b9f95",
+    "665218302a3f3538704c0ae2038fb2a366f67609f6990a91fdabc1403da34215"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-typo-03",
+   "kind": "typo",
+   "sample": 0,
+   "message": "hey can you ask hleen if we can push the holiday travel home back a week",
+   "gold": [
+    "helen-holiday-travel-home"
+   ],
+   "acceptable": [],
+   "expects_reuse": true,
+   "duplicate_possible": true,
+   "outcome": "no_action",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": false,
+   "user_messages": [],
+   "tool_calls": [],
+   "iterations": 1,
+   "hit_iteration_cap": false,
+   "cost": 0.000406524,
+   "fresh_cost": 0.000406524,
+   "cached_calls": 0,
+   "latency_s": 0.947,
+   "prompt_tokens": 6137,
+   "completion_tokens": 153,
+   "cached_prompt_tokens": 5504,
+   "cache_keys": [
+    "067272e3129a8c6616413987c5312a80a7dd268d3ccb4c64af09195ceccaacf2"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-agent_result-00",
+   "kind": "agent_result",
+   "sample": 0,
+   "message": "[SUCCESS] Megan Wedding RSVP Check: Megan replied: she asked if we can push the wedding RSVP to next week.",
+   "gold": [
+    "megan-wedding-rsvp-check"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": true,
+   "user_messages": [
+    "megan came back on the wedding \u2014 she's asking if the RSVP can slide to next week. want me to tell her yes, or is there a date you need locked in first?"
+   ],
+   "tool_calls": [],
+   "iterations": 1,
+   "hit_iteration_cap": false,
+   "cost": 0.000560988,
+   "fresh_cost": 0.000560988,
+   "cached_calls": 0,
+   "latency_s": 1.093,
+   "prompt_tokens": 6225,
+   "completion_tokens": 197,
+   "cached_prompt_tokens": 5248,
+   "cache_keys": [
+    "5b5107a25db047317febfe93dce070e98dd9999d4273dc0d1cad2f9ec9014c01"
+   ]
+  },
+  {
+   "system": "retrieved",
+   "n_agents": "lived-200",
+   "world_seed": 1,
+   "case_id": "lived-s1-200-agent_result-03",
+   "kind": "agent_result",
+   "sample": 0,
+   "message": "[SUCCESS] Ben Okafor Ski Trip Reply: Ben replied that Thursday at 3 works for the ski trip.",
+   "gold": [
+    "ben-okafor-ski-trip-reply"
+   ],
+   "acceptable": [],
+   "expects_reuse": false,
+   "duplicate_possible": true,
+   "outcome": "correct",
+   "error": null,
+   "dispatched_ids": [],
+   "created_names": [],
+   "clarified": true,
+   "user_messages": [
+    "ben's in \u2014 thursday at 3 works for the ski trip. want me to confirm with him?"
+   ],
+   "tool_calls": [
+    {
+     "name": "send_message_to_user",
+     "arguments": {
+      "message": "ben's in \u2014 thursday at 3 works for the ski trip. want me to confirm with him?"
+     }
+    }
+   ],
+   "iterations": 2,
+   "hit_iteration_cap": false,
+   "cost": 0.001456752,
+   "fresh_cost": 0.001456752,
+   "cached_calls": 0,
+   "latency_s": 5.326,
+   "prompt_tokens": 12632,
+   "completion_tokens": 847,
+   "cached_prompt_tokens": 11392,
+   "cache_keys": [
+    "b2da8fb668435c46675b63bc74a3804e84b2bc08b2c1a8a46b98d1a14cb6fa28",
+    "e7c7368ad0c759d7cb91831091b7063842d4f23a596d00b41aaa9057e089acbf"
+   ]
+  }
+ ]
+}
