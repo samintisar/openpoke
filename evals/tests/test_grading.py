@@ -67,3 +67,15 @@ def test_duplicate_possible_matches_grade(the_case, possible):
     assert duplicate_possible(the_case) is possible
     reachable = grade(the_case, Decision(created_names=["fresh"])) == "duplicate_create"
     assert reachable is possible
+
+
+def test_every_outcome_has_a_severity():
+    from evals.grading import (
+        CORRECT, DUPLICATE_CREATE, EXTRA_CREATE, MISSED_CREATE, NO_ACTION, PARTIAL, SEVERITY, SHOULD_CLARIFY,
+        UNNECESSARY_CLARIFY, WRONG_REUSE,
+    )
+
+    assert SEVERITY[CORRECT] is None
+    assert SEVERITY[WRONG_REUSE] == SEVERITY[MISSED_CREATE] == "harmful"
+    assert SEVERITY[DUPLICATE_CREATE] == SEVERITY[EXTRA_CREATE] == "costly"
+    assert {SEVERITY[o] for o in (PARTIAL, SHOULD_CLARIFY, UNNECESSARY_CLARIFY, NO_ACTION)} == {"minor"}

@@ -25,6 +25,20 @@ UNNECESSARY_CLARIFY = "unnecessary_clarify"
 NO_ACTION = "no_action"
 ERROR = "error"
 
+# How much a wrong outcome would hurt the user (spec v2 §3.5). harmful: work reaches the wrong agent or
+# matter; costly: a duplicate agent that will drift; minor: an unneeded question, a half-done or no action.
+SEVERITY: dict[str, str | None] = {
+    CORRECT: None,
+    WRONG_REUSE: "harmful",
+    MISSED_CREATE: "harmful",
+    DUPLICATE_CREATE: "costly",
+    EXTRA_CREATE: "costly",
+    PARTIAL: "minor",
+    SHOULD_CLARIFY: "minor",
+    UNNECESSARY_CLARIFY: "minor",
+    NO_ACTION: "minor",
+}
+
 
 @dataclass
 class Decision:

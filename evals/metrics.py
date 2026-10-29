@@ -22,6 +22,8 @@ Denominators, per roster size:
 - sample_std: population std across sample indexes of the per-sample pass rate.
 - duplicate_rate: duplicate_create share of non-error rows with expects_reuse.
 - duplicate_rate_all: the same over non-error rows where duplicate_create is possible
+- harmful_rate / costly_rate / minor_rate: share of non-error rows whose outcome has that severity
+  (grading.SEVERITY: wrong agent or matter / duplicate agent / unneeded question, partial or no action).
   (duplicate_possible), which adds the optional-dispatch agent_result cases.
 - outcome_rates: share of all rows, errors included.
 - hit_cap_rate: share of non-error rows whose turn hit the iteration cap.
@@ -35,7 +37,7 @@ from collections import Counter, defaultdict
 from statistics import mean, pstdev
 from typing import Any
 
-from .grading import CORRECT, DUPLICATE_CREATE, ERROR
+from .grading import CORRECT, DUPLICATE_CREATE, ERROR, SEVERITY
 
 
 def _by_size(rows: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
@@ -100,6 +102,9 @@ def _routing_group(rows: list[dict[str, Any]], planned: set[tuple] | None, k_con
         "error_count": error_count,
         "error_rate": round(error_count / len(rows), 4) if rows else None,
         "duplicate_rate": _duplicate_rate([row for row in valid if row["expects_reuse"]]),
+        "harmful_rate": _rate([SEVERITY.get(row["outcome"]) == "harmful" for row in valid]),
+        "costly_rate": _rate([SEVERITY.get(row["outcome"]) == "costly" for row in valid]),
+        "minor_rate": _rate([SEVERITY.get(row["outcome"]) == "minor" for row in valid]),
         "duplicate_rate_all": _duplicate_rate([row for row in valid if row["duplicate_possible"]]),
         "outcome_rates": {name: round(count / len(rows), 4) for name, count in sorted(outcomes.items())},
         "hit_cap_rate": _rate([bool(row["hit_iteration_cap"]) for row in valid]),

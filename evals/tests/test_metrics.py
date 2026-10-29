@@ -164,3 +164,10 @@ def test_configured_k_is_used_for_pass_hat_k():
     rows = [row("a", 0, "correct")]
     summary = summarize_routing(rows, k=3)["10"]
     assert summary["k"] == 3 and summary["pass_hat_k"] is None and summary["incomplete_cases"] == 1
+
+
+def test_harmful_costly_and_minor_rates():
+    rows = [row("a", 0, "correct"), row("b", 0, "wrong_reuse"), row("c", 0, "duplicate_create"),
+            row("d", 0, "unnecessary_clarify")]
+    summary = summarize_routing(rows)["10"]
+    assert summary["harmful_rate"] == 0.25 and summary["costly_rate"] == 0.25 and summary["minor_rate"] == 0.25
