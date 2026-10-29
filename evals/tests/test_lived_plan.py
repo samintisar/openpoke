@@ -5,6 +5,8 @@ from evals.worlds.lived.model import LIFE_DAYS
 from evals.worlds.lived.plan import (
     BACKGROUND_SIZE, COLLIDING_FIRSTS, ERRANDS, SHARED_SURNAME, TOPIC_KEYWORDS, build_plan, topic_keyword, topic_words,
 )
+from evals.worlds.lived.personas import PERSONAS, persona_for
+from evals.worlds.lived.plan import service_role
 
 PLAN = build_plan(1)
 USER_KINDS = ("start", "follow_up", "revival", "multi")
@@ -183,3 +185,37 @@ LIFE1_PLAN_SHA256 = "7dfd8cedeb968d8038ee0dea08b440ee711d1f16df85ac05e11fe623118
 
 def test_life1_plan_is_frozen():
     assert _plan_digest(1) == LIFE1_PLAN_SHA256
+
+
+def test_seed_picks_persona():
+    assert persona_for(1).name == "jordan" and persona_for(2).name == "riley"
+    assert persona_for(3).name == "riley"  # any seed other than 1 uses the second life
+
+
+def test_life2_shares_no_people_with_life1():
+    one = {c.full for c in build_plan(1).contacts}
+    two = build_plan(2)
+    assert not one & {c.full for c in two.contacts}
+    assert "Riley" in two.persona and "Mia" not in two.persona
+
+
+def test_life2_has_namesakes_and_a_shared_surname():
+    two = build_plan(2)
+    firsts = [c.first for c in two.contacts]
+    for first in persona_for(2).colliding_firsts:
+        assert firsts.count(first) >= 2
+    assert sum(c.last == persona_for(2).shared_surname for c in two.contacts) >= 2
+
+
+def test_child_name_follows_the_persona():
+    topics2 = {t.topic for t in build_plan(2).threads}
+    assert not any("Mia" in topic for topic in topics2)
+    for topic in topics2:
+        assert topic_keyword(topic)  # every personalized topic still has its keyword
+
+
+def test_service_roles_for_both_lives():
+    assert service_role(build_plan(1).contact("Gary Whitman")) == "landlord"
+    two = build_plan(2)
+    landlord = next(c for c in two.contacts if c.relation == "service" and service_role(c) == "landlord")
+    assert landlord.full == "Dennis Varga"

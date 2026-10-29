@@ -15,9 +15,10 @@ from evals.cases import NEW, Case
 from evals.llm import LLMClient
 from evals.worlds.lived.model import Contact, Intent, LifePlan, Snapshot, Thread
 from evals.worlds.lived.plan import (
-    ERRAND_RESULT_DETAILS, ERRANDS, FOLLOW_UP_DETAILS, RESULT_DETAILS, REVIVAL_DETAILS, SERVICE_TOPICS, SERVICES,
-    START_DETAILS, TOPICS, topic_keyword,
+    ERRAND_RESULT_DETAILS, ERRANDS, FOLLOW_UP_DETAILS, RESULT_DETAILS, REVIVAL_DETAILS, SERVICE_TOPICS,
+    START_DETAILS, TOPICS, personalize, service_role, topic_keyword,
 )
+from evals.worlds.lived.personas import Persona, persona_for
 from evals.worlds.lived.writer import write
 
 CONTEXT = 20  # transcript entries a probe's context holds
@@ -51,12 +52,13 @@ def _group(domain: str) -> str:
     return domain
 
 
-def _relation_pool(contact: Contact) -> tuple[str, ...]:
-    """Topics a contact's relation could have; for services, the role's own pool."""
+def _relation_pool(contact: Contact, persona: Persona) -> tuple[str, ...]:
+    """Topics a contact's relation could have (personalized); for services, the role's own pool."""
     if contact.relation == "service":
-        role = next((r for first, last, _, r in SERVICES if (first, last) == (contact.first, contact.last)), None)
-        return tuple(topic for topic, _ in SERVICE_TOPICS.get(role, ()))
-    return tuple(topic for topic, _ in TOPICS.get(contact.relation, ()))
+        pool = SERVICE_TOPICS.get(service_role(contact), ())
+    else:
+        pool = TOPICS.get(contact.relation, ())
+    return tuple(personalize(topic, persona) for topic, _ in pool)
 
 
 def typo_name(name: str) -> str:
@@ -94,8 +96,10 @@ class _Probes:
             self.namesakes.setdefault(contact.first, []).append(contact)
         self.backed = [t for t in plan.threads if snapshot.thread_agents.get(t.id)]
         self.backed_ids = {t.id for t in self.backed}
+        self.persona = persona_for(plan.seed)
         used = {t.topic for t in plan.threads}
-        self.reserve = [topic for topic, _ in ERRANDS if topic not in used and not self._matches_thread(topic)]
+        errands = [personalize(topic, self.persona) for topic, _ in ERRANDS]
+        self.reserve = [topic for topic in errands if topic not in used and not self._matches_thread(topic)]
         self.rng.shuffle(self.reserve)
 
     # --- names and gold ---------------------------------------------------------------------
@@ -252,7 +256,7 @@ async def _same_person_new_topic(p: _Probes, want: int) -> list[_Draft]:
         if len(out) == want:
             break
         contact = p.by_full[full]
-        fresh = [topic for topic in _relation_pool(contact) if topic not in had.get(full, set())]
+        fresh = [topic for topic in _relation_pool(contact, p.persona) if topic not in had.get(full, set())]
         if not fresh:
             continue
         topic = p.rng.choice(fresh)

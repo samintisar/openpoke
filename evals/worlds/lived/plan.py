@@ -12,54 +12,12 @@ import random
 import re
 
 from .model import LIFE_DAYS, Contact, Event, Intent, LifePlan, Thread
+from .personas import JORDAN, PERSONAS, Persona, persona_for
 
-PERSONA = (
-    "Jordan Reyes, 34, senior product manager at Northwind Labs in Portland, Oregon. Married to Jamie, "
-    "with a six-year-old daughter, Mia. Sister Elena and brother Mateo; cousins on the Doyle side (Mom's "
-    "family) and the Alvarez side. Juggles a team, clients, recruiters, friends and family logistics "
-    "through an AI assistant, mostly from their phone."
-)
-
-WORK_COMPANY = "Northwind Labs"
-COLLIDING_FIRSTS = ("Alice", "Ben")
-SHARED_SURNAME = "Doyle"  # colleague Kevin Doyle and cousin Nora Doyle
-
-WORK = (
-    ("Alice", "Chen"), ("Kevin", "Doyle"), ("Priya", "Shah"), ("Marcus", "Lee"), ("Hana", "Sato"),
-    ("Omar", "Haddad"), ("Greta", "Fischer"), ("Ravi", "Iyer"), ("Chloe", "Martin"), ("Kenji", "Mori"),
-    ("Zoe", "Turner"), ("Dmitri", "Petrov"), ("Maya", "Cohen"), ("Tobias", "Becker"), ("Sofia", "Rossi"),
-    ("Dana", "Kim"), ("Felix", "Wagner"), ("Grace", "Liu"),
-)
-CLIENTS = (
-    ("Ben", "Carter", "Globex"), ("Hugo", "Lambert", "Initech"), ("Iris", "Novak", "Hooli"),
-    ("Jonas", "Berg", "Umbrella"), ("Kira", "Nair", "Stark"), ("Leo", "Costa", "Wayne"),
-    ("Petra", "Horvat", "Soylent"), ("Noah", "Fraser", "Acme"), ("Olga", "Ivanova", "Globex"),
-    ("Pablo", "Ortega", "Initech"), ("Quinn", "Harper", "Hooli"), ("Seth", "Cole", "Umbrella"),
-    ("Tara", "Singh", "Stark"), ("Yusuf", "Aydin", "Wayne"),
-)
-RECRUITERS = (
-    ("Alice", "Brennan", "Hirewell"), ("Anjali", "Rao", "Talentbridge"), ("Gavin", "Hale", "Hirewell"),
-    ("Wendy", "Zhou", "Pinnacle Search"), ("Leila", "Rahman", "Talentbridge"), ("Simon", "Abbott", "Pinnacle Search"),
-)
-FAMILY = (
-    ("Jamie", "Reyes"), ("Elena", "Reyes"), ("Mateo", "Reyes"), ("Nora", "Doyle"), ("Teresa", "Alvarez"),
-    ("Luis", "Alvarez"), ("Diego", "Reyes"), ("Isabel", "Moreno"), ("Rafael", "Moreno"), ("Helen", "Walsh"),
-    ("George", "Walsh"), ("Gloria", "Santos"), ("Pedro", "Alvarez"), ("Lucia", "Reyes"),
-)
-FRIENDS = (
-    ("Ben", "Okafor"), ("Rowan", "Brooks"), ("Beatriz", "Duarte"), ("Kwame", "Mensah"), ("Jake", "Morrison"),
-    ("Freya", "Lindqvist"), ("Owen", "Ellis"), ("Fatima", "Malik"), ("Liam", "Byrne"), ("Callum", "Dunn"),
-    ("Megan", "Hart"), ("Nikhil", "Bose"), ("Sara", "Lund"), ("Ethan", "Ward"), ("Julia", "Weber"),
-    ("Marco", "Bianchi"), ("Anya", "Volkova"), ("Derek", "Shaw"),
-)
-# (first, last, company, role): the role picks the service's own topic pool.
-SERVICES = (
-    ("Gary", "Whitman", "Whitman Properties", "landlord"), ("Laura", "Kemp", "Brightsmile Dental", "dentist"),
-    ("Paul", "Fenwick", "Fenwick Tax", "accountant"), ("Rita", "Gomez", "Sparkle Home", "cleaner"),
-    ("Steve", "Kowalski", "Eastside Auto", "mechanic"), ("Monica", "Reed", "Paws Clinic", "vet"),
-    ("Henry", "Tran", "Tran Plumbing", "plumber"), ("Harriet", "Lawson", "Lawson Music", "piano teacher"),
-    ("Carl", "Jensen", "Jensen Builders", "contractor"), ("Amy", "Fox", "Cascade Insurance", "insurance agent"),
-)
+# Life-1 aliases, kept for importers that predate personas.
+PERSONA = JORDAN.text
+COLLIDING_FIRSTS = JORDAN.colliding_firsts
+SHARED_SURNAME = JORDAN.shared_surname
 
 # (topic, keyword): the keyword is the distinctive word a message must use to name the topic.
 TOPICS = {
@@ -246,8 +204,16 @@ def _errand_pool() -> tuple[tuple[str, str], ...]:
 
 
 ERRANDS = _errand_pool()
+
+
+def personalize(text: str, persona: Persona) -> str:
+    """Topic and detail text with the persona's child in place of life 1's ("Mia")."""
+    return text.replace("Mia", persona.child)
+
+
 TOPIC_KEYWORDS: dict[str, str] = {
-    topic: keyword
+    personalize(topic, persona): keyword
+    for persona in PERSONAS
     for pool in (*TOPICS.values(), *SERVICE_TOPICS.values(), ERRANDS)
     for topic, keyword in pool
 }
@@ -263,41 +229,52 @@ def topic_words(text: str) -> set[str]:
     return {w for w in re.split(r"[^a-z0-9]+", text.lower()) if w and w not in _STOPWORDS}
 
 
-def _contacts() -> tuple[list[Contact], dict[str, tuple[tuple[str, str], ...]]]:
+def _contacts(persona: Persona) -> tuple[list[Contact], dict[str, tuple[tuple[str, str], ...]]]:
     """Every contact, plus the topic pool each contact draws from (keyed by Contact.full)."""
     contacts: list[Contact] = []
     pools: dict[str, tuple[tuple[str, str], ...]] = {}
 
     def add(contact: Contact, pool: tuple[tuple[str, str], ...]) -> None:
         contacts.append(contact)
-        pools[contact.full] = pool
+        pools[contact.full] = tuple((personalize(topic, persona), keyword) for topic, keyword in pool)
 
-    for first, last in WORK:
-        add(Contact(first, last, "work", WORK_COMPANY), TOPICS["work"])
-    for first, last, company in CLIENTS:
+    for first, last in persona.work:
+        add(Contact(first, last, "work", persona.work_company), TOPICS["work"])
+    for first, last, company in persona.clients:
         add(Contact(first, last, "client", company), TOPICS["client"])
-    for first, last, company in RECRUITERS:
+    for first, last, company in persona.recruiters:
         add(Contact(first, last, "recruiter", company), TOPICS["recruiter"])
-    for first, last in FAMILY:
+    for first, last in persona.family:
         add(Contact(first, last, "family"), TOPICS["family"])
-    for first, last in FRIENDS:
+    for first, last in persona.friends:
         add(Contact(first, last, "friend"), TOPICS["friend"])
-    for first, last, company, role in SERVICES:
+    for first, last, company, role in persona.services:
         add(Contact(first, last, "service", company), SERVICE_TOPICS[role])
     return contacts, pools
 
 
-def _threads(contacts: list[Contact], pools: dict[str, tuple[tuple[str, str], ...]], rng: random.Random) -> list[Thread]:
+def service_role(contact: Contact) -> str | None:
+    """A service contact's role (its topic pool), looked up across every persona; None if not a service."""
+    for persona in PERSONAS:
+        for first, last, _, role in persona.services:
+            if (first, last) == (contact.first, contact.last):
+                return role
+    return None
+
+
+def _threads(
+    contacts: list[Contact], pools: dict[str, tuple[tuple[str, str], ...]], rng: random.Random, persona: Persona,
+) -> list[Thread]:
     drafts: list[tuple[str | None, str, str]] = []
     for contact in contacts:
         count = rng.choices(*THREAD_COUNTS)[0]
-        if contact.first in COLLIDING_FIRSTS:
+        if contact.first in persona.colliding_firsts:
             count = max(count, 2)  # probes need both namesakes to own agent-backed threads
         pool = pools[contact.full]
         for topic, _ in rng.sample(pool, min(count, len(pool))):
             drafts.append((contact.full, topic, contact.relation))
     for topic, _ in rng.sample(ERRANDS, ERRAND_THREADS):
-        drafts.append((None, topic, "errand"))
+        drafts.append((None, personalize(topic, persona), "errand"))
     rng.shuffle(drafts)
     return [Thread(f"t{i:03d}", contact, topic, domain) for i, (contact, topic, domain) in enumerate(drafts)]
 
@@ -414,9 +391,10 @@ def _timeline(rng: random.Random) -> list[tuple[float, str]]:
 
 def build_plan(seed: int = 1) -> LifePlan:
     """The seeded life plan; the same seed always gives the same plan."""
+    persona = persona_for(seed)
     rng = random.Random(seed)
-    contacts, pools = _contacts()
-    threads = _threads(contacts, pools, rng)
+    contacts, pools = _contacts(persona)
+    threads = _threads(contacts, pools, rng, persona)
     mentions = _Mentions(contacts, threads, rng)
 
     # (day, sequence, intent): the sequence keeps same-day ordering stable.
@@ -448,7 +426,7 @@ def build_plan(seed: int = 1) -> LifePlan:
 
     raw.sort(key=lambda item: (item[0], item[1]))
     events = [Event(f"e{i:04d}", day, intent) for i, (day, _, intent) in enumerate(raw)]
-    return LifePlan(seed=seed, persona=PERSONA, contacts=contacts, threads=threads, events=events,
+    return LifePlan(seed=seed, persona=persona.text, contacts=contacts, threads=threads, events=events,
                     background=_background(rng))
 
 
