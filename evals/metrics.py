@@ -22,9 +22,9 @@ Denominators, per roster size:
 - sample_std: population std across sample indexes of the per-sample pass rate.
 - duplicate_rate: duplicate_create share of non-error rows with expects_reuse.
 - duplicate_rate_all: the same over non-error rows where duplicate_create is possible
+  (duplicate_possible), which adds the optional-dispatch agent_result cases.
 - harmful_rate / costly_rate / minor_rate: share of non-error rows whose outcome has that severity
   (grading.SEVERITY: wrong agent or matter / duplicate agent / unneeded question, partial or no action).
-  (duplicate_possible), which adds the optional-dispatch agent_result cases.
 - outcome_rates: share of all rows, errors included.
 - hit_cap_rate: share of non-error rows whose turn hit the iteration cap.
 - total_cost_usd is attributed cost (cached calls count what they cost when first made);
