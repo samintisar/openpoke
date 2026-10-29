@@ -4,6 +4,10 @@
     python -m evals.run --config evals/experiments/smoke.yaml --fake-llm    # offline
     python -m evals.run --config ... --split test --final                   # held-out, once per finalist
 
+world: lived_v2 runs benchmark v2: life 1 is the dev life and runs only on dev; life 2 is the
+sealed test life and runs only with --split test --final. The reviewed probe file's sha256 is in
+meta.bench_sha256.
+
 If the budget runs out, scheduling stops: the case that hit the cap and every case not yet
 started are left out of routing_rows (they count as incomplete, not as errors), and
 meta.budget_exhausted is true. If OpenRouter refuses the account (401/402/403: bad key, no
@@ -50,6 +54,8 @@ from .metrics import summarize_retrieval, summarize_routing
 from .systems import get_system
 from .worlds.generator import build_world, generate_cases
 from .worlds.handwritten import load_handwritten
+from .worlds.lived import bench_v2
+from .worlds.lived.round2 import _sha256
 from .worlds.lived.store import DEFAULT_PATH as LIVED_PATH
 from .worlds.lived.store import load_lived
 from .worlds.model import World
@@ -75,8 +81,10 @@ class Config:
     requests_per_minute: int | None = None  # set for free models, which OpenRouter caps per minute
     max_retries: int = 3
     include_handwritten: bool = True
-    world: str = "synthetic"  # synthetic, or lived (the frozen lived-in world; n_agents picks its sizes)
+    world: str = "synthetic"  # synthetic, lived (the frozen lived-in world; n_agents picks its sizes), or lived_v2
     lived_path: str | None = None
+    life: int = 1  # lived_v2 only: 1 is the dev life, 2 the sealed test life
+    bench_dir: str | None = None  # lived_v2 only: where world-s{life}.json and its reviewed bench live
     allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (the guard prevents accidentally huge runs)
 
 
@@ -116,8 +124,12 @@ def _validate(cfg: Config) -> None:
         raise bad("budget_usd", "must be a positive number")
     if not isinstance(cfg.layers, list) or not set(cfg.layers) <= {"retrieval", "routing"}:
         raise bad("layers", "must be a list drawn from ['retrieval', 'routing']")
-    if cfg.world not in ("synthetic", "lived"):
-        raise bad("world", "must be synthetic or lived")
+    if cfg.world not in ("synthetic", "lived", "lived_v2"):
+        raise bad("world", "must be synthetic, lived or lived_v2")
+    if not _is_int(cfg.life) or cfg.life not in (bench_v2.DEV_LIFE, bench_v2.TEST_LIFE):
+        raise bad("life", "must be 1 (the dev life) or 2 (the sealed test life)")
+    if cfg.bench_dir is not None and not isinstance(cfg.bench_dir, str):
+        raise bad("bench_dir", "must be null or a path string")
     if cfg.lived_path is not None and not isinstance(cfg.lived_path, str):
         raise bad("lived_path", "must be null or a path string")
     if not isinstance(cfg.allow_long_prompts, bool):
@@ -130,6 +142,21 @@ def _validate(cfg: Config) -> None:
         raise bad("kinds", f"must be null or a list drawn from {list(ROUTING_KINDS)}")
 
 
+def life_refusal(cfg: Config, split: str, final: bool) -> str | None:
+    """Why a benchmark v2 life may not run on this split, or None."""
+    if cfg.world != "lived_v2":
+        return None
+    if cfg.life == bench_v2.TEST_LIFE and not (split == "test" and final):
+        return "life 2 is the sealed test life: run it with --split test --final"
+    if cfg.life == bench_v2.DEV_LIFE and split != "dev":
+        return "life 1 is the dev life: run it on --split dev (the test split is life 2)"
+    return None
+
+
+def _bench_dir(cfg: Config) -> Path | None:
+    return Path(cfg.bench_dir) if cfg.bench_dir else None
+
+
 Unit = tuple[Any, World, list[Case]]  # (roster-size label, world, cases)
 
 
@@ -138,6 +165,11 @@ def _build_units(cfg: Config, split: str) -> list[Unit]:
     if cfg.world == "lived":
         wanted = {f"lived-{n}" for n in cfg.n_agents}
         for label, world, cases in load_lived(Path(cfg.lived_path) if cfg.lived_path else LIVED_PATH):
+            if label in wanted:
+                units.append((label, world, filter_cases(cases, split=split, suite=cfg.suite, kinds=cfg.kinds)))
+    if cfg.world == "lived_v2":
+        wanted = {f"lived-{n}" for n in cfg.n_agents}
+        for label, world, cases in bench_v2.load_v2(cfg.life, directory=_bench_dir(cfg)):
             if label in wanted:
                 units.append((label, world, filter_cases(cases, split=split, suite=cfg.suite, kinds=cfg.kinds)))
     for seed in cfg.world_seeds if cfg.world == "synthetic" else []:
@@ -222,10 +254,19 @@ async def _run_routing(
 
 
 async def run_experiment(cfg: Config, *, llm: LLMClient, out_dir: Path, split: str, final: bool) -> Path:
+    refusal = life_refusal(cfg, split, final)
+    if refusal:
+        raise ValueError(refusal)
     started = datetime.now(timezone.utc)
     checksum, expected = compute_checksum(), expected_checksum()
     system = get_system(cfg.system)
     units = _build_units(cfg, split)
+    bench_meta: dict[str, Any] = {}
+    if cfg.world == "lived_v2":  # results trace to the exact probe set and rosters
+        bench = bench_v2.bench_path(cfg.life, reviewed=True, directory=_bench_dir(cfg))
+        world_file = bench_v2.world_path(cfg.life, _bench_dir(cfg))
+        bench_meta = {"bench_file": bench.name, "bench_sha256": _sha256(bench),
+                      "world_file": world_file.name, "world_sha256": _sha256(world_file)}
 
     retrieval_rows: list[dict[str, Any]] = []
     if "retrieval" in cfg.layers:
@@ -252,6 +293,7 @@ async def run_experiment(cfg: Config, *, llm: LLMClient, out_dir: Path, split: s
             **asdict(cfg),
             "split": split,
             "final": final,
+            **bench_meta,
             "git_sha": _git("rev-parse", "--short", "HEAD"),
             "git_dirty": bool(_git("status", "--porcelain", "--untracked-files=no")),
             "started_at": started.isoformat(),
@@ -314,6 +356,10 @@ def main(argv: list[str] | None = None) -> int:
         print("Refusing to run the test split without --final. Tune on dev; run test once per finalist.", file=sys.stderr)
         return 2
     cfg = load_config(args.config)
+    refusal = life_refusal(cfg, args.split, args.final)
+    if refusal:
+        print(f"Refusing to run: {refusal}.", file=sys.stderr)
+        return 2
 
     llm: LLMClient
     if args.fake_llm:

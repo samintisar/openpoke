@@ -314,3 +314,71 @@ def test_allow_long_prompts_is_a_known_config_key(tmp_path):
     path = tmp_path / "c.yaml"
     path.write_text("name: x\nallow_long_prompts: true\n", encoding="utf-8")
     assert load_config(path).allow_long_prompts is True
+
+
+# --- benchmark v2 lives -------------------------------------------------------------------------
+
+
+def _v2_config(tmp_path, life, extra=""):
+    from evals.tests.test_bench_v2 import write_v2_fixture
+    write_v2_fixture(tmp_path, life)
+    config = tmp_path / "v2.yaml"
+    config.write_text(
+        f"name: v2\nworld: lived_v2\nlife: {life}\nbench_dir: {json.dumps(str(tmp_path))}\nn_agents: [10, 200]\n"
+        f"k: 1\nlayers: [routing]\ninclude_handwritten: false\n{extra}", encoding="utf-8")
+    return config
+
+
+def test_life_2_is_sealed_until_test_final(tmp_path, capsys):
+    config = _v2_config(tmp_path, 2)
+    assert main(["--config", str(config), "--fake-llm", "--out-dir", str(tmp_path)]) == 2
+    assert "life 2 is the sealed test life: run it with --split test --final" in capsys.readouterr().err
+    assert not list(tmp_path.glob("*-v2-dev.json")) and not (tmp_path / "leaderboard.md").exists()
+
+
+def test_life_1_is_dev_only(tmp_path, capsys):
+    config = _v2_config(tmp_path, 1)
+    assert main(["--config", str(config), "--split", "test", "--final", "--fake-llm", "--out-dir", str(tmp_path)]) == 2
+    assert "life 1 is the dev life" in capsys.readouterr().err
+
+
+def test_life_must_be_1_or_2(tmp_path):
+    config = tmp_path / "c.yaml"
+    config.write_text("name: x\nworld: lived_v2\nlife: 3\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="config key 'life'"):
+        load_config(config)
+
+
+async def test_run_experiment_refuses_life_2_on_dev(tmp_path):
+    _v2_config(tmp_path, 2)
+    cfg = tiny(world="lived_v2", life=2, bench_dir=str(tmp_path))
+    with pytest.raises(ValueError, match="sealed test life"):
+        await run_experiment(cfg, llm=fake_llm(), out_dir=tmp_path, split="dev", final=False)
+
+
+@pytest.mark.parametrize("life, args, split", [(1, [], "dev"), (2, ["--split", "test", "--final"], "test")])
+def test_cli_fake_run_on_v2_life(tmp_path, capsys, life, args, split):
+    from evals.worlds.lived.round2 import _sha256
+    config = _v2_config(tmp_path, life)
+    assert main(["--config", str(config), *args, "--fake-llm", "--out-dir", str(tmp_path)]) == 0
+    [path] = tmp_path.glob(f"*-v2-{split}.json")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    meta = data["meta"]
+    assert meta["world"] == "lived_v2" and meta["life"] == life and meta["split"] == split
+    assert meta["bench_sha256"] == _sha256(tmp_path / f"bench-v2-s{life}.reviewed.json")
+    assert meta["bench_file"] == f"bench-v2-s{life}.reviewed.json"
+    assert {r["case_id"] for r in data["routing_rows"]} == {f"v2-s{life}-10-typo-00", f"v2-s{life}-200-typo-00"}
+    assert {r["n_agents"] for r in data["routing_rows"]} == {"lived-10", "lived-200"}
+
+
+def test_v2_configs_load():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1] / "experiments"
+    for name, system, budget, sizes in [
+        ("v2-baseline", "baseline", 3.0, [10, 50, 200, 1000]), ("v2-retrieved", "retrieved", 3.0, [10, 50, 200, 1000]),
+        ("v2-full-cards", "full_cards", 4.0, [10, 50, 200]),
+    ]:
+        cfg = load_config(root / f"{name}.yaml")
+        assert (cfg.name, cfg.system, cfg.budget_usd, cfg.n_agents) == (name, system, budget, sizes)
+        assert (cfg.world, cfg.life, cfg.k, cfg.include_handwritten, cfg.concurrency) == ("lived_v2", 1, 3, False, 4)
+        assert cfg.model == "deepseek/deepseek-v4.1-flash"

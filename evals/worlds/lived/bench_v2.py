@@ -33,16 +33,19 @@ import copy
 import hashlib
 import json
 import sys
-from dataclasses import asdict, replace
+from dataclasses import asdict, fields, replace
 from pathlib import Path
 from typing import Any
 
 from ...cases import NEW, Case
 from ...llm import LLMClient
-from .model import LifePlan, Snapshot
+from ..model import World
+from .model import LifePlan, Snapshot, day_to_datetime
 from .plan import build_plan, topic_words
 from .probes import build_probes
 from .round2 import DECISIONS, _sha256, fake_writer, rebuild_snapshot
+from .store import FORMAT as WORLD_FORMAT
+from .store import _agent
 
 HERE = Path(__file__).resolve().parent
 PAGE = HERE.parents[1] / "labelling" / "probes_page.html"
@@ -53,12 +56,15 @@ DEFAULT_MODEL = "deepseek/deepseek-v4.1-flash"
 FORMAT = 1
 
 
-def world_path(seed: int, directory: Path = HERE) -> Path:
-    return Path(directory) / f"world-s{seed}.json"
+DEV_LIFE, TEST_LIFE = 1, 2  # life 2 is sealed: the runner only loads it for --split test --final
 
 
-def bench_path(seed: int, *, reviewed: bool = False, directory: Path = HERE) -> Path:
-    return Path(directory) / f"bench-v2-s{seed}{'.reviewed' if reviewed else ''}.json"
+def world_path(seed: int, directory: Path | None = HERE) -> Path:
+    return Path(directory or HERE) / f"world-s{seed}.json"
+
+
+def bench_path(seed: int, *, reviewed: bool = False, directory: Path | None = HERE) -> Path:
+    return Path(directory or HERE) / f"bench-v2-s{seed}{'.reviewed' if reviewed else ''}.json"
 
 
 def rng_seed(seed: int, size: int) -> int:
@@ -321,6 +327,42 @@ def finalize(bench: dict[str, Any], decisions: list[dict[str, Any]], *, allow_fa
     }
     return {"meta": {**copy.deepcopy(bench.get("meta", {})), "review": summary},
             "rosters": copy.deepcopy(bench["rosters"]), "probes": kept}
+
+
+# --- loading for the runner ---------------------------------------------------------------------
+
+CASE_FIELDS = frozenset(f.name for f in fields(Case))
+
+
+def load_v2(seed: int, *, directory: Path | None = None) -> list[tuple[str, World, list[Case]]]:
+    """(label, world, cases) per size of life `seed`, smallest first, for evals.run.
+
+    Rosters and now come from world-s{seed}.json, as store.load_lived builds them; the cases are the
+    reviewed bench's probes (Case fields only), each under every label it carries. A whole life is one
+    split: life 1 dev, any other test."""
+    reviewed = bench_path(seed, reviewed=True, directory=directory)
+    if not reviewed.exists():
+        raise FileNotFoundError(f"benchmark v2 life {seed}: no reviewed probe file {reviewed} (run finalize first)")
+    path = world_path(seed, directory)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if data.get("format") != WORLD_FORMAT or data.get("seed") != seed:
+        raise ValueError(f"{path}: wrong format or seed for life {seed}")
+    split = "dev" if seed == DEV_LIFE else "test"
+    by_label: dict[str, list[Case]] = {}
+    for probe in json.loads(reviewed.read_text(encoding="utf-8"))["probes"]:
+        case = Case(**{
+            **{k: v for k, v in probe.items() if k in CASE_FIELDS},
+            "context": [tuple(c) for c in probe.get("context", [])], "split_override": split,
+        })
+        for label in probe["labels"]:
+            by_label.setdefault(label, []).append(case)
+    units = []
+    for entry in sorted(data["sizes"], key=lambda e: e["size"]):
+        world = World(seed=seed, agents=[_agent(a) for a in entry["agents"]], now=day_to_datetime(entry["day"]))
+        units.append((entry["label"], world, by_label.pop(entry["label"], [])))
+    if by_label:
+        raise ValueError(f"{reviewed}: probes for sizes {path.name} does not have: {sorted(by_label)}")
+    return units
 
 
 # --- CLI ----------------------------------------------------------------------------------------

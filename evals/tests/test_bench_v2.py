@@ -244,3 +244,64 @@ def test_cli_finalize_refuses_fake_benches(tmp_path):
     decisions.write_text(json.dumps(_all(1) + _all(2)), encoding="utf-8")
     with pytest.raises(ValueError, match="fake"):
         main(["finalize", "--seed", "1", "--seed", "2", "--decisions", str(decisions), "--bench-dir", str(tmp_path)])
+
+
+# --- loading for the runner ---------------------------------------------------------------------
+
+
+def _v2_agent(agent_id):
+    return {"id": agent_id, "name": agent_id.title(), "purpose": f"does {agent_id}", "entities": [],
+            "last_active_days": 1.0, "created_days": 2.0, "history": [["req", "resp"]], "threads": []}
+
+
+def _v2_probe(pid, seed, size, labels, gold=("a1",)):
+    return {"id": pid, "kind": "typo", "world_seed": seed, "message": f"msg {pid}", "gold_targets": list(gold),
+            "message_type": "user", "context": [["user", "earlier"]], "acceptable_ids": [], "clarify_ok": False,
+            "dispatch_optional": False, "split_override": None, "size": size, "labels": labels,
+            "gold_agents": [], "check": {"flag": None}, "review": "auto", "roster_key": "x"}
+
+
+def write_v2_fixture(directory, seed):
+    """A minimal world-s{seed}.json (sizes 10, 200, 1000) and its reviewed bench, for load_v2 and the runner."""
+    sizes = [
+        {"label": f"lived-{n}", "size": n, "day": 3.5, "agents": [_v2_agent(f"a{i}") for i in range(1, 4)],
+         "thread_agents": {}, "cases": []}
+        for n in (1000, 10, 200)  # unsorted on purpose
+    ]
+    world = {"format": 1, "seed": seed, "meta": {}, "sizes": sizes}
+    (directory / f"world-s{seed}.json").write_text(json.dumps(world), encoding="utf-8")
+    probes = [
+        _v2_probe(f"v2-s{seed}-10-typo-00", seed, 10, ["lived-10"]),
+        _v2_probe(f"v2-s{seed}-200-typo-00", seed, 200, ["lived-200", "lived-1000"], gold=("a2",)),
+    ]
+    bench = {"meta": {"seed": seed}, "rosters": {}, "probes": probes}
+    (directory / f"bench-v2-s{seed}.reviewed.json").write_text(json.dumps(bench), encoding="utf-8")
+
+
+@pytest.mark.parametrize("seed, split", [(1, "dev"), (2, "test")])
+def test_load_v2_builds_units_with_one_split_per_life(tmp_path, seed, split):
+    from evals.cases import Case
+    from evals.worlds.lived.bench_v2 import load_v2
+    from evals.worlds.lived.model import day_to_datetime
+    write_v2_fixture(tmp_path, seed)
+    units = load_v2(seed, directory=tmp_path)
+    assert [label for label, _, _ in units] == ["lived-10", "lived-200", "lived-1000"]
+    by_label = {label: (world, cases) for label, world, cases in units}
+    world, cases = by_label["lived-10"]
+    assert world.seed == seed and world.now == day_to_datetime(3.5)
+    assert [a.id for a in world.agents] == ["a1", "a2", "a3"] and world.agents[0].history == [("req", "resp")]
+    assert [c.id for c in cases] == [f"v2-s{seed}-10-typo-00"]
+    assert [c.id for c in by_label["lived-200"][1]] == [c.id for c in by_label["lived-1000"][1]]
+    for _, _, cases in units:
+        for case in cases:
+            assert type(case) is Case and case.split == split and case.split_override == split
+            assert case.context == [("user", "earlier")]
+            assert not hasattr(case, "labels") and not hasattr(case, "size")
+
+
+def test_load_v2_names_the_missing_reviewed_file(tmp_path):
+    from evals.worlds.lived.bench_v2 import load_v2
+    write_v2_fixture(tmp_path, 1)
+    (tmp_path / "bench-v2-s1.reviewed.json").unlink()
+    with pytest.raises(FileNotFoundError, match=r"bench-v2-s1\.reviewed\.json"):
+        load_v2(1, directory=tmp_path)
