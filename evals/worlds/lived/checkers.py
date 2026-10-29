@@ -29,7 +29,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from server.services.agents.retrieval import build_query, select
+from server.services.agents.retrieval import build_query, search
 
 from ...cases import NEW
 from ...llm import LLMClient, RunAborted, ScriptedLLM
@@ -107,7 +107,7 @@ def candidates(probe: dict[str, Any], world: World, rng: random.Random) -> list[
     sharers = [a.id for a in world.agents if tokens & set(_WORD.findall(a.name))]
     cards = [card_for(agent, world) for agent in world.agents]
     query = build_query(probe["message"], _context_texts(probe))
-    retrieved = [card.id for card in select(query, cards, world.now)]
+    retrieved = [card.id for card in search(query, cards, world.now)]  # best matches: hard look-alikes, not the hot set
 
     chosen = list(dict.fromkeys(a.id for a in gold))
     for i in range(max(len(sharers), len(retrieved))):  # one sharer, one retrieved, in turn
