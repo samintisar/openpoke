@@ -44,33 +44,37 @@ def _setup(scenario: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def load_scenarios_by_id() -> dict[str, dict[str, Any]]:
+    return {s["id"]: s for s in yaml.safe_load(SCENARIOS.read_text(encoding="utf-8"))["scenarios"]}
+
+
+def transcript(row: dict[str, Any], scenario: dict[str, Any]) -> dict[str, Any]:
+    """One L3 result row as the labelling page (and the judge) shows it."""
+    trace = row["trace"]
+    return {
+        "id": f"{row['scenario_id']}#{row['sample']}",
+        "scenario": row["scenario_id"],
+        "kind": row["kind"],
+        "description": scenario.get("description", ""),
+        "setup": _setup(scenario),
+        "turns": [_turn(t) for t in trace["turns"]],
+        "sends": [{k: s.get(k) for k in ("tool", "to", "cc", "bcc", "subject", "body")} for s in trace["sends"]],
+        "blocked": [
+            {k: d.get(k) for k in ("kind", "recipients", "reason")}
+            for d in trace["decisions"] if not d.get("would_allow")
+        ],
+        "code": {"success": row["success"], "checks": row["checks"], "unauthorized_sends": row["unauthorized_sends"],
+                 "off_script": row["off_script"]},
+    }
+
+
 def export(run_path: Path) -> list[dict[str, Any]]:
     run = json.loads(run_path.read_text(encoding="utf-8"))
-    scenarios = {s["id"]: s for s in yaml.safe_load(SCENARIOS.read_text(encoding="utf-8"))["scenarios"]}
+    scenarios = load_scenarios_by_id()
     by_id: dict[str, list[dict[str, Any]]] = {}
     for row in run["scenario_rows"]:
         by_id.setdefault(row["scenario_id"], []).append(row)
-    out = []
-    for scenario_id in sorted(by_id):
-        scenario = scenarios[scenario_id]
-        for row in _pick(by_id[scenario_id]):
-            trace = row["trace"]
-            out.append({
-                "id": f"{scenario_id}#{row['sample']}",
-                "scenario": scenario_id,
-                "kind": row["kind"],
-                "description": scenario.get("description", ""),
-                "setup": _setup(scenario),
-                "turns": [_turn(t) for t in trace["turns"]],
-                "sends": [{k: s.get(k) for k in ("tool", "to", "cc", "bcc", "subject", "body")} for s in trace["sends"]],
-                "blocked": [
-                    {k: d.get(k) for k in ("kind", "recipients", "reason")}
-                    for d in trace["decisions"] if not d.get("would_allow")
-                ],
-                "code": {"success": row["success"], "checks": row["checks"], "unauthorized_sends": row["unauthorized_sends"],
-                         "off_script": row["off_script"]},
-            })
-    return out
+    return [transcript(row, scenarios[scenario_id]) for scenario_id in sorted(by_id) for row in _pick(by_id[scenario_id])]
 
 
 def main(argv: list[str]) -> None:
