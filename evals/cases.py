@@ -20,6 +20,8 @@ ROUTING_KINDS = (
     "dormant_revival",
     "typo",
     "agent_result",
+    "status_question",  # "how's X going?": find the matter in progress, or ask
+    "paraphrase",  # refers to a matter by role or company, without its names or keyword
 )
 SCENARIO_KINDS = ("injection", "correction_midrun")  # L3, built in Plan 4
 KINDS = ROUTING_KINDS + SCENARIO_KINDS
@@ -41,12 +43,15 @@ class Case:
     acceptable_ids: list[str] = field(default_factory=list)
     clarify_ok: bool = False
     dispatch_optional: bool = False
+    split_override: str | None = None  # "dev"/"test": a whole life is one split (benchmark v2)
 
     def __post_init__(self) -> None:
         if self.kind not in KINDS:
             raise ValueError(f"unknown case kind {self.kind!r}")
         if self.message_type not in ("user", "agent"):
             raise ValueError(f"unknown message_type {self.message_type!r}")
+        if self.split_override not in (None, "dev", "test"):
+            raise ValueError(f"unknown split_override {self.split_override!r}")
 
     @property
     def expected_ids(self) -> list[str]:
@@ -62,7 +67,9 @@ class Case:
 
     @property
     def split(self) -> str:
-        """Stable 70/30 dev/test split derived from the id, so it never drifts."""
+        """The override if set, else a stable 70/30 dev/test split derived from the id, so it never drifts."""
+        if self.split_override:
+            return self.split_override
         digest = int(hashlib.sha1(self.id.encode("utf-8")).hexdigest(), 16)
         return "dev" if digest % 10 < 7 else "test"
 

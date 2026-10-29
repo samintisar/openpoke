@@ -58,3 +58,27 @@ def test_regression_ids_skip_indented_comments(tmp_path):
 def test_unknown_split_is_rejected():
     with pytest.raises(ValueError, match="split"):
         filter_cases([_case("x")], split="train", regression_ids=set())
+
+
+def test_new_routing_kinds():
+    from evals.cases import ROUTING_KINDS
+
+    assert "status_question" in ROUTING_KINDS and "paraphrase" in ROUTING_KINDS
+
+
+def test_split_override_wins_over_the_hash():
+    from evals.cases import Case
+
+    base = dict(id="x", kind="follow_up", world_seed=2, message="m", gold_targets=["a"])
+    assert Case(**base, split_override="test").split == "test"
+    assert Case(**base, split_override="dev").split == "dev"
+    assert Case(**base).split in ("dev", "test")
+
+
+def test_split_override_is_validated():
+    import pytest
+
+    from evals.cases import Case
+
+    with pytest.raises(ValueError):
+        Case(id="x", kind="follow_up", world_seed=2, message="m", gold_targets=[], split_override="train")

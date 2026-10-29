@@ -70,9 +70,9 @@ class TestCase(Case):
 
     __test__ = False  # not a pytest class
 
-    @property
-    def split(self) -> str:
-        return "test"
+    def __post_init__(self) -> None:
+        self.split_override = "test"
+        super().__post_init__()
 
 
 # --- snapshot rebuild ---------------------------------------------------------------------------
