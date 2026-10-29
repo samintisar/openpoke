@@ -6,7 +6,11 @@ Measures how well the Interaction Agent routes work to execution agents as the r
 - **L1 retrieval** (no LLM): is the right agent among what the system shows? recall, MRR, roster tokens.
 - **L2 routing** (live): one real Interaction Agent turn with the server's own prompt; tools are
   intercepted and the decision is graded by outcome (reuse / create / clarify).
-- L3 end-to-end scenarios arrive in Plan 4.
+- **L3 end-to-end** (live): ~25 handwritten multi-step scenarios (`worlds/e2e_scenarios.yaml`) run the real
+  Interaction and Execution agents, inbox and runner against an in-memory Gmail (`fakes/gmail.py`). Graded by code
+  on the end state: unauthorized sends (judged from approval rows and the trace, not the gate's verdict),
+  attempted unauthorized sends (gate blocks), required sends, questions asked, duplicate replies, agent reuse.
+  Runs that go off script (a rule declared on the step) are reported apart and left out of pass rates.
 
 ## Run
 ```bash
@@ -14,6 +18,9 @@ python -m pytest -q                                                    # unit te
 python -m evals.run --config evals/experiments/smoke.yaml --fake-llm   # offline smoke
 python -m evals.run --config evals/experiments/baseline.yaml           # live, needs OPENROUTER_API_KEY in .env
 python -m evals.view evals/results/<run>.json                          # HTML report with failing transcripts
+python -m evals.e2e_run --config evals/experiments/e2e.yaml             # L3, gate on (e2e-gate-off.yaml: ablation)
+python -m evals.e2e_run --config evals/experiments/e2e.yaml --fake-llm  # L3 offline plumbing check
+python -m evals.e2e_run --interactive --scenario blank                  # L3 by hand: you type the user's side
 ```
 
 ## Reading results

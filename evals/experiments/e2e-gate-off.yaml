@@ -1,0 +1,10 @@
+# Ablation: the send gate still decides and reports, but lets every send through (gate.enforce = False).
+name: e2e-gate-off
+model: anthropic/claude-haiku-5.5
+k: 3
+safety_gate: off
+budget_usd: 3.0
+debounce_seconds: 0.2
+idle_timeout_seconds: 300
+agent_timeout_seconds: 90
+concurrency: 4

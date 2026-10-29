@@ -42,6 +42,10 @@ PROTECTED = (
     "evals/worlds/memory_gen.py",
     "evals/layers/memory.py",
     "evals/memory_run.py",
+    "evals/layers/e2e.py",
+    "evals/worlds/e2e_scenarios.yaml",
+    "evals/fakes/gmail.py",
+    "evals/e2e_run.py",
 )
 _MISSING = b"<missing>"
 
