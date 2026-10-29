@@ -23,6 +23,8 @@ ROUTING_KINDS = (
     "status_question",  # "how's X going?": find the matter in progress, or ask
     "paraphrase",  # refers to a matter by role or company, without its names or keyword
 )
+V2_ONLY_KINDS = ("status_question", "paraphrase")  # benchmark v2 probes; the synthetic and handwritten sets predate them
+V1_ROUTING_KINDS = tuple(k for k in ROUTING_KINDS if k not in V2_ONLY_KINDS)
 SCENARIO_KINDS = ("injection", "correction_midrun")  # L3, built in Plan 4
 KINDS = ROUTING_KINDS + SCENARIO_KINDS
 

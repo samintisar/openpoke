@@ -1,6 +1,6 @@
 import hashlib
 
-from evals.cases import NEW, ROUTING_KINDS
+from evals.cases import NEW, V1_ROUTING_KINDS
 from evals.worlds.generator import CROSS_TOPIC, MAX_AGENTS, NEW_PEOPLE, build_world, generate_cases
 
 SEEDS = range(1, 6)
@@ -48,7 +48,7 @@ def test_cases_cover_every_routing_kind_with_valid_gold():
     for seed in (1, 2, 3):
         world = build_world(seed)
         cases = generate_cases(world, per_kind=4)
-        assert {c.kind for c in cases} == set(ROUTING_KINDS)
+        assert {c.kind for c in cases} == set(V1_ROUTING_KINDS)
         assert len({c.id for c in cases}) == len(cases)
         ids = world.by_id()
         for case in cases:
@@ -103,7 +103,7 @@ def test_filler_never_uses_a_core_topic_for_a_core_person():
 def test_every_kind_yields_per_kind_unique_cases():
     for seed in range(1, 11):
         cases = generate_cases(build_world(seed), per_kind=4)
-        for kind in ROUTING_KINDS:
+        for kind in V1_ROUTING_KINDS:
             of_kind = [c for c in cases if c.kind == kind]
             assert len(of_kind) == 4, (seed, kind)
             assert len({(c.message, tuple(c.context)) for c in of_kind}) == 4, (seed, kind)
@@ -174,7 +174,7 @@ def test_typo_cases_misspell_the_first_name():
 def test_messages_are_unique_within_each_kind():
     for seed in SEEDS:
         cases = generate_cases(build_world(seed), per_kind=4)
-        for kind in ROUTING_KINDS:
+        for kind in V1_ROUTING_KINDS:
             messages = [c.message for c in cases if c.kind == kind]
             assert len(messages) == len(set(messages)), (seed, kind)
 
