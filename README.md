@@ -7,6 +7,12 @@ OpenPoke is a simplified, open-source take on [Interaction Company’s](https://
 - Trigger scheduler and background watchers for reminders and "important email" alerts.
 - Next.js web UI that proxies everything through the shared `.env`, so plugging in API keys is the only setup.
 
+## Agent overload: write-up and evals
+This fork reworks how the assistant routes work across hundreds of agents. It adds agent cards with retrieval, a duplicate guard, a lifecycle and compacted memory, plus a send-approval gate enforced in code. All of it is measured with an eval harness.
+- **What changed, how it was tested, and the results:** [docs/agent-overload.md](docs/agent-overload.md)
+- **Running the evals:** [evals/README.md](evals/README.md)
+- **Every experiment and decision:** [evals/experiments/JOURNAL.md](evals/experiments/JOURNAL.md)
+
 ## Requirements
 - Python 3.10+
 - Node.js 18+
