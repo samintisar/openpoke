@@ -473,7 +473,13 @@ def _paraphrase_handle(p: _Probes, contact: Contact) -> str | None:
 
 async def _paraphrase(p: _Probes, want: int) -> list[_Draft]:
     out: list[_Draft] = []
-    for thread in p.shuffled(p.backed):
+
+    def siblings(thread: Thread) -> bool:
+        return any(t.contact == thread.contact and t.id != thread.id for t in p.backed)
+
+    # People with a single matter first: there the paraphrase has one right answer and asking is wrong.
+    # Stable sort, so the shuffled order holds within each group.
+    for thread in sorted(p.shuffled(p.backed), key=siblings):
         if len(out) == want:
             break
         contact = p.contact(thread)
@@ -489,8 +495,7 @@ async def _paraphrase(p: _Probes, want: int) -> list[_Draft]:
         text = await p.write(intent)
         if text:
             gold, acceptable = p.gold(thread)
-            siblings = [t for t in p.backed if t.contact == thread.contact and t.id != thread.id]
-            out.append((text, gold, {"acceptable_ids": acceptable, "clarify_ok": bool(siblings)}))
+            out.append((text, gold, {"acceptable_ids": acceptable, "clarify_ok": siblings(thread)}))
     return out
 
 
