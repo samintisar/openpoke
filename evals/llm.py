@@ -27,6 +27,7 @@ FALLBACK_PRICING: dict[str, tuple[float, float]] = {
     "anthropic/claude-sonnet-4": (3.0, 15.0),
     "anthropic/claude-sonnet-4.5": (3.0, 15.0),
     "anthropic/claude-haiku-5.5": (0.10, 0.50),
+    "deepseek/deepseek-v4.1-flash": (0.045, 0.50),
 }
 DEFAULT_PRICING = (3.0, 15.0)
 RETRY_STATUS = {408, 429, 500, 502, 503, 504}
@@ -195,6 +196,15 @@ def _write_cache(path: Path, data: dict[str, Any]) -> None:
     os.replace(tmp, path)
 
 
+def _cached_tokens(usage: dict[str, Any]) -> int:
+    """Prompt tokens the provider served from its prompt cache (OpenRouter: prompt_tokens_details.cached_tokens)."""
+    details = usage.get("prompt_tokens_details") or {}
+    try:
+        return int(details.get("cached_tokens") or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
 class OpenRouterLLM:
     def __init__(
         self,
@@ -246,6 +256,7 @@ class OpenRouterLLM:
             "latency_s": round(latency, 3),
             "prompt_tokens": int(usage.get("prompt_tokens", 0)),
             "completion_tokens": int(usage.get("completion_tokens", 0)),
+            "cached_tokens": _cached_tokens(usage),
             "cached": False,
             "cache_key": key,
         }
@@ -312,7 +323,7 @@ class OpenRouterLLM:
         raise RuntimeError("unreachable")
 
 
-_ZERO_META = {"cost": 0.0, "latency_s": 0.0, "prompt_tokens": 0, "completion_tokens": 0, "cached": False, "cache_key": ""}
+_ZERO_META = {"cost": 0.0, "latency_s": 0.0, "prompt_tokens": 0, "completion_tokens": 0, "cached_tokens": 0, "cached": False, "cache_key": ""}
 
 
 def tool_call(name: str, index: int = 0, **arguments: Any) -> dict[str, Any]:

@@ -399,3 +399,23 @@ def test_payload_without_tools_has_no_tools_key():
     payload = build_payload(model="m", system="s", messages=[], tools=[])
     assert "tools" not in payload
     assert list(payload) == ["model", "messages", "stream", "usage"]
+
+
+async def test_cached_prompt_tokens_are_recorded(tmp_path):
+    body = _ok()
+    body["usage"]["prompt_tokens_details"] = {"cached_tokens": 64}
+    llm = _llm(tmp_path, lambda request: httpx.Response(200, json=body))
+    first = await llm.complete(**KW)
+    assert first["_meta"]["cached_tokens"] == 64
+    again = await llm.complete(**KW)  # served from our own response cache: the stored meta is kept
+    assert again["_meta"]["cached"] is True and again["_meta"]["cached_tokens"] == 64
+
+
+async def test_cached_tokens_default_to_zero(tmp_path):
+    llm = _llm(tmp_path, lambda request: httpx.Response(200, json=_ok()))
+    assert (await llm.complete(**KW))["_meta"]["cached_tokens"] == 0
+
+
+def test_deepseek_fallback_price():
+    usage = {"prompt_tokens": 1_000_000, "completion_tokens": 1_000_000}
+    assert estimate_cost("deepseek/deepseek-v4.1-flash", usage) == pytest.approx(0.045 + 0.50)
