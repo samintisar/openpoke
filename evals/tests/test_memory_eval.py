@@ -263,7 +263,7 @@ def test_config_loads_and_rejects_unknown_keys(tmp_path):
 
     cfg = load_config(REPO_ROOT / "evals" / "experiments" / "memory.yaml")
     assert (cfg.model, cfg.seed, cfg.n_agents, cfg.runs, cfg.budget_tokens) == (
-        "anthropic/claude-haiku-5.5", 1, 12, 40, 4000
+        "deepseek/deepseek-v4.1-flash", 1, 12, 40, 4000
     )
     bad = tmp_path / "c.yaml"
     bad.write_text("bogus: 1\n", encoding="utf-8")

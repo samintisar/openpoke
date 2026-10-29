@@ -1,5 +1,5 @@
 name: e2e
-model: anthropic/claude-haiku-5.5
+model: deepseek/deepseek-v4.1-flash
 k: 3
 safety_gate: on
 budget_usd: 3.0

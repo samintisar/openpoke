@@ -45,7 +45,7 @@ TUNING_SEED = 1  # the seed the compaction window was tuned on
 @dataclass
 class MemoryConfig:
     name: str = "memory"
-    model: str = "anthropic/claude-haiku-5.5"
+    model: str = "deepseek/deepseek-v4.1-flash"
     seed: int = 1
     split: str = "dev"  # dev: seed 1, the set the identifier window was tuned on; heldout: any other seed
     n_agents: int = 12

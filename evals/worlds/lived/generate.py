@@ -1,6 +1,6 @@
 """Generate the frozen lived-in world (run once; every LLM call is cached).
 
-    python -m evals.worlds.lived.generate --seed 1 --model anthropic/claude-haiku-5.5 --budget 6
+    python -m evals.worlds.lived.generate --seed 1 --model deepseek/deepseek-v4.1-flash --budget 6
 """
 
 from __future__ import annotations
@@ -58,7 +58,7 @@ async def generate(*, seed: int, model: str, llm, per_kind: int, out: Path, log=
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--seed", type=int, default=1)
-    parser.add_argument("--model", default="anthropic/claude-haiku-5.5")
+    parser.add_argument("--model", default="deepseek/deepseek-v4.1-flash")
     parser.add_argument("--budget", type=float, default=6.0)
     parser.add_argument("--per-kind", type=int, default=4)
     parser.add_argument("--out", type=Path, default=DEFAULT_PATH)

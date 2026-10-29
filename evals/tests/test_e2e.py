@@ -461,7 +461,7 @@ def test_shipped_configs_load():
     on = load_config(REPO_ROOT / "evals" / "experiments" / "e2e.yaml")
     off = load_config(REPO_ROOT / "evals" / "experiments" / "e2e-gate-off.yaml")
     assert on.safety_gate and not off.safety_gate and on.k == off.k == 3
-    assert on.model == off.model == "anthropic/claude-haiku-5.5"
+    assert on.model == off.model == "deepseek/deepseek-v4.1-flash"
 
 
 def test_test_split_requires_final(tmp_path):

@@ -65,7 +65,7 @@ DEFAULT_CONFIG = Path(__file__).resolve().parent / "experiments" / "e2e.yaml"
 @dataclass
 class E2EConfig:
     name: str = "e2e"
-    model: str = "anthropic/claude-haiku-5.5"  # interaction and execution agents (and search, compaction)
+    model: str = "deepseek/deepseek-v4.1-flash"  # interaction and execution agents (and search, compaction)
     k: int = 3
     safety_gate: bool = True  # off: the gate decides and reports but lets every send through (ablation)
     budget_usd: float = 3.0

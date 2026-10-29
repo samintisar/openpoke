@@ -1,6 +1,6 @@
 name: retrieved-noguard-lived
 system: retrieved_noguard
-model: anthropic/claude-haiku-5.5
+model: deepseek/deepseek-v4.1-flash
 world: lived
 n_agents: [10, 50, 200, 1000]
 k: 3

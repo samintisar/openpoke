@@ -1,6 +1,6 @@
 name: baseline
 system: baseline
-model: anthropic/claude-haiku-5.5
+model: deepseek/deepseek-v4.1-flash
 n_agents: [10, 50, 200, 1000]
 world_seeds: [1]
 k: 3

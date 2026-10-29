@@ -295,7 +295,7 @@ def fake_writer() -> ScriptedLLM:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--world", type=Path, default=DEFAULT_PATH)
-    parser.add_argument("--model", default="anthropic/claude-haiku-5.5")
+    parser.add_argument("--model", default="deepseek/deepseek-v4.1-flash")
     parser.add_argument("--budget", type=float, default=1.0)
     parser.add_argument("--per-kind", type=int, default=2)
     parser.add_argument("--fake-llm", action="store_true", help="offline scripted writer; no API calls")

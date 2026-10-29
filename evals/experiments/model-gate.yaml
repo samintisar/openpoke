@@ -1,0 +1,10 @@
+# DeepSeek V4.1 Flash sanity gate (spec v2 §5): a small lived dev slice, one sample per case.
+name: model-gate
+system: retrieved
+model: deepseek/deepseek-v4.1-flash
+world: lived
+n_agents: [10, 50, 200]
+k: 1
+include_handwritten: false
+budget_usd: 1.0
+concurrency: 4

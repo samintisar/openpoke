@@ -1,6 +1,6 @@
 name: full-cards-lived
 system: full_cards
-model: anthropic/claude-haiku-5.5
+model: deepseek/deepseek-v4.1-flash
 world: lived
 n_agents: [10, 50, 200]  # 1,000 costs ~265k prompt tokens per call (~$11 per split); its cost is reported from the 18 samples of the aborted 2026-10-29 run
 k: 3

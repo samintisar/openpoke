@@ -1,6 +1,6 @@
 # Ablation: the send gate still decides and reports, but lets every send through (gate.enforce = False).
 name: e2e-gate-off
-model: anthropic/claude-haiku-5.5
+model: deepseek/deepseek-v4.1-flash
 k: 3
 safety_gate: off
 budget_usd: 3.0

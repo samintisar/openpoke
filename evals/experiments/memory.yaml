@@ -1,5 +1,5 @@
 name: memory
-model: anthropic/claude-haiku-5.5
+model: deepseek/deepseek-v4.1-flash
 seed: 1
 n_agents: 12
 runs: 40
