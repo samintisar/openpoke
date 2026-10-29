@@ -1,0 +1,9 @@
+name: memory-heldout-check
+model: anthropic/claude-haiku-5.5
+seed: 2
+split: heldout
+n_agents: 3
+runs: 40
+budget_tokens: 4000
+budget_usd: 0.2
+concurrency: 3

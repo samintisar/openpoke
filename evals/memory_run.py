@@ -38,11 +38,15 @@ from .run import CACHE_DIR, DEFAULT_OUT, _api_key, _fmt, _git, _is_int, _usd
 from .worlds.memory_gen import MIN_RUNS, AgentHistory, build_histories
 
 
+TUNING_SEED = 1  # the seed the compaction window was tuned on
+
+
 @dataclass
 class MemoryConfig:
     name: str = "memory"
     model: str = "anthropic/claude-haiku-5.5"
     seed: int = 1
+    split: str = "dev"  # dev: seed 1, the set the identifier window was tuned on; heldout: any other seed
     n_agents: int = 12
     runs: int = 40
     budget_tokens: int = 4000
@@ -62,6 +66,10 @@ def load_config(path: Path) -> MemoryConfig:
         value = getattr(cfg, key)
         if not _is_int(value) or (value <= 0 and key != "seed"):
             raise ValueError(f"config key {key!r}: must be a positive int")
+    if cfg.split not in ("dev", "heldout"):
+        raise ValueError("config key 'split': must be dev or heldout")
+    if (cfg.split == "heldout") == (cfg.seed == TUNING_SEED):
+        raise ValueError(f"config key 'split': seed {TUNING_SEED} is the dev (tuning) set; any other seed is heldout")
     if cfg.runs < MIN_RUNS:
         raise ValueError(f"config key 'runs': must be at least {MIN_RUNS}")
     if not _is_int(cfg.max_retries) or cfg.max_retries < 0:
@@ -121,7 +129,7 @@ async def run_memory_experiment(cfg: MemoryConfig, *, llm: LLMClient, out_dir: P
         "meta": {
             **asdict(cfg),
             "system": "memory",
-            "split": "dev",
+            "split": cfg.split,
             "git_sha": _git("rev-parse", "--short", "HEAD"),
             "git_dirty": bool(_git("status", "--porcelain", "--untracked-files=no")),
             "started_at": started.isoformat(),
@@ -142,7 +150,7 @@ async def run_memory_experiment(cfg: MemoryConfig, *, llm: LLMClient, out_dir: P
         "agent_rows": rows,
     }
     out_dir.mkdir(parents=True, exist_ok=True)
-    path = out_dir / f"{started:%Y%m%d-%H%M%S}-{cfg.name}-dev.json"
+    path = out_dir / f"{started:%Y%m%d-%H%M%S}-{cfg.name}-{cfg.split}.json"
     path.write_text(json.dumps(result, indent=1), encoding="utf-8")
     return path
 

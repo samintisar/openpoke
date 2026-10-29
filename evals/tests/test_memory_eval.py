@@ -271,6 +271,19 @@ def test_config_loads_and_rejects_unknown_keys(tmp_path):
         load_config(bad)
 
 
+def test_heldout_split_needs_a_seed_other_than_the_tuning_one(tmp_path):
+    from evals.integrity import REPO_ROOT
+
+    cfg = load_config(REPO_ROOT / "evals" / "experiments" / "memory-heldout.yaml")
+    assert (cfg.seed, cfg.split) == (2, "heldout")
+    assert build_histories(1, 1, 40) != build_histories(2, 1, 40)
+    for body in ("seed: 1\nsplit: heldout\n", "seed: 2\nsplit: dev\n", "split: test\n"):
+        bad = tmp_path / "c.yaml"
+        bad.write_text(body, encoding="utf-8")
+        with pytest.raises(ValueError, match="split"):
+            load_config(bad)
+
+
 def test_cli_fake_run_writes_a_result_the_leaderboard_and_view_tolerate(tmp_path, capsys):
     config = tmp_path / "c.yaml"
     config.write_text("name: memory\nn_agents: 2\n", encoding="utf-8")
