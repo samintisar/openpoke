@@ -1,0 +1,11 @@
+# Plan 5 Task 1: offline L1 sweep over lived dev. python -m evals.sweep --config evals/experiments/sweep.yaml
+# One parameter at a time around the defaults, plus the weight simplex: the full Cartesian grid
+# (5 x 6 x 3 x 66 points) would take hours at ~2 s per point.
+name: sweep
+n_agents: [10, 50, 200, 1000]
+mode: one_at_a_time
+grid:
+  k: [4, 6, 8, 12, 16]
+  archived_min_score: [0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+  hot_max: [3, 5, 8]
+weight_step: 0.1
