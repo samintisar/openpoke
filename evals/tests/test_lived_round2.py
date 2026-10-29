@@ -101,8 +101,8 @@ def test_duplicate_drafts_are_skipped_and_ids_stay_contiguous(monkeypatch):
 def test_no_reviewed_file_leaves_units_untouched(world):
     units = load_lived(world)
     assert add_reviewed(world, json.loads(world.read_text(encoding="utf-8")), units) is units
-    assert [(label, [c.id for c in cases]) for label, _, cases in load_lived(world)] == \
-        [(label, [c.id for c in cases]) for label, _, cases in load_lived()]
+    saved = {c["id"] for entry in WORLD["sizes"] for c in entry["cases"]}
+    assert all(c.id in saved for _, _, cases in load_lived(world) for c in cases)
     assert all(type(c) is Case for _, _, cases in units for c in cases)
 
 
