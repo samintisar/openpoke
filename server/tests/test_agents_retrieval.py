@@ -1,4 +1,4 @@
-"""Retrieval: BM25, fuzzy entity matching, recency, boosts and selection caps."""
+"""Retrieval: BM25, exact entity matching, recency and selection caps."""
 
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
@@ -15,7 +15,6 @@ from server.services.agents import (
     select,
     tokenize,
 )
-from server.services.agents.retrieval import edit_distance_le1
 
 NOW = datetime(2026, 6, 26, 12, 0, tzinfo=timezone.utc)
 
@@ -43,41 +42,23 @@ def test_tokenize():
     assert tokenize("Gary's OKRs for the Book-Club, gary@whitman.com") == ["gary", "okr", "book", "club", "gary@whitman.com"]
 
 
-def test_edit_distance_le1():
-    assert edit_distance_le1("baetriz", "beatriz")  # transposition
-    assert edit_distance_le1("kwam", "kwame")
-    assert edit_distance_le1("maya", "mayo")
-    assert not edit_distance_le1("maya", "nora")
-    assert not edit_distance_le1("beatriz", "bea")
-
-
 def test_bm25_orders_by_topic():
     scored = score_cards("when is book club with kwame", CARDS, NOW)
     assert names(c for c, _ in scored[:2]) == ["kwame-book-club-dates", "kwame-podcast"]
     assert scored[0][1] > scored[1][1] > scored[-1][1]
 
 
-def test_fuzzy_typo_finds_beatriz():
-    top = select("any update from baetriz on trivia night?", CARDS, NOW)
-    assert top[0].id == "beatriz-trivia"
-
-
-def test_fuzzy_needs_min_length_and_counts_half():
+def test_entities_match_exactly_only():
+    # Typo-tolerant matching was removed in Plan 6c Task 11 (fuzzy ablation: not worse on dev).
+    import server.services.agents.retrieval as retrieval_module
     cfg = RetrievalConfig(w_kw=0.0, w_rec=0.0)
-    exact = dict((c.id, s) for c, s in score_cards("maya", CARDS, NOW, cfg=cfg))
-    fuzzy = dict((c.id, s) for c, s in score_cards("mayo", CARDS, NOW, cfg=cfg))
-    assert exact["maya-okrs"] == fuzzy["maya-okrs"] == 0.40  # normalized by the max in the set
-    short = [card("ben", "Ben Okafor Camping Weekend", "Camping with Ben", ["ben", "okafor"])]
-    assert score_cards("bem", short, NOW, cfg=cfg)[0][1] == 0.0
-
-
-def test_fuzzy_off_matches_entities_exactly_only():
-    cfg = RetrievalConfig(w_kw=0.0, w_rec=0.0, fuzzy=False)
     exact = dict((c.id, s) for c, s in score_cards("maya", CARDS, NOW, cfg=cfg))
     typo = dict((c.id, s) for c, s in score_cards("mayo", CARDS, NOW, cfg=cfg))
     assert exact["maya-okrs"] == 0.40
     assert typo["maya-okrs"] == 0.0
-    assert RetrievalConfig().fuzzy is True
+    for name in ("fuzzy", "fuzzy_min_len", "fuzzy_weight"):
+        assert not hasattr(RetrievalConfig(), name)
+    assert not hasattr(retrieval_module, "edit_distance_le1")
 
 
 def test_recency_ranks_twin_cards():

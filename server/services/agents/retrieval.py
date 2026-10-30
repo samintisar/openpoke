@@ -29,9 +29,6 @@ class RetrievalConfig:
     hot_max: int = 5
     hot_window_hours: float = 1.0
     min_score: float = 0.1
-    fuzzy: bool = True  # False: entity matching is exact only (the typo-matching ablation)
-    fuzzy_min_len: int = 4
-    fuzzy_weight: float = 0.5
     archived_min_score: float = 0.4  # an archived card joins the top K only on a strong match (tuned on lived dev)
 
 
@@ -54,30 +51,6 @@ def tokenize(text: str) -> list[str]:
 def content_tokens(text: str) -> list[str]:
     """Tokens that can identify a person or topic: `tokenize` minus common instruction words."""
     return [tok for tok in tokenize(text) if not is_common(tok)]
-
-
-def edit_distance_le1(a: str, b: str) -> bool:
-    """True when `a` and `b` differ by at most one insert, delete, substitute or adjacent transposition."""
-    if a == b:
-        return True
-    la, lb = len(a), len(b)
-    if abs(la - lb) > 1:
-        return False
-    if la == lb:
-        diffs = [i for i in range(la) if a[i] != b[i]]
-        if len(diffs) == 1:
-            return True
-        if len(diffs) == 2:
-            i, j = diffs
-            return j == i + 1 and a[i] == b[j] and a[j] == b[i]
-        return False
-    if la > lb:
-        a, b = b, a
-    # b is one longer: skipping one char of b must yield a.
-    i = 0
-    while i < len(a) and a[i] == b[i]:
-        i += 1
-    return a[i:] == b[i + 1 :]
 
 
 def _doc_tokens(card: AgentCard) -> list[str]:
@@ -120,30 +93,13 @@ def _bm25(query_terms: list[str], docs: list[list[str]]) -> list[float]:
     return scores
 
 
-def _entity_overlap(query_terms: set[str], card_terms: list[set[str]], cfg: RetrievalConfig) -> list[float]:
+def _entity_overlap(query_terms: set[str], card_terms: list[set[str]]) -> list[float]:
     n = len(card_terms)
     df: Counter[str] = Counter()
     for terms in card_terms:
         df.update(terms)
     idf = {term: math.log(1 + n / count) for term, count in df.items()}
-    # Fuzzy partners per query term, computed once over the vocabulary rather than per card.
-    fuzzy: dict[str, set[str]] = {}
-    for q in query_terms if cfg.fuzzy else ():
-        if len(q) < cfg.fuzzy_min_len or q in df:
-            continue
-        fuzzy[q] = {t for t in df if len(t) >= cfg.fuzzy_min_len and edit_distance_le1(q, t)}
-    scores = []
-    for terms in card_terms:
-        total = 0.0
-        for q in query_terms:
-            if q in terms:
-                total += idf[q]
-                continue
-            partners = fuzzy.get(q, set()) & terms
-            if partners:
-                total += cfg.fuzzy_weight * max(idf[t] for t in partners)
-        scores.append(total)
-    return scores
+    return [sum(idf[q] for q in query_terms if q in terms) for terms in card_terms]
 
 
 def _normalize(values: list[float]) -> list[float]:
@@ -170,7 +126,7 @@ def score_cards(
     terms = tokenize(query)
     kw = _normalize(_bm25(terms, [_doc_tokens(card) for card in cards]))
     query_terms = {t for t in terms if not is_common(t)}
-    ent = _normalize(_entity_overlap(query_terms, [_entity_terms(card) for card in cards], cfg))
+    ent = _normalize(_entity_overlap(query_terms, [_entity_terms(card) for card in cards]))
     scored = []
     for card, kw_score, ent_score in zip(cards, kw, ent):
         score = cfg.w_kw * kw_score + cfg.w_ent * ent_score + cfg.w_rec * recency(card, now, cfg)
@@ -327,7 +283,6 @@ __all__ = [
     "build_query",
     "content_tokens",
     "context_query",
-    "edit_distance_le1",
     "needs_context",
     "pinned_from_agent_message",
     "recency",

@@ -322,17 +322,7 @@ class RetrievedNoSearchSystem(RetrievedSystem):
         super().__init__(cfg, search=False, **options)
 
 
-class RetrievedNoFuzzySystem(RetrievedSystem):
-    """`retrieved` with exact-only entity matching: no typo matching in retrieval, search or dedup."""
-
-    name = "retrieved_nofuzzy"
-
-    def __init__(self, cfg: RetrievalConfig | None = None, **options: Any) -> None:
-        super().__init__(replace(cfg or RetrievalConfig(), fuzzy=False), **options)
-
-
 __all__ = [
-    "RetrievedNoFuzzySystem",
     "RetrievedNoGuardSystem",
     "RetrievedNoLifecycleSystem",
     "RetrievedNoSearchSystem",

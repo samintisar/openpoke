@@ -9,7 +9,6 @@ from .base import RoutingSystem
 from .baseline import BaselineSystem
 from .full_cards import FullCardsSystem
 from .retrieved import (
-    RetrievedNoFuzzySystem,
     RetrievedNoGuardSystem,
     RetrievedNoLifecycleSystem,
     RetrievedNoSearchSystem,
@@ -22,7 +21,6 @@ SYSTEMS: dict[str, type] = {
     "retrieved_nolife": RetrievedNoLifecycleSystem,
     "retrieved_noguard": RetrievedNoGuardSystem,
     "retrieved_nosearch": RetrievedNoSearchSystem,
-    "retrieved_nofuzzy": RetrievedNoFuzzySystem,
     "full_cards": FullCardsSystem,
 }
 

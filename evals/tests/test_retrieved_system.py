@@ -1,5 +1,4 @@
 import json
-from dataclasses import replace
 from datetime import timedelta
 
 import pytest
@@ -13,7 +12,6 @@ from evals.systems import get_system
 from evals.systems.cards_from_world import cards_for
 from evals.systems.full_cards import FullCardsSystem
 from evals.systems.retrieved import (
-    RetrievedNoFuzzySystem,
     RetrievedNoGuardSystem,
     RetrievedNoLifecycleSystem,
     RetrievedNoSearchSystem,
@@ -447,7 +445,6 @@ def test_render_roster_without_a_case():
 ABLATIONS = {
     "retrieved_noguard": RetrievedNoGuardSystem,
     "retrieved_nosearch": RetrievedNoSearchSystem,
-    "retrieved_nofuzzy": RetrievedNoFuzzySystem,
 }
 
 
@@ -460,7 +457,6 @@ def test_ablations_are_registered_and_each_flips_one_switch():
     expected = {
         "retrieved_noguard": {"guard": False},
         "retrieved_nosearch": {"search": False},
-        "retrieved_nofuzzy": {"cfg": replace(RetrievalConfig(), fuzzy=False)},
     }
     for name, cls in ABLATIONS.items():
         system = get_system(name)
@@ -470,12 +466,11 @@ def test_ablations_are_registered_and_each_flips_one_switch():
 
 def test_ablations_keep_a_passed_config_apart_from_their_switch():
     cfg = RetrievalConfig(k=4)
-    assert RetrievedNoFuzzySystem(cfg).cfg == replace(cfg, fuzzy=False)
     assert RetrievedNoGuardSystem(cfg).cfg is cfg
 
 
 def test_only_nosearch_changes_the_prompt_and_tools():
-    for name in ("retrieved_noguard", "retrieved_nofuzzy"):
+    for name in ("retrieved_noguard",):
         system = get_system(name)
         assert system.system_prompt() == build_system_prompt()
         assert system.tool_schemas() is TOOL_SCHEMAS
@@ -524,16 +519,6 @@ async def test_noguard_creates_what_the_guard_would_flag():
     assert results[0]["status"] == "error" and "nearest_agents" in results[0]["error"]
 
 
-def test_nofuzzy_loses_the_typo_match_only():
-    world = toy_world()
-    plain = case("any word back from Gary on the lease?", [GARY])
-    assert RetrievedNoFuzzySystem().shown_ids(world, plain) == RetrievedSystem().shown_ids(world, plain)
-    entity_only = RetrievalConfig(w_kw=0.0, w_rec=0.0)
-    typo = case("baetriz", [BEATRIZ])
-    assert BEATRIZ in RetrievedSystem(entity_only).shown_ids(world, typo)
-    assert BEATRIZ not in RetrievedNoFuzzySystem(entity_only).shown_ids(world, typo)
-
-
 def test_last_routed_boost_and_its_ablation_are_gone():
     # Plan 6c Task 11: the boost never changed the shown cards on dev, so it was removed whole.
     import evals.systems.retrieved as retrieved_module
@@ -541,6 +526,13 @@ def test_last_routed_boost_and_its_ablation_are_gone():
     assert "retrieved_nolastrouted" not in SYSTEMS
     for name in ("RetrievedNoLastRoutedSystem", "_last_routed", "LAST_ROUTED_WINDOW"):
         assert not hasattr(retrieved_module, name)
+
+
+def test_fuzzy_ablation_is_gone():
+    # Plan 6c Task 11: fuzzy-off was not worse on dev, so typo-tolerant matching was removed.
+    import evals.systems.retrieved as retrieved_module
+    from evals.systems import SYSTEMS
+    assert "retrieved_nofuzzy" not in SYSTEMS and not hasattr(retrieved_module, "RetrievedNoFuzzySystem")
 
 
 class KeyedLLM(ScriptedLLM):

@@ -3,7 +3,6 @@ from evals.grading import Decision
 from evals.systems import get_system
 from evals.systems.full_cards import FullCardsSystem
 from evals.systems.retrieved import (
-    RetrievedNoFuzzySystem,
     RetrievedNoGuardSystem,
     RetrievedNoLifecycleSystem,
     RetrievedNoSearchSystem,
@@ -53,7 +52,7 @@ async def test_custom_budget():
 
 def test_default_and_forwarding():
     assert RetrievedSystem().search_budget == 3
-    for cls in (RetrievedNoFuzzySystem, RetrievedNoGuardSystem,
+    for cls in (RetrievedNoGuardSystem,
                 RetrievedNoLifecycleSystem, RetrievedNoSearchSystem):
         assert cls().search_budget == 3 and cls(search_budget=None).search_budget is None
     assert get_system("retrieved", {"search_budget": None}).search_budget is None
