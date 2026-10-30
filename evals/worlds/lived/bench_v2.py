@@ -2,6 +2,7 @@
 
     python -m evals.worlds.lived.bench_v2 build --seed 1 --seed 2 --budget 2   # bench-v2-s1/s2.json
     python -m evals.worlds.lived.bench_v2 build --seed 1 --fake-llm            # one life, offline, unbalanced
+    python -m evals.worlds.lived.bench_v2 majority --seed 1 --seed 2            # re-flag by 2-of-3 checkers
     python -m evals.worlds.lived.bench_v2 review-data --seed 1 --seed 2         # page of the flagged probes
     python -m evals.worlds.lived.bench_v2 finalize --seed 1 --seed 2 --decisions decisions.json
 
@@ -23,6 +24,11 @@ review page (review-data, which also shows each checker's answer). finalize appl
 life: rejected probes are dropped, fixed ones take the reviewer's gold, accepted ones are kept as they
 are, and unflagged probes are kept untouched with review "auto". The label error rate is the share of
 audit probes (a random sample of those every checker agreed with) that the reviewer fixed or rejected.
+
+Majority rule (majority, run between checkers.py and review-data): to keep the review small, a probe
+two of the three checkers agree with skips review too, and only the rest stay "disagree". The audit is
+then redrawn as MAJORITY_AUDIT probes per life from everything kept, so the label error rate measures
+the probes no human looked at.
 """
 
 from __future__ import annotations
@@ -32,6 +38,7 @@ import asyncio
 import copy
 import hashlib
 import json
+import random
 import sys
 from dataclasses import asdict, fields, replace
 from pathlib import Path
@@ -54,6 +61,8 @@ QUOTA = {10: 3, 50: 5, 200: 10}
 FULL_SIZE = 1000  # reuses the 200 snapshot's probes
 DEFAULT_MODEL = "deepseek/deepseek-v4.1-flash"
 FORMAT = 1
+MAJORITY_MIN_AGREE = 2  # of the three checkers
+MAJORITY_AUDIT = 10  # audit probes per life, drawn from everything majority rule keeps
 
 
 DEV_LIFE, TEST_LIFE = 1, 2  # life 2 is sealed: the runner only loads it for --split test --final
@@ -192,6 +201,33 @@ async def build_life(seed: int, *, llm: LLMClient, model: str = DEFAULT_MODEL, d
 
 def _flagged(probe: dict[str, Any]) -> bool:
     return probe["check"]["flag"] is not None
+
+
+def majority(bench: dict[str, Any], *, seed: int, audit: int = MAJORITY_AUDIT,
+             min_agree: int = MAJORITY_MIN_AGREE) -> dict[str, Any]:
+    """The bench re-flagged by majority rule: a probe at least `min_agree` checkers agree with is kept
+    without review; the rest stay "disagree". The audit is redrawn as `audit` probes sampled from
+    everything kept (unanimous and majority alike), so the label error rate covers what skipped review.
+    The checkers' own flag is kept as check.unanimous_flag."""
+    from .checkers import agrees  # lazy: checkers imports bench-side helpers
+
+    if bench.get("meta", {}).get("review_rule"):
+        raise ValueError("majority rule already applied to this bench")
+    out = copy.deepcopy(bench)
+    kept = []
+    for probe in out["probes"]:
+        check = probe["check"]
+        count = sum(agrees(answer, probe) for answer in check["answers"].values())
+        check.update(unanimous_flag=check["flag"], agree_count=count,
+                     flag="disagree" if count < min_agree else None)
+        if check["flag"] is None:
+            kept.append(probe)
+    for probe in random.Random(f"majority-audit:{seed}").sample(sorted(kept, key=lambda p: p["id"]),
+                                                                min(audit, len(kept))):
+        probe["check"]["flag"] = "audit"
+    out.setdefault("meta", {})["review_rule"] = {"rule": "majority", "min_agree": min_agree, "audit": audit,
+                                                 "seed": seed}
+    return out
 
 
 def review_data(benches: dict[int, dict[str, Any]], source_sha256: str) -> dict[str, Any]:
@@ -409,6 +445,9 @@ def main(argv: list[str] | None = None) -> int:
     build.add_argument("--fake-llm", action="store_true", help="offline scripted writer; no API calls")
     build.add_argument("--world-dir", type=Path, default=HERE, help="where world-s{seed}.json live")
     build.add_argument("--out-dir", type=Path, help="default: next to the world files")
+    rule = sub.add_parser("majority", help="re-flag checked benches by 2-of-3 checker agreement, in place")
+    rule.add_argument("--seed", type=int, action="append", required=True)
+    rule.add_argument("--bench-dir", type=Path, default=HERE, help="where bench-v2-s{seed}.json live")
     page = sub.add_parser("review-data", help="write the review page of the flagged probes")
     page.add_argument("--seed", type=int, action="append", required=True)
     page.add_argument("--bench-dir", type=Path, default=HERE, help="where bench-v2-s{seed}.json live")
@@ -418,6 +457,14 @@ def main(argv: list[str] | None = None) -> int:
     fin.add_argument("--decisions", type=Path, required=True, help="JSON list of decisions, both lives")
     fin.add_argument("--bench-dir", type=Path, default=HERE, help="where bench-v2-s{seed}.json live")
     args = parser.parse_args(argv)
+    if args.command == "majority":
+        for seed in args.seed:
+            path = bench_path(seed, directory=args.bench_dir)
+            body = majority(json.loads(path.read_text(encoding="utf-8")), seed=seed)
+            path.write_text(json.dumps(body, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+            flags = [p["check"]["flag"] for p in body["probes"]]
+            print(f"life {seed}: disagree={flags.count('disagree')} audit={flags.count('audit')}  wrote {path}")
+        return 0
     if args.command == "review-data":
         return _review_data_cli(args.seed, args.bench_dir, args.out)
     if args.command == "finalize":

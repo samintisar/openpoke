@@ -24,6 +24,12 @@
    "audit": 16,
    "clean": 118,
    "cost_usd": 0.046853
+  },
+  "review_rule": {
+   "rule": "majority",
+   "min_agree": 2,
+   "audit": 10,
+   "seed": 1
   }
  },
  "rosters": {
@@ -1478,7 +1484,9 @@
      "jamie-cooking-class",
      "zoe-conference-talk-draft",
      "paul-tax-return"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -1615,7 +1623,7 @@
      "qwen/qwen3.8-flash": "beatriz-housewarming"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "jamie-cooking-class",
      "maya-quarterly-okrs-draft",
@@ -1625,7 +1633,9 @@
      "zoe-conference-talk-draft",
      "gary-whitman-lease-renewal-call",
      "seattle-flight-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -1762,7 +1772,7 @@
      "qwen/qwen3.8-flash": "seattle-flight-search"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "elena-christmas-gifts",
      "jamie-cooking-class",
@@ -1771,7 +1781,9 @@
      "zoe-conference-talk-draft",
      "maya-quarterly-okrs-draft",
      "gary-whitman-lease-renewal-call"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -1909,7 +1921,9 @@
      "jamie-cooking-class",
      "beatriz-housewarming",
      "zoe-conference-talk-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -2039,7 +2053,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "jamie-cooking-class",
      "beatriz-housewarming",
@@ -2047,7 +2061,9 @@
      "maya-quarterly-okrs-draft",
      "gary-whitman-lease-renewal-call",
      "seattle-flight-search"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -2186,7 +2202,9 @@
      "gary-whitman-lease-renewal-call",
      "pablo-export-issue-meeting",
      "jamie-cooking-class"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -2328,7 +2346,9 @@
      "seattle-flight-search",
      "jamie-cooking-class",
      "gary-whitman-lease-renewal-call"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -2468,7 +2488,9 @@
      "pablo-export-issue-meeting",
      "zoe-conference-talk-draft",
      "jamie-cooking-class"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -2607,7 +2629,9 @@
      "zoe-conference-talk-draft",
      "jamie-cooking-class",
      "beatriz-housewarming"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -2744,7 +2768,7 @@
      "qwen/qwen3.8-flash": "gary-whitman-lease-renewal-call"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "pablo-export-issue-meeting",
      "beatriz-housewarming",
@@ -2754,7 +2778,9 @@
      "paul-tax-return",
      "gary-whitman-lease-renewal-call",
      "jamie-cooking-class"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -2891,7 +2917,7 @@
      "qwen/qwen3.8-flash": "elena-christmas-gifts"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "jamie-cooking-class",
      "beatriz-housewarming",
@@ -2900,7 +2926,9 @@
      "seattle-flight-search",
      "zoe-conference-talk-draft",
      "elena-christmas-gifts"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -3055,7 +3083,9 @@
      "ethan-ski-trip",
      "paul-tax-return",
      "jamie-cooking-class"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -3202,7 +3232,9 @@
      "maya-quarterly-okrs-draft",
      "elena-christmas-gifts",
      "gary-whitman-lease-renewal-call"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -3356,7 +3388,9 @@
      "beatriz-housewarming",
      "pablo-export-issue-meeting",
      "zoe-conference-talk-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -3503,7 +3537,9 @@
      "zoe-conference-talk-draft",
      "ethan-ski-trip",
      "seattle-flight-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -3640,7 +3676,7 @@
      "qwen/qwen3.8-flash": "maya-quarterly-okrs-draft"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "zoe-conference-talk-draft",
      "gary-whitman-lease-renewal-call",
@@ -3650,7 +3686,9 @@
      "ethan-ski-trip",
      "jamie-cooking-class",
      "paul-tax-return"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -3798,7 +3836,9 @@
      "jamie-cooking-class",
      "pablo-export-issue-meeting",
      "paul-tax-return"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -3935,7 +3975,7 @@
      "qwen/qwen3.8-flash": "zoe-conference-talk-draft"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "jamie-cooking-class",
      "pablo-export-issue-meeting",
@@ -3944,7 +3984,9 @@
      "zoe-conference-talk-draft",
      "maya-quarterly-okrs-draft",
      "beatriz-housewarming"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -4081,7 +4123,7 @@
      "qwen/qwen3.8-flash": "elena-christmas-gifts"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "elena-christmas-gifts",
      "paul-tax-return",
@@ -4092,7 +4134,9 @@
      "beatriz-housewarming",
      "seattle-flight-search",
      "zoe-conference-talk-draft"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -4239,7 +4283,9 @@
      "maya-quarterly-okrs-draft",
      "zoe-conference-talk-draft",
      "beatriz-housewarming"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -4386,7 +4432,9 @@
      "maya-quarterly-okrs-draft",
      "seattle-flight-search",
      "ethan-ski-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -4531,7 +4579,9 @@
      "beatriz-housewarming",
      "seattle-flight-search",
      "gary-whitman-lease-renewal-call"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -4678,7 +4728,9 @@
      "maya-quarterly-okrs-draft",
      "zoe-conference-talk-draft",
      "gary-whitman-lease-renewal-call"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -4815,7 +4867,7 @@
      "qwen/qwen3.8-flash": "paul-tax-return"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "gary-whitman-lease-renewal-call",
      "jamie-cooking-class",
@@ -4825,7 +4877,9 @@
      "seattle-flight-search",
      "zoe-conference-talk-draft",
      "pablo-export-issue-meeting"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -4962,7 +5016,7 @@
      "qwen/qwen3.8-flash": "elena-christmas-gifts"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "beatriz-housewarming",
      "zoe-conference-talk-draft",
@@ -4973,7 +5027,9 @@
      "elena-christmas-gifts",
      "maya-quarterly-okrs-draft",
      "gary-whitman-lease-renewal-call"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -5110,7 +5166,9 @@
      "jamie-cooking-class",
      "seattle-flight-search",
      "gary-whitman-lease-renewal-call"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -5256,7 +5314,9 @@
      "gary-whitman-lease-renewal-call",
      "paul-tax-return",
      "maya-quarterly-okrs-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -5405,7 +5465,9 @@
      "amy-mia-coverage-next-week",
      "monica-flea-meds-pickup",
      "zoe-conference-talk-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -5554,7 +5616,9 @@
      "mia-pumpkin-patch-next-weekend",
      "ben-okafor-camping-weekend",
      "seattle-flight-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -5703,7 +5767,9 @@
      "ben-okafor-camping-weekend",
      "rafael-moreno-anniversary-dinner",
      "monica-flea-meds-pickup"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -5852,7 +5918,9 @@
      "museum-membership-renewal-options",
      "library-books-renewal-options",
      "freya-game-night"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6001,7 +6069,9 @@
      "ethan-ski-trip",
      "vienna-next-weekend-availability",
      "ben-okafor-camping-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6143,7 +6213,9 @@
      "marco-book-club-note",
      "car-registration-renewal-options",
      "museum-membership-renewal-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6285,7 +6357,9 @@
      "library-books-renewal-options",
      "marco-book-club-note",
      "car-registration-renewal-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6427,7 +6501,9 @@
      "rita-biweekly-schedule",
      "museum-membership-renewal-options",
      "ben-okafor-camping-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6569,7 +6645,9 @@
      "paul-tax-return",
      "museum-membership-renewal-options",
      "haircut-spots-this-week"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6711,7 +6789,9 @@
      "newspaper-delivery-cancel-and-restart",
      "honolulu-flight-search-pdx",
      "seattle-flight-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6853,7 +6933,9 @@
      "beatriz-housewarming",
      "kyoto-next-weekend-availability",
      "elena-christmas-gifts"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6983,7 +7065,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "marco-book-club-note",
      "quinn-procurement-paperwork-request",
@@ -6995,7 +7077,9 @@
      "zoe-conference-talk-draft",
      "amy-mia-coverage-next-week",
      "vienna-next-weekend-availability"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -7125,7 +7209,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "dana-forecast-budget-request",
      "pablo-export-issue-meeting",
@@ -7137,7 +7221,9 @@
      "quinn-procurement-paperwork-request",
      "monica-flea-meds-pickup",
      "paul-tax-return"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -7279,7 +7365,9 @@
      "paul-tax-return",
      "ben-okafor-camping-weekend",
      "amy-mia-coverage-next-week"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -7409,7 +7497,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "quinn-procurement-paperwork-request",
      "monica-flea-meds-pickup",
@@ -7421,7 +7509,9 @@
      "dana-forecast-budget-request",
      "ben-okafor-camping-weekend",
      "marco-book-club-note"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -7570,7 +7660,9 @@
      "vienna-next-weekend-availability",
      "harriet-sheet-music-pickup",
      "megan-podcast-check"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -7718,7 +7810,9 @@
      "dana-forecast-budget-request",
      "monica-flea-meds-pickup",
      "vienna-next-weekend-availability"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -7867,7 +7961,9 @@
      "gym-membership-renewal-check",
      "car-registration-renewal-options",
      "library-books-renewal-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -8023,7 +8119,9 @@
      "monica-flea-meds-pickup",
      "jake-big-sur-road-trip",
      "vienna-next-weekend-availability"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -8171,7 +8269,9 @@
      "paul-tax-return",
      "dana-forecast-budget-request",
      "monica-flea-meds-pickup"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -8327,7 +8427,9 @@
      "contact-lens-order-options",
      "dana-forecast-budget-request",
      "zoe-conference-talk-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -8477,7 +8579,9 @@
      "ben-okafor-camping-weekend",
      "mia-pumpkin-patch-next-weekend",
      "contact-lens-order-options"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -8633,7 +8737,9 @@
      "zoe-conference-talk-draft",
      "quinn-procurement-paperwork-request",
      "beatriz-housewarming"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -8770,7 +8876,7 @@
      "qwen/qwen3.8-flash": "ethan-ski-trip"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "monica-flea-meds-pickup",
      "ben-okafor-camping-weekend",
@@ -8782,7 +8888,9 @@
      "paul-tax-return",
      "jake-big-sur-road-trip",
      "dana-forecast-budget-request"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -8931,7 +9039,9 @@
      "paul-tax-return",
      "hana-performance-review-check-in",
      "monica-flea-meds-pickup"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9080,7 +9190,9 @@
      "museum-membership-renewal-options",
      "ben-okafor-camping-weekend",
      "gym-membership-renewal-check"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9217,7 +9329,7 @@
      "qwen/qwen3.8-flash": "ravi-vendor-security-review-draft"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "ben-okafor-camping-weekend",
      "ravi-vendor-security-review-draft",
@@ -9229,7 +9341,9 @@
      "monica-flea-meds-pickup",
      "quinn-procurement-paperwork-request",
      "ben-carter-export-deadline-note"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -9378,7 +9492,9 @@
      "marco-book-club-note",
      "paul-tax-return",
      "vienna-next-weekend-availability"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9527,7 +9643,9 @@
      "paul-tax-return",
      "monica-flea-meds-pickup",
      "elena-christmas-gifts"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9676,7 +9794,9 @@
      "yosemite-campsite-availability-next-weekend",
      "library-books-renewal-options",
      "monica-flea-meds-pickup"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9813,7 +9933,7 @@
      "qwen/qwen3.8-flash": "boat-tour-availability-next-weekend"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "yosemite-campsite-availability-next-weekend",
      "boat-tour-availability-next-weekend",
@@ -9825,7 +9945,9 @@
      "quinn-procurement-paperwork-request",
      "paul-tax-return",
      "marco-book-club-note"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -9962,7 +10084,7 @@
      "qwen/qwen3.8-flash": "helen-babysitting-schedule"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "rita-biweekly-schedule",
      "paul-tax-return",
@@ -9974,7 +10096,9 @@
      "zoe-conference-talk-draft",
      "dana-forecast-budget-request",
      "quinn-procurement-paperwork-request"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -10123,7 +10247,9 @@
      "jamie-cooking-class",
      "rafael-moreno-anniversary-dinner",
      "monica-flea-meds-pickup"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -10260,7 +10386,7 @@
      "qwen/qwen3.8-flash": "zoe-conference-talk-draft"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "monica-flea-meds-pickup",
      "yosemite-campsite-availability-next-weekend",
@@ -10270,7 +10396,9 @@
      "vienna-next-weekend-availability",
      "dana-forecast-budget-request",
      "quinn-procurement-paperwork-request"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -10418,7 +10546,9 @@
      "dana-forecast-budget-request",
      "seattle-flight-search",
      "marco-book-club-note"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -10567,7 +10697,9 @@
      "ferry-search-victoria-next-weekend",
      "vienna-next-weekend-availability",
      "haircut-spots-this-week"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -10716,7 +10848,9 @@
      "paul-tax-return",
      "beatriz-housewarming",
      "monica-flea-meds-pickup"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -10865,7 +10999,9 @@
      "vienna-next-weekend-availability",
      "ben-okafor-camping-weekend",
      "amy-mia-coverage-next-week"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -11014,7 +11150,9 @@
      "marco-book-club-note",
      "contact-lens-order-options",
      "vienna-next-weekend-availability"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11163,7 +11301,9 @@
      "mia-pumpkin-patch-next-weekend",
      "septime-next-weekend-availability",
      "marco-book-club-note"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11300,7 +11440,7 @@
      "qwen/qwen3.8-flash": "adele-tickets-research"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "dana-forecast-budget-request",
      "freya-game-night",
@@ -11312,7 +11452,9 @@
      "monica-flea-meds-pickup",
      "mia-pumpkin-patch-next-weekend",
      "quinn-procurement-paperwork-request"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -11461,7 +11603,9 @@
      "vienna-next-weekend-availability",
      "amy-mia-coverage-next-week",
      "yosemite-campsite-availability-next-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11610,7 +11754,9 @@
      "vienna-next-weekend-availability",
      "gym-membership-renewal-check",
      "car-registration-renewal-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11758,7 +11904,9 @@
      "hugo-nda-signature-notes",
      "quinn-procurement-paperwork-request",
      "vienna-next-weekend-availability"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11907,7 +12055,9 @@
      "zoe-conference-talk-draft",
      "monica-flea-meds-pickup",
      "library-books-renewal-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -12056,7 +12206,9 @@
      "vienna-next-weekend-availability",
      "marco-book-club-note",
      "yosemite-campsite-availability-next-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -12193,7 +12345,7 @@
      "qwen/qwen3.8-flash": "elena-christmas-gifts"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "yosemite-campsite-availability-next-weekend",
      "vienna-next-weekend-availability",
@@ -12204,7 +12356,9 @@
      "dana-forecast-budget-request",
      "quinn-procurement-paperwork-request",
      "paul-tax-return"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -12342,7 +12496,9 @@
      "monica-flea-meds-pickup",
      "yosemite-campsite-availability-next-weekend",
      "paul-tax-return"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -12491,7 +12647,9 @@
      "carl-deck-fix-earliest-slot",
      "yosemite-campsite-availability-next-weekend",
      "paul-tax-return"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -12628,7 +12786,7 @@
      "qwen/qwen3.8-flash": "monica-flea-meds-pickup"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "zoe-conference-talk-draft",
      "vienna-next-weekend-availability",
@@ -12640,7 +12798,9 @@
      "marco-book-club-note",
      "dana-forecast-budget-request",
      "quinn-procurement-paperwork-request"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -12789,7 +12949,9 @@
      "zoe-conference-talk-draft",
      "dana-forecast-budget-request",
      "library-books-renewal-options"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -12939,7 +13101,9 @@
      "chloe-q3-roadmap-review",
      "chloe-demo-day-slides-request",
      "clothes-donation-pickup-booking"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -13089,7 +13253,9 @@
      "alice-chen-on-call-rotation-doc-draft",
      "tobias-hiring-loop-feedback-follow-up",
      "sofia-on-call-rotation-draft-request"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -13239,7 +13405,9 @@
      "newspaper-delivery-cancel-and-restart",
      "karaoke-room-saturday-night-search",
      "mattress-delivery-next-weekend-availability"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -13389,7 +13557,9 @@
      "alice-chen-on-call-rotation-doc-draft",
      "kwame-book-club-dates",
      "beatriz-housewarming"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -13539,7 +13709,9 @@
      "beatriz-big-sur-trip-push-request",
      "mia-swim-classes-search",
      "karaoke-room-saturday-night-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -13689,7 +13861,9 @@
      "ben-carter-export-deadline-note",
      "clothes-donation-pickup-booking",
      "alice-chen-on-call-rotation-doc-draft"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -13847,7 +14021,9 @@
      "ethan-ski-trip",
      "beatriz-big-sur-trip-push-request",
      "jake-game-night-reply"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -13985,7 +14161,7 @@
      "qwen/qwen3.8-flash": "helen-holiday-travel-home"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "helen-babysitting-schedule",
      "flu-shot-next-weekend-availability",
@@ -13997,7 +14173,9 @@
      "dog-sitter-next-weekend",
      "beatriz-trivia-night-note",
      "freya-game-night"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -14147,7 +14325,9 @@
      "kwame-book-club-dates",
      "alice-chen-on-call-rotation-doc-draft",
      "petra-data-export-stuck"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14297,7 +14477,9 @@
      "beatriz-big-sur-trip-push-request",
      "kira-integration-timeline-nudge",
      "dodgers-tickets-this-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14440,7 +14622,9 @@
      "locksmith-near-home-search-and-booking",
      "dmitri-budget-forecast-check",
      "gary-heater-repair-cost"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14583,7 +14767,9 @@
      "karaoke-room-saturday-night-search",
      "notary-next-weekend-availability",
      "phoenix-rental-car-search-next-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14726,7 +14912,9 @@
      "denver-flight-search-and-booking",
      "dublin-flight-booking",
      "gary-heater-repair-cost"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14869,7 +15057,9 @@
      "austin-flight-search-next-weekend",
      "mattress-delivery-next-weekend-availability",
      "yosemite-campsite-availability-next-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15012,7 +15202,9 @@
      "car-registration-renewal-options",
      "museum-membership-renewal-options",
      "spanish-tutor-options-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15155,7 +15347,9 @@
      "denver-flight-search-and-booking",
      "eye-exam-next-week-booking",
      "prescription-refill-booking"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15298,7 +15492,9 @@
      "newspaper-delivery-cancel-and-restart",
      "dodgers-tickets-this-weekend",
      "yosemite-campsite-availability-next-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15429,7 +15625,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "edinburgh-hotel-search-next-weekend",
      "dublin-flight-booking",
@@ -15441,7 +15637,9 @@
      "gary-heater-repair-cost",
      "priya-budget-forecast-draft-request",
      "dmitri-budget-forecast-check"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15584,7 +15782,9 @@
      "kokkari-table-options",
      "adele-tickets-research",
      "honolulu-flight-search-pdx"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15727,7 +15927,9 @@
      "notary-next-weekend-availability",
      "newspaper-delivery-cancel-and-restart",
      "steve-brake-issue-status"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15870,7 +16072,9 @@
      "priya-sprint-planning-30min-invite",
      "olga-ivanova-pilot-kickoff-wrap-up",
      "kenji-postmortem-draft-request"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -16013,7 +16217,9 @@
      "ben-okafor-podcast-guest-spot-check",
      "megan-podcast-check",
      "julia-podcast-guest-spot"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -16156,7 +16362,9 @@
      "haircut-spots-this-week",
      "smoke-detector-replacement-this-week",
      "elena-cabin-week-check"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -16287,7 +16495,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "kenji-on-call-rotation-check",
      "quinn-procurement-paperwork-request",
@@ -16299,7 +16507,9 @@
      "jonas-case-study-approval",
      "pablo-support-escalation-status",
      "pablo-case-study-approval"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -16430,7 +16640,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "ben-okafor-podcast-guest-spot-check",
      "nikhil-fantasy-football-league-thread",
@@ -16442,7 +16652,9 @@
      "julia-podcast-guest-spot",
      "beatriz-trivia-night-note",
      "kwame-podcast-guest-spot-reply-draft"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -16585,7 +16797,9 @@
      "julia-podcast-guest-spot",
      "marco-book-club-note",
      "ben-okafor-ski-trip-reply"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -16728,7 +16942,9 @@
      "kwame-book-club-dates",
      "beatriz-trivia-night-note",
      "sara-trivia-night-dates-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -16871,7 +17087,9 @@
      "mateo-moving-day-availability",
      "priya-sprint-planning-30min-invite",
      "petra-data-export-stuck"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -17014,7 +17232,9 @@
      "simon-relocation-package-meeting",
      "amy-mia-coverage-next-week",
      "smoke-detector-replacement-this-week"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -17157,7 +17377,9 @@
      "tobias-hiring-loop-feedback-follow-up",
      "dana-performance-review-wrap-up-draft",
      "olga-ivanova-pilot-kickoff-wrap-up"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -17307,7 +17529,9 @@
      "amy-claim-cost-draft",
      "monica-biscuit-checkup-earliest-slot",
      "steve-brake-issue-status"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -17457,7 +17681,9 @@
      "gary-whitman-lease-renewal-call",
      "library-books-renewal-options",
      "olga-renewal-notes-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -17607,7 +17833,9 @@
      "grace-design-spec-review",
      "haircut-spots-this-week",
      "ben-okafor-podcast-guest-spot-check"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -17745,7 +17973,7 @@
      "qwen/qwen3.8-flash": "leo-costa-qbr-check"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "paul-tax-return",
      "leo-renewal-meeting-scheduler",
@@ -17757,7 +17985,9 @@
      "beatriz-big-sur-trip-push-request",
      "beatriz-trivia-night-note",
      "leo-costa-qbr-check"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -17907,7 +18137,9 @@
      "rita-apartment-key-handoff-tuesday",
      "alice-chen-on-call-rotation-doc-draft",
      "monica-biscuit-checkup-earliest-slot"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18057,7 +18289,9 @@
      "beatriz-big-sur-trip-push-request",
      "karaoke-room-saturday-night-search",
      "petra-data-export-stuck"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18207,7 +18441,9 @@
      "alice-chen-on-call-rotation-doc-draft",
      "karaoke-room-saturday-night-search",
      "beatriz-big-sur-trip-push-request"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18357,7 +18593,9 @@
      "paul-tax-return",
      "amy-claim-cost-draft",
      "prescription-refill-booking"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18507,7 +18745,9 @@
      "petra-data-export-stuck",
      "alice-chen-on-call-rotation-doc-draft",
      "amy-claim-cost-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18657,7 +18897,9 @@
      "rita-apartment-key-handoff-tuesday",
      "yusuf-sow-status",
      "alice-chen-on-call-rotation-doc-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18802,7 +19044,7 @@
      "qwen/qwen3.8-flash": "greta-q3-roadmap-review-draft|sara-trivia-night-dates-draft"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "greta-q3-roadmap-review-draft",
      "ravi-q3-roadmap-review",
@@ -18814,7 +19056,9 @@
      "spa-day-downtown-pdx-saturday",
      "dmitri-q3-roadmap-30min-request",
      "chloe-q3-roadmap-review"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18953,7 +19197,7 @@
      "qwen/qwen3.8-flash": "ethan-camera-return-and-dates|NEW"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "amy-mia-coverage-next-week",
      "ethan-camera-return-and-dates",
@@ -18965,7 +19209,9 @@
      "wendy-phone-screen-calendar-slot",
      "megan-camera-reply-draft",
      "gutter-cleaning-booking-this-week"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -19125,7 +19371,7 @@
      "qwen/qwen3.8-flash": "simon-reference-check-comments-draft|ben-okafor-podcast-guest-spot-check"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "ben-okafor-camping-weekend",
      "julia-borrowed-camera",
@@ -19137,7 +19383,9 @@
      "ben-carter-export-deadline-note",
      "maya-hiring-loop-feedback-meeting",
      "ben-carter-onboarding-draft-request"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -19288,7 +19536,9 @@
      "locksmith-near-home-search-and-booking",
      "seattle-flight-search",
      "denver-flight-search-and-booking"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -19433,7 +19683,7 @@
      "qwen/qwen3.8-flash": "nikhil-camping-trip-dates|rafael-moreno-anniversary-dinner"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "rafael-moreno-anniversary-dinner",
      "fatima-camping-weekend-reply-draft",
@@ -19445,7 +19695,9 @@
      "nikhil-fantasy-football-league-thread",
      "rafael-babysitting-thursday-check",
      "ben-okafor-camping-weekend"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -19584,7 +19836,7 @@
      "qwen/qwen3.8-flash": "NEW|NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "rita-biweekly-schedule",
      "yusuf-sow-status",
@@ -19596,7 +19848,9 @@
      "rita-apartment-key-handoff-tuesday",
      "dodgers-tickets-this-weekend",
      "dmitri-q3-roadmap-30min-request"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -19741,7 +19995,7 @@
      "qwen/qwen3.8-flash": "NEW|julia-podcast-guest-spot"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "tobias-hiring-loop-feedback-follow-up",
      "ben-okafor-podcast-guest-spot-check",
@@ -19753,7 +20007,9 @@
      "chloe-q3-roadmap-review",
      "maya-hiring-loop-feedback-meeting",
      "kwame-podcast-guest-spot-reply-draft"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -19904,7 +20160,9 @@
      "denver-flight-search-and-booking",
      "mia-birthday-cake-bakery-options",
      "lisbon-flight-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -20061,7 +20319,9 @@
      "beatriz-trivia-night-note",
      "gary-heater-repair-cost",
      "beatriz-housewarming"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -20208,7 +20468,7 @@
      "qwen/qwen3.8-flash": "NEW|NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "alice-chen-on-call-rotation-doc-draft",
      "jake-big-sur-road-trip",
@@ -20220,7 +20480,9 @@
      "kokkari-table-options",
      "beatriz-housewarming",
      "beatriz-trivia-night-note"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -20361,7 +20623,9 @@
      "ben-okafor-camping-weekend",
      "marco-book-club-note",
      "ben-carter-support-escalation-meeting"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -20511,7 +20775,9 @@
      "zoe-conference-talk-draft",
      "zoo-pass-renewal-options",
      "library-books-renewal-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -20661,7 +20927,9 @@
      "marcus-demo-day-slides-wrap-up-draft",
      "helen-babysitting-schedule",
      "yusuf-sow-status"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -20799,7 +21067,7 @@
      "qwen/qwen3.8-flash": "ben-carter-onboarding-draft-request"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "noah-onboarding-call-scheduling",
      "ben-carter-support-escalation-meeting",
@@ -20811,7 +21079,9 @@
      "ben-okafor-camping-weekend",
      "ben-okafor-podcast-guest-spot-check",
      "ben-carter-export-deadline-note"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -20949,7 +21219,7 @@
      "qwen/qwen3.8-flash": "seth-case-study-approval-draft"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "julia-borrowed-camera",
      "kira-case-study-approval-meeting",
@@ -20961,7 +21231,9 @@
      "seth-cole-onboarding-call-check",
      "dmitri-q3-roadmap-30min-request",
      "pablo-case-study-approval"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -21111,7 +21383,9 @@
      "tara-support-escalation-notes",
      "yusuf-sow-status",
      "beatriz-big-sur-trip-push-request"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -21249,7 +21523,7 @@
      "qwen/qwen3.8-flash": "sara-trivia-night-dates-draft"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "karaoke-room-saturday-night-search",
      "megan-podcast-check",
@@ -21261,7 +21535,9 @@
      "megan-fantasy-football-note",
      "megan-camera-reply-draft",
      "beatriz-trivia-night-note"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -21411,7 +21687,9 @@
      "yusuf-sow-status",
      "omar-analytics-dashboard-notes-follow-up",
      "kenji-analytics-dashboard-meeting"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -21561,7 +21839,9 @@
      "alice-chen-on-call-rotation-doc-draft",
      "kenji-on-call-rotation-check",
      "sofia-conference-talk-proposal-follow-up"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -21711,7 +21991,9 @@
      "quinn-procurement-paperwork-request",
      "yusuf-sow-status",
      "beatriz-big-sur-trip-push-request"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -21861,7 +22143,9 @@
      "beatriz-housewarming",
      "noah-fraser-sow-wrap-up-draft",
      "omar-analytics-dashboard-notes-follow-up"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -22011,7 +22295,9 @@
      "beatriz-housewarming",
      "fatima-game-night-check",
      "derek-marathon-training-check"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -22149,7 +22435,7 @@
      "qwen/qwen3.8-flash": "dana-performance-review-wrap-up-draft"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "maui-rental-car-options",
      "dana-forecast-budget-request",
@@ -22161,7 +22447,9 @@
      "chloe-demo-day-slides-request",
      "alice-chen-on-call-rotation-doc-draft",
      "marcus-demo-day-slides-wrap-up-draft"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -22311,7 +22599,9 @@
      "leila-signing-bonus-follow-up",
      "alice-brennan-signing-bonus-notes-draft",
      "monica-biscuit-checkup-earliest-slot"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -22461,7 +22751,9 @@
      "beatriz-housewarming",
      "megan-podcast-check",
      "megan-wedding-rsvp-check"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -22611,7 +22903,9 @@
      "beatriz-housewarming",
      "carl-remodel-urgency-check",
      "beatriz-trivia-night-note"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -22761,7 +23055,9 @@
      "dmitri-q3-roadmap-30min-request",
      "flu-shot-next-weekend-availability",
      "beatriz-big-sur-trip-push-request"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -22911,7 +23207,9 @@
      "alice-chen-on-call-rotation-doc-draft",
      "karaoke-room-saturday-night-search",
      "beatriz-housewarming"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -23061,7 +23359,9 @@
      "cancun-flight-search",
      "seattle-flight-search",
      "toronto-flight-booking"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -23211,7 +23511,9 @@
      "ben-okafor-podcast-guest-spot-check",
      "petra-data-export-stuck",
      "dog-sitter-next-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -23349,7 +23651,7 @@
      "qwen/qwen3.8-flash": "rug-repair-options-search"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "petra-data-export-stuck",
      "derek-marathon-training-check",
@@ -23361,7 +23663,9 @@
      "yusuf-sow-status",
      "carl-remodel-urgency-check",
      "gary-heater-repair-cost"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -23511,7 +23815,9 @@
      "kwame-book-club-dates",
      "spa-day-downtown-pdx-saturday",
      "yusuf-sow-status"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -23649,7 +23955,7 @@
      "qwen/qwen3.8-flash": "nora-thanksgiving-help-note"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "spa-day-downtown-pdx-saturday",
      "nora-thanksgiving-help-note",
@@ -23661,7 +23967,9 @@
      "dog-sitter-next-weekend",
      "flu-shot-next-weekend-availability",
      "mateo-thanksgiving-check"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -23811,7 +24119,9 @@
      "wendy-salary-draft-request",
      "massage-spots-near-office-thursday",
      "beatriz-big-sur-trip-push-request"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -23969,7 +24279,9 @@
      "jake-big-sur-road-trip",
      "yusuf-sow-status",
      "beatriz-big-sur-trip-push-request"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -24107,7 +24419,7 @@
      "qwen/qwen3.8-flash": "dmitri-budget-forecast-check"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "dmitri-budget-forecast-check",
      "clothes-donation-pickup-booking",
@@ -24119,7 +24431,9 @@
      "nora-thanksgiving-help-note",
      "dana-forecast-budget-request",
      "priya-sprint-planning-30min-invite"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -24257,7 +24571,7 @@
      "qwen/qwen3.8-flash": "fatima-game-night-check"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "sara-trivia-night-dates-draft",
      "freya-game-night",
@@ -24269,7 +24583,9 @@
      "beatriz-trivia-night-note",
      "jake-game-night-reply",
      "amy-mia-coverage-next-week"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -24407,7 +24723,7 @@
      "qwen/qwen3.8-flash": "derek-marathon-training-check"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "beatriz-trivia-night-note",
      "maui-rental-car-options",
@@ -24419,7 +24735,9 @@
      "beatriz-housewarming",
      "laura-cleaning-appointment",
      "karaoke-room-saturday-night-search"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -24569,7 +24887,9 @@
      "karaoke-room-saturday-night-search",
      "fatima-game-night-check",
      "beatriz-trivia-night-note"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -24719,7 +25039,9 @@
      "luis-grandma-recipes-check",
      "maui-rental-car-options",
      "karaoke-room-saturday-night-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -24869,7 +25191,9 @@
      "rafael-moreno-anniversary-dinner",
      "pedro-babysitting-weekend-reply-draft",
      "karaoke-room-saturday-night-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25019,7 +25343,9 @@
      "dmitri-q3-roadmap-30min-request",
      "karaoke-room-saturday-night-search",
      "yusuf-sow-status"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25157,7 +25483,7 @@
      "qwen/qwen3.8-flash": "olga-ivanova-pilot-kickoff-wrap-up"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "olga-ivanova-pilot-kickoff-wrap-up",
      "karaoke-room-saturday-night-search",
@@ -25169,7 +25495,9 @@
      "alice-chen-on-call-rotation-doc-draft",
      "petra-data-export-stuck",
      "wendy-phone-screen-calendar-slot"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25319,7 +25647,9 @@
      "lakers-tickets-next-weekend-search",
      "karaoke-room-saturday-night-search",
      "freya-game-night"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25469,7 +25799,9 @@
      "contact-lens-order-options",
      "gutter-cleaning-booking-this-week",
      "smoke-detector-replacement-this-week"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25619,7 +25951,9 @@
      "priya-budget-forecast-draft-request",
      "priya-sprint-planning-30min-invite",
      "dmitri-budget-forecast-check"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25757,7 +26091,7 @@
      "qwen/qwen3.8-flash": "leila-signing-bonus-follow-up"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "gavin-signing-bonus-wrap-up",
      "alice-brennan-signing-bonus-notes-draft",
@@ -25769,7 +26103,9 @@
      "tobias-hiring-loop-feedback-follow-up",
      "petra-data-export-stuck",
      "maui-rental-car-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25919,7 +26255,9 @@
      "yusuf-sow-status",
      "locksmith-near-home-search-and-booking",
      "alice-chen-on-call-rotation-doc-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -26069,7 +26407,9 @@
      "maui-rental-car-options",
      "karaoke-room-saturday-night-search",
      "monica-biscuit-checkup-earliest-slot"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -26207,7 +26547,7 @@
      "qwen/qwen3.8-flash": "dublin-flight-booking"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "cancun-flight-search",
      "karaoke-room-saturday-night-search",
@@ -26219,7 +26559,9 @@
      "seattle-flight-search",
      "lisbon-flight-search",
      "clothes-donation-pickup-booking"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -26369,7 +26711,9 @@
      "fatima-game-night-check",
      "freya-game-night",
      "beatriz-housewarming"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -26507,7 +26851,7 @@
      "qwen/qwen3.8-flash": "leo-renewal-meeting-scheduler"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "olga-renewal-notes-draft",
      "zoo-pass-renewal-options",
@@ -26519,7 +26863,9 @@
      "leo-export-issue-note",
      "leo-costa-qbr-check",
      "gary-whitman-lease-renewal-call"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -26669,7 +27015,9 @@
      "monica-biscuit-checkup-earliest-slot",
      "yusuf-sow-status",
      "alice-chen-on-call-rotation-doc-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -26807,7 +27155,7 @@
      "qwen/qwen3.8-flash": "zoe-conference-talk-draft"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "zoe-spec-notes-review-draft",
      "yusuf-sow-status",
@@ -26819,7 +27167,9 @@
      "beatriz-big-sur-trip-push-request",
      "karaoke-room-saturday-night-search",
      "sofia-conference-talk-proposal-follow-up"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -26969,7 +27319,9 @@
      "paul-tax-return",
      "gary-heater-repair-cost",
      "beatriz-big-sur-trip-push-request"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -27107,7 +27459,7 @@
      "qwen/qwen3.8-flash": "driving-test-booking-under-budget"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "toronto-flight-booking",
      "eye-exam-next-week-booking",
@@ -27119,7 +27471,9 @@
      "petra-data-export-stuck",
      "chimney-sweep-booking-research",
      "driving-test-booking-under-budget"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -27269,7 +27623,9 @@
      "clothes-donation-pickup-booking",
      "dublin-flight-booking",
      "beatriz-big-sur-trip-push-request"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -27419,7 +27775,9 @@
      "marcus-demo-day-slides-wrap-up-draft",
      "yusuf-sow-status",
      "dmitri-q3-roadmap-30min-request"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -27560,7 +27918,9 @@
      "denver-flight-search-and-booking",
      "beatriz-housewarming",
      "lisbon-flight-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -27689,7 +28049,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "dublin-flight-booking",
      "cancun-flight-search",
@@ -27701,7 +28061,9 @@
      "seattle-flight-search",
      "toronto-flight-booking",
      "denver-flight-search-and-booking"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -27842,7 +28204,9 @@
      "amy-mia-coverage-next-week",
      "mia-birthday-cake-bakery-options",
      "driving-test-booking-under-budget"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -27992,7 +28356,9 @@
      "steve-brake-issue-status",
      "maui-rental-car-options",
      "car-registration-renewal-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -28142,7 +28508,9 @@
      "haircut-spots-this-week",
      "julia-podcast-guest-spot",
      "gary-heater-repair-cost"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -28280,7 +28648,7 @@
      "qwen/qwen3.8-flash": "noah-onboarding-call-scheduling"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "gary-whitman-lease-renewal-call",
      "noah-nda-follow-up",
@@ -28292,7 +28660,9 @@
      "alice-chen-on-call-rotation-doc-draft",
      "noah-onboarding-call-scheduling",
      "noah-fraser-sow-wrap-up-draft"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -28442,7 +28812,9 @@
      "yusuf-sow-status",
      "alice-chen-on-call-rotation-doc-draft",
      "harriet-sheet-music-pickup"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -28592,7 +28964,9 @@
      "flu-shot-next-weekend-availability",
      "amy-mia-coverage-next-week",
      "mia-swim-classes-search"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -28742,7 +29116,9 @@
      "dmitri-q3-roadmap-30min-request",
      "gutter-cleaning-booking-this-week",
      "karaoke-room-saturday-night-search"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -28892,7 +29268,9 @@
      "steve-brake-issue-status",
      "mateo-cabin-week-reply-draft",
      "smoke-detector-replacement-this-week"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -29042,7 +29420,9 @@
      "quinn-procurement-paperwork-request",
      "felix-vendor-security-review-draft-request",
      "alice-chen-on-call-rotation-doc-draft"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -29192,7 +29572,9 @@
      "pottery-classes-next-month",
      "laura-x-rays-tuesday-morning",
      "beatriz-big-sur-trip-push-request"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -29330,7 +29712,7 @@
      "qwen/qwen3.8-flash": "rita-apartment-key-handoff-tuesday"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "laura-x-rays-tuesday-morning",
      "kira-integration-timeline-nudge",
@@ -29342,7 +29724,9 @@
      "steve-brake-issue-status",
      "laura-cleaning-appointment",
      "rita-biweekly-schedule"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   }
  ]

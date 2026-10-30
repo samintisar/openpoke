@@ -305,3 +305,35 @@ def test_load_v2_names_the_missing_reviewed_file(tmp_path):
     (tmp_path / "bench-v2-s1.reviewed.json").unlink()
     with pytest.raises(FileNotFoundError, match=r"bench-v2-s1\.reviewed\.json"):
         load_v2(1, directory=tmp_path)
+
+
+def _voted(pid, answers, flag):
+    return {"id": pid, "size": 10, "kind": "follow_up", "gold_targets": ["a1"], "acceptable_ids": [],
+            "clarify_ok": False, "check": {"answers": dict(zip(("m1", "m2", "m3"), answers)),
+                                           "agree": flag != "disagree", "flag": flag}}
+
+
+def test_majority_keeps_two_of_three_and_redraws_the_audit_from_everything_kept():
+    from evals.worlds.lived.bench_v2 import majority
+
+    probes = ([_voted("strong0", ["a1", "NEW", "a2"], "disagree"), _voted("strong1", ["NEW", "NEW", "a2"], "disagree"),
+               _voted("two", ["a1", "a1", "NEW"], "disagree")]
+              + [_voted(f"u{i:02d}", ["a1"] * 3, "audit" if i < 5 else None) for i in range(30)])
+    bench = {"meta": {}, "rosters": {}, "probes": probes}
+    out = majority(bench, seed=1, audit=4)
+    flags = {p["id"]: p["check"]["flag"] for p in out["probes"]}
+    assert flags["strong0"] == flags["strong1"] == "disagree"
+    assert flags["two"] in (None, "audit")
+    assert sum(f == "audit" for f in flags.values()) == 4
+    assert {p["id"]: p["check"]["agree_count"] for p in out["probes"]}["two"] == 2
+    assert out["probes"][0]["check"]["unanimous_flag"] == "disagree"
+    assert out["meta"]["review_rule"] == {"rule": "majority", "min_agree": 2, "audit": 4, "seed": 1}
+    assert majority(bench, seed=1, audit=4) == out and bench["probes"][2]["check"]["flag"] == "disagree"
+
+
+def test_majority_rule_is_applied_once():
+    from evals.worlds.lived.bench_v2 import majority
+
+    out = majority({"meta": {}, "rosters": {}, "probes": [_voted("x", ["a1"] * 3, None)]}, seed=1, audit=1)
+    with pytest.raises(ValueError, match="already"):
+        majority(out, seed=1, audit=1)

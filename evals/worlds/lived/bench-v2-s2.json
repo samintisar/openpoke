@@ -24,6 +24,12 @@
    "audit": 20,
    "clean": 129,
    "cost_usd": 0.033119
+  },
+  "review_rule": {
+   "rule": "majority",
+   "min_agree": 2,
+   "audit": 10,
+   "seed": 2
   }
  },
  "rosters": {
@@ -1478,7 +1484,9 @@
      "nina-park-big-sur-road-trip",
      "gus-climbing-gym",
      "adrian-q3-roadmap-review"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -1625,7 +1633,9 @@
      "holly-climbing-gym",
      "gus-climbing-gym",
      "edith-sheet-music"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -1771,7 +1781,9 @@
      "edith-sheet-music",
      "kokkari-reservation",
      "nina-park-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -1912,7 +1924,9 @@
      "nina-park-big-sur-road-trip",
      "gus-climbing-gym",
      "cole-camping-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -2053,7 +2067,9 @@
      "brendan-camping-weekend",
      "edith-sheet-music",
      "kokkari-reservation"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -2193,7 +2209,9 @@
      "athens-flight",
      "adrian-q3-roadmap-review",
      "caleb-nda-signature"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -2323,7 +2341,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "athens-flight",
      "nina-park-big-sur-road-trip",
@@ -2332,7 +2350,9 @@
      "caleb-nda-signature",
      "gus-climbing-gym",
      "kokkari-reservation"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -2471,7 +2491,9 @@
      "caleb-nda-signature",
      "edith-sheet-music",
      "gus-climbing-gym"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -2610,7 +2632,9 @@
      "athens-flight",
      "kokkari-reservation",
      "edith-sheet-music"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -2757,7 +2781,9 @@
      "gus-climbing-gym",
      "edith-sheet-music",
      "nina-park-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -2903,7 +2929,9 @@
      "caleb-nda-signature",
      "gus-climbing-gym",
      "nina-park-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -3058,7 +3086,9 @@
      "kokkari-reservation",
      "adrian-q3-roadmap-review",
      "nina-park-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -3207,7 +3237,9 @@
      "caleb-nda-signature",
      "cole-camping-weekend",
      "edith-sheet-music"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -3360,7 +3392,9 @@
      "adrian-q3-roadmap-review",
      "athens-flight",
      "caleb-nda-signature"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -3497,7 +3531,7 @@
      "qwen/qwen3.8-flash": "gus-climbing-gym"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "kokkari-reservation",
      "caleb-nda-signature",
@@ -3508,7 +3542,9 @@
      "edith-sheet-music",
      "nina-park-big-sur-road-trip",
      "cole-camping-weekend"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -3655,7 +3691,9 @@
      "gus-climbing-gym",
      "nina-park-big-sur-road-trip",
      "kokkari-reservation"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -3803,7 +3841,9 @@
      "cole-camping-weekend",
      "caleb-nda-signature",
      "adrian-q3-roadmap-review"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -3950,7 +3990,9 @@
      "nina-park-big-sur-road-trip",
      "cole-camping-weekend",
      "adrian-q3-roadmap-review"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -4096,7 +4138,9 @@
      "adrian-q3-roadmap-review",
      "nina-park-big-sur-road-trip",
      "athens-flight"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -4244,7 +4288,9 @@
      "edith-sheet-music",
      "kokkari-reservation",
      "athens-flight"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -4390,7 +4436,9 @@
      "edith-sheet-music",
      "athens-flight",
      "nina-park-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -4536,7 +4584,9 @@
      "edith-sheet-music",
      "nina-park-big-sur-road-trip",
      "adrian-q3-roadmap-review"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -4673,7 +4723,7 @@
      "qwen/qwen3.8-flash": "caleb-nda-signature"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "edith-sheet-music",
      "caleb-nda-signature",
@@ -4682,7 +4732,9 @@
      "adrian-q3-roadmap-review",
      "athens-flight",
      "kokkari-reservation"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -4830,7 +4882,9 @@
      "kokkari-reservation",
      "edith-sheet-music",
      "brendan-camping-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -4967,7 +5021,7 @@
      "qwen/qwen3.8-flash": "athens-flight"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "caleb-nda-signature",
      "athens-flight",
@@ -4976,7 +5030,9 @@
      "nina-park-big-sur-road-trip",
      "adrian-q3-roadmap-review",
      "kokkari-reservation"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -5113,7 +5169,9 @@
      "caleb-nda-signature",
      "edith-sheet-music",
      "athens-flight"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -5260,7 +5318,9 @@
      "cole-camping-weekend",
      "caleb-nda-signature",
      "adrian-q3-roadmap-review"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -5417,7 +5477,9 @@
      "abby-podcast-guest-spot",
      "adrian-q3-roadmap-review",
      "yara-book-club-scheduling"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -5554,7 +5616,7 @@
      "qwen/qwen3.8-flash": "spa-day"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "jade-nda-draft",
      "bruno-conference-talk-proposal",
@@ -5566,7 +5628,9 @@
      "tariq-camping-weekend",
      "credit-card-dispute",
      "yara-book-club-scheduling"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -5715,7 +5779,9 @@
      "bianca-export-follow-up",
      "bruno-conference-talk-proposal",
      "credit-card-dispute"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -5852,7 +5918,7 @@
      "qwen/qwen3.8-flash": "lena-swim-class"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "credit-card-dispute",
      "vienna-hotel",
@@ -5864,7 +5930,9 @@
      "oslo-flights",
      "dina-big-sur-road-trip",
      "adele-tickets"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -6013,7 +6081,9 @@
      "jade-nda-draft",
      "yara-book-club-scheduling",
      "dina-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6155,7 +6225,9 @@
      "austin-flights",
      "brendan-camping-weekend",
      "athens-flight"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6297,7 +6369,9 @@
      "austin-flights",
      "watch-battery-replacement",
      "honolulu-flights"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6439,7 +6513,9 @@
      "vienna-hotel",
      "max-weller-nda-meeting",
      "jade-nda-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6581,7 +6657,9 @@
      "lena-swim-class",
      "brendan-camping-weekend",
      "watch-battery-replacement"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6723,7 +6801,9 @@
      "yara-book-club-scheduling",
      "erik-baby-shower",
      "honolulu-flights"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -6853,7 +6933,7 @@
      "qwen/qwen3.8-flash": "yara-book-club-scheduling"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "watch-battery-replacement",
      "bruno-conference-talk-proposal",
@@ -6865,7 +6945,9 @@
      "erik-baby-shower",
      "fiona-procurement-paperwork",
      "nina-park-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -7007,7 +7089,9 @@
      "elise-analytics-dashboard",
      "yara-book-club-scheduling",
      "lorna-onboarding-notes"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -7149,7 +7233,9 @@
      "erik-baby-shower",
      "max-weller-nda-meeting",
      "abby-podcast-guest-spot"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -7291,7 +7377,9 @@
      "elise-analytics-dashboard",
      "odette-procurement-draft",
      "fiona-procurement-paperwork"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -7421,7 +7509,7 @@
      "qwen/qwen3.8-flash": "ASK"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "dina-big-sur-road-trip",
      "odette-procurement-draft",
@@ -7433,7 +7521,9 @@
      "jade-nda-draft",
      "elise-analytics-dashboard",
      "tomasz-postmortem"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -7582,7 +7672,9 @@
      "dina-big-sur-road-trip",
      "bruno-conference-talk-proposal",
      "erik-baby-shower"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -7731,7 +7823,9 @@
      "yara-book-club-scheduling",
      "nina-park-big-sur-road-trip",
      "marisol-key-handoff"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -7880,7 +7974,9 @@
      "bruno-conference-talk-proposal",
      "dina-big-sur-road-trip",
      "nina-park-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -8024,7 +8120,7 @@
      "qwen/qwen3.8-flash": "cole-camping-weekend|NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "dina-camping-weekend",
      "lorna-onboarding-notes",
@@ -8036,7 +8132,9 @@
      "cole-camping-weekend",
      "credit-card-dispute",
      "erik-baby-shower"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -8174,7 +8272,7 @@
      "qwen/qwen3.8-flash": "edith-sheet-music|NEW"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "dina-big-sur-road-trip",
      "vienna-hotel",
@@ -8186,7 +8284,9 @@
      "erik-baby-shower",
      "oslo-flights",
      "edith-sheet-music"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -8330,7 +8430,7 @@
      "qwen/qwen3.8-flash": "frank-retirement-party|clara-demo-day-slides"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": "audit",
     "candidates": [
      "zara-big-sur-road-trip",
      "clara-demo-day-slides",
@@ -8342,7 +8442,9 @@
      "bruno-conference-talk-proposal",
      "frank-retirement-party",
      "lorna-onboarding-notes"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -8492,7 +8594,9 @@
      "dina-big-sur-road-trip",
      "nina-castillo-team-offsite",
      "nina-park-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -8648,7 +8752,9 @@
      "haircut-booking",
      "adele-tickets",
      "bruno-conference-talk-proposal"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -8797,7 +8903,9 @@
      "erik-baby-shower",
      "nina-castillo-team-offsite",
      "yara-book-club-scheduling"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -8946,7 +9054,9 @@
      "dina-big-sur-road-trip",
      "nina-castillo-team-offsite",
      "bruno-conference-talk-proposal"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9095,7 +9205,9 @@
      "adele-tickets",
      "dina-big-sur-road-trip",
      "zara-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9244,7 +9356,9 @@
      "tariq-camping-weekend",
      "dog-sitter-search",
      "bianca-export-follow-up"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9393,7 +9507,9 @@
      "bruno-conference-talk-proposal",
      "bianca-export-follow-up",
      "yara-book-club-scheduling"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9530,7 +9646,7 @@
      "qwen/qwen3.8-flash": "edith-sheet-music"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "honolulu-flights",
      "fiona-procurement-paperwork",
@@ -9542,7 +9658,9 @@
      "nina-park-big-sur-road-trip",
      "jade-nda-draft",
      "bruno-conference-talk-proposal"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -9679,7 +9797,7 @@
      "qwen/qwen3.8-flash": "nina-park-big-sur-road-trip"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "erik-baby-shower",
      "honolulu-flights",
@@ -9691,7 +9809,9 @@
      "zara-big-sur-road-trip",
      "bruno-conference-talk-proposal",
      "jade-nda-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9840,7 +9960,9 @@
      "athens-flight",
      "bruno-conference-talk-proposal",
      "austin-flights"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -9977,7 +10099,7 @@
      "qwen/qwen3.8-flash": "caleb-nda-signature"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "bruno-conference-talk-proposal",
      "nina-park-big-sur-road-trip",
@@ -9989,7 +10111,9 @@
      "caleb-nda-signature",
      "dina-big-sur-road-trip",
      "honolulu-flights"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -10126,7 +10250,7 @@
      "qwen/qwen3.8-flash": "holly-climbing-gym"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "dina-big-sur-road-trip",
      "gus-climbing-gym",
@@ -10138,7 +10262,9 @@
      "honolulu-flights",
      "holly-climbing-gym",
      "bruno-conference-talk-proposal"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -10287,7 +10413,9 @@
      "max-weller-nda-meeting",
      "lars-migration-meeting",
      "brendan-camping-weekend"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -10436,7 +10564,9 @@
      "lars-migration-meeting",
      "dina-big-sur-road-trip",
      "abby-podcast-guest-spot"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -10585,7 +10715,9 @@
      "dina-big-sur-road-trip",
      "nina-park-big-sur-road-trip",
      "bruno-conference-talk-proposal"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -10734,7 +10866,9 @@
      "jade-nda-draft",
      "bruno-conference-talk-proposal",
      "dodgers-tickets"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -10883,7 +11017,9 @@
      "bruno-conference-talk-proposal",
      "jade-nda-draft",
      "erik-baby-shower"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11020,7 +11156,7 @@
      "qwen/qwen3.8-flash": "dog-sitter-search"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "vienna-hotel",
      "honolulu-flights",
@@ -11032,7 +11168,9 @@
      "erik-baby-shower",
      "dina-big-sur-road-trip",
      "watch-battery-replacement"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11181,7 +11319,9 @@
      "cole-camping-weekend",
      "dina-big-sur-road-trip",
      "vienna-hotel"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11330,7 +11470,9 @@
      "ivan-pilot-kickoff",
      "erik-baby-shower",
      "jade-nda-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11479,7 +11621,9 @@
      "bruno-conference-talk-proposal",
      "nina-park-big-sur-road-trip",
      "dina-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11628,7 +11772,9 @@
      "dina-big-sur-road-trip",
      "jade-nda-draft",
      "zara-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -11777,7 +11923,9 @@
      "nina-park-big-sur-road-trip",
      "fiona-procurement-paperwork",
      "yara-book-club-scheduling"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -11926,7 +12074,9 @@
      "bruno-conference-talk-proposal",
      "marisol-key-handoff",
      "lars-migration-meeting"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -12075,7 +12225,9 @@
      "fiona-procurement-paperwork",
      "yara-book-club-scheduling",
      "bruno-conference-talk-proposal"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -12224,7 +12376,9 @@
      "ruth-babysitting",
      "nina-park-big-sur-road-trip",
      "bruno-conference-talk-proposal"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -12364,7 +12518,9 @@
      "jade-nda-draft",
      "erik-baby-shower",
      "yara-book-club-scheduling"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -12513,7 +12669,9 @@
      "cole-camping-weekend",
      "tariq-camping-weekend",
      "dina-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -12662,7 +12820,9 @@
      "dina-big-sur-road-trip",
      "tariq-camping-weekend",
      "nina-park-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -12799,7 +12959,7 @@
      "qwen/qwen3.8-flash": "edith-sheet-music"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "erik-baby-shower",
      "nina-park-big-sur-road-trip",
@@ -12811,7 +12971,9 @@
      "yara-book-club-scheduling",
      "bruno-conference-talk-proposal",
      "jade-nda-draft"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -12949,7 +13111,7 @@
      "qwen/qwen3.8-flash": "lucy-borrowed-camera"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "dina-borrowed-camera",
      "aisha-api-migration",
@@ -12961,7 +13123,9 @@
      "tariq-camping-weekend",
      "eli-ski-trip",
      "nina-park-wedding-rsvp"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -13111,7 +13275,9 @@
      "mei-conference-talk-proposal",
      "victor-conference-talk-proposal",
      "tomasz-conference-talk-proposal"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -13261,7 +13427,9 @@
      "maui-rental-car",
      "will-wedding-rsvp",
      "kai-school-pickup"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -13411,7 +13579,9 @@
      "erik-baby-shower",
      "gus-housewarming",
      "flora-wedding-rsvp"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -13561,7 +13731,9 @@
      "will-wedding-rsvp",
      "spa-day",
      "ada-baby-shower"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -13711,7 +13883,9 @@
      "will-wedding-rsvp",
      "ada-summer-cabin-week",
      "erik-reunion"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -13861,7 +14035,9 @@
      "heidi-statement-of-work",
      "elise-team-offsite",
      "elise-analytics-dashboard"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14011,7 +14187,9 @@
      "ximena-bachelor-party",
      "frank-retirement-party",
      "flora-trivia-night"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14161,7 +14339,9 @@
      "flora-bachelor-party",
      "chimney-sweep-booking",
      "yuki-conference-talk"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14319,7 +14499,9 @@
      "sedona-rental-car",
      "ada-baby-shower",
      "notary-search-follow-up"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14462,7 +14644,9 @@
      "rintaro-table-search",
      "zuni-table-search",
      "delfina-table-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14605,7 +14789,9 @@
      "nopa-reservation",
      "spa-day",
      "delfina-table-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14748,7 +14934,9 @@
      "toronto-flights",
      "rug-repair-options",
      "locksmith-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -14891,7 +15079,9 @@
      "bakery-cake-order",
      "vienna-hotel",
      "dog-sitter-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15022,7 +15212,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "oslo-flights",
      "chicago-flights",
@@ -15034,7 +15224,9 @@
      "athens-flight",
      "dublin-flights",
      "toronto-flights"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -15177,7 +15369,9 @@
      "bakery-cake-order",
      "fishing-license-renewal",
      "hamilton-tickets"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15320,7 +15514,9 @@
      "smoke-detector-search",
      "delia-integration-timeline",
      "toronto-flights"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15463,7 +15659,9 @@
      "locksmith-options",
      "passport-renewal-options",
      "toronto-flights"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15606,7 +15804,9 @@
      "hamilton-tickets",
      "delfina-table-search",
      "adele-tickets"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15749,7 +15949,9 @@
      "prague-hotel-search",
      "lyon-hotel-search",
      "porto-hotel"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -15892,7 +16094,9 @@
      "gus-housewarming",
      "dina-borrowed-camera",
      "abby-housewarming"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -16035,7 +16239,9 @@
      "lars-migration-meeting",
      "signe-migration-meeting",
      "delia-integration-timeline"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -16166,7 +16372,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "erik-reunion",
      "heidi-statement-of-work",
@@ -16178,7 +16384,9 @@
      "will-wedding-rsvp",
      "martha-holiday-travel",
      "lucy-borrowed-camera"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -16321,7 +16529,9 @@
      "nate-negotiation-notes",
      "signe-analytics-dashboard",
      "delia-procurement-notes"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -16464,7 +16674,9 @@
      "ivan-pilot-kickoff",
      "max-weller-nda-meeting",
      "raj-nda-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -16595,7 +16807,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "frank-retirement-party",
      "ollie-babysitting-schedule",
@@ -16607,7 +16819,9 @@
      "erik-baby-shower",
      "ruth-thanksgiving",
      "gus-climbing-gym"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -16750,7 +16964,9 @@
      "opal-phone-screen-notes",
      "delia-procurement-notes",
      "elise-vendor-security-review"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -16893,7 +17109,9 @@
      "kofi-integration-timeline-meeting",
      "raj-nda-draft",
      "caleb-nda-signature"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -17024,7 +17242,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "gus-housewarming",
      "max-okonkwo-half-marathon-training",
@@ -17036,7 +17254,9 @@
      "max-weller-nda-meeting",
      "ruth-thanksgiving",
      "eli-half-marathon"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -17167,7 +17387,7 @@
      "qwen/qwen3.8-flash": "nadia-biscuit-checkup"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "nashville-flights",
      "delia-integration-timeline",
@@ -17179,7 +17399,9 @@
      "fishing-license-renewal",
      "eli-podcast-guest-spot",
      "signe-migration-meeting"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -17325,7 +17547,7 @@
      "qwen/qwen3.8-flash": "ada-baby-shower"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "erik-mom-s-birthday",
      "ada-retirement-party",
@@ -17337,7 +17559,9 @@
      "erik-baby-shower",
      "erik-reunion",
      "elise-team-offsite"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -17487,7 +17711,9 @@
      "porto-hotel",
      "adele-tickets",
      "elise-vendor-security-review"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -17637,7 +17863,9 @@
      "trent-permit-stuff",
      "passport-renewal-options",
      "will-wedding-rsvp"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -17787,7 +18015,9 @@
      "signe-analytics-dashboard",
      "will-wedding-rsvp",
      "ada-retirement-party"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -17937,7 +18167,9 @@
      "eli-podcast-guest-spot",
      "erik-reunion",
      "zoo-pass"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18087,7 +18319,9 @@
      "eli-podcast-guest-spot",
      "ada-baby-shower",
      "will-wedding-rsvp"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18237,7 +18471,9 @@
      "elise-vendor-security-review",
      "rug-repair-options",
      "ada-baby-shower"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18387,7 +18623,9 @@
      "ada-baby-shower",
      "elise-vendor-security-review",
      "passport-renewal-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18537,7 +18775,9 @@
      "prescription-refill",
      "will-wedding-rsvp",
      "kai-school-pickup"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -18687,7 +18927,9 @@
      "victor-landing-page-copy",
      "victor-conference-talk-proposal",
      "passport-renewal-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18844,7 +19086,9 @@
      "maui-rental-car",
      "bruno-conference-talk-proposal",
      "tomasz-conference-talk-proposal"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -18983,7 +19227,7 @@
      "qwen/qwen3.8-flash": "tomasz-postmortem|NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "dina-big-sur-road-trip",
      "lucca-table-search",
@@ -18995,7 +19239,9 @@
      "victor-hiring-loop-feedback",
      "zuni-table-search",
      "signe-postmortem-draft"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -19140,7 +19386,7 @@
      "qwen/qwen3.8-flash": "lena-school-uniform|frank-retirement-party"
     },
     "agree": true,
-    "flag": null,
+    "flag": "audit",
     "candidates": [
      "ada-summer-cabin-week",
      "frank-retirement-party",
@@ -19152,7 +19398,9 @@
      "ximena-bachelor-party",
      "flora-bachelor-party",
      "ada-retirement-party"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -19303,7 +19551,9 @@
      "opal-phone-screen-notes",
      "kai-school-pickup",
      "meal-kit-subscription"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -19448,7 +19698,7 @@
      "qwen/qwen3.8-flash": "samir-team-offsite|wicked-tickets"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "wicked-tickets",
      "samir-quarterly-okrs",
@@ -19460,7 +19710,9 @@
      "adele-tickets",
      "samir-analytics-dashboard",
      "hector-team-offsite"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -19599,7 +19851,7 @@
      "qwen/qwen3.8-flash": "hiro-summer-cabin-week|NEW"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "ada-baby-shower",
      "hiro-summer-cabin-week",
@@ -19611,7 +19863,9 @@
      "credit-card-dispute",
      "signe-migration-meeting",
      "hiro-christmas-call"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -19768,7 +20022,9 @@
      "elise-vendor-security-review",
      "rohan-demo-day-slides",
      "stefan-director-of-product-role"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -19927,7 +20183,9 @@
      "gus-housewarming",
      "yara-book-club-scheduling",
      "will-wedding-rsvp"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -20099,7 +20357,9 @@
      "nina-park-housewarming",
      "nina-castillo-team-offsite",
      "hector-analytics-dashboard"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -20250,7 +20510,9 @@
      "oslo-flights",
      "boston-flights",
      "toronto-flights"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -20391,7 +20653,9 @@
      "yara-book-club-scheduling",
      "bruno-conference-talk-proposal",
      "max-okonkwo-half-marathon-training"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -20541,7 +20805,9 @@
      "sam-baby-shower",
      "flora-trivia-night",
      "ollie-babysitting-schedule"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -20691,7 +20957,9 @@
      "kai-school-pickup",
      "will-wedding-rsvp",
      "signe-analytics-dashboard"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -20841,7 +21109,9 @@
      "ivan-pilot-kickoff",
      "ollie-babysitting-schedule",
      "raj-nda-draft"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -20991,7 +21261,9 @@
      "marisol-key-handoff",
      "nina-park-housewarming",
      "ruth-thanksgiving"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -21141,7 +21413,9 @@
      "ximena-bachelor-party",
      "signe-migration-meeting",
      "frank-retirement-party"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -21291,7 +21565,9 @@
      "signe-migration-meeting",
      "kai-school-pickup",
      "will-wedding-rsvp"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -21429,7 +21705,7 @@
      "qwen/qwen3.8-flash": "elise-analytics-dashboard"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "hector-analytics-dashboard",
      "elise-analytics-dashboard",
@@ -21441,7 +21717,9 @@
      "elise-team-offsite",
      "max-weller-nda-meeting",
      "samir-analytics-dashboard"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -21591,7 +21869,9 @@
      "ivan-pilot-kickoff",
      "ada-baby-shower",
      "gustavo-onboarding-call"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -21741,7 +22021,9 @@
      "ada-baby-shower",
      "aisha-api-migration",
      "elise-vendor-security-review"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -21891,7 +22173,9 @@
      "will-wedding-rsvp",
      "kai-school-pickup",
      "ruth-thanksgiving"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -22041,7 +22325,9 @@
      "kai-school-pickup",
      "will-wedding-rsvp",
      "dog-sitter-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -22191,7 +22477,9 @@
      "wicked-tickets",
      "chimney-sweep-booking",
      "haircut-booking"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -22329,7 +22617,7 @@
      "qwen/qwen3.8-flash": "oslo-flights"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "oslo-flights",
      "austin-flights",
@@ -22341,7 +22629,9 @@
      "athens-flight",
      "vancouver-flight",
      "lima-flight"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -22499,7 +22789,9 @@
      "ingrid-offsite",
      "signe-migration-meeting",
      "savannah-hotels"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -22649,7 +22941,9 @@
      "signe-migration-meeting",
      "elise-vendor-security-review",
      "martha-holiday-travel"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -22807,7 +23101,9 @@
      "vera-trivia-night",
      "ada-baby-shower",
      "brendan-camping-weekend"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -22965,7 +23261,9 @@
      "dina-big-sur-road-trip",
      "will-wedding-rsvp",
      "lucy-ski-trip"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -23115,7 +23413,9 @@
      "gustavo-onboarding-call",
      "hiro-christmas-call",
      "lorna-onboarding-notes"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -23261,7 +23561,7 @@
      "qwen/qwen3.8-flash": "lucy-ski-trip"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "nina-park-big-sur-road-trip",
      "yara-ski-trip",
@@ -23273,7 +23573,9 @@
      "eli-podcast-guest-spot",
      "lucy-borrowed-camera",
      "eli-ski-trip"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -23423,7 +23725,9 @@
      "hamilton-tickets",
      "gus-housewarming",
      "elise-vendor-security-review"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -23561,7 +23865,7 @@
      "qwen/qwen3.8-flash": "nina-park-housewarming"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "gus-housewarming",
      "nina-castillo-sprint-planning-notes",
@@ -23573,7 +23877,9 @@
      "nina-park-big-sur-road-trip",
      "tariq-camping-weekend",
      "nina-park-housewarming"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -23723,7 +24029,9 @@
      "ingrid-offsite",
      "hector-team-offsite",
      "ada-baby-shower"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -23873,7 +24181,9 @@
      "library-book-renewals",
      "lucy-ski-trip",
      "brendan-game-night"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -24023,7 +24333,9 @@
      "ada-baby-shower",
      "gus-ski-trip",
      "gus-housewarming"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -24173,7 +24485,9 @@
      "hector-conference-talk-notes",
      "victor-conference-talk-proposal",
      "bruno-conference-talk-proposal"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -24331,7 +24645,9 @@
      "spa-day",
      "elise-vendor-security-review",
      "ada-baby-shower"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -24469,7 +24785,7 @@
      "qwen/qwen3.8-flash": "delia-integration-timeline"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "delia-integration-timeline",
      "delia-onboarding-meeting",
@@ -24481,7 +24797,9 @@
      "credit-card-dispute",
      "hiro-christmas-call",
      "victor-on-call-rotation"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -24631,7 +24949,9 @@
      "dina-borrowed-camera",
      "holly-wedding-rsvp",
      "elise-team-offsite"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -24769,7 +25089,7 @@
      "qwen/qwen3.8-flash": "jade-renewal-draft"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "ada-baby-shower",
      "jade-nda-draft",
@@ -24781,7 +25101,9 @@
      "pierce-lang-onsite",
      "emeka-renewal-draft",
      "jade-renewal-draft"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -24939,7 +25261,9 @@
      "frank-retirement-party",
      "ada-baby-shower",
      "elise-team-offsite"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -25089,7 +25413,9 @@
      "jade-renewal-draft",
      "contact-lens-options",
      "rug-repair-options"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25239,7 +25565,9 @@
      "kokkari-reservation",
      "will-wedding-rsvp",
      "lucca-table-search"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25377,7 +25705,7 @@
      "qwen/qwen3.8-flash": "notary-search-follow-up"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "ada-baby-shower",
      "ada-summer-cabin-week",
@@ -25389,7 +25717,9 @@
      "locksmith-options",
      "rug-repair-options",
      "hiro-summer-cabin-week"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -25539,7 +25869,9 @@
      "ada-baby-shower",
      "lucy-borrowed-camera",
      "zara-half-marathon-training"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25689,7 +26021,9 @@
      "kai-school-pickup",
      "heidi-statement-of-work",
      "elise-vendor-security-review"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25839,7 +26173,9 @@
      "elise-vendor-security-review",
      "aisha-api-migration",
      "will-wedding-rsvp"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -25997,7 +26333,9 @@
      "wanda-premium-quote",
      "imani-incident-postmortem",
      "will-wedding-rsvp"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -26147,7 +26485,9 @@
      "nashville-flights",
      "oslo-flights",
      "austin-flights"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -26297,7 +26637,9 @@
      "martha-holiday-travel",
      "ruth-thanksgiving",
      "delia-integration-timeline"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -26447,7 +26789,9 @@
      "elise-vendor-security-review",
      "flora-bachelor-party",
      "victor-on-call-rotation"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -26585,7 +26929,7 @@
      "qwen/qwen3.8-flash": "lucca-table-search"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "will-wedding-rsvp",
      "delfina-table-search",
@@ -26597,7 +26941,9 @@
      "eli-podcast-guest-spot",
      "rintaro-table-search",
      "elise-vendor-security-review"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -26735,7 +27081,7 @@
      "qwen/qwen3.8-flash": "nina-park-big-sur-road-trip"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "nina-park-wedding-rsvp",
      "nina-castillo-launch-checklist",
@@ -26747,7 +27093,9 @@
      "nina-park-housewarming",
      "nina-park-big-sur-road-trip",
      "zara-big-sur-road-trip"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -26905,7 +27253,9 @@
      "eli-podcast-guest-spot",
      "ruth-thanksgiving",
      "teacher-gift-card"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -27043,7 +27393,7 @@
      "qwen/qwen3.8-flash": "passport-renewal-options"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "heidi-statement-of-work",
      "kai-school-pickup",
@@ -27055,7 +27405,9 @@
      "will-wedding-rsvp",
      "ada-baby-shower",
      "signe-migration-meeting"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -27205,7 +27557,9 @@
      "lars-migration-meeting",
      "signe-migration-meeting",
      "martha-holiday-travel"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -27355,7 +27709,9 @@
      "heidi-statement-of-work",
      "ada-retirement-party",
      "gus-ski-trip"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -27505,7 +27861,9 @@
      "max-weller-nda-meeting",
      "martha-holiday-travel",
      "jade-nda-draft"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -27634,7 +27992,7 @@
      "qwen/qwen3.8-flash": "NEW"
     },
     "agree": true,
-    "flag": "audit",
+    "flag": null,
     "candidates": [
      "lima-flight",
      "austin-flights",
@@ -27646,7 +28004,9 @@
      "vancouver-flight",
      "toronto-flights",
      "nashville-flights"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -27787,7 +28147,9 @@
      "kai-school-pickup",
      "zoo-pass",
      "martha-holiday-travel"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -27928,7 +28290,9 @@
      "vienna-hotel",
      "library-book-renewals",
      "lucy-ski-trip"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -28078,7 +28442,9 @@
      "rohan-demo-day-slides",
      "smoke-detector-search",
      "prescription-refill"
-    ]
+    ],
+    "unanimous_flag": "audit",
+    "agree_count": 3
    }
   },
   {
@@ -28216,7 +28582,7 @@
      "qwen/qwen3.8-flash": "edith-sheet-music"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "edith-sheet-music",
      "nina-park-wedding-rsvp",
@@ -28228,7 +28594,9 @@
      "ada-baby-shower",
      "aisha-api-migration",
      "ruth-thanksgiving"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -28386,7 +28754,9 @@
      "notary-search-follow-up",
      "ray-clogged-drain",
      "nina-park-wedding-rsvp"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -28536,7 +28906,9 @@
      "rohan-quarterly-okrs",
      "phoenix-rental-car",
      "maui-rental-car"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -28686,7 +29058,9 @@
      "phoenix-rental-car",
      "car-registration-renewal",
      "credit-card-dispute"
-    ]
+    ],
+    "unanimous_flag": null,
+    "agree_count": 3
    }
   },
   {
@@ -28836,7 +29210,9 @@
      "elise-vendor-security-review",
      "nina-park-wedding-rsvp",
      "credit-card-dispute"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -28986,7 +29362,9 @@
      "emeka-renewal-draft",
      "nina-park-wedding-rsvp",
      "aisha-api-migration"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 1
    }
   },
   {
@@ -29124,7 +29502,7 @@
      "qwen/qwen3.8-flash": "ivan-pilot-kickoff"
     },
     "agree": false,
-    "flag": "disagree",
+    "flag": null,
     "candidates": [
      "nina-park-wedding-rsvp",
      "tariq-camping-weekend",
@@ -29136,7 +29514,9 @@
      "rohan-quarterly-okrs",
      "edith-sheet-music",
      "credit-card-dispute"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 2
    }
   },
   {
@@ -29286,7 +29666,9 @@
      "tariq-camping-weekend",
      "solar-panel-quotes",
      "aisha-api-migration"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   },
   {
@@ -29436,7 +29818,9 @@
      "credit-card-dispute",
      "nina-park-wedding-rsvp",
      "ada-baby-shower"
-    ]
+    ],
+    "unanimous_flag": "disagree",
+    "agree_count": 0
    }
   }
  ]
