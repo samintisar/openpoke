@@ -446,3 +446,44 @@ The full system (`v2-full.yaml`, Jev split-only reviewer; `20261030-082330-v2-fu
 - Summaries and the status rule carry most of the gain and most of the duplicate reduction. The search budget pays for itself in tokens (3–4k per decision) and pass@1. The second look is small and targeted: it lowers the harmful rate.
 - Full system vs original OpenPoke (dev): pass@1 +0.127 [+0.070, +0.188] at 200, +0.148 [+0.085, +0.215] at 1,000; duplicate −0.092 at both; harmful −0.003 / −0.015. Vs v1 retrieval: +0.100 / +0.094.
 - Results: `20261030-082639-v2-ablate-second-look-dev.json`, `20261030-082813-v2-ablate-search-budget-dev.json`, `20261030-083215-v2-ablate-status-dev.json`, `20261030-083611-v2-ablate-summaries-dev.json`.
+
+## 2026-10-30 — Sealed life-2 run (Plan 6d)
+
+One run per system on life 2 (`--split test --final`), frozen at `825473b`. v1 is the current code with the four Plan 6c changes switched off (`v2-test-v1.yaml`); the same config on dev (`20261030-091036-v2-v1-dev.json`, $1.09) gives 0.86 / 0.85 at 200 / 1,000 against the original v1 run's 0.867 / 0.861, so it is a fair stand-in. Spend $3.44 in all.
+
+| At 200 / 1,000 | Original | v1 | Final |
+|---|---|---|---|
+| pass@1 | 0.815 / 0.781 | 0.849 / 0.818 | **0.929 / 0.910** |
+| duplicate | 0.086 / 0.113 | 0.095 / 0.131 | 0.005 / 0.014 |
+| harmful | 0.077 / 0.093 | 0.037 / 0.046 | 0.040 / 0.049 |
+| prompt tokens | 15.1k / 35.4k | 20.5k / 21.3k | 23.8k / 23.5k |
+
+- Final vs original: pass@1 +0.114 [+0.059, +0.176] at 200, +0.130 [+0.071, +0.198] at 1,000; duplicate −0.081 / −0.099; harmful −0.037 [−0.074, −0.003] / −0.043 [−0.096, +0.006].
+- Final vs v1: pass@1 +0.080 [+0.028, +0.139] / +0.093 [+0.034, +0.157]; duplicate −0.090 / −0.117; harmful +0.003 (no change).
+- Spec §6 targets at 1,000: correct 0.91 (target ≥ 0.95, missed); harmful 0.049 (≤ 0.01, missed); duplicate 0.014 (≤ 0.03, met); tokens 23.5k (≤ 25k, met); second-look rate 0.074 (≤ 0.20, met); gain over the original excludes zero (met). Reported as is; life 2 is not rerun.
+- Life 2 is harder than life 1 for every system (original 0.78 vs 0.81 at 1,000), but the gain over the original held: +0.13 on both lives at 1,000.
+- At 50 agents final is 0.947 against v1's 0.980 (−0.033 [−0.093, +0.013], not significant).
+- Results: `20261030-092828-v2-test-baseline-test.json`, `20261030-094241-v2-test-v1-test.json`, `20261030-100407-v2-test-full-test.json`. Scaling chart: `python -m evals.charts --runs v2-test` → `docs/figures/scaling-test.svg`.
+
+## 2026-10-30 — Summary drift check and fix (Plan 6d, after the sealed run, dev only)
+
+`python -m evals.summary_drift` judges each life-1 summary at 200 agents against its own runs (DeepSeek, four yes/no questions; not calibrated against human labels, so the "no" answers were read). It judges the summary as the card shows it (480 chars) and in full, and a stress test folds 20 extra no-news status checks into the 8 longest agents.
+
+Before (`20261030-104831-summary-drift-shown-dev.json`, `20261030-105621-summary-drift-full-dev.json`, $0.65):
+- Identity held: origin and actionable 1.00 throughout, also after the stress folds. This is what routing needs, which is why summaries still gave the largest routing gain.
+- The card clip hid the current state: the updater allowed 120 words (median 634 chars) and put "Pending" last, so 187 of 200 summaries were clipped. At 4+ runs, current was 0.60 shown against 0.87 in full.
+- Details drifted with folds: supported 0.87 (1 run) → 0.45 (4+ runs) in full. Of 8 failures read, about 3 were real errors (a deadline called unverified after a run reported it), about 3 came from empty eval reports (the summarizer guessed "no search has run"), about 2 were the judge being strict.
+
+Fix (`3b1e95c`): the summary leads with "Now", then "Matter", then "Topics", at most 70 words; an empty result is "awaiting a report"; every 5th run the summary is rebuilt from the agent's run log (last 20 runs) instead of folded, through one `next_summary` used by production and the eval. Dev summaries regenerated ($0.26); life 2's are left as the sealed run used them.
+
+After (`20261030-201216-summary-drift-shown-dev.json`, `20261030-201318-summary-drift-full-dev.json`, $0.41):
+
+| Card view | 1 run | 2–3 runs | 4+ runs |
+|---|---|---|---|
+| current, before → after | 0.96 → 0.99 | 0.70 → 1.00 | 0.60 → 0.97 |
+| supported, before → after | 0.90 → 0.86 | 0.74 → 0.81 | 0.63 → 0.79 |
+
+- Over the card's clip: 187 → 27 of 200. Origin 0.99, actionable 1.00.
+- Stress (8 agents, +20 no-news folds): supported 0.62 before and after, current 1.00 → 0.75; the 3 failures read carry a pending draft-approval step forward from the instructions, which the judge counts as unsupported.
+
+Routing with the new summaries, full system on dev (`20261030-201538-v2-full-dev.json`, $1.17) against the frozen full system: pass@1 −0.009 [−0.030, +0.009] at 200 and +0.015 [−0.012, +0.042] at 1,000; duplicate +0.009 / −0.013; harmful −0.003 at both; tokens 25.2k → 24.3k at 200, 24.7k → 25.2k at 1,000. No headline metric moves by more than 0.02: kept under the spec rule. This change has no held-out test: life 2's numbers above are the frozen system's.
