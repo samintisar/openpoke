@@ -614,3 +614,12 @@ def test_context_query_switch_adds_cards_for_a_vague_message_and_is_off_in_full_
     assert DENTIST in RetrievedSystem(cfg=cfg).shown_ids(world, vague)
     assert FullCardsSystem().context_query is False
     assert RetrievedNoGuardSystem(cfg=cfg, context_query=False).context_query is False
+
+
+def test_noguard_default_shows_the_context_card_on_a_vague_case():
+    world = toy_world()
+    context = [("user_message", "let's sort out the dentist cleaning booking", "2026-10-27T11:00:00"),
+               ("assistant_message", "Sure.", "2026-10-27T11:00:05")]
+    vague = case("how's it going?", [DENTIST], context=context)
+    cfg = RetrievalConfig(k=0, hot_max=0)
+    assert DENTIST in RetrievedNoGuardSystem(cfg=cfg).shown_ids(world, vague)

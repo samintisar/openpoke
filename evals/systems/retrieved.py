@@ -267,7 +267,7 @@ class RetrievedSystem:
         extra = None
         if self.context_query and case is not None and case.message_type == "user":
             texts = [entry[1] for entry in case.context[-QUERY_CONTEXT_ENTRIES:]]
-            extra = context_query(case.message, texts)
+            extra = context_query(case.message, texts, cards, world.now, self.cfg, _last_routed(cards, world))
         return select(_query(case), cards, world.now, _last_routed(cards, world), self.cfg, pinned=pinned,
                       context_query=extra)
 

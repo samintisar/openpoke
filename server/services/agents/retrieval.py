@@ -281,17 +281,34 @@ _PROGRESS_RE = re.compile(
     re.IGNORECASE,
 )
 CONTEXT_EXTRA = 3  # cards a context query may add beyond the top K
+CONTEXT_WEAK_SCORE = 0.35  # best first-pass score below which a vague message gets the context pass
 
 
 def needs_context(message: str) -> bool:
     """A progress question, or a message that names no one: earlier turns may say what it is about."""
-    return bool(_PROGRESS_RE.search(message or "")) or not extract_entities([message or ""])
+    message = (message or "").replace("’", "'")
+    return bool(_PROGRESS_RE.search(message)) or not extract_entities([message])
 
 
-def context_query(message: str, recent_texts: Sequence[str] = ()) -> Optional[str]:
-    """The message plus the last 3 turns, for a second retrieval pass; None when the message needs no context."""
+def context_query(
+    message: str,
+    recent_texts: Sequence[str] = (),
+    cards: Optional[Sequence[AgentCard]] = None,
+    now: Optional[datetime] = None,
+    cfg: Optional[RetrievalConfig] = None,
+    last_routed: Iterable[str] = (),
+) -> Optional[str]:
+    """The message plus the last 3 turns, for a second retrieval pass.
+
+    None unless the message needs context AND the first pass is weak: the message alone has at most 2
+    content words, or (when `cards` and `now` are given) its best card scores below CONTEXT_WEAK_SCORE.
+    """
     if not needs_context(message):
         return None
+    if len(content_tokens(message)) > 2 and cards is not None and now is not None:
+        scored = score_cards(message, cards, now, last_routed, cfg)
+        if scored and scored[0][1] >= CONTEXT_WEAK_SCORE:
+            return None
     parts = [message, *list(recent_texts)[-3:]]
     return "\n".join(part for part in parts if part)
 
@@ -311,6 +328,7 @@ def pinned_from_agent_message(message: str, cards: Sequence[AgentCard]) -> list[
 
 __all__ = [
     "CONTEXT_EXTRA",
+    "CONTEXT_WEAK_SCORE",
     "DEFAULT_CONFIG",
     "RetrievalConfig",
     "build_query",
