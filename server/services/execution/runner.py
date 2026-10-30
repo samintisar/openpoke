@@ -2,7 +2,8 @@
 
 Runs for the same agent are serial in FIFO order (a correction sent mid-run queues behind the run in progress).
 The global slot is taken inside the agent lock, so a queued run never holds one. Each finished run updates its card's
-summary, schedules memory compaction and hands its result to `deliver_result`, which posts it to the inbox.
+summary, schedules memory compaction and hands its result to `deliver_result`, which posts it to the inbox. The summary is updated in the background, so the interaction agent's turn on a
+just-delivered result routes against the previous summary (deliberate: it never delays delivery).
 """
 
 from __future__ import annotations

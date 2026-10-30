@@ -62,6 +62,7 @@ from server.services import inbox as inbox_package
 from server.services import timezone_store as timezone_module
 from server.services import triggers as triggers_package
 from server.services.agents import memory as memory_module
+from server.services.agents import summaries as summaries_module
 from server.services.agents import registry as registry_module
 from server.services.agents import render as render_module
 from server.services.agents.cards import AgentCard, extract_entities
@@ -641,6 +642,7 @@ class E2ESession:
         # LLM call sites.
         for module, role in ((ia_runtime_module, "interaction"), (ea_runtime_module, "execution"),
                              (search_tool_module, "search"), (memory_module, "compaction"),
+                             (summaries_module, "summary"),
                              (summarizer_module, "summarizer"), (classifier_module, "classifier")):
             p.set(module, "request_chat_completion", self.bridge.for_role(role))
         p.set(render_module, "relative_time", coarse_relative_time)

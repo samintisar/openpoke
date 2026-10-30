@@ -22,6 +22,13 @@ _TAG_PATTERN = re.compile(r"<(\s*/?\s*untrusted_email)", re.IGNORECASE)
 MESSAGE_TEXT_FIELDS = ("messageText", "snippet", "textBody", "htmlBody")
 
 
+def escape_tags(text: str, *tags: str) -> str:
+    """Neutralize any opening or closing ``tags`` inside ``text`` so it cannot close or open a wrapper."""
+
+    names = "|".join(re.escape(tag) for tag in tags)
+    return re.sub(rf"<(\s*/?\s*(?:{names}))", r"&lt;\1", text, flags=re.IGNORECASE)
+
+
 def escape_untrusted(text: str) -> str:
     """Neutralize any untrusted_email tag inside ``text`` so it cannot close or open a wrapper."""
 
@@ -84,6 +91,8 @@ def wrap_message_text_fields(payload: Any) -> Any:
 __all__ = [
     "MESSAGE_TEXT_FIELDS",
     "TAG",
+    "escape_tags",
+    "escape_tags",
     "escape_untrusted",
     "wrap_message_text_fields",
     "wrap_untrusted_email",

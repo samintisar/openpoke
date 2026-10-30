@@ -45,8 +45,7 @@ def env(tmp_path, monkeypatch):
         updates.append((agent_id, instructions, result_text))
 
     monkeypatch.setattr(runner_module, "refresh_card_summary", fake_refresh)
-    monkeypatch.setattr(runner_module, "_summary_updates", updates, raising=False)
-    return logs, directory, delivered
+    return logs, directory, delivered, updates
 
 
 def scripted_runtime(monkeypatch, execute):
@@ -71,7 +70,7 @@ async def settle(times: int = 5):
 
 
 async def test_runs_on_one_agent_never_overlap_and_keep_fifo_order(env, monkeypatch):
-    logs, _, _ = env
+    logs, _, _, _ = env
     events, gates = [], {name: asyncio.Event() for name in ("first", "second", "third")}
 
     async def execute(agent_id, instructions):
@@ -95,7 +94,7 @@ async def test_runs_on_one_agent_never_overlap_and_keep_fifo_order(env, monkeypa
 
 
 async def test_fan_out_never_exceeds_the_slot_cap(env, monkeypatch):
-    logs, _, _ = env
+    logs, _, _, _ = env
     active, peak = [0], [0]
 
     async def execute(agent_id, instructions):
@@ -112,7 +111,7 @@ async def test_fan_out_never_exceeds_the_slot_cap(env, monkeypatch):
 
 
 async def test_a_queued_run_holds_no_slot(env, monkeypatch):
-    logs, _, _ = env
+    logs, _, _, _ = env
     started, release = [], asyncio.Event()
 
     async def execute(agent_id, instructions):
@@ -134,7 +133,7 @@ async def test_a_queued_run_holds_no_slot(env, monkeypatch):
 
 
 async def test_the_run_context_names_the_agent_and_trigger(env, monkeypatch):
-    logs, _, _ = env
+    logs, _, _, _ = env
     seen = []
 
     async def execute(agent_id, instructions):
@@ -153,7 +152,7 @@ async def test_the_run_context_names_the_agent_and_trigger(env, monkeypatch):
 
 
 async def test_a_run_schedules_a_summary_and_delivers_one_result(env, monkeypatch):
-    logs, directory, delivered = env
+    logs, directory, delivered, updates = env
 
     async def execute(agent_id, instructions):
         return ExecutionResult(agent_name="Alice Reply", agent_id=agent_id, success=True, response=" Sent the reply. ")
@@ -162,12 +161,12 @@ async def test_a_run_schedules_a_summary_and_delivers_one_result(env, monkeypatc
     result = await AgentRunner(log_store=logs).run("alice", "Reply", origin="trigger", trigger_id=3)
     assert result.success
     await asyncio.sleep(0)
-    assert runner_module._summary_updates == [("alice", "Reply", "[SUCCESS] Alice Reply: Sent the reply.")]
+    assert updates == [("alice", "Reply", "[SUCCESS] Alice Reply: Sent the reply.")]
     assert delivered == [("[SUCCESS] Alice Reply: Sent the reply.", "trigger", 3)]
 
 
 async def test_each_result_is_delivered_on_its_own(env, monkeypatch):
-    logs, _, delivered = env
+    logs, _, delivered, _ = env
 
     async def execute(agent_id, instructions):
         return ok(agent_id, f"{agent_id} done")
@@ -202,7 +201,7 @@ def record_call(logs, agent_id, tool, args, result):
 @pytest.fixture
 def real_runtime(env, monkeypatch):
     """The real EA runtime over the temp log store with a scripted LLM and stub tools."""
-    logs, _, _ = env
+    logs, _, _, _ = env
 
     class StubSettings:
         openrouter_api_key = "test"
@@ -242,7 +241,7 @@ async def test_runtime_returns_a_partial_result_at_the_iteration_limit(real_runt
 
 async def test_iteration_limit_lists_drafts_from_this_run_only(env, real_runtime):
     logs, _ = real_runtime
-    _, directory, delivered = env
+    _, directory, delivered, updates = env
     record_call(logs, "alice", "gmail_create_draft", {"recipient_email": "old@x.com"},
                 {"successful": True, "data": {"id": "r-old"}})
 
@@ -254,11 +253,11 @@ async def test_iteration_limit_lists_drafts_from_this_run_only(env, real_runtime
     assert payload.startswith("[PARTIAL] Alice Reply: ")
     assert payload.endswith("Already done: draft r-123 to alice@x.com.")
     await asyncio.sleep(0)
-    assert runner_module._summary_updates[0][2].endswith("Already done: draft r-123 to alice@x.com.")
+    assert updates[0][2].endswith("Already done: draft r-123 to alice@x.com.")
 
 
 async def test_timeout_reports_side_effects_already_performed(env, monkeypatch):
-    logs, _, delivered = env
+    logs, _, delivered, _ = env
 
     async def execute(agent_id, instructions):
         record_call(logs, agent_id, "createTrigger", {"payload": "Check in"}, {"trigger_id": 9, "status": "active"})
@@ -275,7 +274,7 @@ async def test_timeout_reports_side_effects_already_performed(env, monkeypatch):
 
 
 async def test_partial_with_no_side_effects_says_so(env, monkeypatch):
-    logs, _, delivered = env
+    logs, _, delivered, _ = env
 
     async def execute(agent_id, instructions):
         await asyncio.sleep(10)
