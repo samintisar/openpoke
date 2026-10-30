@@ -1,0 +1,11 @@
+name: v2-step1-summaries
+system: retrieved
+system_options: {status_policy: false, second_look: false}
+model: deepseek/deepseek-v4.1-flash
+world: lived_v2
+life: 1
+n_agents: [10, 50, 200, 1000]
+k: 3
+include_handwritten: false
+budget_usd: 3.0
+concurrency: 4
