@@ -28,8 +28,11 @@ METRICS: dict[str, Callable[[dict[str, Any]], bool]] = {
 def _per_case(rows: list[dict[str, Any]], size: str, metric: str) -> dict[str, float]:
     by_case: dict[str, list[bool]] = defaultdict(list)
     for row in rows:
-        if row["n_agents"] == size and row["outcome"] != "error":
-            by_case[row["case_id"]].append(METRICS[metric](row))
+        if row["n_agents"] != size or row["outcome"] == "error":
+            continue
+        if metric == "duplicate" and not row["expects_reuse"]:  # metrics.py: duplicates among reuse cases only
+            continue
+        by_case[row["case_id"]].append(METRICS[metric](row))
     return {case: sum(v) / len(v) for case, v in by_case.items()}
 
 
@@ -52,7 +55,7 @@ def kind_pass(rows: list[dict[str, Any]], size: str) -> dict[str, float]:
 
 
 def _mean(rows: list[dict[str, Any]], size: str, key: Callable[[dict[str, Any]], float]) -> float | None:
-    values = [key(row) for row in rows if row["n_agents"] == size]
+    values = [key(row) for row in rows if row["n_agents"] == size and row["outcome"] != "error"]
     return sum(values) / len(values) if values else None
 
 
@@ -66,7 +69,15 @@ def report(base_name: str, new_name: str) -> str:
         lines.append(f"\n{size}")
         for metric in METRICS:
             mean, low, high, n = paired(base, new, size, metric)
-            lines.append(f"  {metric:10} {mean:+.3f} [{low:+.3f}, {high:+.3f}]  cases={n}")
+            counts = f"cases={n} (base {len(_per_case(base, size, metric))}, new {len(_per_case(new, size, metric))})"
+            if n == 0:
+                lines.append(f"  {metric:10} n/a  {counts}")
+            else:
+                lines.append(f"  {metric:10} {mean:+.3f} [{low:+.3f}, {high:+.3f}]  {counts}")
+        errors = [sum(1 for r in rows if r["n_agents"] == size and r["outcome"] == "error") for rows in (base, new)]
+        lines.append(f"  error rows: base {errors[0]}, new {errors[1]}")
+        if errors[1] > errors[0]:
+            lines.append(f"  WARNING: NEW has more error rows than BASE at {size}; errored cases are dropped from the comparison")
         tokens = [_mean(rows, size, lambda r: r["prompt_tokens"]) for rows in (base, new)]
         looks = _mean(new, size, lambda r: bool(r.get("second_looks")))
         lines.append(f"  tokens     {tokens[0] or 0:,.0f} -> {tokens[1] or 0:,.0f}   second-look rate {looks or 0:.3f}")

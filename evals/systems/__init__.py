@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 from typing import Any
 
 from .base import RoutingSystem
@@ -35,9 +36,10 @@ def get_system(name: str, options: dict[str, Any] | None = None) -> RoutingSyste
     except KeyError:
         raise ValueError(f"unknown system {name!r}; known: {sorted(SYSTEMS)}") from None
     try:
-        return cls(**(options or {}))
+        inspect.signature(cls).bind(**(options or {}))
     except TypeError as exc:
-        raise ValueError(f"system {name!r} does not take options {sorted(options or {})}: {exc}") from None
+        raise ValueError(f"system {name!r} does not take options {sorted(options or {})}: {exc}") from exc
+    return cls(**(options or {}))  # outside the try: a real constructor bug keeps its traceback
 
 
 __all__ = ["RoutingSystem", "SYSTEMS", "get_system"]
