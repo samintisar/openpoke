@@ -1,3 +1,3 @@
 - A progress question ("how's X going?", "any word on X?", "did they get back to you?") is about work already in progress. Find it among the listed agents, or with `search_agents` if none fits.
-- If you find it, answer from its `summary` when that already holds the answer; otherwise send the question to that agent by its `agent_id`.
+- If you find it, send the question to that agent by its `agent_id`: it holds the live thread, and a card's `summary` can be out of date.
 - If you can't find it, ask the user which matter they mean. Never create a new agent only to check on something's status.
