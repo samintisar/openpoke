@@ -302,14 +302,20 @@ def _apply_fix(probe: dict[str, Any], item: dict[str, Any], roster: dict[str, An
     ]
 
 
-def finalize(bench: dict[str, Any], decisions: list[dict[str, Any]], *, allow_fake: bool = False,
-             decisions_sha256: str | None = None) -> dict[str, Any]:
+def finalize(bench: dict[str, Any], decisions: list[dict[str, Any]], *, corrections: list[dict[str, Any]] | None = None,
+             allow_fake: bool = False, decisions_sha256: str | None = None,
+             corrections_sha256: str | None = None) -> dict[str, Any]:
     """One life's reviewed bench: flagged probes decided by a human, unflagged ones kept as "auto".
 
     A decision is {id, decision: accept|fixed|reject, note?, gold_targets?, acceptable_ids?, clarify_ok?};
     fixed needs gold_targets (NEW allowed) and only fixed may carry the gold fields; a fix without
     acceptable_ids clears them, one without clarify_ok keeps the probe's. Every flagged probe needs
-    exactly one decision. decisions_sha256 defaults to a hash of `decisions` as given."""
+    exactly one decision. decisions_sha256 defaults to a hash of `decisions` as given.
+
+    corrections are curator fixes found after review (e.g. an answer key counting another person's
+    helper): {id, decision: fixed|reject, note, gold fields}, on any probe, flagged or not, each with a
+    note. They apply after the reviewer's decision, which stays on record; the label error rate counts
+    reviewer decisions only."""
     if bench.get("meta", {}).get("fake_llm") and not allow_fake:
         raise ValueError("refusing to finalize a bench built with the fake writer (--fake-llm)")
     missing = [p["id"] for p in bench["probes"] if "check" not in p]
@@ -332,34 +338,59 @@ def finalize(bench: dict[str, Any], decisions: list[dict[str, Any]], *, allow_fa
     undecided = [p["id"] for p in bench["probes"] if _flagged(p) and p["id"] not in chosen]
     if undecided:
         raise ValueError(f"undecided: {', '.join(undecided)}")
+    corrected: dict[str, dict[str, Any]] = {}
+    for item in corrections or []:
+        probe_id = item.get("id")
+        if probe_id not in by_id:
+            raise ValueError(f"correction for unknown probe id {probe_id!r}")
+        if probe_id in corrected:
+            raise ValueError(f"probe {probe_id} corrected twice")
+        if item.get("decision") not in ("fixed", "reject"):
+            raise ValueError(f"{probe_id}: a correction must be fixed or reject")
+        if not str(item.get("note", "")).strip():
+            raise ValueError(f"{probe_id}: a correction needs a note saying why")
+        _check_decision(item, by_id[probe_id], roster_of(by_id[probe_id]))
+        corrected[probe_id] = item
 
     kept: list[dict[str, Any]] = []
     tally = {"accept": 0, "fixed": 0, "reject": 0}
+    curator = {"fixed": 0, "reject": 0}
     audit = audit_changed = auto = 0
     for source in bench["probes"]:
         probe = copy.deepcopy(source)
+        fix = corrected.get(probe["id"])
         if not _flagged(probe):
             auto += 1
-            kept.append({**probe, "review": "auto"})
-            continue
-        item = chosen[probe["id"]]
-        decision = item["decision"]
-        tally[decision] += 1
-        if probe["check"]["flag"] == "audit":
-            audit += 1
-            audit_changed += decision != "accept"
-        if decision == "reject":
-            continue
-        review: dict[str, Any] = {"decision": decision, "note": item.get("note", "")}
-        if decision == "fixed":
-            review["original"] = {k: probe[k] for k in ("gold_targets", "acceptable_ids", "clarify_ok")}
-            _apply_fix(probe, item, roster_of(probe))
+            review: Any = "auto"
+        else:
+            item = chosen[probe["id"]]
+            decision = item["decision"]
+            tally[decision] += 1
+            if probe["check"]["flag"] == "audit":
+                audit += 1
+                audit_changed += decision != "accept"
+            if decision == "reject" and not fix:
+                continue
+            review = {"decision": decision, "note": item.get("note", "")}
+            if decision == "fixed":
+                review["original"] = {k: probe[k] for k in ("gold_targets", "acceptable_ids", "clarify_ok")}
+                _apply_fix(probe, item, roster_of(probe))
+        if fix:
+            curator[fix["decision"]] += 1
+            if fix["decision"] == "reject":
+                continue
+            review = {"decision": "auto"} if review == "auto" else review
+            review["curator"] = {"decision": "fixed", "note": fix["note"],
+                                 "original": {k: probe[k] for k in ("gold_targets", "acceptable_ids", "clarify_ok")}}
+            _apply_fix(probe, fix, roster_of(probe))
         kept.append({**probe, "review": review})
     summary = {
         "kept": len(kept), "auto_kept": auto, "accepted": tally["accept"], "fixed": tally["fixed"],
         "rejected": tally["reject"], "audit": audit, "audit_changed": audit_changed,
         "label_error_rate": audit_changed / audit if audit else None,
         "decisions_sha256": decisions_sha256 or _canonical_sha256(decisions),
+        "curator_fixed": curator["fixed"], "curator_rejected": curator["reject"],
+        "corrections_sha256": corrections_sha256 or _canonical_sha256(corrections or []),
     }
     return {"meta": {**copy.deepcopy(bench.get("meta", {})), "review": summary},
             "rosters": copy.deepcopy(bench["rosters"]), "probes": kept}
@@ -418,19 +449,25 @@ def _review_data_cli(seeds: list[int], bench_dir: Path, out: Path) -> int:
     return 0
 
 
-def _finalize_cli(seeds: list[int], decisions_file: Path, bench_dir: Path) -> int:
+def _finalize_cli(seeds: list[int], decisions_file: Path, bench_dir: Path,
+                  corrections_file: Path | None = None) -> int:
     raw = decisions_file.read_bytes()
     per_life = split_decisions(json.loads(raw.decode("utf-8")), seeds)
     digest = hashlib.sha256(raw).hexdigest()
+    fixes_raw = corrections_file.read_bytes() if corrections_file else b"[]"
+    fixes = split_decisions(json.loads(fixes_raw.decode("utf-8")), seeds)
+    fixes_digest = hashlib.sha256(fixes_raw).hexdigest()
     bodies = {seed: finalize(json.loads(bench_path(seed, directory=bench_dir).read_text(encoding="utf-8")),
-                             per_life[seed], decisions_sha256=digest) for seed in seeds}
+                             per_life[seed], corrections=fixes[seed], decisions_sha256=digest,
+                             corrections_sha256=fixes_digest) for seed in seeds}
     for seed, body in bodies.items():  # all lives validated before anything is written
         out = bench_path(seed, reviewed=True, directory=bench_dir)
         out.write_text(json.dumps(body, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
         r = body["meta"]["review"]
         rate = "n/a" if r["label_error_rate"] is None else f"{r['label_error_rate']:.3f}"
         print(f"life {seed}: kept {r['kept']} ({r['auto_kept']} auto, {r['accepted']} accepted, {r['fixed']} fixed), "
-              f"rejected {r['rejected']}; audit {r['audit_changed']}/{r['audit']} changed, label error rate {rate}  "
+              f"rejected {r['rejected']}; audit {r['audit_changed']}/{r['audit']} changed, label error rate {rate}; "
+              f"curator fixed {r['curator_fixed']}, rejected {r['curator_rejected']}  "
               f"wrote {out}")
     return 0
 
@@ -455,6 +492,7 @@ def main(argv: list[str] | None = None) -> int:
     fin = sub.add_parser("finalize", help="apply review decisions; writes bench-v2-s{seed}.reviewed.json")
     fin.add_argument("--seed", type=int, action="append", required=True)
     fin.add_argument("--decisions", type=Path, required=True, help="JSON list of decisions, both lives")
+    fin.add_argument("--corrections", type=Path, help="JSON list of curator corrections, both lives, each with a note")
     fin.add_argument("--bench-dir", type=Path, default=HERE, help="where bench-v2-s{seed}.json live")
     args = parser.parse_args(argv)
     if args.command == "majority":
@@ -468,7 +506,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "review-data":
         return _review_data_cli(args.seed, args.bench_dir, args.out)
     if args.command == "finalize":
-        return _finalize_cli(args.seed, args.decisions, args.bench_dir)
+        return _finalize_cli(args.seed, args.decisions, args.bench_dir, args.corrections)
     if len(args.seed) not in (1, 2) or len(set(args.seed)) != len(args.seed):
         parser.error("give one --seed, or two different ones")
     out_dir = args.out_dir or args.world_dir

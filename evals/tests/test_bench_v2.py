@@ -337,3 +337,33 @@ def test_majority_rule_is_applied_once():
     out = majority({"meta": {}, "rosters": {}, "probes": [_voted("x", ["a1"] * 3, None)]}, seed=1, audit=1)
     with pytest.raises(ValueError, match="already"):
         majority(out, seed=1, audit=1)
+
+
+def test_finalize_curator_corrections_apply_to_any_probe_and_keep_the_reviewer_decision():
+    from evals.worlds.lived.bench_v2 import finalize
+    corrections = [
+        {"id": "v2-s1-10-typo-03", "decision": "fixed", "gold_targets": ["a2"], "note": "misroute"},  # auto-kept
+        {"id": "v2-s1-10-typo-00", "decision": "reject", "note": "wrong person"},  # reviewer accepted
+    ]
+    out = finalize(_bench(), _all(), corrections=corrections, allow_fake=True)
+    probes = {p["id"]: p for p in out["probes"]}
+    assert "v2-s1-10-typo-00" not in probes
+    auto = probes["v2-s1-10-typo-03"]
+    assert auto["gold_targets"] == ["a2"] and auto["review"]["decision"] == "auto"
+    assert auto["review"]["curator"] == {"decision": "fixed", "note": "misroute",
+                                         "original": {"gold_targets": ["a1"], "acceptable_ids": [], "clarify_ok": False}}
+    r = out["meta"]["review"]
+    assert (r["accepted"], r["rejected"], r["curator_fixed"], r["curator_rejected"]) == (3, 0, 1, 1)
+    assert r["label_error_rate"] == 0.0 and len(r["corrections_sha256"]) == 64  # reviewer-only rate
+
+
+@pytest.mark.parametrize("item, match", [
+    ({"id": "v2-s1-10-typo-03", "decision": "fixed", "gold_targets": ["a2"]}, "note"),
+    ({"id": "v2-s1-10-typo-03", "decision": "accept", "note": "x"}, "fixed or reject"),
+    ({"id": "v2-s1-10-typo-99", "decision": "reject", "note": "x"}, "unknown"),
+    ({"id": "v2-s1-10-typo-03", "decision": "fixed", "gold_targets": ["zz"], "note": "x"}, "not in its roster"),
+])
+def test_finalize_rejects_bad_corrections(item, match):
+    from evals.worlds.lived.bench_v2 import finalize
+    with pytest.raises(ValueError, match=match):
+        finalize(_bench(), _all(), corrections=[item, *([item] if match == "twice" else [])], allow_fake=True)

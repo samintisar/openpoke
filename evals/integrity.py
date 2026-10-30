@@ -42,6 +42,12 @@ PROTECTED = (
     "evals/worlds/lived/store.py",
     "evals/worlds/lived/world-s1.json",
     "evals/worlds/lived/round2-s1.reviewed.json",
+    "evals/worlds/lived/world-s2.json",
+    "evals/worlds/lived/bench_v2.py",  # load_v2 reads the reviewed files below
+    "evals/worlds/lived/bench-v2-s1.reviewed.json",
+    "evals/worlds/lived/bench-v2-s2.reviewed.json",
+    "evals/worlds/lived/bench-v2-decisions.json",  # the human review, as collected
+    "evals/worlds/lived/bench-v2-corrections.json",  # curator corrections, each with its reason
     "evals/worlds/memory_gen.py",
     "evals/layers/memory.py",
     "evals/memory_run.py",
