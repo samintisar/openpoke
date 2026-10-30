@@ -83,7 +83,11 @@ def test_agent_messages_get_no_extras(monkeypatch):
         def last_routed(self): return []
     monkeypatch.setattr(ia, "get_agent_directory", lambda: D())
     monkeypatch.setattr(ia, "_recent_turn_texts", lambda t: ["Gary lease"])
+    monkeypatch.setattr(ia, "CONTEXT_QUERY", True)
     ia._render_active_agents("how's it going?", "agent", NOW)
     assert seen["context_query"] is None
     ia._render_active_agents("how's it going?", "user", NOW)
     assert seen["context_query"] is not None
+    monkeypatch.setattr(ia, "CONTEXT_QUERY", False)  # production default: off (no gold-card gain on dev)
+    ia._render_active_agents("how's it going?", "user", NOW)
+    assert seen["context_query"] is None

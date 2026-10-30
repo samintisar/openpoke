@@ -236,7 +236,7 @@ class RetrievedSystem:
     def __init__(
         self, cfg: RetrievalConfig | None = None, lifecycle: bool = True, guard: bool = True, search: bool = True,
         summaries: bool = True, status_policy: bool = True, second_look: bool = True,
-        context_query: bool = True, search_budget: int | None = SEARCH_BUDGET,
+        context_query: bool = False, search_budget: int | None = SEARCH_BUDGET,
     ) -> None:
         self.cfg = cfg or RetrievalConfig()
         # False keeps every card active, to ablate the lifecycle (dormant / archived statuses).
@@ -247,7 +247,7 @@ class RetrievedSystem:
         self.summaries = summaries  # False: cards carry no living summary (the summaries ablation)
         self.status_policy = status_policy  # False: no status-question rule
         self.second_look = second_look  # False: no second look before risky dispatches
-        self.context_query = context_query  # False: no second retrieval pass for vague messages
+        self.context_query = context_query  # off by default: no gold-card gain on dev (Plan 6c Task 10)
         self.search_budget = search_budget  # searches per turn before a refusal; None = unlimited
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
         self._cards_cache: dict[int, tuple[World, list[AgentCard]]] = {}

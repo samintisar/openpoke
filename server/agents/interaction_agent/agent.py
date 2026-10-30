@@ -11,6 +11,10 @@ from ...services.conversation import get_conversation_log
 # Conversation turns added to the routing query, besides the new message.
 RECENT_TURNS = 3
 
+# Second retrieval pass for vague messages (Plan 6c Task 10). Off: on life-1 dev it never surfaced a
+# correct card the first pass had missed, at 200 or 1,000 agents, so it only added tokens.
+CONTEXT_QUERY = False
+
 _prompt_path = Path(__file__).parent / "system_prompt.md"
 SYSTEM_PROMPT = _prompt_path.read_text(encoding="utf-8").strip()
 
@@ -74,7 +78,7 @@ def _render_active_agents(latest_text: str, message_type: str, now: datetime) ->
     pinned = pinned_from_agent_message(latest_text, cards) if message_type == "agent" else []
     recent = _recent_turn_texts(latest_text)
     query = build_query(latest_text, recent)
-    extra = context_query(latest_text, recent, cards, now, None, directory.last_routed()) if message_type == "user" else None
+    extra = context_query(latest_text, recent, cards, now, None, directory.last_routed()) if CONTEXT_QUERY and message_type == "user" else None
     selected = select(query, cards, now, directory.last_routed(), pinned=pinned, context_query=extra)
     return render_cards(selected, len(cards), now)
 
