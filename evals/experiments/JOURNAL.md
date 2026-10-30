@@ -280,3 +280,29 @@ One compaction call failed (tahoe-cabin). It fell back to the full history, so r
   5. **Two-request messages done halfway (3).** "confirm the deep clean time with Rita, also …" created a new Rita helper instead of using hers. → living summaries should help; re-measure.
 - **Spend so far on v2:** about $4.40 (gate $0.09, life 2 growth $1.16, probes $0.10, checks $0.58, re-baseline $2.46).
 - **Next:** Plan 6c, written from these clusters.
+
+## 2026-10-30 — Second-look calibration (Plan 6c Task 9, offline, $0)
+
+- **How:** `python -m evals.second_look_calibration` replays every step-1 row's `send_message_to_agent` calls through production `dispatch` over the life-1 cards (in-turn creates included), computes each trigger's inputs once, then applies every config's thresholds, one look per user turn. Checked against the production trigger functions at the default config: 0 mismatches over 887 calls; the replay reproduces every row's dispatches. Rate denominator: all valid rows, as `second_look_rate`.
+- **Data:** `20261030-055120-v2-step1-summaries-dev.json` (480 chars, the shipped setting). The -300 run gives the same picture (default 0.641, shared-person floor 0.332).
+- **Default config (0.5 / 0.5 / 0.8), 200+1000:** trigger rate 0.645 (200: 0.627, 1000: 0.664). Looks 426 of 660 rows; 22 of the 64 failures are looked at (precision 0.05).
+
+  | Reason | Looks (rate) | On failures | Precision |
+  |---|---|---|---|
+  | create | 85 (0.129) | 2 | 0.02 |
+  | shared person | 217 (0.329) | 7 | 0.03 |
+  | unmentioned name | 57 (0.086) | 5 | 0.09 |
+  | low coverage | 67 (0.102) | 8 | 0.12 |
+
+  | Outcome | Looked at / failures |
+  |---|---|
+  | missed_create | 13 / 13 |
+  | wrong_reuse | 7 / 7 |
+  | duplicate_create | 1 / 25 |
+  | should_clarify | 1 / 14 |
+  | no_action, unnecessary_clarify | 0 / 5 |
+
+- **Grid** (min_score 0.3–0.9 and 1.01 = off; reuse_coverage 0–0.6; name_coverage 0–0.9; 336 configs): **no config reaches 0.15, or 0.20.** The shared-person trigger has no threshold and alone fires on 0.329 of rows (210 of its 217 looks are on correct rows). The lowest rate is 0.329 (everything else off, 7 failures looked at).
+- **Duplicate creates (the largest failure class) are out of the create trigger's reach:** 24 of 25 have a best-card score of 0.45–0.55 and no shared person or two shared words; correct creates score the same or higher (most 0.82–1.0), so `min_score` cannot separate them.
+- **What-if (not in the code):** if the shared-person signal fired only when the other card outranks the target, it looks at 40 rows (7 failures, all of them still). With create off, reuse_coverage 0.2 and name_coverage 0: rate 0.108 (200: 0.118, 1000: 0.097), 12 of 64 failures (missed_create 9/13, wrong_reuse 3/7).
+- **Decision:** defaults unchanged; the trigger design is the user's call before the step 3 run.
