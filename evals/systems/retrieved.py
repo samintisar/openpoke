@@ -13,6 +13,7 @@ from datetime import timedelta
 from typing import Any
 
 from server.agents.interaction_agent.agent import build_system_prompt
+from server.agents.interaction_agent.second_look_gate import gate
 from server.agents.interaction_agent.tools import SEND_DRAFT_ARGUMENTS_ERROR
 from server.services.agents.cards import AgentCard, as_utc
 from server.services.agents.directory import InMemoryDirectory
@@ -113,17 +114,29 @@ def _error(name: str, args: dict[str, Any], payload: Any) -> dict[str, Any]:
 class RetrievedTurn:
     """Per-run tool state: a fresh directory over the world's cards, so creates are seen within the turn."""
 
-    def __init__(self, world: World, cards: list[AgentCard], cfg: RetrievalConfig, guard: bool = True) -> None:
+    def __init__(
+        self, world: World, cards: list[AgentCard], cfg: RetrievalConfig, guard: bool = True,
+        case: Case | None = None, second_look: bool = False,
+    ) -> None:
         self.world = world
         self.cfg = cfg
         self.guard = guard
+        self.case = case
+        self.second_look = second_look
         self.directory = InMemoryDirectory(cards, last_routed=_last_routed(cards, world))
         self.created_ids: set[str] = set()
+        self._llm: Any = None  # bound by the routing layer: the second look uses the run's client
+        self._model = ""
+        self._sample = 0
+        self._looked = False  # at most one second look per turn
 
-    def handle(self, name: str, args: dict[str, Any], decision: Decision) -> dict[str, Any]:
+    def bind_llm(self, llm: Any, *, model: str, sample: int) -> None:
+        self._llm, self._model, self._sample = llm, model, sample
+
+    async def handle(self, name: str, args: dict[str, Any], decision: Decision) -> dict[str, Any]:
         """Record a valid call's effect and return the tool result production would give."""
         if name == "send_message_to_agent":
-            return self._send_to_agent(name, args, decision)
+            return await self._send_to_agent(name, args, decision)
         if name == "search_agents":
             payload = search_payload(self.directory, str(args.get("query", "")), self.world.now, self.cfg)
             return _success(name, args, payload)
@@ -142,7 +155,18 @@ class RetrievedTurn:
             result = {"status": "waiting", "reason": args.get("reason")}
         return _success(name, args, result)
 
-    def _send_to_agent(self, name: str, args: dict[str, Any], decision: Decision) -> dict[str, Any]:
+    async def _send_to_agent(self, name: str, args: dict[str, Any], decision: Decision) -> dict[str, Any]:
+        if (self.second_look and not self._looked and self._llm is not None and self.case is not None
+                and self.case.message_type == "user"):
+            context = [entry[1] for entry in self.case.context[-QUERY_CONTEXT_ENTRIES:]]
+            args, held, record = await gate(dict(args), message=self.case.message, context=context,
+                                            directory=self.directory, now=self.world.now,
+                                            complete=self._complete(decision), rcfg=self.cfg)
+            if record is not None:
+                self._looked = True
+                decision.second_looks.append(record)
+            if held is not None:
+                return _error(name, args, held)
         result = dispatch(
             self.directory,
             instructions=str(args.get("instructions", "")),
@@ -166,6 +190,29 @@ class RetrievedTurn:
             return _error(name, args, result.payload)
         return _success(name, args, result.payload)
 
+    def _complete(self, decision: Decision):
+        """The second look's model call, through the run's client, accounted on the decision like an IA call."""
+        async def complete(system: str, user: str) -> str:
+            response = await self._llm.complete(model=self._model, system=system,
+                                                messages=[{"role": "user", "content": user}], tools=[],
+                                                sample=self._sample)
+            meta = response.get("_meta", {})
+            cost = float(meta.get("cost", 0.0))
+            decision.cost += cost
+            if meta.get("cached"):
+                decision.cached_calls += 1
+            else:
+                decision.fresh_cost += cost
+            decision.latency_s += float(meta.get("latency_s", 0.0))
+            decision.prompt_tokens += int(meta.get("prompt_tokens", 0))
+            decision.cached_prompt_tokens += int(meta.get("cached_tokens", 0))
+            decision.completion_tokens += int(meta.get("completion_tokens", 0))
+            if meta.get("cache_key"):
+                decision.cache_keys.append(meta["cache_key"])
+            message = ((response.get("choices") or [{}])[0].get("message") or {})
+            return (message.get("content") or "").strip()
+        return complete
+
 
 _STATUS_SEARCH_CLAUSE = ", or with `search_agents` if none fits"
 
@@ -177,7 +224,7 @@ class RetrievedSystem:
 
     def __init__(
         self, cfg: RetrievalConfig | None = None, lifecycle: bool = True, guard: bool = True, search: bool = True,
-        summaries: bool = True, status_policy: bool = True,
+        summaries: bool = True, status_policy: bool = True, second_look: bool = True,
     ) -> None:
         self.cfg = cfg or RetrievalConfig()
         # False keeps every card active, to ablate the lifecycle (dormant / archived statuses).
@@ -187,6 +234,7 @@ class RetrievedSystem:
         self.search = search  # False: no search_agents tool, no prompt rule for it, and no search clause in the status rule
         self.summaries = summaries  # False: cards carry no living summary (the summaries ablation)
         self.status_policy = status_policy  # False: no status-question rule
+        self.second_look = second_look  # False: no second look before risky dispatches
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
         self._cards_cache: dict[int, tuple[World, list[AgentCard]]] = {}
 
@@ -232,7 +280,7 @@ class RetrievedSystem:
         return _SHIMS
 
     def new_turn(self, world: World, case: Case) -> RetrievedTurn:
-        return RetrievedTurn(world, self.cards(world), self.cfg, self.guard)
+        return RetrievedTurn(world, self.cards(world), self.cfg, self.guard, case=case, second_look=self.second_look)
 
 
 class RetrievedNoLifecycleSystem(RetrievedSystem):

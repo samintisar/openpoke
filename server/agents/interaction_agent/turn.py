@@ -12,10 +12,11 @@ from typing import Optional
 class TurnContext:
     """`origin` is "user" for a user turn, else the inbox kind ("agent_result", "trigger_result", "watcher")
     or "agent" for a mix of them. `user_message_at` (timezone-aware UTC) is when the newest user message of
-    the turn was posted; None for non-user turns."""
+    the turn was posted; None for non-user turns. `latest_text` is the message that started the turn."""
 
     origin: str
     user_message_at: Optional[datetime] = None
+    latest_text: str = ""  # the message that started the turn
 
 
 # Set by InteractionAgentRuntime for the duration of each turn so IA tools can tell who started it.

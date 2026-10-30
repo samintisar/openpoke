@@ -1,11 +1,12 @@
 """Interaction Agent Runtime - handles LLM calls for user and agent turns."""
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Sequence, Set
 
 from .agent import build_system_prompt, prepare_message_with_history
+from .second_look_gate import gate as second_look_gate, openrouter_complete as second_look_complete
 from .tools import ToolResult, get_tool_schemas, handle_tool_call
 from .turn import TurnContext, current_turn
 from ...config import get_settings
@@ -43,6 +44,7 @@ class _LoopSummary:
     tool_names: List[str] = field(default_factory=list)
     execution_agents: Set[str] = field(default_factory=set)
     dispatched_ids: List[str] = field(default_factory=list)
+    second_look_done: bool = False  # at most one second look per turn (Plan 6c)
 
 
 def _dispatched_agent_id(result: ToolResult) -> Optional[str]:
@@ -95,7 +97,7 @@ class InteractionAgentRuntime:
             if not recorded:
                 self.conversation_log.record_user_message(user_message)
             moment = (user_message_at or datetime.now(timezone.utc)).astimezone(timezone.utc)
-            token = current_turn.set(TurnContext(origin="user", user_message_at=moment))
+            token = current_turn.set(TurnContext(origin="user", user_message_at=moment, latest_text=user_message))
 
             system_prompt = build_system_prompt()
             messages = prepare_message_with_history(
@@ -138,7 +140,7 @@ class InteractionAgentRuntime:
 
         if origin == "user":
             raise ValueError("Agent messages cannot start a user turn")
-        token = current_turn.set(TurnContext(origin=origin, user_message_at=None))
+        token = current_turn.set(TurnContext(origin=origin, user_message_at=None, latest_text=agent_message))
         try:
             transcript_before = self._load_conversation_transcript()
             self.conversation_log.record_agent_message(agent_message)
@@ -207,7 +209,10 @@ class InteractionAgentRuntime:
             for tool_call in parsed_tool_calls:
                 summary.tool_names.append(tool_call.name)
 
-                result = self._execute_tool(tool_call)
+                held = None
+                if tool_call.name == "send_message_to_agent" and not summary.second_look_done:
+                    tool_call, held = await self._second_look(tool_call, summary)
+                result = ToolResult(success=False, payload=held) if held is not None else self._execute_tool(tool_call)
 
                 if tool_call.name == "send_message_to_agent":
                     agent_id = _dispatched_agent_id(result)
@@ -232,6 +237,33 @@ class InteractionAgentRuntime:
             logger.warning("Interaction loop exited without assistant content")
 
         return summary
+
+    # Second look: one cheap review of a risky routing decision before it is dispatched
+    async def _second_look(self, tool_call: _ToolCall, summary: _LoopSummary) -> tuple[_ToolCall, Optional[Dict[str, Any]]]:
+        """At most one second look per turn, on user turns only. Never raises; on any failure the call stands."""
+        turn = current_turn.get()
+        if turn is None or turn.origin != "user" or "__invalid_arguments__" in tool_call.arguments:
+            return tool_call, None
+        try:
+            context = self.conversation_log.recent_texts(7)[:-1]  # the turns before the message itself
+            arguments, held, record = await second_look_gate(
+                dict(tool_call.arguments),
+                message=turn.latest_text,
+                context=context,
+                directory=get_agent_directory(),
+                now=datetime.now(timezone.utc),
+                complete=second_look_complete,
+            )
+        except Exception as exc:
+            logger.warning("Second look failed; the call stands", extra={"error": str(exc)})
+            return tool_call, None
+        if record is not None:
+            summary.second_look_done = True
+            if record.get("effect") == "error":
+                logger.warning("Second look call failed; the call stands", extra=record)
+            else:
+                logger.info("Second look", extra=record)
+        return replace(tool_call, arguments=arguments), held
 
     # Remember which agents this user turn reached, for the next turn's retrieval boost
     def _update_last_routed(self, summary: _LoopSummary) -> None:

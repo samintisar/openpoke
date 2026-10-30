@@ -369,7 +369,7 @@ async def test_user_turn_sets_current_turn_and_clears_it(turn_runtime):
     runtime = make()
     result = await runtime.execute("yes, send it", user_message_at=at, recorded=["yes, send it"])
     assert result.success
-    assert seen == [TurnContext(origin="user", user_message_at=at)]
+    assert seen == [TurnContext(origin="user", user_message_at=at, latest_text="yes, send it")]
     assert current_turn.get() is None
     # Already in the log: not recorded again, and left out of the history shown before the new message.
     assert runtime.conversation_log.recorded == [("poke_reply", "done")]
@@ -389,7 +389,7 @@ async def test_direct_user_turn_records_then_stamps_utc_now(turn_runtime):
 async def test_agent_turn_sets_its_origin_and_no_user_time(turn_runtime):
     make, seen = turn_runtime
     await make().handle_agent_message("[SUCCESS] a: done", origin="trigger_result")
-    assert seen == [TurnContext(origin="trigger_result", user_message_at=None)]
+    assert seen == [TurnContext(origin="trigger_result", user_message_at=None, latest_text="[SUCCESS] a: done")]
     assert current_turn.get() is None
 
 

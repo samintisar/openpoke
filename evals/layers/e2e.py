@@ -56,6 +56,7 @@ from server.agents.execution_agent.tools import gmail as gmail_tools_module
 from server.agents.execution_agent.tools import triggers as trigger_tools_module
 from server.agents.interaction_agent import runtime as ia_runtime_module
 from server.agents.interaction_agent.runtime import InteractionAgentRuntime
+from server.agents.interaction_agent import second_look_gate as second_look_module
 from server.config import get_settings
 from server.services import approvals
 from server.services import inbox as inbox_package
@@ -642,7 +643,7 @@ class E2ESession:
         # LLM call sites.
         for module, role in ((ia_runtime_module, "interaction"), (ea_runtime_module, "execution"),
                              (search_tool_module, "search"), (memory_module, "compaction"),
-                             (summaries_module, "summary"),
+                             (summaries_module, "summary"), (second_look_module, "second_look"),
                              (summarizer_module, "summarizer"), (classifier_module, "classifier")):
             p.set(module, "request_chat_completion", self.bridge.for_role(role))
         p.set(render_module, "relative_time", coarse_relative_time)

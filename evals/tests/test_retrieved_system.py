@@ -25,6 +25,7 @@ from evals.systems.retrieved import (
 from evals.worlds.model import WORLD_NOW, AgentSpec, World
 from server.agents.interaction_agent.agent import build_system_prompt
 from server.services.agents.retrieval import RetrievalConfig, score_cards
+from server.services.agents.second_look import SECOND_LOOK_PROMPT
 from server.services.agents.schemas import TOOL_SCHEMAS
 
 GARY = "gary-whitman-lease-renewal"
@@ -236,7 +237,7 @@ async def test_each_turn_gets_a_fresh_directory():
     create = {"name": "Kitchen Sink Plumber", "purpose": "Find a plumber for the sink.", "instructions": "x"}
     for _ in range(2):
         decision = Decision()
-        result = system.new_turn(world, case("x", ["NEW"])).handle("send_message_to_agent", create, decision)
+        result = await system.new_turn(world, case("x", ["NEW"])).handle("send_message_to_agent", create, decision)
         assert result["status"] == "success" and decision.created_names == ["Kitchen Sink Plumber"]
     assert all(card.id != "kitchen-sink-plumber" for card in system.cards(world))
 
@@ -357,7 +358,7 @@ def test_cards_for_sets_lifecycle_statuses():
     assert {card.status for card in cards_for(world, lifecycle=False)} == {"active"}
 
 
-def test_lifecycle_archived_cards_surface_only_on_a_strong_match():
+async def test_lifecycle_archived_cards_surface_only_on_a_strong_match():
     world = toy_world()
     world.by_id()[DENTIST].last_active_days = 45
     c = case("did the dentist confirm the cleaning?", [DENTIST], kind="dormant_revival")
@@ -368,7 +369,7 @@ def test_lifecycle_archived_cards_surface_only_on_a_strong_match():
     assert DENTIST in RetrievedNoLifecycleSystem().shown_ids(world, c)
     # Archived is still reachable through search_agents.
     turn = RetrievedSystem().new_turn(world, c)
-    found = turn.handle("search_agents", {"query": "dentist cleaning"}, Decision())
+    found = await turn.handle("search_agents", {"query": "dentist cleaning"}, Decision())
     assert f'id="{DENTIST}"' in found["result"]
 
 
@@ -551,13 +552,20 @@ def test_nolastrouted_drops_the_boost_only():
 
 
 class KeyedLLM(ScriptedLLM):
-    """ScriptedLLM that records each request's production cache key."""
+    """ScriptedLLM that records each IA request's production cache key.
+
+    A second-look call is answered apart, without consuming the script, with an unusable verdict, so the
+    dispatch stands and the IA requests are the same with or without the second look."""
 
     def __init__(self, script):
         super().__init__(script)
         self.keys = []
+        self.second_looks = 0
 
     async def complete(self, *, model, system, messages, tools, sample):
+        if system == SECOND_LOOK_PROMPT:
+            self.second_looks += 1
+            return {"choices": [{"message": {"role": "assistant", "content": ""}}], "_meta": {}}
         self.keys.append(cache_key(model=model, system=system, messages=messages, tools=tools, sample=sample))
         return await super().complete(model=model, system=system, messages=messages, tools=tools, sample=sample)
 
