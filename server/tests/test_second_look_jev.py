@@ -64,8 +64,8 @@ async def _look(jev, cfg=JEV, arguments=None, message=GAME_NIGHT):
                       context=["earlier"], directory=_dir(), now=NOW, complete=_never, cfg=cfg, jev=jev)
 
 
-def test_defaults_keep_the_llm_reviewer():
-    assert DEFAULT_SECOND_LOOK.reviewer == "llm" and DEFAULT_SECOND_LOOK.jev_min_confidence == 0.4
+def test_jev_split_only_is_the_default_reviewer():
+    assert DEFAULT_SECOND_LOOK.reviewer == "jev" and DEFAULT_SECOND_LOOK.jev_min_confidence == 0.4
 
 
 async def test_confident_new_on_a_reuse_holds_with_force_new():
@@ -144,7 +144,7 @@ async def test_production_uses_a_jev_client_from_the_env(monkeypatch):
             made.append(kwargs)
 
     monkeypatch.setattr(gate_module, "JevClient", Client)
-    monkeypatch.setattr(gate_module, "_PRODUCTION_JEV", None)
+    monkeypatch.setattr(gate_module, "api_key_from_env", lambda: "test-key")
     _, held, record = await _look(None)
     assert held is not None and record["effect"] == "hold"
     _, _, _ = await _look(None)
@@ -155,3 +155,36 @@ async def test_production_uses_a_jev_client_from_the_env(monkeypatch):
 def test_split_only_effect_ignores_creates():
     verdict = JevVerdict("new", {"new": 0.9}, 0.9, "v")
     assert split_only_effect(verdict, proposal="create", target_id=None, min_confidence=0.4).action == "proceed"
+
+
+async def test_production_without_a_key_lets_every_call_stand_and_warns_once(monkeypatch):
+    warnings = []
+    monkeypatch.setattr(gate_module.logger, "warning", lambda message, *a, **k: warnings.append(message))
+    for _ in range(3):
+        args, held, record = await gate({"agent_id": "kwame-book", "instructions": "x"}, message=GAME_NIGHT,
+                                        context=[], directory=_dir(), now=NOW, complete=_never)
+        assert held is None and args["agent_id"] == "kwame-book"
+        assert record["effect"] == "error" and record["jev_unavailable"] and record["reviewer"] == "jev"
+    assert len(warnings) == 1 and "TYPESAFE_API_KEY" in warnings[0]
+
+
+async def test_runtime_logs_a_missing_key_at_debug(monkeypatch):
+    import server.agents.interaction_agent.runtime as runtime_module
+    from server.agents.interaction_agent.runtime import InteractionAgentRuntime, _LoopSummary, _ToolCall
+    from server.agents.interaction_agent.turn import TurnContext, current_turn
+
+    seen = []
+    monkeypatch.setattr(runtime_module, "get_agent_directory", _dir)
+    monkeypatch.setattr(runtime_module.logger, "warning", lambda message, *a, **k: seen.append(("warning", message)))
+    monkeypatch.setattr(runtime_module.logger, "debug", lambda message, *a, **k: seen.append(("debug", message)))
+    runtime = InteractionAgentRuntime.__new__(InteractionAgentRuntime)
+    token = current_turn.set(TurnContext(origin="user", latest_text=GAME_NIGHT))
+    try:
+        for _ in range(2):  # two turns
+            call = _ToolCall(identifier="0", name="send_message_to_agent",
+                             arguments={"agent_id": "kwame-book", "instructions": "x"})
+            call, held = await runtime._second_look(call, _LoopSummary())
+            assert held is None and call.arguments["agent_id"] == "kwame-book"
+    finally:
+        current_turn.reset(token)
+    assert [level for level, _ in seen] == ["warning", "debug", "debug"]  # the gate's one warning, then quiet

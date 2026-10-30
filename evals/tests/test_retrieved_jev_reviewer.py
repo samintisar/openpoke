@@ -60,8 +60,10 @@ async def _send(system, tmp_path, llm=None):
     return result, decision
 
 
-def test_the_switch_defaults_to_the_llm_and_validates():
-    assert RetrievedSystem().second_look_reviewer == "llm"
+def test_the_switch_defaults_to_jev_and_validates():
+    assert RetrievedSystem().second_look_reviewer == "jev"
+    assert RetrievedSystem().new_turn(_world(), _case()).second_look_cfg.reviewer == "jev"
+    assert RetrievedSystem(second_look_reviewer="llm").new_turn(_world(), _case()).second_look_cfg.reviewer == "llm"
     with pytest.raises(ValueError):
         RetrievedSystem(second_look_reviewer="oracle")
 
@@ -133,3 +135,33 @@ async def test_routing_layer_runs_the_jev_reviewer(tmp_path):
     assert decision.second_looks[0]["effect"] == "hold" and decision.second_looks[0]["reviewer"] == "jev"
     held = [c for c in decision.tool_calls if c.get("name") == "send_message_to_agent"]
     assert held and decision.dispatched_ids == []
+
+
+async def test_offline_run_clients_get_an_offline_jev_that_never_holds(tmp_path, monkeypatch):
+    """--fake-llm and test fakes (no cache dir or budget) need no key and never reach the network."""
+    import evals.systems.retrieved as retrieved
+
+    def no_key():
+        raise AssertionError("an offline run looked for the key")
+    monkeypatch.setattr(retrieved, "api_key_from_env", no_key)
+    def script(messages, sample):
+        if messages[-1]["role"] == "tool":
+            return {"content": "Done."}
+        return {"content": "", "tool_calls": [tool_call("send_message_to_agent", **SEND)]}
+
+    decision = await run_routing_case(_case(), _world(), RetrievedSystem(), ScriptedLLM(script), model="m", sample=0)
+    record, = decision.second_looks
+    assert record["reviewer"] == "jev" and record["jev_model"] == "jev-offline" and record["effect"] == "proceed"
+    assert decision.dispatched_ids == ["kwame-book"] and decision.cost == 0 and decision.prompt_tokens == 0
+    assert not list(tmp_path.iterdir())
+
+
+async def test_an_unbound_jev_turn_never_looks():
+    """A turn without its system's Jev never falls back to production's client."""
+    from evals.systems.retrieved import RetrievedTurn
+    world = _world()
+    turn = RetrievedTurn(world, RetrievedSystem().cards(world), RetrievedSystem().cfg, case=_case(), second_look=True)
+    turn.bind_llm(ScriptedLLM(lambda m, s: {"content": ""}), model="m", sample=0)
+    decision = Decision()
+    result = await turn.handle("send_message_to_agent", dict(SEND), decision)
+    assert result["status"] == "success" and decision.second_looks == []

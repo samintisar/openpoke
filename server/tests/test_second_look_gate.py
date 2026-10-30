@@ -16,6 +16,7 @@ from server.services.agents.second_look import SecondLookConfig
 
 NOW = datetime(2026, 10, 30, tzinfo=timezone.utc)
 GAME_NIGHT = "ask Kwame what he thinks we should do for game night"
+LLM = SecondLookConfig(reviewer="llm")  # these tests exercise the LLM reviewer; Jev's are in test_second_look_jev.py
 
 
 def _card(agent_id, name, purpose):
@@ -36,7 +37,7 @@ def _verdict(payload):
 async def test_new_subject_holds_a_reuse():
     args, held, record = await gate({"agent_id": "kwame-book", "instructions": "x"},
                                     message=GAME_NIGHT, context=[],
-                                    directory=_dir(), now=NOW, complete=_verdict({"decision": "new", "reason": "r"}))
+                                    directory=_dir(), now=NOW, complete=_verdict({"decision": "new", "reason": "r"}), cfg=LLM)
     assert held["status"] == "held_by_second_look" and record["trigger"] == "reuse" and record["effect"] == "hold"
     assert record["decision"] == "new" and record["why"] == "r"
 
@@ -46,7 +47,7 @@ async def test_no_trigger_means_no_call():
         raise AssertionError("called")
     args, held, record = await gate({"agent_id": "kwame-book", "instructions": "x"},
                                     message="ask Kwame about the book club dates", context=[], directory=_dir(),
-                                    now=NOW, complete=never)
+                                    now=NOW, complete=never, cfg=LLM)
     assert held is None and record is None and args["agent_id"] == "kwame-book"
 
 
@@ -55,7 +56,7 @@ async def test_failures_let_the_decision_stand():
         raise RuntimeError("down")
     args, held, record = await gate({"agent_id": "kwame-book", "instructions": "x"},
                                     message=GAME_NIGHT, context=[],
-                                    directory=_dir(), now=NOW, complete=broken)
+                                    directory=_dir(), now=NOW, complete=broken, cfg=LLM)
     assert held is None and args["agent_id"] == "kwame-book" and record["effect"] == "error"
     assert "down" in record["error"]
 
@@ -66,7 +67,7 @@ async def test_timeout_uses_the_config_and_lets_the_decision_stand():
         return "{}"
     args, held, record = await gate({"agent_id": "kwame-book", "instructions": "x"},
                                     message=GAME_NIGHT, context=[], directory=_dir(), now=NOW, complete=slow,
-                                    cfg=SecondLookConfig(timeout_s=0.01))
+                                    cfg=SecondLookConfig(reviewer="llm", timeout_s=0.01))
     assert held is None and args["agent_id"] == "kwame-book" and record["effect"] == "error"
 
 
@@ -74,7 +75,7 @@ async def test_create_redirects_to_the_owner():
     args, held, record = await gate({"name": "Kwame Book Club Check", "purpose": "Ask Kwame again about book club",
                                      "instructions": "x", "force_new": True},
                                     message="any word from Kwame on the book club dates?", context=[],
-                                    directory=_dir(), now=NOW, cfg=SecondLookConfig(create=True),
+                                    directory=_dir(), now=NOW, cfg=SecondLookConfig(reviewer="llm", create=True),
                                     complete=_verdict({"decision": "reuse", "agent_id": "kwame-book", "reason": "r"}))
     assert held is None and args == {"agent_id": "kwame-book", "instructions": "x"} and record["effect"] == "redirect"
     assert record["trigger"] == "create"
@@ -255,7 +256,7 @@ async def test_noguard_looks_at_an_obvious_duplicate():
     arguments = {"name": "Kwame Book Club Dates", "purpose": "Ask Kwame which dates work for book club.",
                  "instructions": "x"}
     args, held, record = await gate(dict(arguments), message="ask Kwame about book club dates", context=[],
-                                    directory=_dir(), now=NOW, guard=False, cfg=SecondLookConfig(create=True),
+                                    directory=_dir(), now=NOW, guard=False, cfg=SecondLookConfig(reviewer="llm", create=True),
                                     complete=_verdict({"decision": "reuse", "agent_id": "kwame-book", "reason": "r"}))
     assert record is not None and record["trigger"] == "create" and record["effect"] == "redirect"
     assert args == {"agent_id": "kwame-book", "instructions": "x"} and held is None

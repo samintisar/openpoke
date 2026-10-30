@@ -1,4 +1,4 @@
-"""Jev as the second look's reviewer, split-only (Plan 6c J5).
+"""Jev as the second look's reviewer, split-only: the default since J5 (life-1 dev: kept; Plan 6c).
 
 The question is the one the offline experiments asked (`evals.jev_experiments` J1/J2 import it from here): one
 choice over the gate's cards plus "new" and "ask", over the second look's input without the proposal block, so Jev

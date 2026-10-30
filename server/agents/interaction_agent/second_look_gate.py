@@ -3,9 +3,10 @@
 Shared by the production runtime and the eval. Returns the arguments to send (possibly redirected to another
 agent), a held payload when nothing should be sent, and a record of what happened (None when no trigger fired).
 A failed or timed-out call never blocks the dispatch: the arguments come back unchanged with an "error" record.
-`cfg.reviewer == "jev"` asks Jev instead of the LLM, split-only (`jev_review.py`): creates are never reviewed, and
-only a confident "new" on a reuse holds it. Production builds one `JevClient` (TYPESAFE_API_KEY); the eval passes
-its cached client as `jev`.
+The default reviewer is Jev, split-only (`jev_review.py`): creates are never reviewed, and only a confident "new"
+on a reuse holds it. Production builds one `JevClient` (TYPESAFE_API_KEY; without the key every look is an error
+record and the call stands, warned about once); the eval passes its own client as `jev`. `cfg.reviewer == "llm"`
+asks the LLM reviewer through `complete` instead.
 `guard=False` (the eval's no-guard ablation) looks at creates the duplicate guard would have caught, too.
 """
 
@@ -15,10 +16,11 @@ from datetime import datetime
 from typing import Any, Optional, Sequence
 
 from ...config import get_settings
+from ...logging_config import logger
 from ...openrouter_client import request_chat_completion
 from ...services.agents.dedup import find_duplicate
 from ...services.agents.directory import AgentDirectory
-from ...services.agents.jev import JevClient, JevError
+from ...services.agents.jev import JevClient, JevError, api_key_from_env
 from ...services.agents.jev_review import AsksJev, jev_review, split_only_effect
 from ...services.agents.retrieval import RetrievalConfig
 from ...services.agents.second_look import (
@@ -100,8 +102,10 @@ async def _jev_look(arguments: dict[str, Any], record: dict[str, Any], *, messag
                                                                              dict[str, Any]]:
     """The Jev reviewer on a reuse: hold on a confident "new"; any other answer or failure leaves the call."""
     record = {**record, "reviewer": "jev"}
+    client = jev if jev is not None else production_jev(cfg.timeout_s)
+    if client is None:
+        return arguments, None, {**record, "effect": "error", "error": JEV_NO_KEY, "jev_unavailable": True}
     try:
-        client = jev if jev is not None else production_jev(cfg.timeout_s)
         verdict = await jev_review(message=message, context=context, cards=cards, jev=client, now=now, total=total,
                                    timeout_s=cfg.timeout_s)
     except JevError as exc:
@@ -120,14 +124,22 @@ async def _jev_look(arguments: dict[str, Any], record: dict[str, Any], *, messag
     return arguments, None, record
 
 
+JEV_NO_KEY = "TYPESAFE_API_KEY is not set: no Jev second look"
 _PRODUCTION_JEV: Optional[JevClient] = None
+_NO_KEY_WARNED = False
 
 
-def production_jev(timeout_s: float) -> JevClient:
-    """Production's Jev client, made once per process (the key comes from TYPESAFE_API_KEY)."""
-    global _PRODUCTION_JEV
+def production_jev(timeout_s: float) -> Optional[JevClient]:
+    """Production's Jev client, made once per process; None without TYPESAFE_API_KEY (warned about once)."""
+    global _PRODUCTION_JEV, _NO_KEY_WARNED
     if _PRODUCTION_JEV is None:
-        _PRODUCTION_JEV = JevClient(timeout_s=timeout_s)
+        key = api_key_from_env()
+        if not key:
+            if not _NO_KEY_WARNED:
+                _NO_KEY_WARNED = True
+                logger.warning("TYPESAFE_API_KEY is not set: the second look's Jev reviewer is off; calls stand")
+            return None
+        _PRODUCTION_JEV = JevClient(api_key=key, timeout_s=timeout_s)
     return _PRODUCTION_JEV
 
 
@@ -144,4 +156,4 @@ async def openrouter_complete(system: str, user: str) -> str:
     return ((choices[0].get("message") or {}).get("content") or "").strip() if choices else ""
 
 
-__all__ = ["gate", "openrouter_complete", "production_jev"]
+__all__ = ["JEV_NO_KEY", "gate", "openrouter_complete", "production_jev"]

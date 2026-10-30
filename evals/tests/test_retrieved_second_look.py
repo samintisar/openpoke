@@ -47,7 +47,7 @@ def _verdict_llm(payload, meta=None):
 
 async def test_second_look_holds_and_is_accounted():
     world = _world()
-    turn = RetrievedSystem().new_turn(world, _case(GAME_NIGHT))
+    turn = RetrievedSystem(second_look_reviewer="llm").new_turn(world, _case(GAME_NIGHT))
     turn.bind_llm(_verdict_llm({"decision": "new", "reason": "r"}), model="m", sample=0)
     decision = Decision()
     result = await turn.handle("send_message_to_agent", dict(SEND), decision)
@@ -59,7 +59,7 @@ async def test_second_look_holds_and_is_accounted():
 
 
 async def test_second_look_cost_lands_on_the_decision():
-    turn = RetrievedSystem().new_turn(_world(), _case(GAME_NIGHT))
+    turn = RetrievedSystem(second_look_reviewer="llm").new_turn(_world(), _case(GAME_NIGHT))
     meta = {"cost": 0.25, "prompt_tokens": 100, "completion_tokens": 7, "cached_tokens": 40, "latency_s": 0.5,
             "cache_key": "k1"}
     turn.bind_llm(_verdict_llm({"decision": "new", "reason": "r"}, meta), model="m", sample=0)
@@ -71,7 +71,7 @@ async def test_second_look_cost_lands_on_the_decision():
 
 
 async def test_a_broken_verdict_lets_the_dispatch_stand():
-    turn = RetrievedSystem().new_turn(_world(), _case(GAME_NIGHT))
+    turn = RetrievedSystem(second_look_reviewer="llm").new_turn(_world(), _case(GAME_NIGHT))
     turn.bind_llm(ScriptedLLM(lambda m, s: {"content": "not json"}), model="m", sample=0)
     decision = Decision()
     result = await turn.handle("send_message_to_agent", dict(SEND), decision)
@@ -89,10 +89,10 @@ async def test_switch_off_never_looks():
 
 async def test_agent_messages_and_unbound_turns_never_look():
     decision = Decision()
-    turn = RetrievedSystem().new_turn(_world(), _case(GAME_NIGHT, message_type="agent"))
+    turn = RetrievedSystem(second_look_reviewer="llm").new_turn(_world(), _case(GAME_NIGHT, message_type="agent"))
     turn.bind_llm(_verdict_llm({"decision": "new", "reason": "r"}), model="m", sample=0)
     await turn.handle("send_message_to_agent", dict(SEND), decision)
-    unbound = RetrievedSystem().new_turn(_world(), _case(GAME_NIGHT))
+    unbound = RetrievedSystem(second_look_reviewer="llm").new_turn(_world(), _case(GAME_NIGHT))
     await unbound.handle("send_message_to_agent", dict(SEND), decision)
     assert decision.dispatched_ids == ["kwame-book"] and decision.second_looks == []
 
@@ -110,7 +110,7 @@ async def test_routing_layer_binds_the_run_client():
             return {"content": "Done."}
         return {"content": "", "tool_calls": [tool_call("send_message_to_agent", **SEND)]}
 
-    decision = await run_routing_case(_case(GAME_NIGHT), _world(), RetrievedSystem(), ScriptedLLM(script),
+    decision = await run_routing_case(_case(GAME_NIGHT), _world(), RetrievedSystem(second_look_reviewer="llm"), ScriptedLLM(script),
                                       model="m", sample=0)
     assert decision.second_looks[0]["effect"] == "hold" and decision.dispatched_ids == []
 
@@ -123,7 +123,7 @@ def _two_cards_world():
 
 
 async def test_a_reuse_redirect_is_dispatched_to_the_verdicts_agent():
-    turn = RetrievedSystem().new_turn(_two_cards_world(), _case(GAME_NIGHT))
+    turn = RetrievedSystem(second_look_reviewer="llm").new_turn(_two_cards_world(), _case(GAME_NIGHT))
     turn.bind_llm(_verdict_llm({"decision": "reuse", "agent_id": "kwame-games", "reason": "r"}), model="m", sample=0)
     decision = Decision()
     result = await turn.handle("send_message_to_agent", dict(SEND), decision)
@@ -136,13 +136,13 @@ async def test_noguard_still_looks_at_an_obvious_duplicate():
                  "instructions": "x"}
     message = "ask Kwame about book club dates"
     verdict = {"decision": "reuse", "agent_id": "kwame-book", "reason": "r"}
-    noguard = RetrievedNoGuardSystem().new_turn(_world(), _case(message))
+    noguard = RetrievedNoGuardSystem(second_look_reviewer="llm").new_turn(_world(), _case(message))
     noguard.second_look_cfg = replace(noguard.second_look_cfg, create=True)  # the create trigger is off by default
     noguard.bind_llm(_verdict_llm(verdict), model="m", sample=0)
     decision = Decision()
     await noguard.handle("send_message_to_agent", dict(duplicate), decision)
     assert decision.second_looks[0]["trigger"] == "create" and decision.dispatched_ids == ["kwame-book"]
-    guarded = RetrievedSystem().new_turn(_world(), _case(message))
+    guarded = RetrievedSystem(second_look_reviewer="llm").new_turn(_world(), _case(message))
     guarded.second_look_cfg = replace(guarded.second_look_cfg, create=True)
     guarded.bind_llm(_verdict_llm(verdict), model="m", sample=0)
     decision = Decision()
@@ -151,7 +151,7 @@ async def test_noguard_still_looks_at_an_obvious_duplicate():
 
 
 def test_the_eval_timeout_outlasts_the_client():
-    turn = RetrievedSystem().new_turn(_world(), _case(GAME_NIGHT))
+    turn = RetrievedSystem(second_look_reviewer="llm").new_turn(_world(), _case(GAME_NIGHT))
     assert turn.second_look_cfg.timeout_s >= 180
 
 

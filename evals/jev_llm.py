@@ -112,16 +112,17 @@ class CachedJev:
 
 
 class DecisionJev:
-    """A `CachedJev` seen from one eval decision: each answer's cost, input tokens and latency land on it.
+    """A Jev (a `CachedJev`, or an offline one) seen from one eval decision: each answer's cost, input tokens and
+    latency land on it.
 
     Accounted like an IA call: `cost` is attributed (cached answers included), `fresh_cost` and latency count only
-    calls sent this run, and the cache file's name joins `cache_keys`.
+    calls sent this run, and a `CachedJev`'s cache file name joins `cache_keys`.
     """
 
-    def __init__(self, jev: CachedJev, decision: Any) -> None:
+    def __init__(self, jev: Any, decision: Any) -> None:
         self.jev = jev
         self.decision = decision
-        self.model = jev.model
+        self.model = getattr(jev, "model", JEV_MODEL)
 
     async def ask(self, state: Any, questions: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
         start = time.perf_counter()
@@ -134,7 +135,8 @@ class DecisionJev:
             decision.fresh_cost += cost
             decision.latency_s += time.perf_counter() - start
         decision.prompt_tokens += input_tokens(response)
-        decision.cache_keys.append(self.jev.path(build_body(self.model, state, questions)).stem)
+        if isinstance(self.jev, CachedJev):
+            decision.cache_keys.append(self.jev.path(build_body(self.model, state, questions)).stem)
         return response
 
 
@@ -153,10 +155,12 @@ def _uniform(state: Any, qid: str, question: dict[str, Any]) -> dict[str, Any]:
 class ScriptedJev:
     """Offline Jev: `script(state, question_id, question)` returns each answer. Records every request body."""
 
-    def __init__(self, script: Script = _uniform, *, model: str = JEV_MODEL, version: str = "jev-fake") -> None:
+    def __init__(self, script: Script = _uniform, *, model: str = JEV_MODEL, version: str = "jev-fake",
+                 free: bool = False) -> None:
         self.script = script
         self.model = model
         self.version = version
+        self.free = free  # True: usage reports no tokens, so it costs nothing
         self.requests: list[dict[str, Any]] = []
 
     async def ask(self, state: Any, questions: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
@@ -164,8 +168,14 @@ class ScriptedJev:
         self.requests.append(body)
         answers = {qid: self.script(state, qid, q) for qid, q in body["questions"].items()}
         return {"model": self.version, "answers": answers,
-                "usage": {"input_tokens": estimate_tokens(body), "output_tokens": 0}}
+                "usage": {"input_tokens": 0 if self.free else estimate_tokens(body), "output_tokens": 0}}
+
+
+def offline_jev() -> ScriptedJev:
+    """The Jev of offline runs (`--fake-llm`, tests): uniform answers, so the first option at low confidence. It
+    never holds a reuse (split-only needs a confident "new") and costs nothing."""
+    return ScriptedJev(version="jev-offline", free=True)
 
 
 __all__ = ["CACHE_PREFIX", "CachedJev", "DecisionJev", "JEV_REQUESTS_PER_MINUTE", "JevError", "ScriptedJev",
-           "body_key", "estimate_tokens"]
+           "body_key", "estimate_tokens", "offline_jev"]

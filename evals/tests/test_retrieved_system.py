@@ -574,6 +574,8 @@ async def test_default_switches_reproduce_retrieved_cache_keys():
         RetrievedSystem(RetrievalConfig(), lifecycle=True, guard=True, search=True), world, c, *steps
     )
     assert len(retrieved) == 4 and explicit == retrieved
+    # The reviewer switch never changes the IA's requests (Jev is not an IA call; no look fires here).
+    assert await keys_for(RetrievedSystem(second_look_reviewer="llm"), world, c, *steps) == retrieved
     # The guard fires on the last call, so noguard matches until the request carrying that result.
     noguard = await keys_for(RetrievedNoGuardSystem(), world, c, *steps)
     assert noguard[:3] == retrieved[:3] and noguard[3] != retrieved[3]

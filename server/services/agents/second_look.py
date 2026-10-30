@@ -1,4 +1,4 @@
-"""Second look: one cheap model call at the routing moments where mistakes happen (Plan 6c).
+"""Second look: one cheap review at the routing moments where mistakes happen (Plan 6c; Jev by default since J5).
 
 Code decides when it runs:
 - create (off by default, `create=True`): the interaction agent creates an agent, the duplicate guard did not
@@ -10,9 +10,10 @@ Code decides when it runs:
   (Sedona on a Phoenix card; off by default, `name_coverage=0`), or few of the message's topic words, weighted by
   rarity across the cards, are on A's card (same person, new subject).
 Defaults come from the offline calibration on life-1 dev (Task 9): about 0.11 of turns look.
-The call sees the message, the last conversation turns and the top cards with summaries, and answers reuse,
-new or ask. `effect` turns the verdict into what the dispatch does.
-`reviewer="jev"` swaps the call for Jev, split-only, on the same triggers (`jev_review.py`).
+The reviewer is Jev, split-only (`jev_review.py`; kept on life-1 dev in J5): it can only hold a reuse it
+confidently calls a new matter. `reviewer="llm"` is the earlier reviewer: one cheap LLM call that sees the message,
+the last conversation turns and the top cards with summaries, and answers reuse, new or ask; `effect` turns that
+verdict into what the dispatch does.
 """
 
 from __future__ import annotations
@@ -47,7 +48,7 @@ class SecondLookConfig:
     reuse_coverage: float = 0.2  # reuse trigger: share of the message's topic words found on the target card
     name_coverage: float = 0.0  # unmentioned-name trigger: fires only below this coverage (names counted); 0 = off
     timeout_s: float = 10.0
-    reviewer: str = "llm"  # "llm" (reuse/new/ask) or "jev" (split-only: see jev_review.py); same triggers either way
+    reviewer: str = "jev"  # "jev" (split-only: see jev_review.py) or "llm" (reuse/new/ask); same triggers either way
     jev_min_confidence: float = 0.4  # jev: the least confidence at which a "new" holds a reuse
 
 

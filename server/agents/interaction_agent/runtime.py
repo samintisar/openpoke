@@ -286,7 +286,9 @@ class InteractionAgentRuntime:
             return tool_call, None
         if record is not None:
             summary.second_look_done = True
-            if record.get("effect") == "error":
+            if record.get("jev_unavailable"):  # no TYPESAFE_API_KEY: warned about once, at the first look
+                logger.debug("Second look skipped; the call stands", extra=record)
+            elif record.get("effect") == "error":
                 logger.warning("Second look call failed; the call stands", extra=record)
             else:
                 logger.info("Second look", extra=record)
