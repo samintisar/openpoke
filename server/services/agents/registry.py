@@ -53,6 +53,7 @@ class SqliteAgentDirectory:
             purpose TEXT NOT NULL,
             entities TEXT NOT NULL DEFAULT '[]',
             last_status TEXT NOT NULL DEFAULT '',
+            summary TEXT NOT NULL DEFAULT '',
             status TEXT NOT NULL DEFAULT 'active',
             created_at TEXT NOT NULL,
             last_active_at TEXT NOT NULL,
@@ -69,6 +70,10 @@ class SqliteAgentDirectory:
             conn.execute("PRAGMA journal_mode=WAL;")
             conn.execute(agents_sql)
             conn.execute(meta_sql)
+            columns = {row[1] for row in conn.execute("PRAGMA table_info(agents)")}
+            if "summary" not in columns:  # databases from before Plan 6c: the summary starts as last_status
+                conn.execute("ALTER TABLE agents ADD COLUMN summary TEXT NOT NULL DEFAULT ''")
+                conn.execute("UPDATE agents SET summary = last_status")
 
     # -- AgentDirectory -------------------------------------------------------------------------------
 
@@ -148,12 +153,16 @@ class SqliteAgentDirectory:
 
     def update_card(
         self, agent_id: str, *, purpose: Optional[str] = None, last_status: Optional[str] = None,
-        status: Optional[str] = None,
+        status: Optional[str] = None, summary: Optional[str] = None,
     ) -> None:
-        """Overwrite the given fields (compaction refreshes purpose and status; the sweep sets lifecycle)."""
+        """Overwrite the given fields (the summary updater sets summary; the sweep sets lifecycle)."""
         fields = {"purpose": purpose, "last_status": None if last_status is None else last_status.strip()[:STATUS_CHARS],
-                  "status": status}
+                  "status": status, "summary": None if summary is None else summary.strip()}
         updates = {k: v for k, v in fields.items() if v is not None}
+        if summary is not None:
+            card = self.get(agent_id)
+            if card is not None:
+                updates["entities"] = json.dumps(merge_entities(card.entities, [summary]))
         if not updates:
             return
         assignments = ", ".join(f"{column} = ?" for column in updates)
@@ -194,14 +203,15 @@ class SqliteAgentDirectory:
 
     def _insert(self, conn: sqlite3.Connection, card: AgentCard) -> None:
         conn.execute(
-            "INSERT INTO agents (id, name, purpose, entities, last_status, status, created_at, last_active_at,"
-            " run_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO agents (id, name, purpose, entities, last_status, summary, status, created_at,"
+            " last_active_at, run_count) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 card.id,
                 card.name,
                 card.purpose,
                 json.dumps(list(card.entities)),
                 card.last_status,
+                card.summary,
                 card.status,
                 _to_storage(card.created_at),
                 _to_storage(card.last_active_at),
@@ -220,6 +230,7 @@ class SqliteAgentDirectory:
             purpose=row["purpose"],
             entities=[str(e) for e in entities] if isinstance(entities, list) else [],
             last_status=row["last_status"] or "",
+            summary=row["summary"] or "",
             status=row["status"] or "active",
             created_at=_from_storage(row["created_at"]),
             last_active_at=_from_storage(row["last_active_at"]),

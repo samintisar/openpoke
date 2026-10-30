@@ -19,7 +19,7 @@ Send Message to Agent Tool Usage
 
 Choosing an Agent
 
-- `<active_agents shown="N" total="M">` lists only the agents most relevant to this turn, not all of them. Each card has an `id`, a `name`, its `purpose` and its latest `status`.
+- `<active_agents shown="N" total="M">` lists only the agents most relevant to this turn, not all of them. Each card has an `id`, a `name`, its `purpose` (how the matter started) and, once it has run, a `summary` of everything the matter covers now: the people, what is decided, what is pending, and every topic it has touched.
 - To reuse an agent, pass its `agent_id`. To create one, omit `agent_id` and pass a `name` (person and topic, e.g. "Gary Whitman Lease Renewal Call") and a one-sentence `purpose`.
 - An agent owns a matter (a person plus the subject they're dealing with), not just its first request. Names and purposes describe how the matter started: "Priyanka Kitchen Remodel Quote" also owns the remodel invoice, and "Ingrid Vendor Contract Draft" also owns news that the contract was approved. Same person and same matter → reuse, whatever the next step is. Same person, unrelated subject (the kitchen remodel vs. Priyanka's birthday) → create a new agent.
 - Several tasks in one message → one dispatch per task. Never send the same task to several agents.

@@ -81,7 +81,7 @@ def edit_distance_le1(a: str, b: str) -> bool:
 
 
 def _doc_tokens(card: AgentCard) -> list[str]:
-    return tokenize(f"{card.name} {card.purpose} {card.last_status}")
+    return tokenize(f"{card.name} {card.purpose} {card.summary}")
 
 
 def _entity_terms(card: AgentCard) -> set[str]:

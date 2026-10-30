@@ -9,6 +9,7 @@ from typing import Mapping, Optional, Sequence
 from .cards import AgentCard, as_utc
 
 TRUNCATE_CHARS = 160
+SUMMARY_CHARS = 480
 
 
 def relative_time(then: datetime, now: datetime) -> str:
@@ -37,8 +38,9 @@ def render_card(card: AgentCard, now: datetime, open_work: Optional[str] = None)
     if open_work:
         attrs += f' open_work="{escape(open_work, quote=True)}"'
     lines = [f"  <agent {attrs}>", f"    purpose: {escape(truncate(card.purpose), quote=False)}"]
-    if card.last_status.strip():
-        lines.append(f"    status: {escape(truncate(card.last_status), quote=False)}")
+    note = card.summary.strip() or card.last_status.strip()
+    if note:
+        lines.append(f"    summary: {escape(truncate(note, SUMMARY_CHARS), quote=False)}")
     lines.append("  </agent>")
     return "\n".join(lines)
 

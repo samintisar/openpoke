@@ -24,7 +24,7 @@ class AgentDirectory(Protocol):
 
     def update_card(
         self, agent_id: str, *, purpose: Optional[str] = None, last_status: Optional[str] = None,
-        status: Optional[str] = None,
+        status: Optional[str] = None, summary: Optional[str] = None,
     ) -> None: ...
 
 
@@ -78,9 +78,9 @@ class InMemoryDirectory:
 
     def update_card(
         self, agent_id: str, *, purpose: Optional[str] = None, last_status: Optional[str] = None,
-        status: Optional[str] = None,
+        status: Optional[str] = None, summary: Optional[str] = None,
     ) -> None:
-        """Overwrite the given fields (compaction refreshes purpose and status; the sweep sets lifecycle)."""
+        """Overwrite the given fields (the summary updater sets summary; the sweep sets lifecycle)."""
         card = self._cards[agent_id]
         if purpose is not None:
             card.purpose = purpose
@@ -88,6 +88,9 @@ class InMemoryDirectory:
             card.last_status = last_status
         if status is not None:
             card.status = status
+        if summary is not None:
+            card.summary = summary
+            card.entities = merge_entities(card.entities, [summary])
 
 
 __all__ = ["AgentDirectory", "InMemoryDirectory", "merge_entities"]

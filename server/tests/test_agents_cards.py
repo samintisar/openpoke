@@ -54,7 +54,7 @@ def test_render_cards_format():
     assert lines[1] == '  <agent id="beatriz-trivia-night-note" name="Beatriz Trivia Night Note" last_active="2h ago">'
     assert lines[2].startswith("    purpose: Draft an email to Beatriz") and lines[2].endswith("…")
     assert len(lines[2].removeprefix("    purpose: ")) == 160
-    assert lines[3] == "    status: Draft ready for review"
+    assert lines[3] == "    summary: Draft ready for review"
     assert lines[4] == "  </agent>"
     assert 'name="Kwame &quot;Book&quot; Club" last_active="3d ago"' in lines[5]
     assert "status:" not in "\n".join(lines[5:])
