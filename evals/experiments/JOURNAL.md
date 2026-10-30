@@ -487,3 +487,22 @@ After (`20261030-201216-summary-drift-shown-dev.json`, `20261030-201318-summary-
 - Stress (8 agents, +20 no-news folds): supported 0.62 before and after, current 1.00 → 0.75; the 3 failures read carry a pending draft-approval step forward from the instructions, which the judge counts as unsupported.
 
 Routing with the new summaries, full system on dev (`20261030-201538-v2-full-dev.json`, $1.17) against the frozen full system: pass@1 −0.009 [−0.030, +0.009] at 200 and +0.015 [−0.012, +0.042] at 1,000; duplicate +0.009 / −0.013; harmful −0.003 at both; tokens 25.2k → 24.3k at 200, 24.7k → 25.2k at 1,000. No headline metric moves by more than 0.02: kept under the spec rule. This change has no held-out test: life 2's numbers above are the frozen system's.
+
+## 2026-10-30 — Status-rule wording test (Plan 6d, dev)
+
+The status rule's wording was revised once after reading dev failures (step 2b), so `python -m evals.status_wording` asks each of the 10 dev status questions at 1,000 agents ten more ways (templates written before the run, never changed), keeping each original's answer key and context. One sample per message and system; $0.59 (`20261030-211001-status-wording-dev.json`). Systems as frozen for the sealed run, except that "final" now carries the new summaries.
+
+Found after the run: cases 00–02 name the person in the original ("did Leo get back to me about the renewal yet?") and the roster has other agents on the same matter (8 renewals, 2 bachelor parties, 2 conference talks), none named in the context. The nine templates that drop the person make those questions ambiguous, so the original answer key does not fit them. They are scored apart; the templates were not changed.
+
+| | Original | v1 | Final |
+|---|---|---|---|
+| Unambiguous rewordings (73) | 0.62 | 0.59 | **0.99** |
+| … matter has an agent (43) | 0.91 | 0.81 | 1.00 |
+| … no agent fits: ask, never create (30) | 0.20 | 0.27 | 0.97 |
+| Ambiguous (27): asked which matter | 7 | 4 | 10 |
+| Ambiguous: dispatched to one agent (a guess) | 18 | 23 | 17 |
+| Turns that created an agent (all 100) | 29 | 24 | 1 |
+
+- The status rule is not tied to the benchmark's wording: 72 of 73 unambiguous rewordings correct, every template at 0.86 or above (original and v1: as low as 0.43).
+- Its largest effect is on questions about a matter no agent holds: the original and v1 create a new agent to "check" (24–29 times); final asks instead.
+- Weakness: when two agents fit, final usually picks one (17 of 27) instead of asking. The rule says to ask when nothing fits and says nothing about several fitting. A one-line addition ("if more than one agent could be the one, ask which") is the obvious fix; it is not made here, since it could only be checked on dev.
