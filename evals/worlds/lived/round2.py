@@ -100,7 +100,18 @@ def _last_event_index(plan: LifePlan, day: float, context: Sequence[Sequence[str
 
 
 def rebuild_snapshot(entry: dict[str, Any], plan: LifePlan, *, skipped: int) -> Snapshot:
-    """The Snapshot build_probes needs, from one saved size entry and the plan; see the module doc."""
+    """The Snapshot build_probes needs, from one saved size entry and the plan; see the module doc.
+
+    Worlds saved with their probe state (`transcript` in the entry) rebuild from it directly; older
+    worlds (life 1) replay the plan from the probes' shared context."""
+    if "transcript" in entry:
+        return Snapshot(
+            size=entry["size"], day=entry["day"], agents=[_agent(a) for a in entry["agents"]],
+            transcript=[tuple(item) for item in entry["transcript"]],
+            thread_agents={t: list(ids) for t, ids in entry["thread_agents"].items()},
+            thread_last_day={t: float(d) for t, d in entry["thread_last_day"].items()},
+            last_user_threads=tuple(entry["last_user_threads"]),
+        )
     if skipped:
         raise ValueError(f"growth skipped {skipped} events; thread_last_day cannot be replayed exactly")
     contexts = {json.dumps(case["context"]) for case in entry["cases"]}

@@ -182,3 +182,18 @@ def test_load_lived_includes_reviewed_probes(world, body):
     ids = {label: [c.id for c in cases] for label, _, cases in load_lived(world)}
     assert p50[0]["id"] in ids["lived-50"] and p50[1]["id"] not in ids["lived-50"]
     assert p200["id"] in ids["lived-200"] and p200["id"] in ids["lived-1000"]
+
+
+def test_saved_probe_state_rebuilds_without_replay(tmp_path):
+    from evals.worlds.lived.store import save
+
+    entry = ENTRIES[200]
+    original = rebuild_snapshot(entry, build_plan(1), skipped=WORLD["meta"]["skipped"])
+    path = tmp_path / "w.json"
+    save(path, seed=1, units=[(original, [])], meta={"skipped": 5})
+    saved = json.loads(path.read_text(encoding="utf-8"))["sizes"][0]
+    again = rebuild_snapshot(saved, build_plan(1), skipped=5)  # skips no longer matter
+    assert again.agents == original.agents and again.thread_agents == original.thread_agents
+    assert again.transcript == original.transcript[-20:]
+    assert again.thread_last_day == original.thread_last_day
+    assert again.last_user_threads == original.last_user_threads

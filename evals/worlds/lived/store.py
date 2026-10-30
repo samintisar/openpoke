@@ -13,6 +13,7 @@ from .model import Snapshot, day_to_datetime
 
 DEFAULT_PATH = Path(__file__).resolve().parent / "world-s1.json"
 FORMAT = 1
+SAVED_CONTEXT = 20  # transcript entries saved per size: all build_probes reads (probes.CONTEXT)
 
 
 def _case_dict(case: Case) -> dict[str, Any]:
@@ -36,6 +37,11 @@ def save(path: Path, *, seed: int, units: list[tuple[Snapshot, list[Case]]], met
             "day": snapshot.day,
             "agents": [asdict(agent) for agent in snapshot.agents],
             "thread_agents": snapshot.thread_agents,
+            # The probe-building state, saved so a snapshot rebuilds without replaying the plan
+            # (worlds grown with skipped events, or without v1 probes, can't be replayed).
+            "transcript": [list(entry) for entry in snapshot.transcript[-SAVED_CONTEXT:]],
+            "thread_last_day": snapshot.thread_last_day,
+            "last_user_threads": list(snapshot.last_user_threads),
             "cases": [_case_dict(case) for case in cases],
         }
         for snapshot, cases in units
