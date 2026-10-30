@@ -431,6 +431,18 @@ Safeguards:
 - **The eval runs production code.** It imports the same prompts, dispatch, summaries updater and second-look gate, so a dev gain is a real behaviour change and not a harness artefact.
 - Expect life 2's gains to be smaller than dev's. Treat the dev intervals as an upper bound on the claim.
 
-## 2026-10-30 — Leave-one-out ablations — pending
+## 2026-10-30 — Leave-one-out ablations (Plan 6c Task 12)
 
-(To be filled in: the full system with each kept change switched off, compared with the full system. Configs: `v2-ablate-summaries.yaml`, `v2-ablate-search-budget.yaml`, `v2-ablate-status.yaml`, `v2-ablate-second-look.yaml` in `evals/experiments/`.)
+The full system (`v2-full.yaml`, Jev split-only reviewer; `20261030-082330-v2-full-dev.json`, $0.001, cached) with one kept change switched off at a time. Paired differences vs full on life-1 dev, 95% intervals; spend $1.42 in total.
+
+| Switched off | pass@1 at 200 | pass@1 at 1,000 | duplicate at 200 | duplicate at 1,000 | harmful 200 / 1,000 | tokens 200 / 1,000 |
+|---|---|---|---|---|---|---|
+| summaries | −0.052 [−0.091, −0.015] | −0.027 [−0.064, +0.006] | +0.048 [+0.013, +0.092] | +0.009 | +0.009 / +0.009 | 25.2k→21.6k / 24.7k→21.6k |
+| status rule | −0.042 [−0.085, −0.006] | −0.027 [−0.064, +0.003] | +0.044 [+0.009, +0.088] | +0.031 [+0.004, +0.066] | −0.012 / −0.003 | 26.1k / 24.6k |
+| search budget | −0.024 [−0.055, −0.000] | −0.021 [−0.045, −0.003] | +0.018 | −0.004 | −0.006 / 0.000 | 28.3k / 29.0k |
+| second look (Jev) | −0.012 [−0.030, +0.000] | −0.015 [−0.039, +0.000] | 0.000 | 0.000 | +0.012 / +0.015 | 24.8k / 24.2k |
+
+- Every change helps inside the full system; none improves it when removed, so nothing blocks Plan 6d.
+- Summaries and the status rule carry most of the gain and most of the duplicate reduction. The search budget pays for itself in tokens (3–4k per decision) and pass@1. The second look is small and targeted: it lowers the harmful rate.
+- Full system vs original OpenPoke (dev): pass@1 +0.127 [+0.070, +0.188] at 200, +0.148 [+0.085, +0.215] at 1,000; duplicate −0.092 at both; harmful −0.003 / −0.015. Vs v1 retrieval: +0.100 / +0.094.
+- Results: `20261030-082639-v2-ablate-second-look-dev.json`, `20261030-082813-v2-ablate-search-budget-dev.json`, `20261030-083215-v2-ablate-status-dev.json`, `20261030-083611-v2-ablate-summaries-dev.json`.

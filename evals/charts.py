@@ -38,7 +38,7 @@ V2_STEPS = {  # Plan 6c, life 1 dev: each step adds one change to the one before
     "step 2b + status rule": "20261030-070834-v2-step2b-status-dispatch-dev.json",
     "step 3 + second look (LLM reviewer)": "20261030-072458-v2-step3-second-look-dev.json",
 }
-FULL_JEV: str | None = None  # the full system with the Jev reviewer; set to its result file once the run lands
+FULL_JEV: str | None = "20261030-082330-v2-full-dev.json"  # the full system with the Jev reviewer (frozen for Plan 6d)
 SIZES = ("lived-50", "lived-200", "lived-1000")
 V2_SIZES = ("lived-10", *SIZES)
 COLORS = {"Original OpenPoke": "#9aa4b1", "Full cards": "#d9a441", "Retrieval (this work)": "#2f6fdf"}

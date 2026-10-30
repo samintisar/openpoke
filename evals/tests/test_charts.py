@@ -18,5 +18,5 @@ def test_v2_steps_report_prints_rates_and_paired_differences(tmp_path, monkeypat
     assert out.count("paired difference") == 2
 
 
-def test_v2_steps_skips_nothing_when_full_jev_unset():
-    assert charts.FULL_JEV is None and len(charts.V2_STEPS) == 6
+def test_v2_steps_end_with_the_frozen_full_system():
+    assert charts.FULL_JEV == "20261030-082330-v2-full-dev.json" and len(charts.V2_STEPS) == 6
