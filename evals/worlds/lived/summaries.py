@@ -2,7 +2,8 @@
 
     python -m evals.worlds.lived.summaries --seed 1 --seed 2 --budget 1.5    # writes summaries-s{seed}.json
 
-Each summary folds one agent's runs in order, as production folds every run into the card. A run is an instruction
+Each summary folds one agent's runs in order through production's `next_summary`, as production updates the card
+after every run (a fold, or a rebuild from all runs so far every REBUILD_EVERY runs). A run is an instruction
 and the helper reports that followed it before the next instruction (joined with a blank line; empty if none). The
 runs come from agent-logs-s{seed}.json (replay.py), cut at each size's event index, when that file exists for the
 same world; a report before any instruction is folded with empty instructions. Agents without a log (background
@@ -23,7 +24,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from server.services.agents.summaries import SummaryError, update_summary
+from server.services.agents.summaries import SummaryError, next_summary
 
 from ...llm import LLMClient, RunAborted
 from .bench_v2 import DEFAULT_MODEL, HERE, world_path
@@ -59,10 +60,10 @@ def runs_from_log(entries: list[list[Any]]) -> list[tuple[str, str]]:
 
 async def summarize_runs(agent: dict[str, Any], runs: list[tuple[str, str]], complete) -> str:
     summary = ""
-    for instructions, result in runs:
+    for i in range(len(runs)):
         try:
-            summary = await update_summary(name=agent["name"], purpose=agent["purpose"], current=summary,
-                                           instructions=instructions, result=result, complete=complete)
+            summary = await next_summary(name=agent["name"], purpose=agent["purpose"], current=summary,
+                                         runs=runs[: i + 1], complete=complete)
         except SummaryError as exc:
             if isinstance(exc.__cause__, RunAborted):
                 raise exc.__cause__

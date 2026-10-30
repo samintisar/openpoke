@@ -10,8 +10,8 @@ Two parts, both on life 1 at 200 agents (the 1,000 size has the same logs):
   summaries were cut. Rates are reported by how many runs were folded (1, 2-3, 4+), so drift shows as a fall
   with more folds.
 - Stress: the agents with the most runs get STRESS_FOLDS more runs of a common, low-content kind (a status
-  check that finds no news) folded on top, through the production updater, then the same judge. This asks
-  whether a long tail of empty updates pushes the matter itself out of the summary.
+  check that finds no news) on top, through production's `next_summary` (folds and periodic rebuilds), then
+  the same judge. This asks whether a long tail of empty updates pushes the matter itself out of the summary.
 
 The judge (DeepSeek, one call per summary) answers four yes/no questions about the summary against the runs:
 supported (no claim contradicts or goes beyond the runs), current (it states where things stand after the
@@ -33,7 +33,7 @@ from pathlib import Path
 from typing import Any
 
 from server.services.agents.render import SUMMARY_CHARS, truncate  # the card shows summaries clipped here
-from server.services.agents.summaries import SummaryError, update_summary
+from server.services.agents.summaries import SummaryError, next_summary
 
 from .llm import Budget, LLMClient, OpenRouterLLM, RunAborted, ScriptedLLM
 from .run import CACHE_DIR, DEFAULT_OUT, _api_key
@@ -150,10 +150,10 @@ async def run(llm: LLMClient, model: str, seed: int = DEV_LIFE, view: str = "sho
         tail = [(STATUS_CHECK, NO_NEWS)] * STRESS_FOLDS
         failed = 0
         async with gate:
-            for instructions, result in tail:
+            for n in range(len(runs) + 1, len(runs) + len(tail) + 1):
                 try:
-                    summary = await update_summary(name=agent["name"], purpose=agent["purpose"], current=summary,
-                                                   instructions=instructions, result=result, complete=complete)
+                    summary = await next_summary(name=agent["name"], purpose=agent["purpose"], current=summary,
+                                                 runs=(runs + tail)[:n], complete=complete)
                 except SummaryError as exc:
                     if isinstance(exc.__cause__, RunAborted):
                         raise exc.__cause__
