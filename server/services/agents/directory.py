@@ -18,10 +18,6 @@ class AgentDirectory(Protocol):
 
     def touch(self, agent_id: str, instructions: str, now: datetime) -> AgentCard: ...
 
-    def last_routed(self) -> list[str]: ...
-
-    def set_last_routed(self, ids: Iterable[str]) -> None: ...
-
     def update_card(
         self, agent_id: str, *, purpose: Optional[str] = None, last_status: Optional[str] = None,
         status: Optional[str] = None, summary: Optional[str] = None,
@@ -37,11 +33,10 @@ def merge_entities(existing: Iterable[str], texts: Iterable[str]) -> list[str]:
 class InMemoryDirectory:
     """`AgentDirectory` over a dict; copies the given cards so callers' cards are never mutated."""
 
-    def __init__(self, cards: Iterable[AgentCard] = (), last_routed: Iterable[str] = ()) -> None:
+    def __init__(self, cards: Iterable[AgentCard] = ()) -> None:
         self._cards: dict[str, AgentCard] = {
             card.id: replace(card, entities=list(card.entities)) for card in cards
         }
-        self._last_routed = list(last_routed)
 
     def list_cards(self) -> list[AgentCard]:
         return list(self._cards.values())
@@ -69,12 +64,6 @@ class InMemoryDirectory:
         card.run_count += 1
         card.status = "active"
         return card
-
-    def last_routed(self) -> list[str]:
-        return list(self._last_routed)
-
-    def set_last_routed(self, ids: Iterable[str]) -> None:
-        self._last_routed = list(ids)
 
     def update_card(
         self, agent_id: str, *, purpose: Optional[str] = None, last_status: Optional[str] = None,

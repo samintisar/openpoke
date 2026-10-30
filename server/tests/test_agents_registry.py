@@ -1,4 +1,4 @@
-"""SQLite agent registry: CRUD, id collisions, last_routed, record_status and the roster.json migration."""
+"""SQLite agent registry: CRUD, id collisions, record_status and the roster.json migration."""
 
 import json
 from datetime import datetime, timedelta, timezone
@@ -52,13 +52,17 @@ def test_dispatch_over_registry(tmp_path):
     assert reused.action == "reused" and d.get(created.card.id).run_count == 2
 
 
-def test_last_routed_persists(tmp_path):
-    d = registry(tmp_path)
-    assert d.last_routed() == []
-    d.set_last_routed(["a", "b", "a"])
-    assert SqliteAgentDirectory(tmp_path / "agents.db").last_routed() == ["a", "b"]
-    d.set_last_routed([])
-    assert d.last_routed() == []
+def test_drops_the_old_last_routed_meta_table(tmp_path):
+    import sqlite3
+    path = tmp_path / "agents.db"
+    with sqlite3.connect(path) as conn:  # a database from before Plan 6c Task 11
+        conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+        conn.execute("INSERT INTO meta VALUES ('last_routed', '[\"a\"]')")
+    d = SqliteAgentDirectory(path)
+    with sqlite3.connect(path) as conn:
+        tables = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+    assert "meta" not in tables
+    assert not hasattr(d, "last_routed") and not hasattr(d, "set_last_routed")
 
 
 def test_record_status_keeps_first_200_chars(tmp_path):
@@ -76,9 +80,8 @@ def test_find_by_name_and_clear(tmp_path):
     assert d.find_by_name("Email to Alice").id == first.id
     assert d.find_by_name("email to alice!").id == first.id
     assert d.find_by_name("Bob") is None
-    d.set_last_routed([first.id])
     d.clear()
-    assert d.list_cards() == [] and d.last_routed() == [] and d.is_empty()
+    assert d.list_cards() == [] and d.is_empty()
 
 
 def test_migrates_roster_json(tmp_path):

@@ -114,7 +114,6 @@ class InteractionAgentRuntime:
 
             logger.info("Processing user message through interaction agent")
             summary = await self._run_interaction_loop(system_prompt, messages)
-            self._update_last_routed(summary)
 
             final_response = self._finalize_response(summary)
 
@@ -292,17 +291,6 @@ class InteractionAgentRuntime:
             else:
                 logger.info("Second look", extra=record)
         return replace(tool_call, arguments=arguments), held
-
-    # Remember which agents this user turn reached, for the next turn's retrieval boost
-    def _update_last_routed(self, summary: _LoopSummary) -> None:
-        # A turn that dispatched nothing ("thanks!") keeps the previous routing, so a later vague
-        # follow-up still resolves to the agents last worked with.
-        if not summary.dispatched_ids:
-            return
-        try:
-            get_agent_directory().set_last_routed(summary.dispatched_ids)
-        except Exception as exc:  # pragma: no cover - defensive
-            logger.warning("Failed to record last routed agents", extra={"error": str(exc)})
 
     # Load conversation history, preferring summarized version if available
     def _load_conversation_transcript(self, omit_user_messages: Sequence[str] = ()) -> str:

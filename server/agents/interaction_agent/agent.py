@@ -78,8 +78,8 @@ def _render_active_agents(latest_text: str, message_type: str, now: datetime) ->
     pinned = pinned_from_agent_message(latest_text, cards) if message_type == "agent" else []
     recent = _recent_turn_texts(latest_text)
     query = build_query(latest_text, recent)
-    extra = context_query(latest_text, recent, cards, now, None, directory.last_routed()) if CONTEXT_QUERY and message_type == "user" else None
-    selected = select(query, cards, now, directory.last_routed(), pinned=pinned, context_query=extra)
+    extra = context_query(latest_text, recent, cards, now) if CONTEXT_QUERY and message_type == "user" else None
+    selected = select(query, cards, now, pinned=pinned, context_query=extra)
     return render_cards(selected, len(cards), now)
 
 

@@ -9,14 +9,13 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import replace
-from datetime import timedelta
 from typing import Any
 
 from server.agents.interaction_agent.agent import build_system_prompt
 from server.agents.interaction_agent.second_look_gate import gate
 from server.services.agents.second_look import DEFAULT_SECOND_LOOK
 from server.agents.interaction_agent.tools import SEND_DRAFT_ARGUMENTS_ERROR
-from server.services.agents.cards import AgentCard, as_utc
+from server.services.agents.cards import AgentCard
 from server.services.agents.directory import InMemoryDirectory
 from server.services.agents.dispatch import SEARCH_BUDGET, SEARCH_BUDGET_EXHAUSTED, dispatch, search_payload
 from server.services.agents.render import render_cards
@@ -36,8 +35,6 @@ from .cards_from_world import cards_for
 
 # Context entries fed to build_query: the last 3 turns, a user and an assistant entry each.
 QUERY_CONTEXT_ENTRIES = 6
-# Stand-in for the previous turn's routing: agents active this recently.
-LAST_ROUTED_WINDOW = timedelta(hours=1)
 # The eval's second look waits out the client's own timeout and retries, so results never depend on wall-clock.
 EVAL_SECOND_LOOK = replace(DEFAULT_SECOND_LOOK, timeout_s=180.0)
 SEARCH_TOOL = "search_agents"
@@ -101,11 +98,6 @@ def _query(case: Case | None) -> str:
     return build_query(case.message, texts)
 
 
-def _last_routed(cards: list[AgentCard], world: World) -> list[str]:
-    now = as_utc(world.now)
-    return [card.id for card in cards if now - as_utc(card.last_active_at) <= LAST_ROUTED_WINDOW]
-
-
 def _success(name: str, args: dict[str, Any], result: Any) -> dict[str, Any]:
     return {"tool": name, "status": "success", "arguments": args, "result": result}
 
@@ -130,7 +122,7 @@ class RetrievedTurn:
         self.second_look_cfg = EVAL_SECOND_LOOK
         self.search_budget = search_budget  # None: unlimited
         self._searches = 0
-        self.directory = InMemoryDirectory(cards, last_routed=_last_routed(cards, world))
+        self.directory = InMemoryDirectory(cards)
         self.created_ids: set[str] = set()
         self._llm: Any = None  # bound by the routing layer: the second look uses the run's client
         self._model = ""
@@ -267,8 +259,8 @@ class RetrievedSystem:
         extra = None
         if self.context_query and case is not None and case.message_type == "user":
             texts = [entry[1] for entry in case.context[-QUERY_CONTEXT_ENTRIES:]]
-            extra = context_query(case.message, texts, cards, world.now, self.cfg, _last_routed(cards, world))
-        return select(_query(case), cards, world.now, _last_routed(cards, world), self.cfg, pinned=pinned,
+            extra = context_query(case.message, texts, cards, world.now, self.cfg)
+        return select(_query(case), cards, world.now, self.cfg, pinned=pinned,
                       context_query=extra)
 
     def render_roster(self, world: World, case: Case | None) -> str:
@@ -339,19 +331,9 @@ class RetrievedNoFuzzySystem(RetrievedSystem):
         super().__init__(replace(cfg or RetrievalConfig(), fuzzy=False), **options)
 
 
-class RetrievedNoLastRoutedSystem(RetrievedSystem):
-    """`retrieved` without the last-routed boost."""
-
-    name = "retrieved_nolastrouted"
-
-    def __init__(self, cfg: RetrievalConfig | None = None, **options: Any) -> None:
-        super().__init__(replace(cfg or RetrievalConfig(), last_routed_boost=0.0), **options)
-
-
 __all__ = [
     "RetrievedNoFuzzySystem",
     "RetrievedNoGuardSystem",
-    "RetrievedNoLastRoutedSystem",
     "RetrievedNoLifecycleSystem",
     "RetrievedNoSearchSystem",
     "RetrievedSystem",

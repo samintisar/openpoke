@@ -15,16 +15,14 @@ from evals.systems.full_cards import FullCardsSystem
 from evals.systems.retrieved import (
     RetrievedNoFuzzySystem,
     RetrievedNoGuardSystem,
-    RetrievedNoLastRoutedSystem,
     RetrievedNoLifecycleSystem,
     RetrievedNoSearchSystem,
     RetrievedSystem,
-    _last_routed,
     without_tool_lines,
 )
 from evals.worlds.model import WORLD_NOW, AgentSpec, World
 from server.agents.interaction_agent.agent import build_system_prompt
-from server.services.agents.retrieval import RetrievalConfig, score_cards
+from server.services.agents.retrieval import RetrievalConfig
 from server.services.agents.second_look import SECOND_LOOK_PROMPT
 from server.services.agents.schemas import TOOL_SCHEMAS
 
@@ -450,7 +448,6 @@ ABLATIONS = {
     "retrieved_noguard": RetrievedNoGuardSystem,
     "retrieved_nosearch": RetrievedNoSearchSystem,
     "retrieved_nofuzzy": RetrievedNoFuzzySystem,
-    "retrieved_nolastrouted": RetrievedNoLastRoutedSystem,
 }
 
 
@@ -464,7 +461,6 @@ def test_ablations_are_registered_and_each_flips_one_switch():
         "retrieved_noguard": {"guard": False},
         "retrieved_nosearch": {"search": False},
         "retrieved_nofuzzy": {"cfg": replace(RetrievalConfig(), fuzzy=False)},
-        "retrieved_nolastrouted": {"cfg": replace(RetrievalConfig(), last_routed_boost=0.0)},
     }
     for name, cls in ABLATIONS.items():
         system = get_system(name)
@@ -475,12 +471,11 @@ def test_ablations_are_registered_and_each_flips_one_switch():
 def test_ablations_keep_a_passed_config_apart_from_their_switch():
     cfg = RetrievalConfig(k=4)
     assert RetrievedNoFuzzySystem(cfg).cfg == replace(cfg, fuzzy=False)
-    assert RetrievedNoLastRoutedSystem(cfg).cfg == replace(cfg, last_routed_boost=0.0)
     assert RetrievedNoGuardSystem(cfg).cfg is cfg
 
 
 def test_only_nosearch_changes_the_prompt_and_tools():
-    for name in ("retrieved_noguard", "retrieved_nofuzzy", "retrieved_nolastrouted"):
+    for name in ("retrieved_noguard", "retrieved_nofuzzy"):
         system = get_system(name)
         assert system.system_prompt() == build_system_prompt()
         assert system.tool_schemas() is TOOL_SCHEMAS
@@ -533,22 +528,19 @@ def test_nofuzzy_loses_the_typo_match_only():
     world = toy_world()
     plain = case("any word back from Gary on the lease?", [GARY])
     assert RetrievedNoFuzzySystem().shown_ids(world, plain) == RetrievedSystem().shown_ids(world, plain)
-    entity_only = RetrievalConfig(w_kw=0.0, w_rec=0.0, last_routed_boost=0.0)
+    entity_only = RetrievalConfig(w_kw=0.0, w_rec=0.0)
     typo = case("baetriz", [BEATRIZ])
     assert BEATRIZ in RetrievedSystem(entity_only).shown_ids(world, typo)
     assert BEATRIZ not in RetrievedNoFuzzySystem(entity_only).shown_ids(world, typo)
 
 
-def test_nolastrouted_drops_the_boost_only():
-    world = toy_world()
-    cards = RetrievedSystem().cards(world)
-    routed = _last_routed(cards, world)
-    assert routed == [HOT]
-    for system, boost in ((RetrievedSystem(), RetrievalConfig().last_routed_boost), (RetrievedNoLastRoutedSystem(), 0.0)):
-        boosted = dict((c.id, s) for c, s in score_cards("lease", cards, world.now, routed, system.cfg))
-        plain = dict((c.id, s) for c, s in score_cards("lease", cards, world.now, (), system.cfg))
-        assert boosted[HOT] - plain[HOT] == pytest.approx(boost)
-        assert boosted[GARY] == plain[GARY]
+def test_last_routed_boost_and_its_ablation_are_gone():
+    # Plan 6c Task 11: the boost never changed the shown cards on dev, so it was removed whole.
+    import evals.systems.retrieved as retrieved_module
+    from evals.systems import SYSTEMS
+    assert "retrieved_nolastrouted" not in SYSTEMS
+    for name in ("RetrievedNoLastRoutedSystem", "_last_routed", "LAST_ROUTED_WINDOW"):
+        assert not hasattr(retrieved_module, name)
 
 
 class KeyedLLM(ScriptedLLM):

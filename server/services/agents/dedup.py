@@ -46,7 +46,7 @@ def find_duplicate(
     if not new_entities:
         return None
     new_tokens = set(content_tokens(f"{name} {purpose}"))
-    for card, score in score_cards(purpose, cards, now, (), cfg):
+    for card, score in score_cards(purpose, cards, now, cfg):
         if score < ENTITY_SCORE:
             break
         shared = _shared_entities(new_entities, card)

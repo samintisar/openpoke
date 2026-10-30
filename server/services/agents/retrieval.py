@@ -25,7 +25,6 @@ class RetrievalConfig:
     w_ent: float = 0.40
     w_rec: float = 0.15
     recency_days: float = 7.0
-    last_routed_boost: float = 0.15
     k: int = 8
     hot_max: int = 5
     hot_window_hours: float = 1.0
@@ -161,7 +160,6 @@ def score_cards(
     query: str,
     cards: Sequence[AgentCard],
     now: datetime,
-    last_routed: Iterable[str] = (),
     cfg: Optional[RetrievalConfig] = None,
 ) -> list[tuple[AgentCard, float]]:
     """Score every card against `query`, best first (ties broken by most recently active)."""
@@ -173,12 +171,9 @@ def score_cards(
     kw = _normalize(_bm25(terms, [_doc_tokens(card) for card in cards]))
     query_terms = {t for t in terms if not is_common(t)}
     ent = _normalize(_entity_overlap(query_terms, [_entity_terms(card) for card in cards], cfg))
-    boosted = set(last_routed)
     scored = []
     for card, kw_score, ent_score in zip(cards, kw, ent):
         score = cfg.w_kw * kw_score + cfg.w_ent * ent_score + cfg.w_rec * recency(card, now, cfg)
-        if card.id in boosted:
-            score += cfg.last_routed_boost
         scored.append((card, score))
     scored.sort(key=lambda item: (-item[1], -as_utc(item[0].last_active_at).timestamp()))
     return scored
@@ -188,7 +183,6 @@ def select(
     query: str,
     cards: Sequence[AgentCard],
     now: datetime,
-    last_routed: Iterable[str] = (),
     cfg: Optional[RetrievalConfig] = None,
     pinned: Iterable[Union[AgentCard, str]] = (),
     open_work: Iterable[str] = (),
@@ -228,7 +222,7 @@ def select(
         take(card)
 
     added = 0
-    for card, score in score_cards(query, cards, now, last_routed, cfg):
+    for card, score in score_cards(query, cards, now, cfg):
         if added >= cfg.k or score < cfg.min_score:
             break
         if card.status == "archived" and score < cfg.archived_min_score:
@@ -238,7 +232,7 @@ def select(
             added += 1
     if context_query:
         extra = 0
-        for card, score in score_cards(context_query, cards, now, last_routed, cfg):
+        for card, score in score_cards(context_query, cards, now, cfg):
             if extra >= CONTEXT_EXTRA or score < cfg.min_score:
                 break
             if card.status == "archived" and score < cfg.archived_min_score:
@@ -258,7 +252,7 @@ def search(
 ) -> list[AgentCard]:
     """Best matches over all cards, archived included."""
     cfg = cfg or DEFAULT_CONFIG
-    scored = score_cards(query, cards, now, (), cfg)
+    scored = score_cards(query, cards, now, cfg)
     return [card for card, score in scored if score >= cfg.min_score][:limit]
 
 
@@ -267,7 +261,7 @@ def build_query(message: str, recent_texts: Sequence[str] = ()) -> str:
 
     Names and topics from earlier turns otherwise outrank the request itself (on the lived world,
     adding context dropped recall@shown at 1,000 agents from 1.00 to 0.76). A contentless follow-up
-    ("any update?") still needs context, and the last-routed agents reach it through the hot set.
+    ("any update?") still needs context, and agents active in the last hour reach it through the hot set.
     """
     if content_tokens(message):
         return message
@@ -296,7 +290,6 @@ def context_query(
     cards: Optional[Sequence[AgentCard]] = None,
     now: Optional[datetime] = None,
     cfg: Optional[RetrievalConfig] = None,
-    last_routed: Iterable[str] = (),
 ) -> Optional[str]:
     """The message plus the last 3 turns, for a second retrieval pass.
 
@@ -306,7 +299,7 @@ def context_query(
     if not needs_context(message):
         return None
     if len(content_tokens(message)) > 2 and cards is not None and now is not None:
-        scored = score_cards(message, cards, now, last_routed, cfg)
+        scored = score_cards(message, cards, now, cfg)
         if scored and scored[0][1] >= CONTEXT_WEAK_SCORE:
             return None
     parts = [message, *list(recent_texts)[-3:]]

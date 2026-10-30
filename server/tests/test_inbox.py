@@ -341,7 +341,7 @@ def turn_runtime(monkeypatch):
     monkeypatch.setattr(ia_runtime_module, "handle_tool_call", tool)
     monkeypatch.setattr(ia_runtime_module, "build_system_prompt", lambda: "system")
     monkeypatch.setattr(ia_runtime_module, "prepare_message_with_history", lambda text, transcript, message_type: [])
-    monkeypatch.setattr(ia_runtime_module, "get_agent_directory", lambda: type("D", (), {"set_last_routed": lambda s, ids: None})())
+    monkeypatch.setattr(ia_runtime_module, "get_agent_directory", lambda: type("D", (), {})())
 
     def make():
         runtime = InteractionAgentRuntime.__new__(InteractionAgentRuntime)

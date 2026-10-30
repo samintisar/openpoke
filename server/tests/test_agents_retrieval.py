@@ -80,16 +80,24 @@ def test_fuzzy_off_matches_entities_exactly_only():
     assert RetrievalConfig().fuzzy is True
 
 
-def test_recency_and_last_routed_boost():
+def test_recency_ranks_twin_cards():
     twins = [
         card("old", "Ben Okafor Ski Trip Reply", "Reply to Ben about the ski trip", ["ben"], days=30),
         card("new", "Ben Okafor Ski Trip Reply", "Reply to Ben about the ski trip", ["ben"], days=1),
     ]
     scored = score_cards("ben ski trip", twins, NOW)
     assert names(c for c, _ in scored) == ["new", "old"]
-    boosted = score_cards("ben ski trip", twins, NOW, last_routed=["old"])
-    assert names(c for c, _ in boosted) == ["old", "new"]
-    assert boosted[0][1] - scored[1][1] == pytest.approx(RetrievalConfig().last_routed_boost)
+
+
+def test_no_last_routed_boost_anywhere():
+    # Removed in Plan 6c Task 11: the boost never changed the shown cards on dev (L1 check).
+    import inspect
+    from server.services.agents.retrieval import context_query
+    assert not hasattr(RetrievalConfig(), "last_routed_boost")
+    for fn in (score_cards, select, context_query):
+        assert "last_routed" not in inspect.signature(fn).parameters
+    cfg = RetrievalConfig(w_kw=0.0, w_rec=0.0)
+    assert score_cards("ben", [card("b", "Ben", "Ben", ["ben"])], NOW, cfg)[0][1] == pytest.approx(cfg.w_ent)
 
 
 def test_select_pinned_first_then_hot_set_capped():

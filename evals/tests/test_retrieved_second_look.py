@@ -10,7 +10,6 @@ from evals.systems import get_system
 from evals.systems.retrieved import (
     RetrievedNoFuzzySystem,
     RetrievedNoGuardSystem,
-    RetrievedNoLastRoutedSystem,
     RetrievedNoLifecycleSystem,
     RetrievedNoSearchSystem,
     RetrievedSystem,
@@ -158,8 +157,7 @@ def test_the_eval_timeout_outlasts_the_client():
 
 
 def test_ablation_subclasses_take_the_switches():
-    for cls in (RetrievedNoLifecycleSystem, RetrievedNoGuardSystem, RetrievedNoSearchSystem, RetrievedNoFuzzySystem,
-                RetrievedNoLastRoutedSystem):
+    for cls in (RetrievedNoLifecycleSystem, RetrievedNoGuardSystem, RetrievedNoSearchSystem, RetrievedNoFuzzySystem):
         assert cls(second_look=False).second_look is False and cls().second_look is True
     system = get_system("retrieved_noguard", {"second_look": False, "status_policy": False})
     assert system.second_look is False and system.status_policy is False and system.guard is False

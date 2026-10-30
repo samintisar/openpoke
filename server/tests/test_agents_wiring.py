@@ -1,4 +1,4 @@
-"""Interaction-agent wiring over the registry: tools, prompt rendering, last_routed and execution status."""
+"""Interaction-agent wiring over the registry: tools, prompt rendering, dispatched ids and execution status."""
 
 import asyncio
 import json
@@ -169,16 +169,11 @@ def test_prepare_renders_relevant_cards(prompt_env, monkeypatch):
     assert content.endswith("\n\n<new_user_message>\nDraft for Beatriz?\n</new_user_message>")
 
 
-def test_prepare_uses_recent_turns_and_last_routed(prompt_env, monkeypatch):
+def test_prepare_uses_recent_turns(prompt_env, monkeypatch):
     # The vague follow-up matches nothing itself; the earlier turn about Kwame does.
     monkeypatch.setattr(agent_module, "get_conversation_log", lambda: FakeLog(["Ask Kwame about book club", "did he reply?"]))
     roster = section(agent_module.prepare_message_with_history("did he reply?", "", now=NOW)[0]["content"], "active_agents")
     assert 'id="kwame-book-club"' in roster
-
-    monkeypatch.setattr(agent_module, "get_conversation_log", lambda: FakeLog([]))
-    prompt_env.set_last_routed(["beatriz-trivia"])
-    roster = section(agent_module.prepare_message_with_history("did she reply?", "", now=NOW)[0]["content"], "active_agents")
-    assert 'id="beatriz-trivia"' in roster
 
 
 def test_prepare_pins_agents_on_agent_messages(prompt_env, monkeypatch):
@@ -217,7 +212,7 @@ def test_conversation_log_recent_texts(tmp_path):
     assert log.recent_texts(0) == []
 
 
-# -- runtime: last_routed after a user turn -----------------------------------------------------------
+# -- runtime: dispatched ids of a user turn -----------------------------------------------------------
 
 
 def bare_runtime():
@@ -240,7 +235,7 @@ def bare_runtime():
     return runtime
 
 
-async def test_runtime_collects_dispatched_ids_and_sets_last_routed(tmp_path, monkeypatch):
+async def test_runtime_collects_dispatched_ids(tmp_path, monkeypatch):
     results = iter(
         [
             ToolResult(success=True, payload={"status": "submitted", "agent_id": "a"}),
@@ -255,11 +250,7 @@ async def test_runtime_collects_dispatched_ids_and_sets_last_routed(tmp_path, mo
     runtime = bare_runtime()
     summary = await runtime._run_interaction_loop("system", [])
     assert summary.dispatched_ids == ["a", "b"]
-    runtime._update_last_routed(summary)
-    assert directory.last_routed() == ["a", "b"]
-
-    runtime._update_last_routed(runtime_module._LoopSummary())  # nothing dispatched keeps the boost
-    assert directory.last_routed() == ["a", "b"]
+    assert not hasattr(runtime, "_update_last_routed")  # the last-routed boost is gone (Plan 6c Task 11)
 
 
 # -- execution side: status and the [SUCCESS] payload --------------------------------------------------

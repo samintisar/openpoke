@@ -1,0 +1,12 @@
+name: v2-l1-nolastrouted
+system: retrieved_nolastrouted
+model: deepseek/deepseek-v4.1-flash
+world: lived_v2
+life: 1
+n_agents: [10, 50, 200, 1000]
+k: 3
+include_handwritten: false
+budget_usd: 0.01  # retrieval layer only: no model calls
+concurrency: 4
+layers: [retrieval]
+system_options: {context_query: false}

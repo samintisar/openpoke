@@ -15,7 +15,6 @@ from .cards import AgentCard, as_utc, extract_entities, normalize_name, slug_id
 from .directory import merge_entities
 
 STATUS_CHARS = 200
-_LAST_ROUTED_KEY = "last_routed"
 
 
 def _to_storage(moment: datetime) -> str:
@@ -27,7 +26,7 @@ def _from_storage(value: str) -> datetime:
 
 
 class SqliteAgentDirectory:
-    """`AgentDirectory` over an `agents` table, with `last_routed` kept in a `meta` table."""
+    """`AgentDirectory` over an `agents` table."""
 
     def __init__(self, db_path: Path):
         self._db_path = db_path
@@ -61,12 +60,6 @@ class SqliteAgentDirectory:
             run_count INTEGER NOT NULL DEFAULT 0
         );
         """
-        meta_sql = """
-        CREATE TABLE IF NOT EXISTS meta (
-            key TEXT PRIMARY KEY,
-            value TEXT NOT NULL
-        );
-        """
         with self._lock, self._connect() as conn:
             if str(conn.execute("PRAGMA journal_mode;").fetchone()[0]).lower() != "wal":
                 for attempt in range(50):  # switching to WAL does not wait on the busy timeout when opens race
@@ -78,7 +71,7 @@ class SqliteAgentDirectory:
                             raise
                         time.sleep(0.05)
             conn.execute(agents_sql)
-            conn.execute(meta_sql)
+            conn.execute("DROP TABLE IF EXISTS meta")  # it held only last_routed, removed in Plan 6c
             conn.execute("BEGIN IMMEDIATE")  # one writer migrates; the check, ALTER and copy succeed or fail together
             try:
                 columns = {row[1] for row in conn.execute("PRAGMA table_info(agents)")}
@@ -139,25 +132,6 @@ class SqliteAgentDirectory:
             )
         return card
 
-    def last_routed(self) -> list[str]:
-        with self._lock, self._connect() as conn:
-            row = conn.execute("SELECT value FROM meta WHERE key = ?", (_LAST_ROUTED_KEY,)).fetchone()
-        if row is None:
-            return []
-        try:
-            value = json.loads(row[0])
-        except json.JSONDecodeError:
-            return []
-        return [str(item) for item in value] if isinstance(value, list) else []
-
-    def set_last_routed(self, ids: Iterable[str]) -> None:
-        payload = json.dumps(list(dict.fromkeys(ids)))
-        with self._lock, self._connect() as conn:
-            conn.execute(
-                "INSERT INTO meta (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
-                (_LAST_ROUTED_KEY, payload),
-            )
-
     # -- Registry extras ------------------------------------------------------------------------------
 
     def record_status(self, agent_id: str, text: str) -> None:
@@ -208,7 +182,6 @@ class SqliteAgentDirectory:
     def clear(self) -> None:
         with self._lock, self._connect() as conn:
             conn.execute("DELETE FROM agents")
-            conn.execute("DELETE FROM meta")
 
     # -- Internals ------------------------------------------------------------------------------------
 

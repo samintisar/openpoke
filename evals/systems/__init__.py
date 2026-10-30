@@ -11,7 +11,6 @@ from .full_cards import FullCardsSystem
 from .retrieved import (
     RetrievedNoFuzzySystem,
     RetrievedNoGuardSystem,
-    RetrievedNoLastRoutedSystem,
     RetrievedNoLifecycleSystem,
     RetrievedNoSearchSystem,
     RetrievedSystem,
@@ -24,7 +23,6 @@ SYSTEMS: dict[str, type] = {
     "retrieved_noguard": RetrievedNoGuardSystem,
     "retrieved_nosearch": RetrievedNoSearchSystem,
     "retrieved_nofuzzy": RetrievedNoFuzzySystem,
-    "retrieved_nolastrouted": RetrievedNoLastRoutedSystem,
     "full_cards": FullCardsSystem,
 }
 

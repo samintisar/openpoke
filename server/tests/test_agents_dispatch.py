@@ -116,14 +116,12 @@ def test_create_extracts_entities_and_collides_ids():
     assert again.card.id == "gary-whitman-lease-renewal-call-2"
 
 
-def test_in_memory_directory_copies_cards_and_tracks_last_routed():
+def test_in_memory_directory_copies_cards():
     original = AgentCard("a", "Maya Quarterly OKRs Draft", "OKRs", ["maya"], last_active_at=EARLIER)
     d = InMemoryDirectory([original])
     d.touch("a", "Loop in Nora", NOW)
     assert original.entities == ["maya"] and original.last_active_at == EARLIER
-    assert d.last_routed() == []
-    d.set_last_routed(["a"])
-    assert d.last_routed() == ["a"]
+    assert not hasattr(d, "last_routed") and not hasattr(d, "set_last_routed")
 
 
 def test_search_payload_renders_results():

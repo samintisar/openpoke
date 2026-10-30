@@ -80,7 +80,6 @@ def test_agent_messages_get_no_extras(monkeypatch):
     monkeypatch.setattr(ia, "select", lambda *a, **k: seen.update(k) or [])
     class D:
         def list_cards(self): return []
-        def last_routed(self): return []
     monkeypatch.setattr(ia, "get_agent_directory", lambda: D())
     monkeypatch.setattr(ia, "_recent_turn_texts", lambda t: ["Gary lease"])
     monkeypatch.setattr(ia, "CONTEXT_QUERY", True)
