@@ -146,7 +146,7 @@ def test_extract_identifiers_dedupes_case_insensitively_and_ignores_noise():
 
 
 def test_compaction_prompt_asks_for_json_and_says_identifiers_are_kept():
-    assert '{"memory": "...", "purpose": "...", "last_status": "..."}' in COMPACTION_PROMPT
+    assert '{"memory": "..."}' in COMPACTION_PROMPT
     assert "300 words" in COMPACTION_PROMPT and "preserved separately" in COMPACTION_PROMPT
     for kept in ("people", "decisions", "commitments", "preferences", "open loops"):
         assert kept in COMPACTION_PROMPT
@@ -156,7 +156,7 @@ async def test_compact_parses_json_and_sends_prefix_memory_and_purpose():
     calls, complete = scripted(GOOD)
     prefix = [entry("agent_request", "Ask Gary about the lease")]
     result = await compact(prefix, "Earlier: Gary is the landlord.", "Lease with Gary", complete=complete)
-    assert result == CompactionResult(GOOD["memory"], "Renew Gary's lease", "Waiting on the signed copy from Gary")
+    assert result == CompactionResult(GOOD["memory"])
     system, user = calls[0]
     assert system == COMPACTION_PROMPT
     assert "Purpose: Lease with Gary" in user and "Earlier: Gary is the landlord." in user
@@ -175,9 +175,9 @@ async def test_compact_tolerates_fences_and_surrounding_text(raw):
     assert (await compact([], "", "p", complete=complete)).memory == GOOD["memory"]
 
 
-async def test_compact_keeps_old_purpose_when_missing():
-    _, complete = scripted({"memory": "m"})
-    assert await compact([], "", "Old purpose", complete=complete) == CompactionResult("m", "Old purpose", "")
+async def test_compact_ignores_purpose_and_status_fields_in_the_output():
+    _, complete = scripted({"memory": "m", "purpose": "x", "last_status": "y"})
+    assert await compact([], "", "Old purpose", complete=complete) == CompactionResult("m")
 
 
 @pytest.mark.parametrize(
@@ -304,7 +304,7 @@ async def test_maybe_compact_skips_under_budget(compact_env):
     assert calls == [] and logs.latest_memory("gary-lease") is None
 
 
-async def test_maybe_compact_records_memory_and_refreshes_card(compact_env):
+async def test_maybe_compact_records_memory_and_leaves_the_card(compact_env):
     logs, directory = compact_env
     logs.record_request("gary-lease", "Email gary.whitman@example.com about the lease")
     fill(logs, "gary-lease", 12)
@@ -319,12 +319,12 @@ async def test_maybe_compact_records_memory_and_refreshes_card(compact_env):
     assert saved.identifiers == ["gary.whitman@example.com", THREAD]
     assert "Purpose: Negotiate Gary's lease renewal" in calls[0][1]
     refreshed = directory.get("gary-lease")
-    assert refreshed.purpose == "Renew Gary's lease" and refreshed.last_status == "Waiting on the signed copy from Gary"
+    assert refreshed.purpose == "Negotiate Gary's lease renewal" and refreshed.summary == ""
     assert memory.load_entries(logs, "gary-lease") == entries  # raw entries untouched
 
     # The next compaction folds only what came after the memory, into the existing memory and identifiers.
     fill(logs, "gary-lease", 12)
-    calls2, complete2 = scripted({"memory": "Even newer.", "purpose": "p", "last_status": "s"})
+    calls2, complete2 = scripted({"memory": "Even newer."})
     assert await maybe_compact("gary-lease", log_store=logs, directory=directory, complete=complete2,
                                budget_tokens=600)
     assert GOOD["memory"] in calls2[0][1] and "Email gary.whitman" not in calls2[0][1]
@@ -431,6 +431,11 @@ async def test_runner_schedules_compaction_after_the_run(tmp_path, monkeypatch):
     monkeypatch.setattr(runner_module, "ExecutionAgentRuntime", FakeRuntime)
     monkeypatch.setattr(runner_module, "maybe_compact", slow_compact)
     monkeypatch.setattr(runner_module, "deliver_result", capture)
+
+    async def no_summary(agent_id, instructions, result_text):
+        return False
+
+    monkeypatch.setattr(runner_module, "refresh_card_summary", no_summary)
 
     runner = runner_module.AgentRunner(log_store=ExecutionAgentLogStore(tmp_path / "logs"))
     result = await runner.run("gary-lease", "Follow up", origin="interaction")

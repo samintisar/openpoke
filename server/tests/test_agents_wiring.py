@@ -265,7 +265,7 @@ async def test_runtime_collects_dispatched_ids_and_sets_last_routed(tmp_path, mo
 # -- execution side: status and the [SUCCESS] payload --------------------------------------------------
 
 
-async def test_runner_records_status_and_keeps_payload_format(tmp_path, monkeypatch):
+async def test_runner_schedules_a_summary_and_keeps_payload_format(tmp_path, monkeypatch):
     directory = SqliteAgentDirectory(tmp_path / "agents.db")
     card = directory.create("Email to Alice", "Reply to Alice", "", NOW)
     created = []
@@ -289,9 +289,16 @@ async def test_runner_records_status_and_keeps_payload_format(tmp_path, monkeypa
     monkeypatch.setattr(runner_module, "ExecutionAgentRuntime", FakeRuntime)
     monkeypatch.setattr(runner_module, "maybe_compact", no_compact)
     monkeypatch.setattr(runner_module, "deliver_result", capture)
+    updates = []
+
+    async def fake_refresh(agent_id, instructions, result_text):
+        updates.append((agent_id, instructions, result_text))
+
+    monkeypatch.setattr(runner_module, "refresh_card_summary", fake_refresh)
 
     runner = runner_module.AgentRunner(log_store=ExecutionAgentLogStore(tmp_path / "logs"))
     await runner.run(card.id, "Reply to Alice", origin="interaction")
     assert created == [(card.id, "Email to Alice")]  # display name resolved from the card
-    assert directory.get(card.id).last_status == ("Sent the reply. " * 30).strip()[:200]
+    await asyncio.sleep(0)
+    assert updates == [(card.id, "Reply to Alice", f"[SUCCESS] Email to Alice: {('Sent the reply. ' * 30).strip()}")]
     assert dispatched == [f"[SUCCESS] Email to Alice: {('Sent the reply. ' * 30).strip()}"]

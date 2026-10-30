@@ -141,9 +141,8 @@ async def run_memory_agent(agent: AgentHistory, llm: LLMClient, *, model: str, b
     full = await _condition(llm, model, system_prompt(agent.name, agent.purpose, full_history), full_history, agent.facts)
     if result is not None:
         history = render_history(result.memory, identifiers, tail, context_entries=prefix)
-        # Compaction refreshes the card's purpose, which the agent's prompt then uses.
         compacted = await _condition(
-            llm, model, system_prompt(agent.name, result.purpose, history), history, agent.facts
+            llm, model, system_prompt(agent.name, agent.purpose, history), history, agent.facts
         )
         compacted["fallback"] = False
     else:
@@ -157,8 +156,7 @@ async def run_memory_agent(agent: AgentHistory, llm: LLMClient, *, model: str, b
         "identifiers": identifiers,
         "compaction": {
             "status": status, "error": error,
-            "memory": result.memory if result else None, "purpose": result.purpose if result else None,
-            "last_status": result.last_status if result else None,
+            "memory": result.memory if result else None,
             "memory_tokens": estimate_tokens(result.memory) if result else None,
             **_meta_sums(completer.metas),
         },
@@ -211,8 +209,7 @@ def fake_memory_llm() -> ScriptedLLM:
     def script(messages: list[dict[str, Any]], sample: int) -> dict[str, Any]:
         if "<new_entries>" in messages[-1]["content"]:
             return {"content": json.dumps({
-                "memory": "Offline fake memory: no facts kept.", "purpose": "Offline fake purpose.",
-                "last_status": "Offline fake status.",
+                "memory": "Offline fake memory: no facts kept.",
             })}
         return {"content": "I don't know."}
 

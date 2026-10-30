@@ -128,14 +128,12 @@ agent's purpose, its existing memory (possibly empty) and older log entries that
 Fold the new entries into the memory.
 
 Return only a JSON object, with no other text and no code fences:
-{"memory": "...", "purpose": "...", "last_status": "..."}
+{"memory": "..."}
 
 - memory: under 300 words. Keep the people involved and their roles; decisions made (amounts, dates, choices); \
 commitments and deadlines (who owes what, by when); the user's preferences (tone, sign-off, timing, what to avoid); \
 and open loops still waiting on someone. Keep everything from the existing memory that still matters, update what \
 changed, and drop chit-chat, tool mechanics and anything superseded.
-- purpose: one sentence describing the agent's whole matter, not just its latest request.
-- last_status: one line on where the matter stands now.
 
 Email addresses and thread, message and draft ids are preserved separately, verbatim, so you need not repeat them."""
 
@@ -147,8 +145,6 @@ class CompactionError(Exception):
 @dataclass(frozen=True)
 class CompactionResult:
     memory: str
-    purpose: str
-    last_status: str
 
 
 def build_compaction_input(prefix: Sequence[Entry], existing_memory: str, purpose: str) -> str:
@@ -159,8 +155,8 @@ def build_compaction_input(prefix: Sequence[Entry], existing_memory: str, purpos
     )
 
 
-def parse_compaction(raw: str, purpose: str) -> CompactionResult:
-    """Parse the model's JSON; a missing purpose keeps the old one. Raises `CompactionError`."""
+def parse_compaction(raw: str) -> CompactionResult:
+    """Parse the model's JSON. Raises `CompactionError`."""
     text = (raw or "").strip()
     if text.startswith("```"):
         text = re.sub(r"^```[A-Za-z]*\s*|\s*```$", "", text).strip()
@@ -178,13 +174,7 @@ def parse_compaction(raw: str, purpose: str) -> CompactionResult:
     memory = data.get("memory")
     if not isinstance(memory, str) or not memory.strip():
         raise CompactionError("compaction output has an empty memory")
-    new_purpose = data.get("purpose")
-    last_status = data.get("last_status")
-    return CompactionResult(
-        memory=memory.strip(),
-        purpose=new_purpose.strip() if isinstance(new_purpose, str) and new_purpose.strip() else purpose,
-        last_status=" ".join(last_status.split()) if isinstance(last_status, str) else "",
-    )
+    return CompactionResult(memory=memory.strip())
 
 
 async def compact(
@@ -197,7 +187,7 @@ async def compact(
         raise
     except Exception as exc:
         raise CompactionError(f"compaction call failed: {exc}") from exc
-    return parse_compaction(raw, purpose)
+    return parse_compaction(raw)
 
 
 _CONTEXT_BEFORE = 60
@@ -313,11 +303,6 @@ async def maybe_compact(
             )
             logs.record_memory(agent_id, result.memory, identifiers, upto + len(prefix))
             logger.info(f"[{agent_id}] Compacted {len(prefix)} log entries into memory")
-            if card is not None:
-                try:
-                    directory.update_card(agent_id, purpose=result.purpose, last_status=result.last_status)
-                except Exception as exc:
-                    logger.warning(f"[{agent_id}] Failed to refresh card after compaction: {exc}")
             return True
     except Exception as exc:
         logger.warning(f"[{agent_id}] Memory compaction failed; keeping full history: {exc}")

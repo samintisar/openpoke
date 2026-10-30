@@ -39,6 +39,13 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setattr(runner_module, "get_agent_directory", lambda: directory)
     monkeypatch.setattr(runner_module, "maybe_compact", no_compact)
     monkeypatch.setattr(runner_module, "deliver_result", capture)
+    updates = []
+
+    async def fake_refresh(agent_id, instructions, result_text):
+        updates.append((agent_id, instructions, result_text))
+
+    monkeypatch.setattr(runner_module, "refresh_card_summary", fake_refresh)
+    monkeypatch.setattr(runner_module, "_summary_updates", updates, raising=False)
     return logs, directory, delivered
 
 
@@ -145,7 +152,7 @@ async def test_the_run_context_names_the_agent_and_trigger(env, monkeypatch):
 # -- status, compaction and delivery --------------------------------------------------------------------------
 
 
-async def test_a_run_records_status_and_delivers_one_result(env, monkeypatch):
+async def test_a_run_schedules_a_summary_and_delivers_one_result(env, monkeypatch):
     logs, directory, delivered = env
 
     async def execute(agent_id, instructions):
@@ -154,7 +161,8 @@ async def test_a_run_records_status_and_delivers_one_result(env, monkeypatch):
     scripted_runtime(monkeypatch, execute)
     result = await AgentRunner(log_store=logs).run("alice", "Reply", origin="trigger", trigger_id=3)
     assert result.success
-    assert directory.get("alice").last_status == "Sent the reply."
+    await asyncio.sleep(0)
+    assert runner_module._summary_updates == [("alice", "Reply", "[SUCCESS] Alice Reply: Sent the reply.")]
     assert delivered == [("[SUCCESS] Alice Reply: Sent the reply.", "trigger", 3)]
 
 
@@ -245,7 +253,8 @@ async def test_iteration_limit_lists_drafts_from_this_run_only(env, real_runtime
     payload = delivered[0][0]
     assert payload.startswith("[PARTIAL] Alice Reply: ")
     assert payload.endswith("Already done: draft r-123 to alice@x.com.")
-    assert "Already done: draft r-123" in directory.get("alice").last_status
+    await asyncio.sleep(0)
+    assert runner_module._summary_updates[0][2].endswith("Already done: draft r-123 to alice@x.com.")
 
 
 async def test_timeout_reports_side_effects_already_performed(env, monkeypatch):

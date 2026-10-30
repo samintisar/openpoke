@@ -145,7 +145,7 @@ class Oracle:
             if self.compaction == "abort":
                 raise BudgetExceeded("budget of $0.00 reached")
             content = self.compaction if self.compaction != "ok" else json.dumps(
-                {"memory": self.memory, "purpose": "Refreshed purpose", "last_status": "Waiting"}
+                {"memory": self.memory}
             )
         else:
             question = user.split(": ", 1)[1]
@@ -180,7 +180,7 @@ async def test_layer_compacts_with_production_prompts_and_scores_both_conditions
     assert any(c["system"] == f"{base}\n\n# Execution History\n\n{render_entries(AGENT.entries)}" for c in qa)
     compacted_prompts = [c["system"] for c in qa if "<agent_memory>" in c["system"]]
     assert len(compacted_prompts) == len(FACT_KINDS)
-    assert all("Purpose: Refreshed purpose" in p for p in compacted_prompts)  # compaction refreshes the card
+    assert all(f"Purpose: {AGENT.purpose}" in p for p in compacted_prompts)  # compaction no longer rewrites purpose
 
     assert row["compaction"]["status"] == "ok" and row["compaction"]["cost"] == pytest.approx(0.001)
     assert row["compacted_history_tokens"] < row["full_history_tokens"]

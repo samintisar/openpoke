@@ -1,8 +1,8 @@
 """Run execution agents: one run at a time per agent, a global cap on concurrent runs, partial results.
 
 Runs for the same agent are serial in FIFO order (a correction sent mid-run queues behind the run in progress).
-The global slot is taken inside the agent lock, so a queued run never holds one. Each finished run records its
-status, schedules memory compaction and hands its result to `deliver_result`, which posts it to the inbox.
+The global slot is taken inside the agent lock, so a queued run never holds one. Each finished run updates its card's
+summary, schedules memory compaction and hands its result to `deliver_result`, which posts it to the inbox.
 """
 
 from __future__ import annotations
@@ -19,6 +19,7 @@ from ...config import get_settings
 from ...logging_config import logger
 from ..agents.memory import maybe_compact
 from ..agents.registry import get_agent_directory
+from ..agents.summaries import refresh_card_summary
 from ..inbox import get_inbox
 from .log_store import ExecutionAgentLogStore, get_execution_agent_logs
 
@@ -46,14 +47,6 @@ def _display_name(agent_id: str) -> str:
     return card.name if card else agent_id
 
 
-def _record_status(agent_id: str, response: str) -> None:
-    """Store the agent's latest final response on its card (best effort)."""
-    try:
-        get_agent_directory().record_status(agent_id, response or "")
-    except Exception as exc:  # pragma: no cover - defensive
-        logger.warning(f"[{agent_id}] Failed to record status: {exc}")
-
-
 _BACKGROUND_TASKS: set[asyncio.Task] = set()  # strong refs so background tasks are not collected
 
 
@@ -70,6 +63,14 @@ def _schedule_compaction(agent_id: str) -> None:
         _spawn(maybe_compact(agent_id))
     except Exception as exc:  # pragma: no cover - defensive
         logger.warning(f"[{agent_id}] Could not schedule memory compaction: {exc}")
+
+
+def _schedule_summary(agent_id: str, instructions: str, result_text: str) -> None:
+    """Fold the run into the card's living summary in the background; never blocks or fails the run."""
+    try:
+        _spawn(refresh_card_summary(agent_id, instructions, result_text))
+    except Exception as exc:  # pragma: no cover - defensive
+        logger.warning(f"[{agent_id}] Could not schedule the summary update: {exc}")
 
 
 # -- result payload and delivery ------------------------------------------------------------------------------
@@ -242,7 +243,7 @@ class AgentRunner:
         trigger_id: Optional[int] = None,
         agent_name: Optional[str] = None,
     ) -> ExecutionResult:
-        """Run the agent, record its status, schedule compaction and deliver the result.
+        """Run the agent, schedule its summary update and compaction and deliver the result.
 
         `origin` is "interaction" (sent by the interaction agent) or "trigger" (a trigger fire, with `trigger_id`).
         `agent_name` is the display name used in prompts and the result payload; it defaults to the card's name.
@@ -254,7 +255,7 @@ class AgentRunner:
             async with self._slots:
                 result = await self._execute(agent_id, agent_name, instructions, origin, trigger_id)
 
-        _record_status(agent_id, result.response)
+        _schedule_summary(agent_id, instructions, format_result(result))
         _schedule_compaction(agent_id)
         deliver_result(result, origin=origin, trigger_id=trigger_id)
         return result
