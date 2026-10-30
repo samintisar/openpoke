@@ -12,6 +12,7 @@ from evals.layers.routing import MAX_ITERATIONS, build_messages, run_routing_cas
 from evals.llm import ScriptedLLM, cache_key, tool_call
 from evals.systems.baseline import BaselineSystem
 from evals.worlds.generator import build_world, generate_cases
+from evals.worlds.lived.store import load_lived
 
 
 def setup(kind="follow_up"):
@@ -417,6 +418,26 @@ async def test_baseline_decisions_and_payloads_match_pre_refactor():
         out.append({"case": case.id, "decision": fields, "keys": llm.keys})
     blob = json.dumps(out, indent=1, sort_keys=True).encode("utf-8")
     assert hashlib.sha256(blob).hexdigest() == BASELINE_GOLDEN_SHA256
+
+
+# The same check on the frozen lived world (lived-50, its first 8 cases), recorded in the same run in which
+# the synthetic-world golden above still passed (Plan 6c Task 11): it carries that golden's chain of trust.
+BASELINE_LIVED_GOLDEN_SHA256 = "3138d603add64b442ca725eb8e0d58284787ff568104a0b8e4108aa6caafbf58"
+
+
+async def test_baseline_decisions_and_payloads_match_on_lived_world():
+    world, cases = next((w, c) for label, w, c in load_lived() if label == "lived-50")
+    out = []
+    for case in cases[:8]:
+        llm = KeyedLLM(mixed_script(world, case))
+        decision = await run_routing_case(case, world, BaselineSystem(), llm, model="m", sample=0)
+        fields = asdict(decision)
+        fields.pop("cached_prompt_tokens")  # accounting added after fa4bf6f; not part of the decision
+        fields.pop("second_looks")  # added in Plan 6c; empty for the baseline
+        out.append({"case": case.id, "decision": fields, "keys": llm.keys})
+    assert len(out) == 8
+    blob = json.dumps(out, indent=1, sort_keys=True).encode("utf-8")
+    assert hashlib.sha256(blob).hexdigest() == BASELINE_LIVED_GOLDEN_SHA256
 
 
 class SpySystem(BaselineSystem):
