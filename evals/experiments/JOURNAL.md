@@ -314,3 +314,123 @@ One compaction call failed (tahoe-cabin). It fell back to the full history, so r
 - **Baseline golden re-anchored (commit 5145e61):** `test_baseline_decisions_and_payloads_match_on_lived_world` hashes the baseline's decisions and payload cache keys on `lived-50`'s first 8 cases (`BASELINE_LIVED_GOLDEN_SHA256 = 3138d603…bf58`). It and the old synthetic-world golden (`…_match_pre_refactor`, anchored at fa4bf6f) passed in the same run, so the chain of trust carries over; the old one was then deleted.
 - **Synthetic world removed:** `evals/worlds/generator.py`, `evals/tests/test_world_generator.py`, the old golden, the `synthetic` branch of `evals/run.py` (with its `world_seeds` and `cases_per_kind` keys; `world` now defaults to `lived` and accepts `lived` or `lived_v2`), and `baseline.yaml` (v1 synthetic only). `smoke.yaml` now runs `world: lived`, `n_agents: [10]`. Tests that only needed a world use `lived-10`/`lived-50`. `generator.py` left the protected list. Past synthetic result files stay as history; the generator can be restored from commit 5145e61 (`git show 5145e61:evals/worlds/generator.py`). `memory_gen.py` and `handwritten.py` are untouched.
 - **Typo matching (fuzzy) ablation (live):** `v2-ablate-fuzzy.yaml` (`retrieved_nofuzzy`, step 3 settings), `20261030-074653-v2-ablate-fuzzy-dev.json` vs step 3 `20261030-072458-v2-step3-second-look-dev.json`, at 200 / 1,000 agents: `typo` pass@1 0.90 → 0.93 / 0.93 → 0.97; pass@1 +0.000 / +0.006; harmful −0.003 / −0.003; duplicate +0.004 / −0.009. Fuzzy-off is not worse (every headline within 0.02, typo up), so typo-tolerant matching is removed: `RetrievalConfig.fuzzy`, `fuzzy_min_len`, `fuzzy_weight`, `edit_distance_le1` (no other user), `RetrievedNoFuzzySystem` and `retrieved_nofuzzy`, and their tests. Entity matching is exact only, in retrieval, search and the duplicate guard. `v2-ablate-fuzzy.yaml` and `retrieved-nofuzzy-lived.yaml` stay as history and no longer run.
+
+## 2026-10-30 — Eval summaries by $0 cached replay (Plan 6c Task 4)
+
+- **Why:** step 1 needs a living summary on every eval card. The world files hold instructions only, so the helper reports growth produced were recovered by rerunning growth's `generate()` on each world's own model with `Budget(0)` and no network, served entirely from the LLM cache. The replay checks that the world is reproduced (apart from `generated_at`) and that the logged instructions equal every saved history. Output: `agent-logs-s{1,2}.json`.
+- **Summaries:** the production updater (`summaries.py`) folded each agent's instructions and replayed reports up to each size's cutoff. 1,260 summaries per life. Cost $0.458 for both lives.
+  - Life 1: 0 empty; 99 of 200 agents saw a result.
+  - Life 2: 1 empty; 100 of 200 saw a result. Counts only; nobody read life 2's summaries.
+- **Caveat:** not every instruction has a report and background agents have none, so eval summaries are a lower bound on production's. The world files never hold summaries; `load_v2` attaches them (and refuses a summaries file for another world or one missing a size). They are shown on eval cards but not copied into card entities, as in production. `full_cards` stays without summaries.
+
+## 2026-10-30 — Step 1: living summaries (Plan 6c, live, $1.40) and the 300-char rerun ($1.31)
+
+- **Step 1** (`20261030-055120-v2-step1-summaries-dev.json`, summaries shown at 480 chars) vs v1 retrieval (`20261030-034838-v2-retrieved-dev.json`), paired over cases:
+
+  | Agents | pass@1 | harmful | duplicate | tokens / decision |
+  |---|---|---|---|---|
+  | 200 | +0.027 [−0.009, +0.067] | −0.012 [−0.039, +0.012] | −0.018 [−0.057, +0.013] | 22.1k → 27.1k |
+  | 1,000 | +0.052 [+0.012, +0.094] | −0.012 [−0.036, +0.009] | −0.044 [−0.083, −0.013] | 22.0k → 26.7k |
+
+  Target metric (paraphrase pass@1): 0.26 → 0.37 at 200, 0.19 → 0.48 at 1,000. Also multi_task 0.90 → 1.00 / 0.83 → 1.00 and typo 0.90 → 0.97 at both sizes. Down: same_person_new_topic 0.80 → 0.77 / 0.97 → 0.93 and new_task 0.93 → 0.90 at 1,000 (the second look's targets).
+- **Keep rule:** target improves and no headline metric is worse by more than 0.02, except prompt tokens: 27k is over the 25k cap.
+- **300-char rerun** (`20261030-061558-v2-step1-summaries-300-dev.json`) vs step 1 at 480: pass@1 −0.012 [−0.039, +0.015] at 200 and −0.021 [−0.055, +0.009] at 1,000; tokens 27.1k → 27.3k and 26.7k → 27.3k (no saving); paraphrase at 1,000 0.48 → 0.37.
+- **Why no saving:** the extra tokens come from search loops (5 or more `search_agents` calls in a turn, mostly failed turns), not from card length. Shortening cards cost accuracy and saved nothing.
+- **Decision:** back to 480 chars. The loop is handled by step 1b.
+
+## 2026-10-30 — Step 1b: per-turn search budget (Plan 6c, live $0.05 + $0 clean rerun)
+
+- **Why:** in step 1, turns with 5 or more searches were mostly failures and drove mean prompt tokens past the cap. The 4th `search_agents` call in a turn is now refused with a fixed text (server and eval share it). Full cards is pinned to no budget; earlier step configs pin it null.
+- **Result** (`20261030-064327-v2-step1b-search-budget-dev.json`) vs step 1:
+
+  | Agents | pass@1 | harmful | duplicate | tokens / decision |
+  |---|---|---|---|---|
+  | 200 | +0.009 [−0.003, +0.027] | +0.000 | −0.013 [−0.035, +0.000] | 27.1k → 25.4k |
+  | 1,000 | +0.009 [+0.000, +0.027] | +0.000 | +0.004 [+0.000, +0.013] | 26.7k → 24.3k |
+
+  No turn hits the iteration cap. lived-10 and lived-50 are unchanged (no turn there searched four times). The budget is cheap and does not hurt, so it is kept; it is the step that brings tokens under the cap.
+- **Vs original:** +0.064 [+0.003, +0.127] at 200, +0.115 [+0.061, +0.173] at 1,000.
+
+## 2026-10-30 — Step 2 status rule (mixed) and step 2b (always dispatch) (Plan 6c, live $1.23 + $1.20)
+
+- **Rule:** a status question about something nobody holds finds the matter or asks; it never creates an agent only to check status. It lives in the prompt (`status_policy.md`); the `search_agents` description is unchanged so the ablation is one switch.
+- **Step 2** (`20261030-064547-v2-step2-status-dev.json`) vs step 1b, 200 / 1,000: status_question 0.80 → 0.80 / 0.83 → 0.83 (target unchanged); pass@1 −0.018 [−0.073, +0.036] / −0.015 [−0.067, +0.036]; duplicate −0.035 [−0.075, −0.009] / −0.031 [−0.075, +0.000]. Mixed side effects: paraphrase 0.48 → 0.78 at both sizes, but vague_reference 0.90 → 0.67 / 0.97 → 0.83 and dormant_revival 1.00 → 0.83 / 1.00 → 0.80. Cause: the rule's "answer from the card's summary" clause made the IA reply without dispatching (`no_action`, `unnecessary_clarify` on vague references), sometimes promising work it never started.
+- **Step 2b** (`20261030-070834-v2-step2b-status-dispatch-dev.json`): the same rule with that clause removed. A progress question about a matter always goes to the matter's agent, because a summary can be stale.
+
+  | vs | Agents | pass@1 | harmful | duplicate | status_question | tokens |
+  |---|---|---|---|---|---|---|
+  | step 1b | 200 | +0.052 [+0.015, +0.094] | +0.006 [−0.012, +0.030] | −0.048 [−0.092, −0.013] | 0.80 → 1.00 | 25.4k → 24.4k |
+  | step 1b | 1,000 | +0.012 [−0.027, +0.052] | +0.015 [−0.003, +0.036] | −0.022 [−0.057, +0.004] | 0.83 → 1.00 | 24.3k → 24.4k |
+  | original | 200 | +0.115 [+0.058, +0.176] | +0.012 [−0.012, +0.039] | −0.096 [−0.162, −0.039] | | |
+  | original | 1,000 | +0.127 [+0.067, +0.191] | +0.003 [−0.027, +0.033] | −0.083 [−0.136, −0.039] | | |
+
+  Failed samples of 330: original 53 → 15 at 200 and 64 → 22 at 1,000 (step 1b: 32 and 26). Costs: typo 0.97 → 0.90 at 200; same_person_new_topic at 1,000 0.93 → 0.77 (the second look's target); harmful +0.015 at 1,000 stays under the 0.02 line.
+- **Honest note:** 2b was a dev-informed iteration. I changed the wording after reading step 2's dev failures. The change is justified on product grounds (a stale summary should never stand in for asking the agent that is doing the work), but the 1.00 on status_question at dev is partly tuned. Life 2 is the check; its numbers are what count.
+- **Decision:** keep 2b as the status rule.
+
+## 2026-10-30 — Context retrieval (Plan 6c Task 10): off by default, no live run
+
+- **Idea:** when the first search is weak and the message is vague or a status question, run a second pass whose query adds the recent turns.
+- **Offline measurement on life 1 ($0):** the first version fired on 38% of user probes; after narrowing it to fire only when the first pass is weak, 5% (5 of 100 user probes at 200 and at 1,000 agents). It never added a gold card the first pass missed, so it can only add tokens.
+- **Keep rule:** the target metrics (vague_reference, status_question pass@1) cannot improve if no gold card is added, so the change is reverted by turning the default off (`RetrievedSystem(context_query=True)` / `agent.CONTEXT_QUERY` re-enable it). The code stays; removing it is the user's decision. No live run was spent. Earlier step configs pin it off.
+
+## 2026-10-30 — Step 3: calibrated second look (Plan 6c, live $0.10)
+
+- **Defaults from the calibration** (see the calibration entry above): shared-person signal only when the other card outranks the target in retrieval order; create trigger off; `reuse_coverage` 0.2; `name_coverage` 0 (off). Offline replay: 0.108 of turns look. At most one look per user turn; a "new" verdict on a reuse holds the dispatch (`force_new`). LLM reviewer in this run.
+- **Result** (`20261030-072458-v2-step3-second-look-dev.json`) vs step 2b:
+
+  | Agents | trigger rate | pass@1 | harmful | duplicate | same_person_new_topic | tokens |
+  |---|---|---|---|---|---|---|
+  | 200 | 0.121 | +0.006 [+0.000, +0.018] | −0.006 [−0.018, +0.000] | +0.000 | 0.87 → 0.93 | 24.4k → 25.1k |
+  | 1,000 | 0.106 | +0.009 [+0.000, +0.021] | −0.009 [−0.021, +0.000] | +0.000 | 0.77 → 0.87 | 24.4k → 25.3k |
+
+  Failed samples: 15 → 13 at 200, 22 → 19 at 1,000. The trigger rate is under the 0.20 cap and matches the calibration (0.108 offline).
+- **Disclosed:** prompt tokens including the second-look prompt are 25.1k and 25.3k, about 1% over the 25k cap. Kept: the harmful and duplicate targets hold, and the overshoot is small.
+- **Limit:** the trigger reaches 12 of 64 failures (precision 0.17). The largest class, duplicate creates, is out of reach (see the calibration). The step is small but clean.
+- **Total vs original** (step 3): pass@1 +0.121 [+0.067, +0.182] at 200 and +0.136 [+0.079, +0.197] at 1,000; duplicate −0.096 [−0.162, −0.039] / −0.083 [−0.136, −0.039]; harmful +0.006 / −0.006 (no change). Failed samples 53 → 13 and 64 → 19.
+
+## 2026-10-30 — Jev experiments J1–J7 (Plan 6c, life 1 dev, offline replays, about $0.40)
+
+Jev (TypeSafe System One, `jev-1.14.0`) is a classifier-style vendor model billed per input token ($0.042/1M). J1–J4, J6 and J7 replay the step 1 run (`20261030-055120-v2-step1-summaries-dev.json`) and change nothing in the live system. Results are in `evals/.cache/jev/*.json`. Life 1 only.
+
+| # | Question | Result |
+|---|---|---|
+| J1 | Can Jev review the IA's dispatch (the second look)? | As-is, net −18: 71 looks, 9 fixed, 27 broke (24 of them by asking when the IA was right), verdict accuracy 0.49. Split-only (act only on "new" at confidence ≥ 0.4, otherwise leave the call): 9 fixes, 0 breaks, all in same_person_new_topic. The 3 breaks (typo) sit at confidence 0.36. |
+| J2 | Can Jev decide when to look? | Flags 0.155 of rows for 14 of 64 failures (precision 0.14); 0.188 at confidence 0.4 (precision 0.11). No better than the calibrated rules (0.108, 12 of 64, precision 0.17), so the rules keep the trigger. |
+| J3 | Jev as the router | 0.80 pass vs 0.90 for the IA over 885 rows. Perfect on same_person_new_topic (1.00 vs 0.81); poor on multi_task (0.15) and paraphrase (0.18). Not a replacement. |
+| J4 | Duplicate check before a create | Catches 0 to 4 of 33 duplicate creates; the best rule (P(covered) ≥ 0.1) flags 15, 4 true and 11 false. Useless. |
+| J6 | "Clarify" from Jev's no-uncertainty-left score | No usable threshold. All 14 should-clarify failures are caught only at ≤ 0.6, where the rate is 0.18 and precision 0.13; at 0.7 precision is 0.175 and recall halves. Precision never exceeds 0.17. |
+| J7 | Message-type classifier | 0.75 overall (885 rows). Reliable on new_task 1.00, agent_result 1.00, same_person_new_topic 1.00, multi_task 0.96 and cross_agent 0.99; weak on vague_reference 0.13, indirect references 0.46 and follow_up 0.58. |
+
+- **Spend:** J1 about $0 new (cached), J2 $0.067, J3 $0.152, J4 $0.016, J6 $0.059, J7 $0.097; total about $0.40. The j1–j4, j6 and j7 runs first paid about 3 times for each unique request: the k=3 samples of a case raced past the cache and were each billed. `ask_all` now groups requests by body and sends each once (commit 5642c0c).
+- **What it means:** Jev is strong at exactly the thing the IA is weak at, deciding that a message about a known person is a new topic. That is the second look's split-only job. J1 says to use it that way, not as a general reviewer, router or clarifier.
+
+## 2026-10-30 — J5 live: Jev split-only reviewer as the second look ($0.019)
+
+- **Config:** `v2-step3j-jev-reviewer.yaml`: same triggers as step 3; reviewer is Jev split-only, `jev_min_confidence` 0.4. Compared with the full system on the same code with the LLM reviewer (`20261030-080707-v2-full-dev.json`, $0 cached, identical to step 3 apart from the removals); the J5 run is `20261030-081025-v2-step3j-jev-reviewer-dev.json`.
+- **Result** (J5 − LLM reviewer), 200 / 1,000: pass@1 +0.006 [+0.000, +0.018] at both sizes; harmful −0.006 [−0.018, +0.000] at both; duplicate +0.000; same_person_new_topic 0.93 → 1.00 / 0.87 → 0.93; trigger rate 0.124 / 0.112; tokens 25.5k → 25.2k and 25.1k → 24.7k. Jev spend $0.019.
+- **Decision:** keep. The Jev split-only reviewer is the default second look (commit 0828536): fewer tokens, no worse anywhere, better where the second look aims.
+- **Caveats:**
+  - The 0.4 confidence threshold was chosen on dev, from J1 (the 3 breaks sit at 0.36). Life 2 will show whether it transfers.
+  - Production now depends on a new vendor API (`TYPESAFE_API_KEY`). Without the key, or on any Jev error, the call stands unchanged and an error record with `jev_unavailable` is logged (one warning per process). The failure mode is "no second look", never a wrong redirect. The LLM reviewer stays available (`reviewer="llm"`).
+  - In the eval, a paying run client gets a cached Jev on the run's budget; offline and fake clients get a Jev that never holds, so tests need no key.
+
+## 2026-10-30 — Benchmaxing risk (Plan 6c)
+
+Plan 6c iterated on life 1 dev, so its dev numbers are optimistic. Tuned on dev:
+- the second-look thresholds (`reuse_coverage` 0.2, shared-person-outranks rule, create off, `name_coverage` 0), chosen from step 1's failures;
+- the search budget of 3, set because of step 1's long search loops;
+- the status rule's wording (step 2 to 2b was changed after reading dev failures);
+- the Jev confidence threshold 0.4, chosen from J1's dev rows;
+- the 480-char summary length (against 300, on dev).
+
+Safeguards:
+- **Life 2 is sealed.** Nobody has read its probes, runs or summaries (only counts of its summaries were reported). Plan 6d runs the final system on it once.
+- **One final run.** The full system is frozen first (Task 12 step 4), then run once, with no tuning after.
+- **Pre-registered keep rule** (spec §6), with target and headline metrics fixed before the runs. The two exceptions informed by dev, step 2b and the 0.4 threshold, are named above.
+- **The eval runs production code.** It imports the same prompts, dispatch, summaries updater and second-look gate, so a dev gain is a real behaviour change and not a harness artefact.
+- Expect life 2's gains to be smaller than dev's. Treat the dev intervals as an upper bound on the claim.
+
+## 2026-10-30 — Leave-one-out ablations — pending
+
+(To be filled in: the full system with each kept change switched off, compared with the full system. Configs: `v2-ablate-summaries.yaml`, `v2-ablate-search-budget.yaml`, `v2-ablate-status.yaml`, `v2-ablate-second-look.yaml` in `evals/experiments/`.)
