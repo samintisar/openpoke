@@ -12,6 +12,7 @@ Code decides when it runs:
 Defaults come from the offline calibration on life-1 dev (Task 9): about 0.11 of turns look.
 The call sees the message, the last conversation turns and the top cards with summaries, and answers reuse,
 new or ask. `effect` turns the verdict into what the dispatch does.
+`reviewer="jev"` swaps the call for Jev, split-only, on the same triggers (`jev_review.py`).
 """
 
 from __future__ import annotations
@@ -46,8 +47,11 @@ class SecondLookConfig:
     reuse_coverage: float = 0.2  # reuse trigger: share of the message's topic words found on the target card
     name_coverage: float = 0.0  # unmentioned-name trigger: fires only below this coverage (names counted); 0 = off
     timeout_s: float = 10.0
+    reviewer: str = "llm"  # "llm" (reuse/new/ask) or "jev" (split-only: see jev_review.py); same triggers either way
+    jev_min_confidence: float = 0.4  # jev: the least confidence at which a "new" holds a reuse
 
 
+REVIEWERS = ("llm", "jev")
 DEFAULT_SECOND_LOOK = SecondLookConfig()
 
 
@@ -280,7 +284,7 @@ def effect(verdict: Verdict, *, proposal: str, target_id: Optional[str]) -> Effe
 
 
 __all__ = [
-    "DEFAULT_SECOND_LOOK", "Effect", "SECOND_LOOK_PROMPT", "SecondLookConfig", "SecondLookError", "Verdict",
+    "DEFAULT_SECOND_LOOK", "Effect", "REVIEWERS", "SECOND_LOOK_PROMPT", "SecondLookConfig", "SecondLookError", "Verdict",
     "build_review_input", "create_trigger", "effect", "parse_verdict", "reuse_trigger", "review", "top_cards",
     "topic_coverage",
 ]

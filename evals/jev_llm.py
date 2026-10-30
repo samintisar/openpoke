@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import json
+import time
 from collections import Counter
 from pathlib import Path
 from typing import Any, Callable, Mapping, Optional, Protocol
@@ -110,6 +111,33 @@ class CachedJev:
                 "models": dict(self.models)}
 
 
+class DecisionJev:
+    """A `CachedJev` seen from one eval decision: each answer's cost, input tokens and latency land on it.
+
+    Accounted like an IA call: `cost` is attributed (cached answers included), `fresh_cost` and latency count only
+    calls sent this run, and the cache file's name joins `cache_keys`.
+    """
+
+    def __init__(self, jev: CachedJev, decision: Any) -> None:
+        self.jev = jev
+        self.decision = decision
+        self.model = jev.model
+
+    async def ask(self, state: Any, questions: Mapping[str, Mapping[str, Any]]) -> dict[str, Any]:
+        start = time.perf_counter()
+        response = await self.jev.ask(state, questions)
+        decision, cost = self.decision, cost_usd(response)
+        decision.cost += cost
+        if (response.get("_meta") or {}).get("cached"):
+            decision.cached_calls += 1
+        else:
+            decision.fresh_cost += cost
+            decision.latency_s += time.perf_counter() - start
+        decision.prompt_tokens += input_tokens(response)
+        decision.cache_keys.append(self.jev.path(build_body(self.model, state, questions)).stem)
+        return response
+
+
 Script = Callable[[Any, str, dict[str, Any]], dict[str, Any]]
 
 
@@ -139,5 +167,5 @@ class ScriptedJev:
                 "usage": {"input_tokens": estimate_tokens(body), "output_tokens": 0}}
 
 
-__all__ = ["CACHE_PREFIX", "CachedJev", "JEV_REQUESTS_PER_MINUTE", "JevError", "ScriptedJev", "body_key",
-           "estimate_tokens"]
+__all__ = ["CACHE_PREFIX", "CachedJev", "DecisionJev", "JEV_REQUESTS_PER_MINUTE", "JevError", "ScriptedJev",
+           "body_key", "estimate_tokens"]

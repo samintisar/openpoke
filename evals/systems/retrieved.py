@@ -13,7 +13,8 @@ from typing import Any
 
 from server.agents.interaction_agent.agent import build_system_prompt
 from server.agents.interaction_agent.second_look_gate import gate
-from server.services.agents.second_look import DEFAULT_SECOND_LOOK
+from server.services.agents.jev import JevClient, api_key_from_env
+from server.services.agents.second_look import DEFAULT_SECOND_LOOK, REVIEWERS
 from server.agents.interaction_agent.tools import SEND_DRAFT_ARGUMENTS_ERROR
 from server.services.agents.cards import AgentCard
 from server.services.agents.directory import InMemoryDirectory
@@ -30,6 +31,8 @@ from server.services.agents.schemas import TOOL_SCHEMAS
 
 from ..cases import Case
 from ..grading import Decision
+from ..jev_llm import JEV_REQUESTS_PER_MINUTE, CachedJev, DecisionJev
+from ..llm import RateLimiter, RunAborted
 from ..worlds.model import World
 from .cards_from_world import cards_for
 
@@ -128,9 +131,13 @@ class RetrievedTurn:
         self._model = ""
         self._sample = 0
         self._looked = False  # at most one second look per turn
+        self.jev_source: Callable[[Any], CachedJev] | None = None  # set when the reviewer is Jev
+        self._jev: CachedJev | None = None
 
     def bind_llm(self, llm: Any, *, model: str, sample: int) -> None:
         self._llm, self._model, self._sample = llm, model, sample
+        if self.jev_source is not None:
+            self._jev = self.jev_source(llm)
 
     async def handle(self, name: str, args: dict[str, Any], decision: Decision) -> dict[str, Any]:
         """Record a valid call's effect and return the tool result production would give."""
@@ -164,7 +171,8 @@ class RetrievedTurn:
             args, held, record = await gate(dict(args), message=self.case.message, context=context,
                                             directory=self.directory, now=self.world.now,
                                             complete=self._complete(decision), cfg=self.second_look_cfg,
-                                            rcfg=self.cfg, guard=self.guard)
+                                            rcfg=self.cfg, guard=self.guard,
+                                            jev=DecisionJev(self._jev, decision) if self._jev else None)
             if record is not None:
                 self._looked = True
                 decision.second_looks.append(record)
@@ -229,6 +237,7 @@ class RetrievedSystem:
         self, cfg: RetrievalConfig | None = None, lifecycle: bool = True, guard: bool = True, search: bool = True,
         summaries: bool = True, status_policy: bool = True, second_look: bool = True,
         context_query: bool = False, search_budget: int | None = SEARCH_BUDGET,
+        second_look_reviewer: str = "llm", jev_client: Any = None,
     ) -> None:
         self.cfg = cfg or RetrievalConfig()
         # False keeps every card active, to ablate the lifecycle (dormant / archived statuses).
@@ -241,6 +250,11 @@ class RetrievedSystem:
         self.second_look = second_look  # False: no second look before risky dispatches
         self.context_query = context_query  # off by default: no gold-card gain on dev (Plan 6c Task 10)
         self.search_budget = search_budget  # searches per turn before a refusal; None = unlimited
+        if second_look_reviewer not in REVIEWERS:
+            raise ValueError(f"second_look_reviewer {second_look_reviewer!r} is not one of {REVIEWERS}")
+        self.second_look_reviewer = second_look_reviewer  # "jev": Jev reviews, split-only (Plan 6c J5)
+        self.jev_client = jev_client  # tests: a scripted Jev; None: a JevClient with TYPESAFE_API_KEY
+        self._jevs: dict[int, tuple[Any, CachedJev]] = {}  # id(run client) -> (client, its cached Jev)
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
         self._cards_cache: dict[int, tuple[World, list[AgentCard]]] = {}
 
@@ -291,8 +305,26 @@ class RetrievedSystem:
         return _SHIMS
 
     def new_turn(self, world: World, case: Case) -> RetrievedTurn:
-        return RetrievedTurn(world, self.cards(world), self.cfg, self.guard, case=case, second_look=self.second_look,
-                             search_budget=self.search_budget)
+        turn = RetrievedTurn(world, self.cards(world), self.cfg, self.guard, case=case,
+                             second_look=self.second_look, search_budget=self.search_budget)
+        if self.second_look_reviewer == "jev":
+            turn.second_look_cfg = replace(EVAL_SECOND_LOOK, reviewer="jev")
+            turn.jev_source = self._jev_for
+        return turn
+
+    def _jev_for(self, llm: Any) -> CachedJev:
+        """One cached Jev per run client: the run's cache directory and budget, so Jev spend counts toward the cap."""
+        held = self._jevs.get(id(llm))
+        if held is None or held[0] is not llm:
+            client = self.jev_client
+            if client is None:
+                key = api_key_from_env()
+                if not key:
+                    raise RunAborted("second_look_reviewer=jev needs TYPESAFE_API_KEY in .env at the repo root")
+                client = JevClient(api_key=key, timeout_s=30.0)
+            held = self._jevs[id(llm)] = (llm, CachedJev(client, cache_dir=llm.cache_dir, budget=llm.budget,
+                                                         rate_limiter=RateLimiter(JEV_REQUESTS_PER_MINUTE)))
+        return held[1]
 
 
 class RetrievedNoLifecycleSystem(RetrievedSystem):
