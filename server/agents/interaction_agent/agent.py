@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from ...services.agents import build_query, pinned_from_agent_message, render_cards, select
+from ...services.agents import build_query, context_query, pinned_from_agent_message, render_cards, select
 from ...services.agents.registry import get_agent_directory
 from ...services.conversation import get_conversation_log
 
@@ -72,8 +72,10 @@ def _render_active_agents(latest_text: str, message_type: str, now: datetime) ->
     directory = get_agent_directory()
     cards = directory.list_cards()
     pinned = pinned_from_agent_message(latest_text, cards) if message_type == "agent" else []
-    query = build_query(latest_text, _recent_turn_texts(latest_text))
-    selected = select(query, cards, now, directory.last_routed(), pinned=pinned)
+    recent = _recent_turn_texts(latest_text)
+    query = build_query(latest_text, recent)
+    extra = context_query(latest_text, recent) if message_type == "user" else None
+    selected = select(query, cards, now, directory.last_routed(), pinned=pinned, context_query=extra)
     return render_cards(selected, len(cards), now)
 
 

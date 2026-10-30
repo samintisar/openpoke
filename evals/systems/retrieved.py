@@ -23,6 +23,7 @@ from server.services.agents.render import render_cards
 from server.services.agents.retrieval import (
     RetrievalConfig,
     build_query,
+    context_query,
     pinned_from_agent_message,
     select,
 )
@@ -230,6 +231,7 @@ class RetrievedSystem:
     def __init__(
         self, cfg: RetrievalConfig | None = None, lifecycle: bool = True, guard: bool = True, search: bool = True,
         summaries: bool = True, status_policy: bool = True, second_look: bool = True,
+        context_query: bool = True,
     ) -> None:
         self.cfg = cfg or RetrievalConfig()
         # False keeps every card active, to ablate the lifecycle (dormant / archived statuses).
@@ -240,6 +242,7 @@ class RetrievedSystem:
         self.summaries = summaries  # False: cards carry no living summary (the summaries ablation)
         self.status_policy = status_policy  # False: no status-question rule
         self.second_look = second_look  # False: no second look before risky dispatches
+        self.context_query = context_query  # False: no second retrieval pass for vague messages
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
         self._cards_cache: dict[int, tuple[World, list[AgentCard]]] = {}
 
@@ -255,7 +258,12 @@ class RetrievedSystem:
         pinned: list[AgentCard] = []
         if case is not None and case.message_type == "agent":
             pinned = pinned_from_agent_message(case.message, cards)
-        return select(_query(case), cards, world.now, _last_routed(cards, world), self.cfg, pinned=pinned)
+        extra = None
+        if self.context_query and case is not None and case.message_type == "user":
+            texts = [entry[1] for entry in case.context[-QUERY_CONTEXT_ENTRIES:]]
+            extra = context_query(case.message, texts)
+        return select(_query(case), cards, world.now, _last_routed(cards, world), self.cfg, pinned=pinned,
+                      context_query=extra)
 
     def render_roster(self, world: World, case: Case | None) -> str:
         return render_cards(self.selected(world, case), len(self.cards(world)), world.now)

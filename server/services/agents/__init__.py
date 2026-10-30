@@ -8,6 +8,7 @@ from .render import render_cards
 from .retrieval import (
     RetrievalConfig,
     build_query,
+    context_query,
     pinned_from_agent_message,
     score_cards,
     search,

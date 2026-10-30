@@ -285,7 +285,7 @@ def test_agent_message_pins_the_reporting_agent_first():
 def test_pinned_card_appears_even_when_retrieval_would_drop_it():
     world = toy_world()
     message = "[SUCCESS] Dentist Cleaning Booking: done."
-    system = RetrievedSystem(cfg=RetrievalConfig(k=0, hot_max=0))
+    system = RetrievedSystem(cfg=RetrievalConfig(k=0, hot_max=0), context_query=False)
     assert system.shown_ids(world, case(message, [DENTIST], kind="agent_result", message_type="agent")) == [DENTIST]
     assert system.shown_ids(world, case(message, [DENTIST], kind="agent_result")) == []
 
@@ -602,3 +602,15 @@ def test_status_policy_switch():
     from evals.systems.retrieved import RetrievedSystem
     assert "Never create a new agent only to check" in RetrievedSystem().system_prompt()
     assert "Never create a new agent only to check" not in RetrievedSystem(status_policy=False).system_prompt()
+
+
+def test_context_query_switch_adds_cards_for_a_vague_message_and_is_off_in_full_cards():
+    world = toy_world()
+    context = [("user_message", "let's sort out the dentist cleaning booking", "2026-10-27T11:00:00"),
+               ("assistant_message", "Sure.", "2026-10-27T11:00:05")]
+    vague = case("how's it going?", [DENTIST], context=context)
+    cfg = RetrievalConfig(k=0, hot_max=0)
+    assert RetrievedSystem(cfg=cfg, context_query=False).shown_ids(world, vague) == []
+    assert DENTIST in RetrievedSystem(cfg=cfg).shown_ids(world, vague)
+    assert FullCardsSystem().context_query is False
+    assert RetrievedNoGuardSystem(cfg=cfg, context_query=False).context_query is False
