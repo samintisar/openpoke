@@ -58,7 +58,7 @@ Failure clusters for retrieval at 200 agents, 43 of its 60 failed samples:
 
 ### Decisions taken while planning (and why)
 
-1. **Eval summaries are built from instructions only.** Lived worlds store every instruction an agent was sent but no results, because growth never ran execution agents. Production folds in each instruction *and* its result. Eval summaries can therefore only be weaker than production's, never stronger. The write-up says so.
+1. **Eval summaries fold instructions and the results growth produced** (amended; see Task 4). The world files keep instructions only, but growth's helper reports (about 185 per life) are recovered by a $0 cached replay. Not every instruction has a report, and background agents have none, so eval summaries are still a lower bound on production's; the write-up reports the share of agents that saw a result.
 2. **The second look's reuse trigger is wider than the spec.** The spec triggers only when another top card shares a person with the message (wrong person). Cluster 2 is the same person on a new subject, so a second condition is added: few of the message's topic words appear on the target card (`reuse_coverage`).
 3. **At most one second look per turn**, and only on user turns. This bounds cost and latency and stops create↔reuse loops.
 4. **A "new" verdict on a reuse holds the dispatch.** The IA is told to create a new agent with `force_new=true`. Otherwise the spec's "new → proceed" would keep the wrong reuse that cluster 2 is about.
@@ -787,6 +787,30 @@ git commit -m "Summary updater folds every run into its card; compaction no long
 ---
 
 ### Task 4: Eval summaries for both lives (live, about $0.50)
+
+> **Amendment (2026-10-30, approved): fold real results, recovered by a $0 cached replay.**
+> Growth wrote about 185 helper reports per life (`"[SUCCESS] {owner.name}: {body}"`), but only into the transcript,
+> so the world files keep instructions with empty results. Every growth call is cached, so replaying growth with a
+> zero budget reproduces it exactly and lets us record each agent's log in order. Changes to this task:
+> 1. **`grow.py`:** `_Roster` gains `logs: dict[str, list[tuple[int, str, str]]]` (event index, `"instruction"` or
+>    `"result"`, text). `apply` appends each agent's instructions (created and dispatched) with the event index; `grow`
+>    appends `(index, "result", body)` to the owner's log after routing succeeds for an agent-message event. Each
+>    `Snapshot` records `event_index` (the last event applied). `GrowthResult` gains `logs`. None of this reaches the
+>    world file (`store.save` is unchanged), so `world-s{seed}.json` stays byte-identical apart from `generated_at`.
+> 2. **New `evals/worlds/lived/replay.py`:** `python -m evals.worlds.lived.replay --seed N` reads the world file's
+>    `meta.model`, runs `generate(...)` with `Budget(0)` (any cache miss raises `BudgetExceeded`) into a temp path,
+>    compares the result to the committed world file ignoring `meta.generated_at` (stop on any difference), then writes
+>    `agent-logs-s{seed}.json`: `{format, seed, world_sha256, cutoffs: {label: event_index}, logs: {agent_id: [[i, kind, text], ...]}}`.
+>    The 1,000 size uses the 200 cutoff; background agents have no log. Life 1's replay reads cached Haiku responses
+>    only (no new Haiku calls; the user approved this).
+> 3. **`summaries.py`:** if `agent-logs-s{seed}.json` exists (and its `world_sha256` matches), fold each size's
+>    agents from their log entries up to that size's cutoff, pairing each instruction with the results that follow it
+>    before the next instruction (joined with a blank line; empty if none). A result before any instruction is folded
+>    with empty instructions. Agents without a log fall back to their `history`. The output adds `results_folded` and
+>    `agents_with_results` per size, and `source: "logs"` or `"history"`. Without a logs file, behaviour is as below.
+> 4. **Reporting:** the write-up states the share of agents whose summary saw at least one result; the remaining gap to
+>    production (which sees a result every run) is reported as a conservative lower bound.
+> 5. **Protect** `replay.py` and both `agent-logs-s{seed}.json` files. Life 2 integrity only: counts, no content.
 
 **Files:**
 - Modify: `evals/worlds/model.py:27-40`, `evals/systems/cards_from_world.py`, `evals/systems/retrieved.py:170-192`, `evals/systems/full_cards.py`, `evals/worlds/lived/bench_v2.py` (`load_v2`), `evals/run.py` (meta), `evals/integrity.py`
