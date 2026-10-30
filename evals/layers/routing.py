@@ -7,6 +7,7 @@ semantics come from the system under test.
 
 from __future__ import annotations
 
+import inspect
 import json
 from datetime import datetime, timedelta
 from html import escape
@@ -121,6 +122,9 @@ async def _run_turn(
     tools = system.tool_schemas()
     shims = system.tool_signatures()
     turn = system.new_turn(world, case)
+    bind = getattr(turn, "bind_llm", None)
+    if bind is not None:  # a handler that makes its own model calls (the second look) uses the run's client
+        bind(llm, model=model, sample=sample)
     last_assistant_text = ""
 
     for iteration in range(MAX_ITERATIONS):
@@ -163,6 +167,8 @@ async def _run_turn(
             else:
                 decision.tool_calls.append({"name": name, "arguments": args})
                 result = turn.handle(name, args, decision)
+                if inspect.isawaitable(result):
+                    result = await result
             messages.append({
                 "role": "tool",
                 "tool_call_id": raw.get("id") or name,

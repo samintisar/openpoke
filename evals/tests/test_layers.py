@@ -413,6 +413,7 @@ async def test_baseline_decisions_and_payloads_match_pre_refactor():
         decision = await run_routing_case(case, world, BaselineSystem(), llm, model="m", sample=0)
         fields = asdict(decision)
         fields.pop("cached_prompt_tokens")  # accounting added after fa4bf6f; not part of the decision
+        fields.pop("second_looks")  # added in Plan 6c; empty for the baseline
         out.append({"case": case.id, "decision": fields, "keys": llm.keys})
     blob = json.dumps(out, indent=1, sort_keys=True).encode("utf-8")
     assert hashlib.sha256(blob).hexdigest() == BASELINE_GOLDEN_SHA256
@@ -476,3 +477,35 @@ async def test_cached_prompt_tokens_are_summed():
     decision = await run_routing_case(case, world, BaselineSystem(), llm, model="m", sample=0)
     assert decision.prompt_tokens == 2200
     assert decision.cached_prompt_tokens == 1800
+
+
+async def test_async_handlers_and_bound_llm_are_supported():
+    full = build_world(1)
+    world = full.truncated(20)
+    case = generate_cases(full, per_kind=1)[0]
+
+    class AsyncTurn:
+        def __init__(self):
+            self.bound = None
+
+        def bind_llm(self, llm, *, model, sample):
+            self.bound = (model, sample)
+
+        async def handle(self, name, args, decision):
+            decision.second_looks.append({"decision": "new"})
+            return {"tool": name, "status": "success", "arguments": args, "result": {"status": "waiting"}}
+
+    turn = AsyncTurn()
+
+    class System(BaselineSystem):
+        def new_turn(self, world, case):
+            return turn
+
+    def script(messages, sample):
+        if len(messages) == 1:
+            return {"content": "", "tool_calls": [tool_call("wait", reason="x")]}
+        return {"content": "done"}
+
+    decision = await run_routing_case(case, world, System(), ScriptedLLM(script), model="m", sample=2)
+    assert turn.bound == ("m", 2)
+    assert decision.second_looks == [{"decision": "new"}]

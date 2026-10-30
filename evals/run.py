@@ -68,6 +68,7 @@ CACHE_DIR = REPO_ROOT / "evals" / ".cache" / "llm"
 class Config:
     name: str
     system: str = "baseline"
+    system_options: dict[str, Any] = field(default_factory=dict)  # keyword switches for the system (Plan 6c)
     model: str = "deepseek/deepseek-v4.1-flash"
     layers: list[str] = field(default_factory=lambda: ["retrieval", "routing"])
     n_agents: list[int] = field(default_factory=lambda: [10, 50, 200, 1000])
@@ -197,6 +198,7 @@ def _routing_row(
         "cached_calls": d.cached_calls, "latency_s": d.latency_s, "prompt_tokens": d.prompt_tokens,
         "completion_tokens": d.completion_tokens,
         "cached_prompt_tokens": d.cached_prompt_tokens, "cache_keys": d.cache_keys,
+        "second_looks": d.second_looks,
     }
 
 
@@ -259,7 +261,7 @@ async def run_experiment(cfg: Config, *, llm: LLMClient, out_dir: Path, split: s
         raise ValueError(refusal)
     started = datetime.now(timezone.utc)
     checksum, expected = compute_checksum(), expected_checksum()
-    system = get_system(cfg.system)
+    system = get_system(cfg.system, cfg.system_options)
     units = _build_units(cfg, split)
     bench_meta: dict[str, Any] = {}
     if cfg.world == "lived_v2":  # results trace to the exact probe set and rosters

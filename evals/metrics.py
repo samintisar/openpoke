@@ -114,6 +114,7 @@ def _routing_group(rows: list[dict[str, Any]], planned: set[tuple] | None, k_con
         "fresh_cost_usd": round(sum(row["fresh_cost"] for row in rows), 4),
         "cache_hit_rate": round(sum(row["cached_calls"] for row in rows) / total_calls, 4) if total_calls else None,
         "mean_latency_s": _rate([row["latency_s"] for row in rows], 3),
+        "second_look_rate": _rate([bool(row.get("second_looks")) for row in valid]),
     }
 
 

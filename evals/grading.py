@@ -59,6 +59,7 @@ class Decision:
     completion_tokens: int = 0
     cached_prompt_tokens: int = 0  # prompt tokens the provider served from its prompt cache
     cache_keys: list[str] = field(default_factory=list)
+    second_looks: list[dict[str, Any]] = field(default_factory=list)  # second-look calls this turn (Plan 6c)
 
 
 def grade(case: Case, decision: Decision) -> str:

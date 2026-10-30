@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from .base import RoutingSystem
 from .baseline import BaselineSystem
 from .full_cards import FullCardsSystem
@@ -26,11 +28,16 @@ SYSTEMS: dict[str, type] = {
 }
 
 
-def get_system(name: str) -> RoutingSystem:
+def get_system(name: str, options: dict[str, Any] | None = None) -> RoutingSystem:
+    """The system `name`, built with keyword `options` (eval switches such as {"summaries": False})."""
     try:
-        return SYSTEMS[name]()
+        cls = SYSTEMS[name]
     except KeyError:
         raise ValueError(f"unknown system {name!r}; known: {sorted(SYSTEMS)}") from None
+    try:
+        return cls(**(options or {}))
+    except TypeError as exc:
+        raise ValueError(f"system {name!r} does not take options {sorted(options or {})}: {exc}") from None
 
 
 __all__ = ["RoutingSystem", "SYSTEMS", "get_system"]
