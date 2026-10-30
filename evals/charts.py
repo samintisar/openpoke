@@ -3,6 +3,7 @@
     python -m evals.charts                      # the final test runs named below -> docs/figures/routing-test.svg
     python -m evals.charts --runs v2-dev        # benchmark v2, life 1 (dev): intervals only, no figure
     python -m evals.charts --runs v2-steps      # Plan 6c steps, original -> full: rates, tokens, paired differences
+    python -m evals.charts --runs v2-test       # Plan 6d sealed life 2: scaling table -> docs/figures/scaling-test.svg
 
 pass@1 per size is the mean over cases of each case's share of correct samples. The 95% interval is a bootstrap over
 cases (10,000 resamples, seed 0), since the k samples of one case are not independent. The paired difference
@@ -39,9 +40,15 @@ V2_STEPS = {  # Plan 6c, life 1 dev: each step adds one change to the one before
     "step 3 + second look (LLM reviewer)": "20261030-072458-v2-step3-second-look-dev.json",
 }
 FULL_JEV: str | None = "20261030-082330-v2-full-dev.json"  # the full system with the Jev reviewer (frozen for Plan 6d)
+V2_TEST = {  # Plan 6d: the sealed life-2 run, once per system
+    "Original OpenPoke": "20261030-092828-v2-test-baseline-test.json",
+    "v1 retrieval": "20261030-094241-v2-test-v1-test.json",
+    "Final (this work)": "20261030-100407-v2-test-full-test.json",
+}
 SIZES = ("lived-50", "lived-200", "lived-1000")
 V2_SIZES = ("lived-10", *SIZES)
 COLORS = {"Original OpenPoke": "#9aa4b1", "Full cards": "#d9a441", "Retrieval (this work)": "#2f6fdf"}
+SCALING_COLORS = {"Original OpenPoke": "#9aa4b1", "v1 retrieval": "#d9a441", "Final (this work)": "#2f6fdf"}
 
 
 def case_scores(rows: list[dict], size: str) -> dict[str, float]:
@@ -114,6 +121,70 @@ def routing_svg(data: dict[str, dict[str, tuple[float, float, float, int]]]) -> 
     return "\n".join(parts)
 
 
+def scaling(runs: dict[str, str] = V2_TEST, sizes: tuple[str, ...] = V2_SIZES) -> dict[str, dict[str, tuple[float, float, float, float, float]]]:
+    """system -> size -> (pass@1, low, high, mean prompt tokens, mean latency s)."""
+    out: dict[str, dict[str, tuple[float, float, float, float, float]]] = {}
+    for label, name in runs.items():
+        rows = json.loads((RESULTS / name).read_text(encoding="utf-8"))["routing_rows"]
+        out[label] = {}
+        for size in sizes:
+            sized = [r for r in rows if r["n_agents"] == size]
+            if sized:
+                scores = list(case_scores(rows, size).values())
+                tokens = sum(r["prompt_tokens"] for r in sized) / len(sized)
+                latency = sum(r["latency_s"] for r in sized) / len(sized)
+                out[label][size] = (sum(scores) / len(scores), *bootstrap(scores), tokens, latency)
+    return out
+
+
+def scaling_svg(data: dict[str, dict[str, tuple[float, float, float, float, float]]]) -> str:
+    """Three panels against roster size (log x): pass@1 with 95% CI, prompt tokens, latency."""
+    import math
+
+    panel_w, height, top, bottom, gap = 250, 300, 56, 64, 46
+    width = 3 * panel_w + 2 * gap + 40
+    plot_h = height - top - bottom
+    sizes = [s for s in V2_SIZES if any(s in d for d in data.values())]
+    counts = [int(s.split("-")[1]) for s in sizes]
+    lo, hi = math.log10(counts[0]), math.log10(counts[-1])
+    panels = (
+        ("pass@1 (95% CI)", 0, (0.6, 1.0), lambda v: f"{v:.1f}", (0.6, 0.7, 0.8, 0.9, 1.0)),
+        ("prompt tokens per decision", 3, (0, 40_000), lambda v: f"{v / 1000:.0f}k", (0, 10_000, 20_000, 30_000, 40_000)),
+        ("latency per decision (s)", 4, (0, 8), lambda v: f"{v:.0f}", (0, 2, 4, 6, 8)),
+    )
+    parts = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}" width="{width}" height="{height}" font-family="system-ui, sans-serif" font-size="12">',
+        f'<rect width="{width}" height="{height}" fill="#ffffff"/>',
+        f'<text x="40" y="22" font-size="14" font-weight="600" fill="#1f2328">Scaling on the sealed test life (life 2): original vs v1 vs final</text>',
+    ]
+    for p, (title, idx, (ymin, ymax), fmt, ticks) in enumerate(panels):
+        left = 40 + p * (panel_w + gap)
+        x = lambda n: left + panel_w * (math.log10(n) - lo) / (hi - lo)
+        y = lambda v: top + plot_h * (1 - (v - ymin) / (ymax - ymin))
+        parts.append(f'<text x="{left}" y="{top - 14}" font-weight="600" fill="#1f2328">{title}</text>')
+        for tick in ticks:
+            parts.append(f'<line x1="{left}" x2="{left + panel_w}" y1="{y(tick):.1f}" y2="{y(tick):.1f}" stroke="#e6e8eb"/>')
+            parts.append(f'<text x="{left - 6}" y="{y(tick) + 4:.1f}" text-anchor="end" fill="#57606a">{fmt(tick)}</text>')
+        for n in counts:
+            parts.append(f'<text x="{x(n):.1f}" y="{top + plot_h + 18}" text-anchor="middle" fill="#57606a">{n}</text>')
+        parts.append(f'<text x="{left + panel_w / 2}" y="{top + plot_h + 36}" text-anchor="middle" fill="#57606a">agents</text>')
+        for label, by_size in data.items():
+            color = SCALING_COLORS[label]
+            pts = [(x(int(s.split("-")[1])), y(by_size[s][idx]), by_size[s]) for s in sizes if s in by_size]
+            parts.append(f'<polyline points="{" ".join(f"{px:.1f},{py:.1f}" for px, py, _ in pts)}" fill="none" stroke="{color}" stroke-width="2"/>')
+            for px, py, values in pts:
+                if idx == 0:
+                    parts.append(f'<line x1="{px:.1f}" x2="{px:.1f}" y1="{y(min(values[2], ymax)):.1f}" y2="{y(max(values[1], ymin)):.1f}" stroke="{color}" stroke-width="1.2"/>')
+                parts.append(f'<circle cx="{px:.1f}" cy="{py:.1f}" r="3.2" fill="{color}"/>')
+    lx = 40
+    for label, color in SCALING_COLORS.items():
+        parts.append(f'<rect x="{lx}" y="{height - 18}" width="10" height="10" fill="{color}"/>')
+        parts.append(f'<text x="{lx + 14}" y="{height - 9}" fill="#1f2328">{label}</text>')
+        lx += 14 + 7.2 * len(label) + 18
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
 def v2_steps_report(steps: dict[str, str] | None = None, sizes: tuple[str, ...] = V2_SIZES) -> str:
     """Per-size pass@1 / harmful / duplicate / tokens with intervals for each step, then paired differences vs the
     previous step and vs the first. Metric logic is evals.compare's (imported here to avoid a cycle)."""
@@ -154,10 +225,20 @@ def main(argv: list[str] | None = None) -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--runs", choices=["final", "v2-dev", "v2-steps"], default="final")
+    parser.add_argument("--runs", choices=["final", "v2-dev", "v2-steps", "v2-test"], default="final")
     args = parser.parse_args(argv)
     if args.runs == "v2-steps":
         print(v2_steps_report())
+        return
+    if args.runs == "v2-test":
+        data = scaling()
+        for label, by_size in data.items():
+            for size, (mean, low, high, tokens, latency) in by_size.items():
+                print(f"{label:20} {size:11} pass@1 {mean:.3f} [{low:.3f}, {high:.3f}]  tokens {tokens:>7,.0f}  latency {latency:.2f}s")
+        print(v2_steps_report(dict(V2_TEST)))
+        FIGURES.mkdir(parents=True, exist_ok=True)
+        (FIGURES / "scaling-test.svg").write_text(scaling_svg(data), encoding="utf-8")
+        print(f"wrote {FIGURES / 'scaling-test.svg'}")
         return
     runs, sizes = (V2_DEV, V2_SIZES) if args.runs == "v2-dev" else (FINAL, SIZES)
     data = summary(runs, sizes)
