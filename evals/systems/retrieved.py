@@ -174,7 +174,7 @@ class RetrievedSystem:
 
     def __init__(
         self, cfg: RetrievalConfig | None = None, lifecycle: bool = True, guard: bool = True, search: bool = True,
-        summaries: bool = True,
+        summaries: bool = True, status_policy: bool = True,
     ) -> None:
         self.cfg = cfg or RetrievalConfig()
         # False keeps every card active, to ablate the lifecycle (dormant / archived statuses).
@@ -183,6 +183,7 @@ class RetrievedSystem:
         self.guard = guard  # False: creates skip the duplicate guard
         self.search = search  # False: no search_agents tool and no prompt rule for it
         self.summaries = summaries  # False: cards carry no living summary (the summaries ablation)
+        self.status_policy = status_policy  # False: no status-question rule
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
         self._cards_cache: dict[int, tuple[World, list[AgentCard]]] = {}
 
@@ -207,9 +208,10 @@ class RetrievedSystem:
         return [card.id for card in self.selected(world, case)]
 
     def system_prompt(self) -> str:
+        prompt = build_system_prompt(status_policy=self.status_policy)
         if not self.search:
-            return without_tool_lines(build_system_prompt(), SEARCH_TOOL)
-        return build_system_prompt()
+            return without_tool_lines(prompt, SEARCH_TOOL)
+        return prompt
 
     def tool_schemas(self) -> list[dict[str, Any]]:
         if not self.search:

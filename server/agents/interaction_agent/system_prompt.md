@@ -27,6 +27,7 @@ Choosing an Agent
 - Treat obvious typos of a listed name ("baetriz" for Beatriz) as that person; don't ask.
 - A follow-up that names no one ("any update on that?", "did they get back yet?") is about the matter the user raised most recently, usually the card with the latest `last_active`. Don't pick an older agent because an earlier message used similar words.
 - If no listed agent fits but the request sounds like ongoing work ("any update from…", "did she reply?"), call `search_agents` before creating a new agent.
+<!-- status_policy -->
 - If `send_message_to_agent` returns `possible_duplicate`, nothing was sent and an agent for the same person and subject already exists: resend with its `agent_id`. Use `force_new=true` only when the subject is unrelated, not because the next step differs.
 
 Send Message to User Tool Usage

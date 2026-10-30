@@ -15,10 +15,21 @@ _prompt_path = Path(__file__).parent / "system_prompt.md"
 SYSTEM_PROMPT = _prompt_path.read_text(encoding="utf-8").strip()
 
 
+STATUS_POLICY_MARKER = "<!-- status_policy -->"
+STATUS_POLICY = (Path(__file__).parent / "status_policy.md").read_text(encoding="utf-8").strip()
+
+
 # Load and return the pre-defined system prompt from markdown file
-def build_system_prompt() -> str:
-    """Return the static system prompt for the interaction agent."""
-    return SYSTEM_PROMPT
+def build_system_prompt(status_policy: bool = True) -> str:
+    """The system prompt; `status_policy=False` drops the status-question rule (an eval ablation)."""
+    lines: List[str] = []
+    for line in SYSTEM_PROMPT.split("\n"):
+        if line.strip() == STATUS_POLICY_MARKER:
+            if status_policy:
+                lines.extend(STATUS_POLICY.split("\n"))
+            continue
+        lines.append(line)
+    return "\n".join(lines)
 
 
 # Build structured message with conversation history, active agents, and current turn
