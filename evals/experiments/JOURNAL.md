@@ -506,3 +506,34 @@ Found after the run: cases 00–02 name the person in the original ("did Leo get
 - The status rule is not tied to the benchmark's wording: 72 of 73 unambiguous rewordings correct, every template at 0.86 or above (original and v1: as low as 0.43).
 - Its largest effect is on questions about a matter no agent holds: the original and v1 create a new agent to "check" (24–29 times); final asks instead.
 - Weakness: when two agents fit, final usually picks one (17 of 27) instead of asking. The rule says to ask when nothing fits and says nothing about several fitting. A one-line addition ("if more than one agent could be the one, ask which") is the obvious fix; it is not made here, since it could only be checked on dev.
+
+## 2026-10-30 — "Several fit, ask which" status line: tried on dev, reverted
+
+The wording test showed final guessing one agent on 17 of 27 ambiguous status questions. One line was added to the status rule (`0979426`): "If more than one agent could be the one and nothing in the conversation tells them apart, ask the user which they mean instead of picking one." Checked on dev only; life 2 is not rerun.
+
+Wording test again (`20261030-225849-status-wording-dev.json`, $0.17; original and v1 unchanged):
+
+| Final | Before | With the line |
+|---|---|---|
+| Ambiguous (27): asked which | 10 | 21 |
+| Ambiguous: guessed one agent | 17 | 6 |
+| Unambiguous rewordings (73) | 0.99 | 0.93 |
+| Turns that created an agent (100) | 1 | 5 |
+
+Routing, full system on dev (`20261030-225851-v2-full-dev.json`, $0.95) against the full system before the line (`20261030-201538-v2-full-dev.json`):
+- pass@1 −0.083 [−0.139, −0.028] at 50; −0.015 at 200; −0.018 at 1,000.
+- duplicate +0.018 at 200, +0.026 [−0.004, +0.070] at 1,000; paraphrase 0.89 → 0.63 at 1,000.
+- 9 of the 50-agent failures are `no_action`: the reply says the message is being passed on but no tool is called (10 in the run against 1 before). This may be model noise rather than the line, but it can't be shown either way from one sample.
+
+Decision: reverted (`9cd38b6`) under the keep rule (a headline metric worse by more than 0.02). The ambiguous-status gap stays a known weakness.
+
+## 2026-10-30 — Safety and memory evals on DeepSeek V4.1 Flash (Plan 6d)
+
+Earlier safety and memory results were on Haiku; these are the first on the eval model now used everywhere.
+
+- Memory, dev (`20261030-223530-memory-dev.json`, $0.15): full recall 1.00; compacted 0.97 (draft_id and commitment 0.92); 2 of 12 compactions failed and fell back to the full history (Haiku: 0).
+- Memory, held-out (`20261030-225633-memory-heldout-heldout.json`): full and compacted recall 1.00, no compaction failures.
+- Safety, held-out (`20261030-231408-e2e-test.json`, `--final`, $0.06): 15 of 15, 0 unauthorized sends, 6 attempted and blocked. Run while the reverted status line was in the prompt; none of its 5 scenarios is a status question, and the held-out split is not rerun.
+- Safety, dev on the reverted code (`20261030-232034-e2e-dev.json`, $0.18): 0 unauthorized sends of 22, 3 attempted and blocked, no gate disagreements. pass@1 0.95, pass^k 0.89 over 58 graded runs (Haiku: 0.98 / 0.95). 5 runs went off script and are not graded: the reply claims an action (a dispatch, a shown draft) without the tool call, the same failure as the routing `no_action` rows above. Two runs never sent an approved draft. The run with the line in the prompt (`20261030-225637-e2e-dev.json`) gave 0.94 / 0.89, also 0 unauthorized sends.
+- Safety holds on the cheaper model; task completion is a little lower, and "says it without doing it" is the main DeepSeek failure. Production runs Sonnet, so this is a property of the eval model, not shown for production.
+- Also seen in the logs: the email search agent calls search with an empty query and can hit its iteration limit.
