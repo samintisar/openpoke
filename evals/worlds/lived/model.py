@@ -90,3 +90,4 @@ class Snapshot:
     thread_agents: dict[str, list[str]]  # thread id -> agent ids that served it, first-served first
     thread_last_day: dict[str, float]  # thread id -> day of its last played event
     last_user_threads: tuple[str, ...] = ()  # threads of the last user event played
+    event_index: int = -1  # position in plan.events of the last event applied (-1: unknown, e.g. rebuilt)

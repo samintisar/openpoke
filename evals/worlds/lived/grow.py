@@ -35,6 +35,7 @@ class GrowthResult:
     agents: list[AgentSpec]  # the final roster; created_days / last_active_days relative to the last event played
     transcript: list[tuple[str, str, str]]
     skipped: list[tuple[str, str]] = field(default_factory=list)  # (event id, reason)
+    logs: dict[str, list[tuple[int, str, str]]] = field(default_factory=dict)  # see _Roster.logs
 
 
 def _slug(name: str) -> str:
@@ -83,6 +84,10 @@ class _Roster:
         self.thread_last_day: dict[str, float] = {}
         self.last_user_threads: tuple[str, ...] = ()
         self.transcript: list[tuple[str, str, str]] = []
+        # agent id -> (event index, "instruction" or "result", text) in the order the agent got them. Never saved
+        # in the world file; evals/worlds/lived/replay.py recovers it for the living summaries.
+        self.logs: dict[str, list[tuple[int, str, str]]] = {}
+        self.event_index = -1  # position in plan.events of the last event applied
 
     def relative(self, day: float, *, deep: bool = False) -> list[AgentSpec]:
         """Copies of the agents with created_days / last_active_days counted back from `day`."""
@@ -98,7 +103,11 @@ class _Roster:
         if agent_id not in served:
             served.append(agent_id)
 
-    def apply(self, event: Event, decision: Decision) -> None:
+    def log(self, agent_id: str, event_index: int, kind: str, texts: Sequence[str]) -> None:
+        self.logs.setdefault(agent_id, []).extend((event_index, kind, text) for text in texts)
+
+    def apply(self, event: Event, decision: Decision, event_index: int) -> None:
+        self.event_index = event_index
         threads = list(event.intent.thread_ids)
         calls = _instructions(decision)
         created = list(dict.fromkeys(decision.created_names))
@@ -116,6 +125,7 @@ class _Roster:
             )
             self.agents.append(agent)
             self.by_id[agent.id] = agent
+            self.log(agent.id, event_index, "instruction", [text for text, _ in agent.history])
             self.created_day[agent.id] = self.last_day[agent.id] = event.day
             for thread_id in agent_threads:
                 self._serve(thread_id, agent.id)
@@ -128,6 +138,7 @@ class _Roster:
                 self._serve(thread_id, agent_id)
             self.last_day[agent_id] = event.day
             agent.history.extend((text, "") for text in calls.get(agent.name, []))
+            self.log(agent_id, event_index, "instruction", calls.get(agent.name, []))
         for thread_id in threads:
             self.thread_last_day[thread_id] = event.day
         if event.intent.message_type == "user":
@@ -138,6 +149,7 @@ class _Roster:
             size=size, day=day, agents=self.relative(day, deep=True), transcript=list(self.transcript),
             thread_agents={t: list(ids) for t, ids in self.thread_agents.items()},
             thread_last_day=dict(self.thread_last_day), last_user_threads=self.last_user_threads,
+            event_index=self.event_index,
         )
 
 
@@ -188,7 +200,9 @@ async def grow(
             continue
 
         day = event.day
-        roster.apply(event, decision)
+        if owner is not None:  # the report reached its agent before this turn's instructions
+            roster.log(owner.id, index - 1, "result", [body])
+        roster.apply(event, decision, index - 1)
         stamp = day_to_datetime(event.day).isoformat()
         tag = "agent_message" if intent.message_type == "agent" else "user_message"
         roster.transcript.append((tag, message, stamp))
@@ -204,7 +218,8 @@ async def grow(
             f"events ran out at {len(roster.agents)} agents, before sizes {pending} (skipped {len(skipped)})"
         )
     return GrowthResult(snapshots=snapshots, agents=roster.relative(day, deep=True),
-                        transcript=list(roster.transcript), skipped=skipped)
+                        transcript=list(roster.transcript), skipped=skipped,
+                        logs={agent_id: list(entries) for agent_id, entries in roster.logs.items()})
 
 
 def _progress(log: Callable[[str], object], done: int, total: int, roster: _Roster,
@@ -289,4 +304,5 @@ def merge_background(snapshot: Snapshot, background: Sequence[AgentSpec], target
         size=target, day=snapshot.day, agents=[row[3] for row in rows], transcript=list(snapshot.transcript),
         thread_agents={t: list(a) for t, a in snapshot.thread_agents.items()},
         thread_last_day=dict(snapshot.thread_last_day), last_user_threads=snapshot.last_user_threads,
+        event_index=snapshot.event_index,
     )

@@ -8,12 +8,14 @@ from __future__ import annotations
 import argparse
 import asyncio
 import sys
+from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
 from ...llm import Budget, OpenRouterLLM
 from ...run import CACHE_DIR, _api_key
-from .grow import grow, merge_background, name_background
+from .grow import GrowthResult, grow, merge_background, name_background
+from .model import Snapshot
 from .plan import build_plan
 from .probes import build_probes
 from .store import DEFAULT_PATH, save
@@ -22,7 +24,12 @@ SIZES = (10, 50, 200)
 FULL_SIZE = 1000
 
 
-async def generate(*, seed: int, model: str, llm, per_kind: int, out: Path, log=print) -> Path:
+async def generate(
+    *, seed: int, model: str, llm, per_kind: int, out: Path, log=print,
+    on_grown: Callable[[GrowthResult, list[Snapshot]], object] | None = None,
+) -> Path:
+    """Grow, name the background, probe and save. `on_grown` gets the growth and every snapshot (the merged
+    1,000 included) before probing; the replay (replay.py) reads growth's agent logs from it."""
     plan = build_plan(seed)
     log(f"plan: {len(plan.contacts)} contacts, {len(plan.threads)} threads, {len(plan.events)} events")
     growth = await grow(plan, llm=llm, model=model, sizes=SIZES, max_agents=max(SIZES), log=log)
@@ -31,6 +38,8 @@ async def generate(*, seed: int, model: str, llm, per_kind: int, out: Path, log=
     log(f"background: {len(background)} agents named")
     snapshots = list(growth.snapshots)
     snapshots.append(merge_background(snapshots[-1], background, target=FULL_SIZE))
+    if on_grown is not None:
+        on_grown(growth, snapshots)
 
     units = []
     probes_200 = None

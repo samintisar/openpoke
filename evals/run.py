@@ -269,6 +269,8 @@ async def run_experiment(cfg: Config, *, llm: LLMClient, out_dir: Path, split: s
         world_file = bench_v2.world_path(cfg.life, _bench_dir(cfg))
         bench_meta = {"bench_file": bench.name, "bench_sha256": _sha256(bench),
                       "world_file": world_file.name, "world_sha256": _sha256(world_file)}
+        summary_file = world_file.parent / f"summaries-s{cfg.life}.json"
+        bench_meta["summaries_sha256"] = _sha256(summary_file) if summary_file.exists() else None
 
     retrieval_rows: list[dict[str, Any]] = []
     if "retrieval" in cfg.layers:

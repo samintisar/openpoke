@@ -406,7 +406,8 @@ def load_v2(seed: int, *, directory: Path | None = None) -> list[tuple[str, Worl
 
     Rosters and now come from world-s{seed}.json, as store.load_lived builds them; the cases are the
     reviewed bench's probes (Case fields only), each under every label it carries. A whole life is one
-    split: life 1 dev, any other test."""
+    split: life 1 dev, any other test. Agents carry their living summary from summaries-s{seed}.json when
+    that file exists; one made for a different world file is refused."""
     reviewed = bench_path(seed, reviewed=True, directory=directory)
     if not reviewed.exists():
         raise FileNotFoundError(f"benchmark v2 life {seed}: no reviewed probe file {reviewed} (run finalize first)")
@@ -414,6 +415,13 @@ def load_v2(seed: int, *, directory: Path | None = None) -> list[tuple[str, Worl
     data = json.loads(path.read_text(encoding="utf-8"))
     if data.get("format") != WORLD_FORMAT or data.get("seed") != seed:
         raise ValueError(f"{path}: wrong format or seed for life {seed}")
+    summary_file = Path(directory or HERE) / f"summaries-s{seed}.json"
+    summaries: dict[str, dict[str, str]] = {}
+    if summary_file.exists():
+        body = json.loads(summary_file.read_text(encoding="utf-8"))
+        if body.get("world_sha256") != hashlib.sha256(path.read_bytes()).hexdigest():
+            raise ValueError(f"{summary_file.name} was made for a different world than {path.name}; rebuild it")
+        summaries = body["sizes"]
     split = "dev" if seed == DEV_LIFE else "test"
     by_label: dict[str, list[Case]] = {}
     for probe in json.loads(reviewed.read_text(encoding="utf-8"))["probes"]:
@@ -425,7 +433,9 @@ def load_v2(seed: int, *, directory: Path | None = None) -> list[tuple[str, Worl
             by_label.setdefault(label, []).append(case)
     units = []
     for entry in sorted(data["sizes"], key=lambda e: e["size"]):
-        world = World(seed=seed, agents=[_agent(a) for a in entry["agents"]], now=day_to_datetime(entry["day"]))
+        summary = summaries.get(entry["label"], {})
+        agents = [replace(_agent(a), summary=summary.get(a["id"], "")) for a in entry["agents"]]
+        world = World(seed=seed, agents=agents, now=day_to_datetime(entry["day"]))
         units.append((entry["label"], world, by_label.pop(entry["label"], [])))
     if by_label:
         raise ValueError(f"{reviewed}: probes for sizes {path.name} does not have: {sorted(by_label)}")

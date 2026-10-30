@@ -48,6 +48,10 @@ PROTECTED = (
     "evals/worlds/lived/bench-v2-s2.reviewed.json",
     "evals/worlds/lived/bench-v2-decisions.json",  # the human review, as collected
     "evals/worlds/lived/bench-v2-corrections.json",  # curator corrections, each with its reason
+    "evals/worlds/lived/replay.py",  # recovers growth's agent logs from the cache, at $0
+    "evals/worlds/lived/agent-logs-s1.json",
+    "evals/worlds/lived/agent-logs-s2.json",
+    "evals/worlds/lived/summaries.py",
     "evals/worlds/memory_gen.py",
     "evals/layers/memory.py",
     "evals/memory_run.py",

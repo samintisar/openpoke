@@ -38,6 +38,7 @@ class AgentSpec:
     core: bool = False
     history: list[tuple[str, str]] = field(default_factory=list)  # (request, response)
     threads: list[str] = field(default_factory=list)  # lived world only; gold, never read by systems
+    summary: str = ""  # living summary (Plan 6c), attached from summaries-s{seed}.json; not gold
 
     def last_active_at(self, now: datetime = WORLD_NOW) -> datetime:
         return now - timedelta(days=self.last_active_days)

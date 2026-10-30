@@ -178,3 +178,24 @@ async def test_merge_drops_equal_names_and_respects_target():
     assert len(capped.agents) == 5
     assert [a.name for a in capped.agents if not a.threads] == ["desk agent"]
     assert len(snapshot.agents) == 4  # the input snapshot is untouched
+
+
+async def test_growth_logs_each_agents_instructions_and_results_by_event():
+    result = await grow(_plan(STORY), llm=_llm(), model="m", sizes=(1, 3, 4), max_agents=10, log=lambda _: None)
+    # e0003's report reached alpha before the turn sent it new instructions
+    assert result.logs["alpha-agent"] == [
+        (1, "instruction", "handle alpha"), (2, "instruction", "handle alpha"),
+        (3, "result", "alpha"), (3, "instruction", "handle alpha"), (7, "instruction", "handle alpha"),
+    ]
+    assert result.logs["echo-agent"] == [(7, "instruction", "handle echo")]
+    for agent in result.agents:  # the instructions logged are exactly the agent's history
+        assert [text for _, kind, text in result.logs[agent.id] if kind == "instruction"] == [
+            request for request, _ in agent.history]
+    assert [s.event_index for s in result.snapshots] == [1, 4, 7]
+
+
+async def test_merged_snapshot_keeps_the_event_index():
+    plan = _plan(STORY, BACKGROUND)
+    grown = await grow(plan, llm=_llm(), model="m", sizes=(4,), max_agents=4, log=lambda _: None)
+    background = await name_background(plan, llm=_llm(), model="m")
+    assert merge_background(grown.snapshots[0], background, target=100).event_index == grown.snapshots[0].event_index

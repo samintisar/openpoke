@@ -367,6 +367,7 @@ def test_cli_fake_run_on_v2_life(tmp_path, capsys, life, args, split):
     assert meta["world"] == "lived_v2" and meta["life"] == life and meta["split"] == split
     assert meta["bench_sha256"] == _sha256(tmp_path / f"bench-v2-s{life}.reviewed.json")
     assert meta["bench_file"] == f"bench-v2-s{life}.reviewed.json"
+    assert meta["summaries_sha256"] is None  # the fixture has no summaries file
     assert {r["case_id"] for r in data["routing_rows"]} == {f"v2-s{life}-10-typo-00", f"v2-s{life}-200-typo-00"}
     assert {r["n_agents"] for r in data["routing_rows"]} == {"lived-10", "lived-200"}
 

@@ -367,3 +367,19 @@ def test_finalize_rejects_bad_corrections(item, match):
     from evals.worlds.lived.bench_v2 import finalize
     with pytest.raises(ValueError, match=match):
         finalize(_bench(), _all(), corrections=[item, *([item] if match == "twice" else [])], allow_fake=True)
+
+
+def test_load_v2_attaches_summaries_for_the_same_world(tmp_path):
+    import hashlib
+    from evals.worlds.lived.bench_v2 import load_v2, world_path
+    write_v2_fixture(tmp_path, 1)
+    sha = hashlib.sha256(world_path(1, tmp_path).read_bytes()).hexdigest()
+    (tmp_path / "summaries-s1.json").write_text(json.dumps({"format": 1, "seed": 1, "world_sha256": sha,
+        "sizes": {"lived-10": {"a1": "Ann: ski trip."}}}), encoding="utf-8")
+    units = {label: world for label, world, _ in load_v2(1, directory=tmp_path)}
+    assert {a.id: a.summary for a in units["lived-10"].agents} == {"a1": "Ann: ski trip.", "a2": "", "a3": ""}
+    assert all(a.summary == "" for a in units["lived-200"].agents)
+    (tmp_path / "summaries-s1.json").write_text(json.dumps({"format": 1, "seed": 1, "world_sha256": "0" * 64,
+        "sizes": {}}), encoding="utf-8")
+    with pytest.raises(ValueError, match="different world"):
+        load_v2(1, directory=tmp_path)

@@ -173,7 +173,8 @@ class RetrievedSystem:
     name = "retrieved"
 
     def __init__(
-        self, cfg: RetrievalConfig | None = None, lifecycle: bool = True, guard: bool = True, search: bool = True
+        self, cfg: RetrievalConfig | None = None, lifecycle: bool = True, guard: bool = True, search: bool = True,
+        summaries: bool = True,
     ) -> None:
         self.cfg = cfg or RetrievalConfig()
         # False keeps every card active, to ablate the lifecycle (dormant / archived statuses).
@@ -181,6 +182,7 @@ class RetrievedSystem:
         # Eval-only ablation switches; the defaults are production behaviour.
         self.guard = guard  # False: creates skip the duplicate guard
         self.search = search  # False: no search_agents tool and no prompt rule for it
+        self.summaries = summaries  # False: cards carry no living summary (the summaries ablation)
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
         self._cards_cache: dict[int, tuple[World, list[AgentCard]]] = {}
 
@@ -188,7 +190,7 @@ class RetrievedSystem:
         """The world's cards, built once per world (every case and turn shares them; directories copy)."""
         cached = self._cards_cache.get(id(world))
         if cached is None or cached[0] is not world:
-            cached = self._cards_cache[id(world)] = (world, cards_for(world, self.lifecycle))
+            cached = self._cards_cache[id(world)] = (world, cards_for(world, self.lifecycle, self.summaries))
         return cached[1]
 
     def selected(self, world: World, case: Case | None) -> list[AgentCard]:

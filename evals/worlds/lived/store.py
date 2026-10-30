@@ -28,6 +28,13 @@ def _case(data: dict[str, Any]) -> Case:
     return Case(**{**data, "context": [tuple(c) for c in data.get("context", [])]})
 
 
+def _saved_agent(agent: AgentSpec) -> dict[str, Any]:
+    # Living summaries are kept in summaries-s{seed}.json, made after the world; the world file never holds them.
+    data = asdict(agent)
+    del data["summary"]
+    return data
+
+
 def save(path: Path, *, seed: int, units: list[tuple[Snapshot, list[Case]]], meta: dict[str, Any]) -> None:
     """Write each (snapshot, probes) as a size entry labelled lived-{size}."""
     sizes = [
@@ -35,7 +42,7 @@ def save(path: Path, *, seed: int, units: list[tuple[Snapshot, list[Case]]], met
             "label": f"lived-{snapshot.size}",
             "size": snapshot.size,
             "day": snapshot.day,
-            "agents": [asdict(agent) for agent in snapshot.agents],
+            "agents": [_saved_agent(agent) for agent in snapshot.agents],
             "thread_agents": snapshot.thread_agents,
             # The probe-building state, saved so a snapshot rebuilds without replaying the plan
             # (worlds grown with skipped events, or without v1 probes, can't be replayed).

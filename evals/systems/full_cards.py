@@ -17,6 +17,10 @@ class FullCardsSystem(RetrievedSystem):
 
     name = "full_cards"
 
+    def __init__(self) -> None:
+        # Frozen at its v2 re-baseline: the full-cards reference row has none of Plan 6c's changes.
+        super().__init__(summaries=False)
+
     def selected(self, world: World, case: Case | None) -> list[AgentCard]:
         by_id = {card.id: card for card in self.cards(world)}
         return [by_id[agent.id] for agent in world.roster_order()]

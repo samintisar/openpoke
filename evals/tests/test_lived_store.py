@@ -81,3 +81,14 @@ async def test_runner_routes_a_lived_world(tmp_path):
     assert {r["case_id"] for r in rows} == dev_ids
     assert all(r["n_agents"] == "lived-2" for r in rows)
     assert set(data["summary"]["retrieval"]) <= {"lived-2"}
+
+
+def test_saved_agents_carry_no_summary(tmp_path):
+    # Summaries live in summaries-s{seed}.json, so the world file keeps the shape it was generated with.
+    from dataclasses import replace
+    snapshot = _snapshot()
+    snapshot.agents[0] = replace(snapshot.agents[0], summary="Alice: lease.")
+    path = tmp_path / "w.json"
+    save(path, seed=1, units=[(snapshot, [])], meta={})
+    agents = json.loads(path.read_text(encoding="utf-8"))["sizes"][0]["agents"]
+    assert all("summary" not in agent for agent in agents)
