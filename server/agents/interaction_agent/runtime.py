@@ -9,6 +9,7 @@ from .agent import build_system_prompt, prepare_message_with_history
 from .second_look_gate import gate as second_look_gate, openrouter_complete as second_look_complete
 from .tools import ToolResult, get_tool_schemas, handle_tool_call
 from .turn import TurnContext, current_turn
+from ...services.agents.dispatch import SEARCH_BUDGET, SEARCH_BUDGET_EXHAUSTED
 from ...services.agents.second_look import CONTEXT_TURNS
 from ...services.conversation.log import _TURN_TAGS
 from ...services.conversation.summarization.state import omitted_user_entries
@@ -48,6 +49,7 @@ class _LoopSummary:
     execution_agents: Set[str] = field(default_factory=set)
     dispatched_ids: List[str] = field(default_factory=list)
     second_look_done: bool = False  # at most one second look per turn (Plan 6c)
+    searches: int = 0  # search_agents calls run this turn, against SEARCH_BUDGET
 
 
 def _dispatched_agent_id(result: ToolResult) -> Optional[str]:
@@ -218,7 +220,14 @@ class InteractionAgentRuntime:
                 held = None
                 if tool_call.name == "send_message_to_agent" and not summary.second_look_done:
                     tool_call, held = await self._second_look(tool_call, summary)
-                result = ToolResult(success=False, payload=held) if held is not None else self._execute_tool(tool_call)
+                if held is not None:
+                    result = ToolResult(success=False, payload=held)
+                elif tool_call.name == "search_agents" and summary.searches >= SEARCH_BUDGET:
+                    result = ToolResult(success=False, payload=SEARCH_BUDGET_EXHAUSTED)
+                else:
+                    if tool_call.name == "search_agents":
+                        summary.searches += 1
+                    result = self._execute_tool(tool_call)
 
                 if tool_call.name == "send_message_to_agent":
                     agent_id = _dispatched_agent_id(result)

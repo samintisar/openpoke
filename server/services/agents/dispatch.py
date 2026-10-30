@@ -14,6 +14,14 @@ from .retrieval import RetrievalConfig, search
 
 NEAREST_ON_UNKNOWN = 3
 
+# `search_agents` calls one turn may make; the server and the eval both apply it (None = unlimited in the eval).
+SEARCH_BUDGET = 3
+# The tool error a search past the budget gets instead of results.
+SEARCH_BUDGET_EXHAUSTED = (
+    "The search budget for this turn is used up, so no search was run. Decide now: reuse the best matching "
+    "agent already shown, ask the user which matter they mean, or create a new agent."
+)
+
 
 @dataclass
 class DispatchResult:
@@ -107,4 +115,4 @@ def search_payload(
     return render_cards(search(query, cards, now, cfg), len(cards), now)
 
 
-__all__ = ["DispatchResult", "dispatch", "search_payload"]
+__all__ = ["DispatchResult", "SEARCH_BUDGET", "SEARCH_BUDGET_EXHAUSTED", "dispatch", "search_payload"]

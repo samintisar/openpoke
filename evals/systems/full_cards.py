@@ -19,7 +19,8 @@ class FullCardsSystem(RetrievedSystem):
 
     def __init__(self) -> None:
         # Frozen at its v2 re-baseline: the full-cards reference row has none of Plan 6c's changes.
-        super().__init__(summaries=False, status_policy=False, second_look=False, context_query=False)
+        super().__init__(summaries=False, status_policy=False, second_look=False, context_query=False,
+                         search_budget=None)
 
     def selected(self, world: World, case: Case | None) -> list[AgentCard]:
         by_id = {card.id: card for card in self.cards(world)}

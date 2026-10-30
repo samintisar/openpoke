@@ -18,7 +18,7 @@ from server.services.agents.second_look import DEFAULT_SECOND_LOOK
 from server.agents.interaction_agent.tools import SEND_DRAFT_ARGUMENTS_ERROR
 from server.services.agents.cards import AgentCard, as_utc
 from server.services.agents.directory import InMemoryDirectory
-from server.services.agents.dispatch import dispatch, search_payload
+from server.services.agents.dispatch import SEARCH_BUDGET, SEARCH_BUDGET_EXHAUSTED, dispatch, search_payload
 from server.services.agents.render import render_cards
 from server.services.agents.retrieval import (
     RetrievalConfig,
@@ -120,7 +120,7 @@ class RetrievedTurn:
 
     def __init__(
         self, world: World, cards: list[AgentCard], cfg: RetrievalConfig, guard: bool = True,
-        case: Case | None = None, second_look: bool = False,
+        case: Case | None = None, second_look: bool = False, search_budget: int | None = None,
     ) -> None:
         self.world = world
         self.cfg = cfg
@@ -128,6 +128,8 @@ class RetrievedTurn:
         self.case = case
         self.second_look = second_look
         self.second_look_cfg = EVAL_SECOND_LOOK
+        self.search_budget = search_budget  # None: unlimited
+        self._searches = 0
         self.directory = InMemoryDirectory(cards, last_routed=_last_routed(cards, world))
         self.created_ids: set[str] = set()
         self._llm: Any = None  # bound by the routing layer: the second look uses the run's client
@@ -143,6 +145,9 @@ class RetrievedTurn:
         if name == "send_message_to_agent":
             return await self._send_to_agent(name, args, decision)
         if name == "search_agents":
+            if self.search_budget is not None and self._searches >= self.search_budget:
+                return _error(name, args, SEARCH_BUDGET_EXHAUSTED)
+            self._searches += 1
             payload = search_payload(self.directory, str(args.get("query", "")), self.world.now, self.cfg)
             return _success(name, args, payload)
         if name == "send_message_to_user":
@@ -231,7 +236,7 @@ class RetrievedSystem:
     def __init__(
         self, cfg: RetrievalConfig | None = None, lifecycle: bool = True, guard: bool = True, search: bool = True,
         summaries: bool = True, status_policy: bool = True, second_look: bool = True,
-        context_query: bool = True,
+        context_query: bool = True, search_budget: int | None = SEARCH_BUDGET,
     ) -> None:
         self.cfg = cfg or RetrievalConfig()
         # False keeps every card active, to ablate the lifecycle (dormant / archived statuses).
@@ -243,6 +248,7 @@ class RetrievedSystem:
         self.status_policy = status_policy  # False: no status-question rule
         self.second_look = second_look  # False: no second look before risky dispatches
         self.context_query = context_query  # False: no second retrieval pass for vague messages
+        self.search_budget = search_budget  # searches per turn before a refusal; None = unlimited
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
         self._cards_cache: dict[int, tuple[World, list[AgentCard]]] = {}
 
@@ -293,7 +299,8 @@ class RetrievedSystem:
         return _SHIMS
 
     def new_turn(self, world: World, case: Case) -> RetrievedTurn:
-        return RetrievedTurn(world, self.cards(world), self.cfg, self.guard, case=case, second_look=self.second_look)
+        return RetrievedTurn(world, self.cards(world), self.cfg, self.guard, case=case, second_look=self.second_look,
+                             search_budget=self.search_budget)
 
 
 class RetrievedNoLifecycleSystem(RetrievedSystem):

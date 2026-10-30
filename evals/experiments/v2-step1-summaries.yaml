@@ -1,6 +1,6 @@
 name: v2-step1-summaries
 system: retrieved
-system_options: {status_policy: false, second_look: false, context_query: false}
+system_options: {status_policy: false, second_look: false, context_query: false, search_budget: null}
 model: deepseek/deepseek-v4.1-flash
 world: lived_v2
 life: 1
