@@ -10,7 +10,21 @@
   },
   "fake_llm": false,
   "format": 1,
-  "balanced_with": 1
+  "balanced_with": 1,
+  "check": {
+   "models": [
+    "openai/gpt-6-luna",
+    "google/gemini-3.1-flash-lite",
+    "qwen/qwen3.8-flash"
+   ],
+   "audit_share": 0.1,
+   "seed": 2,
+   "max_cards": 10,
+   "disagree": 40,
+   "audit": 20,
+   "clean": 129,
+   "cost_usd": 0.033119
+  }
  },
  "rosters": {
   "lived-10": [
@@ -1447,7 +1461,25 @@
      "purpose": "Check availability at Kokkari Estiatorio (a restaurant in San Francisco) for a table next weekend, April 11–12, 2026. Look at their reservation system (OpenTable or their site) for available time slots for dinner on both Saturday April 11 and Sunday April 12. Report back the available times for each day, and note party size for 2 unless otherwise needed. Provide whatever options are open.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "kokkari-reservation",
+     "google/gemini-3.1-flash-lite": "kokkari-reservation",
+     "qwen/qwen3.8-flash": "kokkari-reservation"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "kokkari-reservation",
+     "edith-sheet-music",
+     "athens-flight",
+     "caleb-nda-signature",
+     "nina-park-big-sur-road-trip",
+     "gus-climbing-gym",
+     "adrian-q3-roadmap-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-follow_up-01",
@@ -1575,7 +1607,26 @@
      "purpose": "Find Holly in the user's contacts (likely related to a climbing gym meetup). Draft a short message asking if she's still up for the climbing gym meetup. Do NOT send it — return the draft recipient and message text so the user can approve. If you find context on the meetup date/time or location, include it.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "holly-climbing-gym",
+     "google/gemini-3.1-flash-lite": "holly-climbing-gym",
+     "qwen/qwen3.8-flash": "holly-climbing-gym"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "nina-park-big-sur-road-trip",
+     "kokkari-reservation",
+     "adrian-q3-roadmap-review",
+     "athens-flight",
+     "caleb-nda-signature",
+     "holly-climbing-gym",
+     "gus-climbing-gym",
+     "edith-sheet-music"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-follow_up-02",
@@ -1703,7 +1754,25 @@
      "purpose": "Find Nina Park's contact info and draft a message asking what she thinks we should do for the Big Sur road trip. Do not send it — report back the draft (recipient, subject if email, and body) so the user can review before anything goes out.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "nina-park-big-sur-road-trip",
+     "google/gemini-3.1-flash-lite": "nina-park-big-sur-road-trip",
+     "qwen/qwen3.8-flash": "nina-park-big-sur-road-trip"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "adrian-q3-roadmap-review",
+     "gus-climbing-gym",
+     "caleb-nda-signature",
+     "athens-flight",
+     "edith-sheet-music",
+     "kokkari-reservation",
+     "nina-park-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-new_task-00",
@@ -1824,7 +1893,27 @@
    "labels": [
     "lived-10"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "adrian-q3-roadmap-review",
+     "kokkari-reservation",
+     "edith-sheet-music",
+     "brendan-camping-weekend",
+     "athens-flight",
+     "caleb-nda-signature",
+     "nina-park-big-sur-road-trip",
+     "gus-climbing-gym",
+     "cole-camping-weekend"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-new_task-01",
@@ -1945,7 +2034,27 @@
    "labels": [
     "lived-10"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "gus-climbing-gym",
+     "caleb-nda-signature",
+     "nina-park-big-sur-road-trip",
+     "athens-flight",
+     "cole-camping-weekend",
+     "adrian-q3-roadmap-review",
+     "brendan-camping-weekend",
+     "edith-sheet-music",
+     "kokkari-reservation"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-new_task-02",
@@ -2066,7 +2175,26 @@
    "labels": [
     "lived-10"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "gus-climbing-gym",
+     "edith-sheet-music",
+     "kokkari-reservation",
+     "brendan-camping-weekend",
+     "nina-park-big-sur-road-trip",
+     "athens-flight",
+     "adrian-q3-roadmap-review",
+     "caleb-nda-signature"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-same_person_new_topic-00",
@@ -2187,7 +2315,25 @@
    "labels": [
     "lived-10"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "nina-park-big-sur-road-trip",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "athens-flight",
+     "nina-park-big-sur-road-trip",
+     "adrian-q3-roadmap-review",
+     "edith-sheet-music",
+     "caleb-nda-signature",
+     "gus-climbing-gym",
+     "kokkari-reservation"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-same_person_new_topic-01",
@@ -2308,7 +2454,25 @@
    "labels": [
     "lived-10"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ASK",
+     "google/gemini-3.1-flash-lite": "caleb-nda-signature",
+     "qwen/qwen3.8-flash": "ASK"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "athens-flight",
+     "adrian-q3-roadmap-review",
+     "kokkari-reservation",
+     "nina-park-big-sur-road-trip",
+     "caleb-nda-signature",
+     "edith-sheet-music",
+     "gus-climbing-gym"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-same_person_new_topic-02",
@@ -2429,7 +2593,25 @@
    "labels": [
     "lived-10"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "nina-park-big-sur-road-trip",
+     "gus-climbing-gym",
+     "caleb-nda-signature",
+     "adrian-q3-roadmap-review",
+     "athens-flight",
+     "kokkari-reservation",
+     "edith-sheet-music"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-vague_reference-00",
@@ -2557,7 +2739,26 @@
      "purpose": "Find the NDA that needs signing by Caleb (check the user's email and docs for context on who Caleb is, which NDA, and where it stands). Then draft a polite follow-up email to Caleb asking him to sign the NDA, framing it as something the user wants wrapped up before the end of the month. Prepare the draft for the user's review — do not send it. Report back the recipient email, subject, and the full draft body.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "caleb-nda-signature",
+     "google/gemini-3.1-flash-lite": "caleb-nda-signature",
+     "qwen/qwen3.8-flash": "caleb-nda-signature"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "adrian-q3-roadmap-review",
+     "cole-camping-weekend",
+     "caleb-nda-signature",
+     "kokkari-reservation",
+     "athens-flight",
+     "gus-climbing-gym",
+     "edith-sheet-music",
+     "nina-park-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-vague_reference-01",
@@ -2685,7 +2886,25 @@
      "purpose": "Find the contact named Edith (look through email contacts, prior threads, and messages to identify the right person). Then compose a short, casual message asking her if next Tuesday morning works for the sheet music. Do NOT send anything yet — return the draft (recipient, subject if email, and body) so I can show it to the user for approval first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "edith-sheet-music",
+     "google/gemini-3.1-flash-lite": "edith-sheet-music",
+     "qwen/qwen3.8-flash": "edith-sheet-music"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "kokkari-reservation",
+     "athens-flight",
+     "edith-sheet-music",
+     "adrian-q3-roadmap-review",
+     "caleb-nda-signature",
+     "gus-climbing-gym",
+     "nina-park-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-multi_task-00",
@@ -2820,7 +3039,27 @@
      "purpose": "Find Gus (contact tied to the climbing gym meetup) and draft a message asking how the user can help with the climbing gym meetup. Mention the user is excited. Present the draft for the user's review before sending anything.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "edith-sheet-music|gus-climbing-gym",
+     "google/gemini-3.1-flash-lite": "edith-sheet-music|gus-climbing-gym",
+     "qwen/qwen3.8-flash": "edith-sheet-music|gus-climbing-gym"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "cole-camping-weekend",
+     "edith-sheet-music",
+     "caleb-nda-signature",
+     "athens-flight",
+     "holly-climbing-gym",
+     "gus-climbing-gym",
+     "kokkari-reservation",
+     "adrian-q3-roadmap-review",
+     "nina-park-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-multi_task-01",
@@ -2949,7 +3188,27 @@
      "purpose": "The user wants to move \"the Athens flight\" to the following weekend. First, verify whether an Athens flight has actually been booked — search the user's inbox for any flight confirmation or booking for Athens. If a booking exists, report back the full details (airline, dates, cost, confirmation number) and the options for moving it to the following weekend, but do NOT make any changes yet. If no Athens booking exists, report that clearly.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "athens-flight|NEW",
+     "google/gemini-3.1-flash-lite": "athens-flight|NEW",
+     "qwen/qwen3.8-flash": "athens-flight|NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "gus-climbing-gym",
+     "kokkari-reservation",
+     "nina-park-big-sur-road-trip",
+     "brendan-camping-weekend",
+     "athens-flight",
+     "adrian-q3-roadmap-review",
+     "caleb-nda-signature",
+     "cole-camping-weekend",
+     "edith-sheet-music"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-multi_task-02",
@@ -3084,7 +3343,25 @@
      "purpose": "Find Nina Park's contact info and draft a message asking what she thinks we should do for the Big Sur road trip. Do not send it — report back the draft (recipient, subject if email, and body) so the user can review before anything goes out.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "caleb-nda-signature|nina-park-big-sur-road-trip",
+     "google/gemini-3.1-flash-lite": "caleb-nda-signature|nina-park-big-sur-road-trip",
+     "qwen/qwen3.8-flash": "caleb-nda-signature|nina-park-big-sur-road-trip"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "kokkari-reservation",
+     "gus-climbing-gym",
+     "edith-sheet-music",
+     "nina-park-big-sur-road-trip",
+     "adrian-q3-roadmap-review",
+     "athens-flight",
+     "caleb-nda-signature"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-cross_agent-00",
@@ -3212,7 +3489,27 @@
      "purpose": "Find Gus (contact tied to the climbing gym meetup) and draft a message asking how the user can help with the climbing gym meetup. Mention the user is excited. Present the draft for the user's review before sending anything.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "gus-climbing-gym",
+     "google/gemini-3.1-flash-lite": "gus-climbing-gym",
+     "qwen/qwen3.8-flash": "gus-climbing-gym"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "kokkari-reservation",
+     "caleb-nda-signature",
+     "holly-climbing-gym",
+     "athens-flight",
+     "gus-climbing-gym",
+     "adrian-q3-roadmap-review",
+     "edith-sheet-music",
+     "nina-park-big-sur-road-trip",
+     "cole-camping-weekend"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-cross_agent-01",
@@ -3340,7 +3637,26 @@
      "purpose": "Find the contact named Edith (look through email contacts, prior threads, and messages to identify the right person). Then compose a short, casual message asking her if next Tuesday morning works for the sheet music. Do NOT send anything yet — return the draft (recipient, subject if email, and body) so I can show it to the user for approval first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "edith-sheet-music",
+     "google/gemini-3.1-flash-lite": "edith-sheet-music",
+     "qwen/qwen3.8-flash": "edith-sheet-music"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "athens-flight",
+     "cole-camping-weekend",
+     "caleb-nda-signature",
+     "adrian-q3-roadmap-review",
+     "edith-sheet-music",
+     "gus-climbing-gym",
+     "nina-park-big-sur-road-trip",
+     "kokkari-reservation"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-cross_agent-02",
@@ -3468,7 +3784,27 @@
      "purpose": "Find the contact info for Brendan (look through the user's contacts, email history, and messages to identify who \"Brendan\" is and the best way to reach him). Then prepare a message to Brendan asking what he thinks the user and he should do for their upcoming camping weekend. If it's an email, draft it (subject + body) in a friendly, casual tone. Report back: who Brendan is, the best contact method, and the proposed draft message text.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "brendan-camping-weekend",
+     "google/gemini-3.1-flash-lite": "brendan-camping-weekend",
+     "qwen/qwen3.8-flash": "brendan-camping-weekend"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "kokkari-reservation",
+     "athens-flight",
+     "nina-park-big-sur-road-trip",
+     "edith-sheet-music",
+     "brendan-camping-weekend",
+     "gus-climbing-gym",
+     "cole-camping-weekend",
+     "caleb-nda-signature",
+     "adrian-q3-roadmap-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-typo-00",
@@ -3596,7 +3932,26 @@
      "purpose": "Find Nina Park's contact info and draft a message asking what she thinks we should do for the Big Sur road trip. Do not send it — report back the draft (recipient, subject if email, and body) so the user can review before anything goes out.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "nina-park-big-sur-road-trip",
+     "google/gemini-3.1-flash-lite": "nina-park-big-sur-road-trip",
+     "qwen/qwen3.8-flash": "nina-park-big-sur-road-trip"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "caleb-nda-signature",
+     "athens-flight",
+     "kokkari-reservation",
+     "edith-sheet-music",
+     "gus-climbing-gym",
+     "nina-park-big-sur-road-trip",
+     "cole-camping-weekend",
+     "adrian-q3-roadmap-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-typo-01",
@@ -3724,7 +4079,25 @@
      "purpose": "Find the contact named Edith (look through email contacts, prior threads, and messages to identify the right person). Then compose a short, casual message asking her if next Tuesday morning works for the sheet music. Do NOT send anything yet — return the draft (recipient, subject if email, and body) so I can show it to the user for approval first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "edith-sheet-music",
+     "google/gemini-3.1-flash-lite": "edith-sheet-music",
+     "qwen/qwen3.8-flash": "edith-sheet-music"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "caleb-nda-signature",
+     "gus-climbing-gym",
+     "kokkari-reservation",
+     "edith-sheet-music",
+     "adrian-q3-roadmap-review",
+     "nina-park-big-sur-road-trip",
+     "athens-flight"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-typo-02",
@@ -3852,7 +4225,27 @@
      "purpose": "Find the contact info for Brendan (look through the user's contacts, email history, and messages to identify who \"Brendan\" is and the best way to reach him). Then prepare a message to Brendan asking what he thinks the user and he should do for their upcoming camping weekend. If it's an email, draft it (subject + body) in a friendly, casual tone. Report back: who Brendan is, the best contact method, and the proposed draft message text.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "brendan-camping-weekend",
+     "google/gemini-3.1-flash-lite": "brendan-camping-weekend",
+     "qwen/qwen3.8-flash": "brendan-camping-weekend"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "adrian-q3-roadmap-review",
+     "gus-climbing-gym",
+     "caleb-nda-signature",
+     "nina-park-big-sur-road-trip",
+     "cole-camping-weekend",
+     "brendan-camping-weekend",
+     "edith-sheet-music",
+     "kokkari-reservation",
+     "athens-flight"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-agent_result-00",
@@ -3980,7 +4373,25 @@
      "purpose": "The user wants Adrian included in the Q3 roadmap review, with the goal of wrapping up the review before the end of the month. Find the relevant Q3 roadmap review (calendar event, email thread, or doc) and add Adrian to it. If scheduling is involved, propose times that would let the review finish before end of month. Report back with what you found, what you did, and any draft (invite/message) that needs the user's confirmation before sending. Do not send anything to external parties without approval.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "adrian-q3-roadmap-review",
+     "google/gemini-3.1-flash-lite": "adrian-q3-roadmap-review",
+     "qwen/qwen3.8-flash": "adrian-q3-roadmap-review"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "caleb-nda-signature",
+     "adrian-q3-roadmap-review",
+     "kokkari-reservation",
+     "gus-climbing-gym",
+     "edith-sheet-music",
+     "athens-flight",
+     "nina-park-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-agent_result-01",
@@ -4108,7 +4519,25 @@
      "purpose": "The user wants to move \"the Athens flight\" to the following weekend. First, verify whether an Athens flight has actually been booked — search the user's inbox for any flight confirmation or booking for Athens. If a booking exists, report back the full details (airline, dates, cost, confirmation number) and the options for moving it to the following weekend, but do NOT make any changes yet. If no Athens booking exists, report that clearly.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "athens-flight",
+     "google/gemini-3.1-flash-lite": "athens-flight",
+     "qwen/qwen3.8-flash": "athens-flight"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "kokkari-reservation",
+     "athens-flight",
+     "gus-climbing-gym",
+     "caleb-nda-signature",
+     "edith-sheet-music",
+     "nina-park-big-sur-road-trip",
+     "adrian-q3-roadmap-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-agent_result-02",
@@ -4236,7 +4665,25 @@
      "purpose": "Find the NDA that needs signing by Caleb (check the user's email and docs for context on who Caleb is, which NDA, and where it stands). Then draft a polite follow-up email to Caleb asking him to sign the NDA, framing it as something the user wants wrapped up before the end of the month. Prepare the draft for the user's review — do not send it. Report back the recipient email, subject, and the full draft body.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "caleb-nda-signature",
+     "google/gemini-3.1-flash-lite": "caleb-nda-signature",
+     "qwen/qwen3.8-flash": "caleb-nda-signature"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "edith-sheet-music",
+     "caleb-nda-signature",
+     "gus-climbing-gym",
+     "nina-park-big-sur-road-trip",
+     "adrian-q3-roadmap-review",
+     "athens-flight",
+     "kokkari-reservation"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-status_question-00",
@@ -4364,7 +4811,27 @@
      "purpose": "Check availability at Kokkari Estiatorio (a restaurant in San Francisco) for a table next weekend, April 11–12, 2026. Look at their reservation system (OpenTable or their site) for available time slots for dinner on both Saturday April 11 and Sunday April 12. Report back the available times for each day, and note party size for 2 unless otherwise needed. Provide whatever options are open.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "kokkari-reservation",
+     "google/gemini-3.1-flash-lite": "kokkari-reservation",
+     "qwen/qwen3.8-flash": "kokkari-reservation"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "adrian-q3-roadmap-review",
+     "caleb-nda-signature",
+     "gus-climbing-gym",
+     "cole-camping-weekend",
+     "athens-flight",
+     "nina-park-big-sur-road-trip",
+     "kokkari-reservation",
+     "edith-sheet-music",
+     "brendan-camping-weekend"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-status_question-01",
@@ -4492,7 +4959,25 @@
      "purpose": "The user wants to move \"the Athens flight\" to the following weekend. First, verify whether an Athens flight has actually been booked — search the user's inbox for any flight confirmation or booking for Athens. If a booking exists, report back the full details (airline, dates, cost, confirmation number) and the options for moving it to the following weekend, but do NOT make any changes yet. If no Athens booking exists, report that clearly.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "athens-flight",
+     "google/gemini-3.1-flash-lite": "athens-flight",
+     "qwen/qwen3.8-flash": "athens-flight"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "caleb-nda-signature",
+     "athens-flight",
+     "edith-sheet-music",
+     "gus-climbing-gym",
+     "nina-park-big-sur-road-trip",
+     "adrian-q3-roadmap-review",
+     "kokkari-reservation"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-status_question-02",
@@ -4611,7 +5096,25 @@
    "labels": [
     "lived-10"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "ASK"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "gus-climbing-gym",
+     "nina-park-big-sur-road-trip",
+     "adrian-q3-roadmap-review",
+     "kokkari-reservation",
+     "caleb-nda-signature",
+     "edith-sheet-music",
+     "athens-flight"
+    ]
+   }
   },
   {
    "id": "v2-s2-10-paraphrase-00",
@@ -4739,7 +5242,26 @@
      "purpose": "Find the contact named Edith (look through email contacts, prior threads, and messages to identify the right person). Then compose a short, casual message asking her if next Tuesday morning works for the sheet music. Do NOT send anything yet — return the draft (recipient, subject if email, and body) so I can show it to the user for approval first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "edith-sheet-music",
+     "google/gemini-3.1-flash-lite": "edith-sheet-music",
+     "qwen/qwen3.8-flash": "edith-sheet-music"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "edith-sheet-music",
+     "gus-climbing-gym",
+     "athens-flight",
+     "kokkari-reservation",
+     "nina-park-big-sur-road-trip",
+     "cole-camping-weekend",
+     "caleb-nda-signature",
+     "adrian-q3-roadmap-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-follow_up-00",
@@ -4875,7 +5397,28 @@
      "purpose": "Find the email thread with Farah about the Q3 roadmap review scheduling. Draft a reply from the user saying that Friday works better for them for the Q3 roadmap review. Show me the exact draft (recipient, subject, body) so the user can review before anything is sent. Do not send it.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "farah-q3-roadmap-review",
+     "google/gemini-3.1-flash-lite": "farah-q3-roadmap-review",
+     "qwen/qwen3.8-flash": "farah-q3-roadmap-review"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "bianca-export-follow-up",
+     "bruno-conference-talk-proposal",
+     "zara-big-sur-road-trip",
+     "dog-sitter-search",
+     "farah-q3-roadmap-review",
+     "fiona-procurement-paperwork",
+     "erik-baby-shower",
+     "abby-podcast-guest-spot",
+     "adrian-q3-roadmap-review",
+     "yara-book-club-scheduling"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-follow_up-01",
@@ -5003,7 +5546,28 @@
      "purpose": "Find spa day options for the user (day spa packages, likely for the user and possibly a guest — check what the budget context allows). Determine the applicable budget for this, and if there's an option under budget, book it. Report back the options, prices, whether it fits the budget, and whether it was booked. If nothing is under budget or the budget is unclear, report that instead of booking.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "spa-day",
+     "google/gemini-3.1-flash-lite": "spa-day",
+     "qwen/qwen3.8-flash": "spa-day"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "jade-nda-draft",
+     "bruno-conference-talk-proposal",
+     "erik-baby-shower",
+     "austin-flights",
+     "dina-big-sur-road-trip",
+     "spa-day",
+     "clara-demo-day-slides",
+     "tariq-camping-weekend",
+     "credit-card-dispute",
+     "yara-book-club-scheduling"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-follow_up-02",
@@ -5131,7 +5695,28 @@
      "purpose": "Draft a check-in message to Bruno about the conference talk proposal. The user wants to wrap it up before the end of the month. Ask where things stand and what's needed to finalize. Prepare the draft for the user to review before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "bruno-conference-talk-proposal",
+     "google/gemini-3.1-flash-lite": "bruno-conference-talk-proposal",
+     "qwen/qwen3.8-flash": "bruno-conference-talk-proposal"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "spa-day",
+     "vienna-hotel",
+     "fiona-procurement-paperwork",
+     "clara-demo-day-slides",
+     "dina-big-sur-road-trip",
+     "dog-sitter-search",
+     "yuki-conference-talk",
+     "bianca-export-follow-up",
+     "bruno-conference-talk-proposal",
+     "credit-card-dispute"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-follow_up-03",
@@ -5259,7 +5844,28 @@
      "purpose": "Find swim class options for Lena — look for local swim schools/classes, note the price, location, and upcoming session start dates. Identify the best fit and report back the details plus the cost so we can confirm it's within budget before booking. Do not book yet; just gather and report the top options.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "lena-swim-class",
+     "qwen/qwen3.8-flash": "lena-swim-class"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "credit-card-dispute",
+     "vienna-hotel",
+     "lena-swim-class",
+     "dog-sitter-search",
+     "athens-flight",
+     "pottery-class-search",
+     "bruno-conference-talk-proposal",
+     "oslo-flights",
+     "dina-big-sur-road-trip",
+     "adele-tickets"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-follow_up-04",
@@ -5387,7 +5993,28 @@
      "purpose": "The user needs a dog sitter for next weekend. Find available dog sitting options in their area for next weekend (Saturday and Sunday). Check reputable dog sitting services (e.g., Rover, Wag, local sitters) and compile a list of available sitters with their availability, rates, and any relevant details like reviews or experience. Report back the best options.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "dog-sitter-search",
+     "google/gemini-3.1-flash-lite": "dog-sitter-search",
+     "qwen/qwen3.8-flash": "dog-sitter-search"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "max-weller-nda-meeting",
+     "dog-sitter-search",
+     "lars-migration-meeting",
+     "yuki-conference-talk",
+     "bruno-conference-talk-proposal",
+     "erik-baby-shower",
+     "nina-park-big-sur-road-trip",
+     "jade-nda-draft",
+     "yara-book-club-scheduling",
+     "dina-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-new_task-00",
@@ -5508,7 +6135,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "haircut-booking",
+     "honolulu-flights",
+     "dina-big-sur-road-trip",
+     "lena-swim-class",
+     "ivan-pilot-kickoff",
+     "montreal-flights",
+     "watch-battery-replacement",
+     "austin-flights",
+     "brendan-camping-weekend",
+     "athens-flight"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-new_task-01",
@@ -5629,7 +6277,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "oslo-flights",
+     "yara-book-club-scheduling",
+     "montreal-flights",
+     "dodgers-tickets",
+     "max-weller-nda-meeting",
+     "dog-sitter-search",
+     "athens-flight",
+     "austin-flights",
+     "watch-battery-replacement",
+     "honolulu-flights"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-new_task-02",
@@ -5750,7 +6419,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "watch-battery-replacement",
+     "dodgers-tickets",
+     "montreal-flights",
+     "yara-book-club-scheduling",
+     "oslo-flights",
+     "austin-flights",
+     "dog-sitter-search",
+     "vienna-hotel",
+     "max-weller-nda-meeting",
+     "jade-nda-draft"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-new_task-03",
@@ -5871,7 +6561,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "montreal-flights",
+     "dina-big-sur-road-trip",
+     "dog-sitter-search",
+     "dodgers-tickets",
+     "adele-tickets",
+     "honolulu-flights",
+     "austin-flights",
+     "lena-swim-class",
+     "brendan-camping-weekend",
+     "watch-battery-replacement"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-new_task-04",
@@ -5992,7 +6703,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "jade-nda-draft",
+     "lena-swim-class",
+     "spa-day",
+     "oslo-flights",
+     "bruno-conference-talk-proposal",
+     "dina-big-sur-road-trip",
+     "watch-battery-replacement",
+     "yara-book-club-scheduling",
+     "erik-baby-shower",
+     "honolulu-flights"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-same_person_new_topic-00",
@@ -6113,7 +6845,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "yara-book-club-scheduling"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "watch-battery-replacement",
+     "bruno-conference-talk-proposal",
+     "yara-book-club-scheduling",
+     "oslo-flights",
+     "zara-big-sur-road-trip",
+     "abby-podcast-guest-spot",
+     "honolulu-flights",
+     "erik-baby-shower",
+     "fiona-procurement-paperwork",
+     "nina-park-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-same_person_new_topic-01",
@@ -6234,7 +6987,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "farah-q3-roadmap-review",
+     "erik-baby-shower",
+     "adrian-q3-roadmap-review",
+     "abby-podcast-guest-spot",
+     "jade-nda-draft",
+     "dina-big-sur-road-trip",
+     "bruno-conference-talk-proposal",
+     "elise-analytics-dashboard",
+     "yara-book-club-scheduling",
+     "lorna-onboarding-notes"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-same_person_new_topic-02",
@@ -6355,7 +7129,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "lorna-onboarding-notes",
+     "ivan-pilot-kickoff",
+     "fiona-procurement-paperwork",
+     "jade-nda-draft",
+     "bruno-conference-talk-proposal",
+     "bianca-export-follow-up",
+     "yara-book-club-scheduling",
+     "erik-baby-shower",
+     "max-weller-nda-meeting",
+     "abby-podcast-guest-spot"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-same_person_new_topic-03",
@@ -6476,7 +7271,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "yara-book-club-scheduling",
+     "clara-demo-day-slides",
+     "farah-q3-roadmap-review",
+     "erik-baby-shower",
+     "bruno-conference-talk-proposal",
+     "jade-nda-draft",
+     "abby-podcast-guest-spot",
+     "elise-analytics-dashboard",
+     "odette-procurement-draft",
+     "fiona-procurement-paperwork"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-same_person_new_topic-04",
@@ -6597,7 +7413,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "ASK"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "dina-big-sur-road-trip",
+     "odette-procurement-draft",
+     "abby-podcast-guest-spot",
+     "yara-book-club-scheduling",
+     "bruno-conference-talk-proposal",
+     "farah-q3-roadmap-review",
+     "erik-baby-shower",
+     "jade-nda-draft",
+     "elise-analytics-dashboard",
+     "tomasz-postmortem"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-vague_reference-00",
@@ -6725,7 +7562,28 @@
      "purpose": "Draft a check-in message to Bruno about the conference talk proposal. The user wants to wrap it up before the end of the month. Ask where things stand and what's needed to finalize. Prepare the draft for the user to review before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "bruno-conference-talk-proposal",
+     "google/gemini-3.1-flash-lite": "bruno-conference-talk-proposal",
+     "qwen/qwen3.8-flash": "bruno-conference-talk-proposal"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "lars-migration-meeting",
+     "yuki-conference-talk",
+     "yara-book-club-scheduling",
+     "tomasz-postmortem",
+     "jade-nda-draft",
+     "lorna-onboarding-notes",
+     "ruth-babysitting",
+     "dina-big-sur-road-trip",
+     "bruno-conference-talk-proposal",
+     "erik-baby-shower"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-vague_reference-01",
@@ -6853,7 +7711,28 @@
      "purpose": "The user has an urgent key handoff with Marisol and wants help. Please look into the context/history of the key handoff with Marisol (there may be prior threads or related emails about Marisol, including a recent question about the cost of a deep clean). Prepare a draft message to Marisol to coordinate the handoff — propose locking in a time and place and confirming she can receive/collect the key. Do not send anything yet; return a draft for the user to review. If there are specific details already known (dates, location), include them. Report back with the draft and any relevant context you find.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "marisol-key-handoff",
+     "google/gemini-3.1-flash-lite": "marisol-key-handoff",
+     "qwen/qwen3.8-flash": "marisol-key-handoff"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "bruno-conference-talk-proposal",
+     "jade-nda-draft",
+     "erik-baby-shower",
+     "dina-big-sur-road-trip",
+     "tariq-camping-weekend",
+     "zara-big-sur-road-trip",
+     "credit-card-dispute",
+     "yara-book-club-scheduling",
+     "nina-park-big-sur-road-trip",
+     "marisol-key-handoff"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-vague_reference-02",
@@ -6981,7 +7860,28 @@
      "purpose": "Find the contact named Edith (look through email contacts, prior threads, and messages to identify the right person). Then compose a short, casual message asking her if next Tuesday morning works for the sheet music. Do NOT send anything yet — return the draft (recipient, subject if email, and body) so I can show it to the user for approval first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "edith-sheet-music",
+     "google/gemini-3.1-flash-lite": "edith-sheet-music",
+     "qwen/qwen3.8-flash": "edith-sheet-music"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "adele-tickets",
+     "erik-baby-shower",
+     "yara-book-club-scheduling",
+     "zara-big-sur-road-trip",
+     "watch-battery-replacement",
+     "jade-nda-draft",
+     "edith-sheet-music",
+     "bruno-conference-talk-proposal",
+     "dina-big-sur-road-trip",
+     "nina-park-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-multi_task-00",
@@ -7116,7 +8016,28 @@
      "purpose": "Find the email from Abby about a podcast guest spot in the user's inbox. Once found, draft a reply from the user to Abby that says the user is excited about the guest spot and asks how they can help. Return the recipient email address, the subject line (keep the same thread/subject so it's a proper reply), and the full draft body text so the user can review it before it's sent. Do NOT send anything yet.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "cole-camping-weekend|abby-podcast-guest-spot",
+     "google/gemini-3.1-flash-lite": "cole-camping-weekend|abby-podcast-guest-spot",
+     "qwen/qwen3.8-flash": "cole-camping-weekend|NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "dina-camping-weekend",
+     "lorna-onboarding-notes",
+     "farah-q3-roadmap-review",
+     "dina-big-sur-road-trip",
+     "tariq-camping-weekend",
+     "abby-podcast-guest-spot",
+     "brendan-camping-weekend",
+     "cole-camping-weekend",
+     "credit-card-dispute",
+     "erik-baby-shower"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-multi_task-01",
@@ -7245,7 +8166,28 @@
      "purpose": "Find the contact named Edith (look through email contacts, prior threads, and messages to identify the right person). Then compose a short, casual message asking her if next Tuesday morning works for the sheet music. Do NOT send anything yet — return the draft (recipient, subject if email, and body) so I can show it to the user for approval first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "edith-sheet-music|NEW",
+     "google/gemini-3.1-flash-lite": "edith-sheet-music|NEW",
+     "qwen/qwen3.8-flash": "edith-sheet-music|NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "dina-big-sur-road-trip",
+     "vienna-hotel",
+     "yara-book-club-scheduling",
+     "bruno-conference-talk-proposal",
+     "honolulu-flights",
+     "watch-battery-replacement",
+     "tariq-camping-weekend",
+     "erik-baby-shower",
+     "oslo-flights",
+     "edith-sheet-music"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-multi_task-02",
@@ -7380,7 +8322,28 @@
      "purpose": "The user wants the demo day slides for Clara finished, with a target of wrapping up before the end of the month.\n\n1. Find the existing demo day slide deck for Clara — check the user's email, shared drives/files, and any relevant threads with Clara for the deck, its current state, and what's still outstanding.\n2. Identify what specifically is unfinished (missing sections, placeholder slides, outstanding feedback from Clara, pending data/numbers, etc.).\n3. Report back a clear status: where the deck lives, what's done vs. outstanding, who owes what, and a concrete plan/next steps to finish it before month-end.\n\nDo not send or share anything with Clara without the user's explicit approval — report findings first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "frank-retirement-party|NEW",
+     "google/gemini-3.1-flash-lite": "frank-retirement-party|clara-demo-day-slides",
+     "qwen/qwen3.8-flash": "frank-retirement-party|clara-demo-day-slides"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "zara-big-sur-road-trip",
+     "clara-demo-day-slides",
+     "dina-big-sur-road-trip",
+     "nina-park-big-sur-road-trip",
+     "credit-card-dispute",
+     "vienna-hotel",
+     "erik-baby-shower",
+     "bruno-conference-talk-proposal",
+     "frank-retirement-party",
+     "lorna-onboarding-notes"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-multi_task-03",
@@ -7509,7 +8472,28 @@
      "purpose": "Find Nina Park's contact info and draft a message asking what she thinks we should do for the Big Sur road trip. Do not send it — report back the draft (recipient, subject if email, and body) so the user can review before anything goes out.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ASK|NEW",
+     "google/gemini-3.1-flash-lite": "dina-big-sur-road-trip|NEW",
+     "qwen/qwen3.8-flash": "NEW|NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "zara-big-sur-road-trip",
+     "bruno-conference-talk-proposal",
+     "honolulu-flights",
+     "yara-book-club-scheduling",
+     "eli-ski-trip",
+     "tariq-camping-weekend",
+     "fiona-procurement-paperwork",
+     "dina-big-sur-road-trip",
+     "nina-castillo-team-offsite",
+     "nina-park-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-multi_task-04",
@@ -7644,7 +8628,28 @@
      "purpose": "The user wants to book a haircut and asked to see what's open next weekend. Find availability for a haircut next weekend (Saturday/Sunday). Check the user's usual barber/salon if it can be identified from their email/receipts/contacts; otherwise gather a few good nearby options. Report back with the specific open time slots and locations so the user can pick, and have a booking draft/message ready for review before sending anything.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "dodgers-tickets|haircut-booking",
+     "google/gemini-3.1-flash-lite": "dodgers-tickets|haircut-booking",
+     "qwen/qwen3.8-flash": "dodgers-tickets|haircut-booking"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "erik-baby-shower",
+     "dina-big-sur-road-trip",
+     "jade-nda-draft",
+     "nina-park-big-sur-road-trip",
+     "yara-book-club-scheduling",
+     "tariq-camping-weekend",
+     "dodgers-tickets",
+     "haircut-booking",
+     "adele-tickets",
+     "bruno-conference-talk-proposal"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-cross_agent-00",
@@ -7772,7 +8777,28 @@
      "purpose": "Draft a check-in message to Bruno about the conference talk proposal. The user wants to wrap it up before the end of the month. Ask where things stand and what's needed to finalize. Prepare the draft for the user to review before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "bruno-conference-talk-proposal",
+     "google/gemini-3.1-flash-lite": "bruno-conference-talk-proposal",
+     "qwen/qwen3.8-flash": "bruno-conference-talk-proposal"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "zara-big-sur-road-trip",
+     "dina-big-sur-road-trip",
+     "nina-park-big-sur-road-trip",
+     "bruno-conference-talk-proposal",
+     "bianca-export-follow-up",
+     "jade-nda-draft",
+     "yuki-conference-talk",
+     "erik-baby-shower",
+     "nina-castillo-team-offsite",
+     "yara-book-club-scheduling"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-cross_agent-01",
@@ -7900,7 +8926,28 @@
      "purpose": "Find Nina Park's contact info and draft a message asking what she thinks we should do for the Big Sur road trip. Do not send it — report back the draft (recipient, subject if email, and body) so the user can review before anything goes out.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "nina-park-big-sur-road-trip",
+     "google/gemini-3.1-flash-lite": "nina-park-big-sur-road-trip",
+     "qwen/qwen3.8-flash": "nina-park-big-sur-road-trip"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "yara-book-club-scheduling",
+     "eli-ski-trip",
+     "zara-big-sur-road-trip",
+     "jade-nda-draft",
+     "erik-baby-shower",
+     "honolulu-flights",
+     "nina-park-big-sur-road-trip",
+     "dina-big-sur-road-trip",
+     "nina-castillo-team-offsite",
+     "bruno-conference-talk-proposal"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-cross_agent-02",
@@ -8028,7 +9075,28 @@
      "purpose": "Please follow up with Bianca regarding the export to determine the current status and the next steps required to have it completed by the end of the month. Let me know what she needs from me.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "bianca-export-follow-up",
+     "google/gemini-3.1-flash-lite": "bianca-export-follow-up",
+     "qwen/qwen3.8-flash": "bianca-export-follow-up"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "bianca-export-follow-up",
+     "nina-castillo-team-offsite",
+     "erik-baby-shower",
+     "yara-book-club-scheduling",
+     "bruno-conference-talk-proposal",
+     "jade-nda-draft",
+     "nina-park-big-sur-road-trip",
+     "adele-tickets",
+     "dina-big-sur-road-trip",
+     "zara-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-cross_agent-03",
@@ -8156,7 +9224,28 @@
      "purpose": "Find the contact info for Brendan (look through the user's contacts, email history, and messages to identify who \"Brendan\" is and the best way to reach him). Then prepare a message to Brendan asking what he thinks the user and he should do for their upcoming camping weekend. If it's an email, draft it (subject + body) in a friendly, casual tone. Report back: who Brendan is, the best contact method, and the proposed draft message text.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "brendan-camping-weekend",
+     "google/gemini-3.1-flash-lite": "brendan-camping-weekend",
+     "qwen/qwen3.8-flash": "brendan-camping-weekend"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "yara-book-club-scheduling",
+     "brendan-camping-weekend",
+     "adele-tickets",
+     "dina-camping-weekend",
+     "cole-camping-weekend",
+     "max-weller-nda-meeting",
+     "vienna-hotel",
+     "tariq-camping-weekend",
+     "dog-sitter-search",
+     "bianca-export-follow-up"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-cross_agent-04",
@@ -8284,7 +9373,28 @@
      "purpose": "Find the NDA that needs signing by Caleb (check the user's email and docs for context on who Caleb is, which NDA, and where it stands). Then draft a polite follow-up email to Caleb asking him to sign the NDA, framing it as something the user wants wrapped up before the end of the month. Prepare the draft for the user's review — do not send it. Report back the recipient email, subject, and the full draft body.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "caleb-nda-signature",
+     "google/gemini-3.1-flash-lite": "caleb-nda-signature",
+     "qwen/qwen3.8-flash": "caleb-nda-signature"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "jade-nda-draft",
+     "caleb-nda-signature",
+     "max-weller-nda-meeting",
+     "cole-camping-weekend",
+     "adele-tickets",
+     "dina-big-sur-road-trip",
+     "odette-procurement-draft",
+     "bruno-conference-talk-proposal",
+     "bianca-export-follow-up",
+     "yara-book-club-scheduling"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-dormant_revival-00",
@@ -8412,7 +9522,28 @@
      "purpose": "Find the contact named Edith (look through email contacts, prior threads, and messages to identify the right person). Then compose a short, casual message asking her if next Tuesday morning works for the sheet music. Do NOT send anything yet — return the draft (recipient, subject if email, and body) so I can show it to the user for approval first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "edith-sheet-music",
+     "google/gemini-3.1-flash-lite": "edith-sheet-music",
+     "qwen/qwen3.8-flash": "edith-sheet-music"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "honolulu-flights",
+     "fiona-procurement-paperwork",
+     "abby-podcast-guest-spot",
+     "edith-sheet-music",
+     "dina-big-sur-road-trip",
+     "yara-book-club-scheduling",
+     "erik-baby-shower",
+     "nina-park-big-sur-road-trip",
+     "jade-nda-draft",
+     "bruno-conference-talk-proposal"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-dormant_revival-01",
@@ -8540,7 +9671,28 @@
      "purpose": "Find Nina Park's contact info and draft a message asking what she thinks we should do for the Big Sur road trip. Do not send it — report back the draft (recipient, subject if email, and body) so the user can review before anything goes out.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "nina-park-big-sur-road-trip",
+     "google/gemini-3.1-flash-lite": "nina-park-big-sur-road-trip",
+     "qwen/qwen3.8-flash": "nina-park-big-sur-road-trip"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "erik-baby-shower",
+     "honolulu-flights",
+     "nina-park-big-sur-road-trip",
+     "yara-book-club-scheduling",
+     "nina-castillo-team-offsite",
+     "dina-big-sur-road-trip",
+     "eli-ski-trip",
+     "zara-big-sur-road-trip",
+     "bruno-conference-talk-proposal",
+     "jade-nda-draft"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-dormant_revival-02",
@@ -8668,7 +9820,28 @@
      "purpose": "The user wants to move \"the Athens flight\" to the following weekend. First, verify whether an Athens flight has actually been booked — search the user's inbox for any flight confirmation or booking for Athens. If a booking exists, report back the full details (airline, dates, cost, confirmation number) and the options for moving it to the following weekend, but do NOT make any changes yet. If no Athens booking exists, report that clearly.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "athens-flight",
+     "google/gemini-3.1-flash-lite": "athens-flight",
+     "qwen/qwen3.8-flash": "athens-flight"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "dina-big-sur-road-trip",
+     "honolulu-flights",
+     "jade-nda-draft",
+     "yara-book-club-scheduling",
+     "montreal-flights",
+     "oslo-flights",
+     "erik-baby-shower",
+     "athens-flight",
+     "bruno-conference-talk-proposal",
+     "austin-flights"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-dormant_revival-03",
@@ -8796,7 +9969,28 @@
      "purpose": "Find the NDA that needs signing by Caleb (check the user's email and docs for context on who Caleb is, which NDA, and where it stands). Then draft a polite follow-up email to Caleb asking him to sign the NDA, framing it as something the user wants wrapped up before the end of the month. Prepare the draft for the user's review — do not send it. Report back the recipient email, subject, and the full draft body.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "caleb-nda-signature",
+     "google/gemini-3.1-flash-lite": "caleb-nda-signature",
+     "qwen/qwen3.8-flash": "caleb-nda-signature"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "bruno-conference-talk-proposal",
+     "nina-park-big-sur-road-trip",
+     "max-weller-nda-meeting",
+     "odette-procurement-draft",
+     "jade-nda-draft",
+     "erik-baby-shower",
+     "yara-book-club-scheduling",
+     "caleb-nda-signature",
+     "dina-big-sur-road-trip",
+     "honolulu-flights"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-dormant_revival-04",
@@ -8924,7 +10118,28 @@
      "purpose": "Find Holly in the user's contacts (likely related to a climbing gym meetup). Draft a short message asking if she's still up for the climbing gym meetup. Do NOT send it — return the draft recipient and message text so the user can approve. If you find context on the meetup date/time or location, include it.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "holly-climbing-gym",
+     "google/gemini-3.1-flash-lite": "holly-climbing-gym",
+     "qwen/qwen3.8-flash": "holly-climbing-gym"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "dina-big-sur-road-trip",
+     "gus-climbing-gym",
+     "nina-park-big-sur-road-trip",
+     "jade-nda-draft",
+     "yara-book-club-scheduling",
+     "zara-big-sur-road-trip",
+     "erik-baby-shower",
+     "honolulu-flights",
+     "holly-climbing-gym",
+     "bruno-conference-talk-proposal"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-typo-00",
@@ -9052,7 +10267,28 @@
      "purpose": "Find the contact Dina and message her asking what dates work for everyone for the camping weekend. Report back with the exact message you plan to send (or sent) so the user can review it before anything goes out.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "dina-camping-weekend",
+     "google/gemini-3.1-flash-lite": "dina-camping-weekend",
+     "qwen/qwen3.8-flash": "dina-camping-weekend"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "dina-camping-weekend",
+     "credit-card-dispute",
+     "bruno-conference-talk-proposal",
+     "cole-camping-weekend",
+     "dina-big-sur-road-trip",
+     "tariq-camping-weekend",
+     "erik-baby-shower",
+     "max-weller-nda-meeting",
+     "lars-migration-meeting",
+     "brendan-camping-weekend"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-typo-01",
@@ -9180,7 +10416,28 @@
      "purpose": "Set up a 30-minute meeting with Lars this week to go over the migration. Find a slot that works this week and confirm the details. Report back the proposed time so the user can approve it before anything is finalized.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "lars-migration-meeting",
+     "google/gemini-3.1-flash-lite": "lars-migration-meeting",
+     "qwen/qwen3.8-flash": "lars-migration-meeting"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "fiona-procurement-paperwork",
+     "yara-book-club-scheduling",
+     "eli-ski-trip",
+     "bruno-conference-talk-proposal",
+     "tomasz-postmortem",
+     "jade-nda-draft",
+     "erik-baby-shower",
+     "lars-migration-meeting",
+     "dina-big-sur-road-trip",
+     "abby-podcast-guest-spot"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-typo-02",
@@ -9308,7 +10565,28 @@
      "purpose": "The user has an urgent key handoff with Marisol and wants help. Please look into the context/history of the key handoff with Marisol (there may be prior threads or related emails about Marisol, including a recent question about the cost of a deep clean). Prepare a draft message to Marisol to coordinate the handoff — propose locking in a time and place and confirming she can receive/collect the key. Do not send anything yet; return a draft for the user to review. If there are specific details already known (dates, location), include them. Report back with the draft and any relevant context you find.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "marisol-key-handoff",
+     "google/gemini-3.1-flash-lite": "marisol-key-handoff",
+     "qwen/qwen3.8-flash": "marisol-key-handoff"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "yara-book-club-scheduling",
+     "jade-nda-draft",
+     "tariq-camping-weekend",
+     "credit-card-dispute",
+     "marisol-key-handoff",
+     "erik-baby-shower",
+     "zara-big-sur-road-trip",
+     "dina-big-sur-road-trip",
+     "nina-park-big-sur-road-trip",
+     "bruno-conference-talk-proposal"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-typo-03",
@@ -9436,7 +10714,28 @@
      "purpose": "Draft a short, polite note to Jade asking her to send the latest NDA draft by Friday. First find Jade's correct email address (check contacts/email history). Then show me the draft note (recipient, subject, body) for the user to review before anything is sent. Do not send it.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "jade-nda-draft",
+     "google/gemini-3.1-flash-lite": "jade-nda-draft",
+     "qwen/qwen3.8-flash": "jade-nda-draft"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "marisol-key-handoff",
+     "max-weller-nda-meeting",
+     "honolulu-flights",
+     "dina-big-sur-road-trip",
+     "vienna-hotel",
+     "odette-procurement-draft",
+     "caleb-nda-signature",
+     "jade-nda-draft",
+     "bruno-conference-talk-proposal",
+     "dodgers-tickets"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-typo-04",
@@ -9564,7 +10863,28 @@
      "purpose": "Find and propose a 30-minute meeting slot with Yuki this week to go over the conference talk proposal. Check Yuki's availability and suggest times. Do not finalize/lock in the meeting until the user confirms the time. Report back the proposed slot(s).",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "yuki-conference-talk",
+     "google/gemini-3.1-flash-lite": "yuki-conference-talk",
+     "qwen/qwen3.8-flash": "yuki-conference-talk"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "yara-book-club-scheduling",
+     "fiona-procurement-paperwork",
+     "abby-podcast-guest-spot",
+     "dina-big-sur-road-trip",
+     "zara-big-sur-road-trip",
+     "yuki-conference-talk",
+     "nina-park-big-sur-road-trip",
+     "bruno-conference-talk-proposal",
+     "jade-nda-draft",
+     "erik-baby-shower"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-agent_result-00",
@@ -9692,7 +11012,28 @@
      "purpose": "The user needs a dog sitter for next weekend. Find available dog sitting options in their area for next weekend (Saturday and Sunday). Check reputable dog sitting services (e.g., Rover, Wag, local sitters) and compile a list of available sitters with their availability, rates, and any relevant details like reviews or experience. Report back the best options.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "dog-sitter-search",
+     "google/gemini-3.1-flash-lite": "dog-sitter-search",
+     "qwen/qwen3.8-flash": "dog-sitter-search"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "vienna-hotel",
+     "honolulu-flights",
+     "zara-big-sur-road-trip",
+     "dog-sitter-search",
+     "yara-book-club-scheduling",
+     "bruno-conference-talk-proposal",
+     "jade-nda-draft",
+     "erik-baby-shower",
+     "dina-big-sur-road-trip",
+     "watch-battery-replacement"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-agent_result-01",
@@ -9820,7 +11161,28 @@
      "purpose": "Find the contact Dina and message her asking what dates work for everyone for the camping weekend. Report back with the exact message you plan to send (or sent) so the user can review it before anything goes out.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "dina-camping-weekend",
+     "google/gemini-3.1-flash-lite": "dina-camping-weekend",
+     "qwen/qwen3.8-flash": "dina-camping-weekend"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "dina-camping-weekend",
+     "brendan-camping-weekend",
+     "adele-tickets",
+     "tariq-camping-weekend",
+     "oslo-flights",
+     "dog-sitter-search",
+     "bruno-conference-talk-proposal",
+     "cole-camping-weekend",
+     "dina-big-sur-road-trip",
+     "vienna-hotel"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-agent_result-02",
@@ -9948,7 +11310,28 @@
      "purpose": "Set up a 30-minute meeting with Ivan sometime this week (week of Monday April 20, 2026, through Friday April 24) to go over the pilot kickoff. Check the user's calendar for open slots and Ivan's availability, propose/place the best 30-minute slot this week, and report back the confirmed time. If multiple options are needed, list the top choices. Do NOT send any invite or email without showing the user a draft first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ivan-pilot-kickoff",
+     "google/gemini-3.1-flash-lite": "ivan-pilot-kickoff",
+     "qwen/qwen3.8-flash": "ivan-pilot-kickoff"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "dina-big-sur-road-trip",
+     "dog-sitter-search",
+     "max-weller-nda-meeting",
+     "yara-book-club-scheduling",
+     "zara-big-sur-road-trip",
+     "nina-park-big-sur-road-trip",
+     "bruno-conference-talk-proposal",
+     "ivan-pilot-kickoff",
+     "erik-baby-shower",
+     "jade-nda-draft"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-agent_result-03",
@@ -10076,7 +11459,28 @@
      "purpose": "Find Nina Park's contact info and draft a message asking what she thinks we should do for the Big Sur road trip. Do not send it — report back the draft (recipient, subject if email, and body) so the user can review before anything goes out.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "nina-park-big-sur-road-trip",
+     "google/gemini-3.1-flash-lite": "nina-park-big-sur-road-trip",
+     "qwen/qwen3.8-flash": "nina-park-big-sur-road-trip"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "erik-baby-shower",
+     "zara-big-sur-road-trip",
+     "jade-nda-draft",
+     "yara-book-club-scheduling",
+     "eli-ski-trip",
+     "nina-castillo-team-offsite",
+     "honolulu-flights",
+     "bruno-conference-talk-proposal",
+     "nina-park-big-sur-road-trip",
+     "dina-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-agent_result-04",
@@ -10204,7 +11608,28 @@
      "purpose": "Find the email from Abby about a podcast guest spot in the user's inbox. Once found, draft a reply from the user to Abby that says the user is excited about the guest spot and asks how they can help. Return the recipient email address, the subject line (keep the same thread/subject so it's a proper reply), and the full draft body text so the user can review it before it's sent. Do NOT send anything yet.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "abby-podcast-guest-spot",
+     "google/gemini-3.1-flash-lite": "abby-podcast-guest-spot",
+     "qwen/qwen3.8-flash": "abby-podcast-guest-spot"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "nina-park-big-sur-road-trip",
+     "bruno-conference-talk-proposal",
+     "erik-baby-shower",
+     "dog-sitter-search",
+     "yara-book-club-scheduling",
+     "abby-podcast-guest-spot",
+     "max-weller-nda-meeting",
+     "dina-big-sur-road-trip",
+     "jade-nda-draft",
+     "zara-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-status_question-00",
@@ -10332,7 +11757,28 @@
      "purpose": "Find Holly in the user's contacts (likely related to a climbing gym meetup). Draft a short message asking if she's still up for the climbing gym meetup. Do NOT send it — return the draft recipient and message text so the user can approve. If you find context on the meetup date/time or location, include it.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "holly-climbing-gym",
+     "google/gemini-3.1-flash-lite": "holly-climbing-gym",
+     "qwen/qwen3.8-flash": "holly-climbing-gym"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "lars-migration-meeting",
+     "dina-big-sur-road-trip",
+     "ruth-babysitting",
+     "erik-baby-shower",
+     "bruno-conference-talk-proposal",
+     "gus-climbing-gym",
+     "holly-climbing-gym",
+     "nina-park-big-sur-road-trip",
+     "fiona-procurement-paperwork",
+     "yara-book-club-scheduling"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-status_question-01",
@@ -10460,7 +11906,28 @@
      "purpose": "Find Odette's email address (she may be the same contact from the procurement paperwork thread with Fiona - Procurement Paperwork). Then draft an email to Odette asking her to send the latest procurement draft by Friday. Show me the draft with her correct email address, subject, and body - do not send anything yet.\n\nAlso, check if there's an existing email thread with Odette about the procurement draft and reply in that thread if so.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "odette-procurement-draft",
+     "google/gemini-3.1-flash-lite": "odette-procurement-draft",
+     "qwen/qwen3.8-flash": "odette-procurement-draft"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "yara-book-club-scheduling",
+     "erik-baby-shower",
+     "odette-procurement-draft",
+     "nina-park-big-sur-road-trip",
+     "ruth-babysitting",
+     "fiona-procurement-paperwork",
+     "dina-big-sur-road-trip",
+     "bruno-conference-talk-proposal",
+     "marisol-key-handoff",
+     "lars-migration-meeting"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-status_question-02",
@@ -10588,7 +12055,28 @@
      "purpose": "Find the user's onboarding call notes. Then draft a message/email to Lorna sharing those notes and asking her to send comments by Wednesday. Return the exact draft (recipient, subject if email, and full body text) so the user can review before it's sent. Do not send anything yet.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "lorna-onboarding-notes",
+     "google/gemini-3.1-flash-lite": "lorna-onboarding-notes",
+     "qwen/qwen3.8-flash": "lorna-onboarding-notes"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "marisol-key-handoff",
+     "lorna-onboarding-notes",
+     "erik-baby-shower",
+     "lars-migration-meeting",
+     "nina-park-big-sur-road-trip",
+     "dina-big-sur-road-trip",
+     "ruth-babysitting",
+     "fiona-procurement-paperwork",
+     "yara-book-club-scheduling",
+     "bruno-conference-talk-proposal"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-status_question-03",
@@ -10716,7 +12204,28 @@
      "purpose": "Draft a check-in message to Bruno about the conference talk proposal. The user wants to wrap it up before the end of the month. Ask where things stand and what's needed to finalize. Prepare the draft for the user to review before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "bruno-conference-talk-proposal",
+     "google/gemini-3.1-flash-lite": "bruno-conference-talk-proposal",
+     "qwen/qwen3.8-flash": "bruno-conference-talk-proposal"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "yuki-conference-talk",
+     "yara-book-club-scheduling",
+     "lars-migration-meeting",
+     "dina-big-sur-road-trip",
+     "fiona-procurement-paperwork",
+     "erik-baby-shower",
+     "marisol-key-handoff",
+     "ruth-babysitting",
+     "nina-park-big-sur-road-trip",
+     "bruno-conference-talk-proposal"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-status_question-04",
@@ -10835,7 +12344,28 @@
    "labels": [
     "lived-50"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "montreal-flights",
+     "athens-flight",
+     "honolulu-flights",
+     "oslo-flights",
+     "dina-big-sur-road-trip",
+     "austin-flights",
+     "bruno-conference-talk-proposal",
+     "jade-nda-draft",
+     "erik-baby-shower",
+     "yara-book-club-scheduling"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-paraphrase-00",
@@ -10963,7 +12493,28 @@
      "purpose": "Reach out to Fiona and ask what she needs from the user in order to get the procurement paperwork moving. Draft the email/message, then show the draft to the user for review before sending anything.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ASK",
+     "google/gemini-3.1-flash-lite": "odette-procurement-draft",
+     "qwen/qwen3.8-flash": "fiona-procurement-paperwork"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "bruno-conference-talk-proposal",
+     "yara-book-club-scheduling",
+     "erik-baby-shower",
+     "odette-procurement-draft",
+     "edith-sheet-music",
+     "fiona-procurement-paperwork",
+     "credit-card-dispute",
+     "cole-camping-weekend",
+     "tariq-camping-weekend",
+     "dina-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-paraphrase-01",
@@ -11091,7 +12642,28 @@
      "purpose": "The user has an urgent key handoff with Marisol and wants help. Please look into the context/history of the key handoff with Marisol (there may be prior threads or related emails about Marisol, including a recent question about the cost of a deep clean). Prepare a draft message to Marisol to coordinate the handoff — propose locking in a time and place and confirming she can receive/collect the key. Do not send anything yet; return a draft for the user to review. If there are specific details already known (dates, location), include them. Report back with the draft and any relevant context you find.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "marisol-key-handoff",
+     "google/gemini-3.1-flash-lite": "marisol-key-handoff",
+     "qwen/qwen3.8-flash": "marisol-key-handoff"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "zara-big-sur-road-trip",
+     "bruno-conference-talk-proposal",
+     "marisol-key-handoff",
+     "yara-book-club-scheduling",
+     "credit-card-dispute",
+     "erik-baby-shower",
+     "jade-nda-draft",
+     "dina-big-sur-road-trip",
+     "tariq-camping-weekend",
+     "nina-park-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-50-paraphrase-02",
@@ -11219,7 +12791,28 @@
      "purpose": "Find the contact named Edith (look through email contacts, prior threads, and messages to identify the right person). Then compose a short, casual message asking her if next Tuesday morning works for the sheet music. Do NOT send anything yet — return the draft (recipient, subject if email, and body) so I can show it to the user for approval first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "edith-sheet-music",
+     "google/gemini-3.1-flash-lite": "edith-sheet-music",
+     "qwen/qwen3.8-flash": "edith-sheet-music"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "erik-baby-shower",
+     "nina-park-big-sur-road-trip",
+     "zara-big-sur-road-trip",
+     "tariq-camping-weekend",
+     "dina-big-sur-road-trip",
+     "edith-sheet-music",
+     "credit-card-dispute",
+     "yara-book-club-scheduling",
+     "bruno-conference-talk-proposal",
+     "jade-nda-draft"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-follow_up-00",
@@ -11348,7 +12941,28 @@
      "purpose": "The user wants to reach out to Lucy to ask what dates work for everyone regarding the borrowed camera. Check any existing email/thread context about the borrowed camera (there are related threads about a borrowed camera with Dina and Zara) so the message makes sense in context. Then write a short, friendly message to Lucy asking which dates work for everyone for the borrowed camera. Do NOT send anything — return the draft (recipient, subject, body) so the user can review and approve it first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "lucy-borrowed-camera",
+     "google/gemini-3.1-flash-lite": "lucy-borrowed-camera",
+     "qwen/qwen3.8-flash": "lucy-borrowed-camera"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "dina-borrowed-camera",
+     "aisha-api-migration",
+     "lucy-borrowed-camera",
+     "ada-baby-shower",
+     "zara-borrowed-camera",
+     "will-wedding-rsvp",
+     "lucy-ski-trip",
+     "tariq-camping-weekend",
+     "eli-ski-trip",
+     "nina-park-wedding-rsvp"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-follow_up-01",
@@ -11477,7 +13091,28 @@
      "purpose": "Draft a message to Tomasz about the conference talk proposal. Ask him what he needs from the user to get it moving. Show the draft for approval before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "tomasz-conference-talk-proposal",
+     "google/gemini-3.1-flash-lite": "tomasz-conference-talk-proposal",
+     "qwen/qwen3.8-flash": "tomasz-conference-talk-proposal"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "yuki-conference-talk",
+     "victor-hiring-loop-feedback",
+     "bruno-conference-talk-proposal",
+     "hector-conference-talk-notes",
+     "tomasz-postmortem",
+     "will-wedding-rsvp",
+     "elise-vendor-security-review",
+     "mei-conference-talk-proposal",
+     "victor-conference-talk-proposal",
+     "tomasz-conference-talk-proposal"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-follow_up-02",
@@ -11606,7 +13241,28 @@
      "purpose": "Find a few options for new contact lenses for the user. Look into current popular/well-rated contact lens options (e.g., daily vs monthly, different brands) and gather details like where to buy them, pricing, and any relevant notes (prescription requirements, etc.). There's also an existing \"Eye Exam Booking\" agent that may have the user's prescription/eye exam context — check with it if useful. Compile the options and send them to the user as a message/recommendation list.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "contact-lens-options",
+     "google/gemini-3.1-flash-lite": "contact-lens-options",
+     "qwen/qwen3.8-flash": "contact-lens-options"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "contact-lens-options",
+     "signe-migration-meeting",
+     "ada-baby-shower",
+     "passport-renewal-options",
+     "rug-repair-options",
+     "delia-integration-timeline",
+     "locksmith-options",
+     "maui-rental-car",
+     "will-wedding-rsvp",
+     "kai-school-pickup"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-follow_up-03",
@@ -11735,7 +13391,28 @@
      "purpose": "Draft a message from the user to Will about the wedding RSVP. Ask Will what dates work for everyone. Find the correct contact/thread for Will and prepare the draft for the user's review before anything is sent.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "will-wedding-rsvp",
+     "google/gemini-3.1-flash-lite": "will-wedding-rsvp",
+     "qwen/qwen3.8-flash": "will-wedding-rsvp"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "abby-housewarming",
+     "holly-wedding-rsvp",
+     "will-wedding-rsvp",
+     "fiona-procurement-paperwork",
+     "holly-climbing-gym",
+     "nina-park-wedding-rsvp",
+     "ruth-thanksgiving",
+     "erik-baby-shower",
+     "gus-housewarming",
+     "flora-wedding-rsvp"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-follow_up-04",
@@ -11864,7 +13541,28 @@
      "purpose": "Set up a 30-minute meeting with Signe this week to go over the migration. Find available slots and propose/confirm the best option. Report back the scheduled time and details.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "signe-migration-meeting",
+     "google/gemini-3.1-flash-lite": "signe-migration-meeting",
+     "qwen/qwen3.8-flash": "signe-migration-meeting"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "signe-analytics-dashboard",
+     "pierce-lang-onsite",
+     "signe-migration-meeting",
+     "aisha-api-migration",
+     "trent-permit-stuff",
+     "signe-postmortem-draft",
+     "lars-migration-meeting",
+     "will-wedding-rsvp",
+     "spa-day",
+     "ada-baby-shower"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-follow_up-05",
@@ -11993,7 +13691,28 @@
      "purpose": "Find the right Erik in the user's contacts (the one related to family/birthday, not the baby shower or reunion Erik unless it's the same person — use best judgment and note who you picked). Then draft a friendly message/email from the user to Erik that: (1) asks him about Mom's birthday, (2) says the user is excited, and (3) asks how the user can help. Do NOT send anything yet — just return the draft (to, subject, body) so it can be shown to the user first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "erik-mom-s-birthday",
+     "google/gemini-3.1-flash-lite": "erik-mom-s-birthday",
+     "qwen/qwen3.8-flash": "erik-mom-s-birthday"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "erik-mom-s-birthday",
+     "dina-borrowed-camera",
+     "hiro-summer-cabin-week",
+     "erik-baby-shower",
+     "martha-birthday-help",
+     "signe-migration-meeting",
+     "credit-card-dispute",
+     "will-wedding-rsvp",
+     "ada-summer-cabin-week",
+     "erik-reunion"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-follow_up-06",
@@ -12122,7 +13841,28 @@
      "purpose": "The user wants to let Elise know that Friday works better for them for the team offsite. Draft a short, friendly message to Elise saying Friday works better for the team offsite scheduling. Show the draft text to the user for approval before sending anything.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "elise-team-offsite",
+     "google/gemini-3.1-flash-lite": "elise-team-offsite",
+     "qwen/qwen3.8-flash": "elise-team-offsite"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "aisha-team-offsite",
+     "mei-team-offsite",
+     "nina-castillo-team-offsite",
+     "samir-team-offsite",
+     "ingrid-offsite",
+     "hector-team-offsite",
+     "elise-vendor-security-review",
+     "heidi-statement-of-work",
+     "elise-team-offsite",
+     "elise-analytics-dashboard"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-follow_up-07",
@@ -12251,7 +13991,28 @@
      "purpose": "Draft a message to Flora asking if she's still up for the bachelor party. Keep it casual and friendly. Show the draft to the user for review before sending it — do not send until the user confirms.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "flora-bachelor-party",
+     "google/gemini-3.1-flash-lite": "flora-bachelor-party",
+     "qwen/qwen3.8-flash": "flora-bachelor-party"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ada-retirement-party",
+     "flora-half-marathon-training",
+     "flora-wedding-rsvp",
+     "ada-baby-shower",
+     "max-okonkwo-half-marathon-training",
+     "holly-wedding-rsvp",
+     "flora-bachelor-party",
+     "ximena-bachelor-party",
+     "frank-retirement-party",
+     "flora-trivia-night"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-follow_up-08",
@@ -12380,7 +14141,28 @@
      "purpose": "Draft an email/message to Ray asking whether next Tuesday morning works for the clogged drain appointment/service. Show me the draft before sending anything.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ray-clogged-drain",
+     "google/gemini-3.1-flash-lite": "ray-clogged-drain",
+     "qwen/qwen3.8-flash": "ray-clogged-drain"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ray-clogged-drain",
+     "signe-migration-meeting",
+     "paula-cleaning-appointment",
+     "notary-search-follow-up",
+     "passport-renewal-options",
+     "bakery-cake-order",
+     "kofi-integration-timeline-meeting",
+     "flora-bachelor-party",
+     "chimney-sweep-booking",
+     "yuki-conference-talk"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-follow_up-09",
@@ -12517,7 +14299,28 @@
      "purpose": "Search the user's email, messages, and notes for any past request or thread about finding a notary (public notary, mobile notary, notary appointment, notarizing documents) from roughly the last 3-6 weeks. Determine: (1) whether such a request ever existed, (2) its current status, and (3) the details — any notary options found, rates, availability, whether an appointment was booked, and any outstanding action items. Report back exactly what you find; if nothing exists, say so clearly.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "phoenix-rental-car",
+     "google/gemini-3.1-flash-lite": "phoenix-rental-car",
+     "qwen/qwen3.8-flash": "phoenix-rental-car"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "elise-vendor-security-review",
+     "phoenix-rental-car",
+     "lena-school-uniform",
+     "dog-sitter-search",
+     "passport-renewal-options",
+     "nashville-flights",
+     "maui-rental-car",
+     "sedona-rental-car",
+     "ada-baby-shower",
+     "notary-search-follow-up"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-new_task-00",
@@ -12639,7 +14442,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "lucca-table-search",
+     "porto-hotel",
+     "prescription-refill",
+     "nopa-reservation",
+     "spa-day",
+     "museum-membership-renewal",
+     "teacher-gift-card",
+     "rintaro-table-search",
+     "zuni-table-search",
+     "delfina-table-search"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-new_task-01",
@@ -12761,7 +14585,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "lucca-table-search",
+     "prescription-refill",
+     "zuni-table-search",
+     "museum-membership-renewal",
+     "porto-hotel",
+     "rintaro-table-search",
+     "teacher-gift-card",
+     "nopa-reservation",
+     "spa-day",
+     "delfina-table-search"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-new_task-02",
@@ -12883,7 +14728,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "porto-hotel",
+     "contact-lens-options",
+     "vienna-hotel",
+     "passport-renewal-options",
+     "savannah-hotels",
+     "prague-hotel-search",
+     "lyon-hotel-search",
+     "toronto-flights",
+     "rug-repair-options",
+     "locksmith-options"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-new_task-03",
@@ -13005,7 +14871,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "spanish-tutor-search",
+     "hamilton-tickets",
+     "delia-integration-timeline",
+     "zoo-pass",
+     "car-registration-renewal",
+     "adele-tickets",
+     "fishing-license-renewal",
+     "bakery-cake-order",
+     "vienna-hotel",
+     "dog-sitter-search"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-new_task-04",
@@ -13127,7 +15014,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "oslo-flights",
+     "chicago-flights",
+     "montreal-flights",
+     "austin-flights",
+     "honolulu-flights",
+     "vancouver-flight",
+     "nashville-flights",
+     "athens-flight",
+     "dublin-flights",
+     "toronto-flights"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-new_task-05",
@@ -13249,7 +15157,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "dog-sitter-search",
+     "zoo-pass",
+     "spanish-tutor-search",
+     "vienna-hotel",
+     "adele-tickets",
+     "car-registration-renewal",
+     "chimney-sweep-booking",
+     "bakery-cake-order",
+     "fishing-license-renewal",
+     "hamilton-tickets"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-new_task-06",
@@ -13371,7 +15300,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "newspaper-delivery",
+     "locksmith-options",
+     "rug-repair-options",
+     "passport-renewal-options",
+     "coldplay-tickets",
+     "nashville-flights",
+     "contact-lens-options",
+     "smoke-detector-search",
+     "delia-integration-timeline",
+     "toronto-flights"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-new_task-07",
@@ -13493,7 +15443,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "contact-lens-options",
+     "bakery-cake-order",
+     "car-registration-renewal",
+     "coldplay-tickets",
+     "rug-repair-options",
+     "nashville-flights",
+     "lena-school-uniform",
+     "locksmith-options",
+     "passport-renewal-options",
+     "toronto-flights"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-new_task-08",
@@ -13615,7 +15586,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "lucca-table-search",
+     "brendan-game-night",
+     "coldplay-tickets",
+     "library-book-renewals",
+     "zuni-table-search",
+     "wicked-tickets",
+     "dodgers-tickets",
+     "hamilton-tickets",
+     "delfina-table-search",
+     "adele-tickets"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-new_task-09",
@@ -13737,7 +15729,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "passport-renewal-options",
+     "nashville-flights",
+     "rug-repair-options",
+     "vienna-hotel",
+     "savannah-hotels",
+     "locksmith-options",
+     "contact-lens-options",
+     "prague-hotel-search",
+     "lyon-hotel-search",
+     "porto-hotel"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_person_new_topic-00",
@@ -13859,7 +15872,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ruth-thanksgiving",
+     "erik-mom-s-birthday",
+     "zara-borrowed-camera",
+     "kai-school-pickup",
+     "frank-retirement-party",
+     "lucy-borrowed-camera",
+     "abby-podcast-guest-spot",
+     "gus-housewarming",
+     "dina-borrowed-camera",
+     "abby-housewarming"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_person_new_topic-01",
@@ -13981,7 +16015,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "nina-castillo-team-offsite",
+     "emeka-export-issue-meeting",
+     "mei-team-offsite",
+     "victor-hiring-loop-feedback",
+     "victor-landing-page-copy",
+     "yuki-conference-talk",
+     "kofi-integration-timeline-meeting",
+     "lars-migration-meeting",
+     "signe-migration-meeting",
+     "delia-integration-timeline"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_person_new_topic-02",
@@ -14103,7 +16158,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "erik-reunion",
+     "heidi-statement-of-work",
+     "walter-anniversary-dinner",
+     "martha-birthday-help",
+     "ada-retirement-party",
+     "tariq-podcast-guest-spot",
+     "erik-baby-shower",
+     "will-wedding-rsvp",
+     "martha-holiday-travel",
+     "lucy-borrowed-camera"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_person_new_topic-03",
@@ -14225,7 +16301,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "elise-vendor-security-review",
+     "nina-castillo-sprint-planning-notes",
+     "hector-conference-talk-notes",
+     "elise-analytics-dashboard",
+     "lorna-onboarding-notes",
+     "elise-team-offsite",
+     "opal-phone-screen-notes",
+     "nate-negotiation-notes",
+     "signe-analytics-dashboard",
+     "delia-procurement-notes"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_person_new_topic-04",
@@ -14347,7 +16444,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "opal-phone-screen-notes",
+     "hector-conference-talk-notes",
+     "elise-vendor-security-review",
+     "nate-negotiation-notes",
+     "nina-castillo-sprint-planning-notes",
+     "jade-nda-draft",
+     "caleb-nda-signature",
+     "ivan-pilot-kickoff",
+     "max-weller-nda-meeting",
+     "raj-nda-draft"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_person_new_topic-05",
@@ -14469,7 +16587,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "ollie-babysitting-schedule",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "frank-retirement-party",
+     "ollie-babysitting-schedule",
+     "ada-retirement-party",
+     "sam-baby-shower",
+     "ruth-babysitting",
+     "gus-housewarming",
+     "brendan-game-night",
+     "erik-baby-shower",
+     "ruth-thanksgiving",
+     "gus-climbing-gym"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_person_new_topic-06",
@@ -14591,7 +16730,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "signe-analytics-dashboard",
+     "nina-castillo-sprint-planning-notes",
+     "heidi-statement-of-work",
+     "hector-conference-talk-notes",
+     "max-okonkwo-half-marathon-training",
+     "max-weller-nda-meeting",
+     "nate-negotiation-notes",
+     "opal-phone-screen-notes",
+     "delia-procurement-notes",
+     "elise-vendor-security-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_person_new_topic-07",
@@ -14713,7 +16873,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "max-weller-nda-meeting",
+     "signe-postmortem-draft",
+     "samir-analytics-dashboard",
+     "odette-procurement-draft",
+     "jade-nda-draft",
+     "jade-renewal-draft",
+     "emeka-renewal-draft",
+     "kofi-integration-timeline-meeting",
+     "raj-nda-draft",
+     "caleb-nda-signature"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_person_new_topic-08",
@@ -14835,7 +17016,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "gus-housewarming",
+     "max-okonkwo-half-marathon-training",
+     "flora-wedding-rsvp",
+     "nina-park-housewarming",
+     "abby-housewarming",
+     "kai-school-pickup",
+     "yara-book-club-scheduling",
+     "max-weller-nda-meeting",
+     "ruth-thanksgiving",
+     "eli-half-marathon"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_person_new_topic-09",
@@ -14957,7 +17159,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "nadia-biscuit-checkup"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "nashville-flights",
+     "delia-integration-timeline",
+     "nadia-biscuit-checkup",
+     "passport-renewal-options",
+     "bob-brake-repair",
+     "tariq-podcast-guest-spot",
+     "will-wedding-rsvp",
+     "fishing-license-renewal",
+     "eli-podcast-guest-spot",
+     "signe-migration-meeting"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-vague_reference-00",
@@ -15094,7 +17317,28 @@
      "purpose": "Find the contact for Ada (related to the baby shower) and prepare a message to her saying that Saturday works better for us for the baby shower. Check the inbox for any earlier thread with Ada about the baby shower and reply on that thread if one exists. Prepare a draft message for the user to review before it's sent — do not send anything yet. Report back the draft recipient, subject, and body.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ada-baby-shower",
+     "google/gemini-3.1-flash-lite": "ASK",
+     "qwen/qwen3.8-flash": "ada-baby-shower"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "erik-mom-s-birthday",
+     "ada-retirement-party",
+     "ada-summer-cabin-week",
+     "heidi-statement-of-work",
+     "lucy-borrowed-camera",
+     "sam-baby-shower",
+     "ada-baby-shower",
+     "erik-baby-shower",
+     "erik-reunion",
+     "elise-team-offsite"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-vague_reference-01",
@@ -15223,7 +17467,28 @@
      "purpose": "Draft an email/message to Ray asking whether next Tuesday morning works for the clogged drain appointment/service. Show me the draft before sending anything.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "will-wedding-rsvp",
+     "ada-baby-shower",
+     "kai-school-pickup",
+     "ray-clogged-drain",
+     "spanish-tutor-search",
+     "passport-renewal-options",
+     "watch-battery-replacement",
+     "porto-hotel",
+     "adele-tickets",
+     "elise-vendor-security-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-vague_reference-02",
@@ -15352,7 +17617,28 @@
      "purpose": "Reach out to Trent and ask if next Tuesday morning works for the permit stuff. Wait for his reply and report back.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "eli-podcast-guest-spot",
+     "ada-baby-shower",
+     "kai-school-pickup",
+     "ruth-thanksgiving",
+     "zoo-pass",
+     "elise-vendor-security-review",
+     "martha-holiday-travel",
+     "trent-permit-stuff",
+     "passport-renewal-options",
+     "will-wedding-rsvp"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-vague_reference-03",
@@ -15481,7 +17767,28 @@
      "purpose": "Reach out to Heidi about the statement of work. Let her know the user would like to wrap it up before the end of the month. Find the right contact/thread for Heidi, draft the message, and return the draft (recipient, subject, body) for the user to review before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "heidi-statement-of-work",
+     "google/gemini-3.1-flash-lite": "heidi-statement-of-work",
+     "qwen/qwen3.8-flash": "heidi-statement-of-work"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "elise-team-offsite",
+     "heidi-statement-of-work",
+     "ada-baby-shower",
+     "kofi-integration-timeline-meeting",
+     "lucy-borrowed-camera",
+     "adele-tickets",
+     "spanish-tutor-search",
+     "signe-analytics-dashboard",
+     "will-wedding-rsvp",
+     "ada-retirement-party"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-vague_reference-04",
@@ -15610,7 +17917,28 @@
      "purpose": "Reach out to Erik and ask him what dates work for everyone for the reunion. Report back his reply.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "erik-reunion",
+     "google/gemini-3.1-flash-lite": "erik-reunion",
+     "qwen/qwen3.8-flash": "erik-reunion"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ada-baby-shower",
+     "erik-baby-shower",
+     "passport-renewal-options",
+     "elise-vendor-security-review",
+     "family-photographer-search",
+     "will-wedding-rsvp",
+     "erik-mom-s-birthday",
+     "eli-podcast-guest-spot",
+     "erik-reunion",
+     "zoo-pass"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-vague_reference-05",
@@ -15739,7 +18067,28 @@
      "purpose": "Draft a message to Ingrid asking what she needs from the user in order to get the performance review moving. Find the correct recipient/thread. Do not send yet — return the draft (to, subject, body) for the user to review.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ingrid-performance-review",
+     "google/gemini-3.1-flash-lite": "ingrid-performance-review",
+     "qwen/qwen3.8-flash": "ingrid-performance-review"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "elise-vendor-security-review",
+     "ingrid-offsite",
+     "ingrid-performance-review",
+     "flora-bachelor-party",
+     "zoo-pass",
+     "ruth-thanksgiving",
+     "kai-school-pickup",
+     "eli-podcast-guest-spot",
+     "ada-baby-shower",
+     "will-wedding-rsvp"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-vague_reference-06",
@@ -15868,7 +18217,28 @@
      "purpose": "Find the contact info for Bob (the auto/brake repair shop) and reach out to ask what the earliest appointment slot is for the user's brake repair. Show me (OpenPoke) a draft of the message first before sending anything, then report back Bob's earliest availability.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "bob-brake-repair",
+     "google/gemini-3.1-flash-lite": "bob-brake-repair",
+     "qwen/qwen3.8-flash": "bob-brake-repair"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "will-wedding-rsvp",
+     "ruth-thanksgiving",
+     "passport-renewal-options",
+     "bob-brake-repair",
+     "zoo-pass",
+     "eli-podcast-guest-spot",
+     "kai-school-pickup",
+     "elise-vendor-security-review",
+     "rug-repair-options",
+     "ada-baby-shower"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-vague_reference-07",
@@ -15997,7 +18367,28 @@
      "purpose": "The user says the Dennis parking spot situation is getting urgent and wants to know what can be done. Find all relevant context (emails, threads, messages, notes) about the Dennis parking spot, figure out the current status and any blockers, and identify concrete options/next steps to resolve it urgently. Report back with the key facts, the current status, and specific recommended actions.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "dennis-parking-spot",
+     "google/gemini-3.1-flash-lite": "dennis-parking-spot",
+     "qwen/qwen3.8-flash": "dennis-parking-spot"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "abby-podcast-guest-spot",
+     "adele-tickets",
+     "tariq-podcast-guest-spot",
+     "dennis-parking-spot",
+     "eli-podcast-guest-spot",
+     "will-wedding-rsvp",
+     "spanish-tutor-search",
+     "ada-baby-shower",
+     "elise-vendor-security-review",
+     "passport-renewal-options"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-vague_reference-08",
@@ -16126,7 +18517,28 @@
      "purpose": "Reach out to Nadia and ask if next Tuesday morning works for Biscuit's checkup. Report back her response.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "prescription-refill",
+     "google/gemini-3.1-flash-lite": "prescription-refill",
+     "qwen/qwen3.8-flash": "prescription-refill"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "passport-renewal-options",
+     "ada-baby-shower",
+     "eli-podcast-guest-spot",
+     "nadia-biscuit-checkup",
+     "ruth-thanksgiving",
+     "zoo-pass",
+     "elise-vendor-security-review",
+     "prescription-refill",
+     "will-wedding-rsvp",
+     "kai-school-pickup"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-vague_reference-09",
@@ -16255,7 +18667,28 @@
      "purpose": "Set up a 30-minute meeting with Victor sometime this week (week of June 15, 2026) to go over hiring loop feedback. Find a slot that works on both calendars and book it. Confirm the details back to me.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "victor-hiring-loop-feedback",
+     "google/gemini-3.1-flash-lite": "victor-hiring-loop-feedback",
+     "qwen/qwen3.8-flash": "victor-hiring-loop-feedback"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ruth-thanksgiving",
+     "ada-baby-shower",
+     "victor-hiring-loop-feedback",
+     "elise-vendor-security-review",
+     "kai-school-pickup",
+     "victor-on-call-rotation",
+     "will-wedding-rsvp",
+     "victor-landing-page-copy",
+     "victor-conference-talk-proposal",
+     "passport-renewal-options"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-multi_task-00",
@@ -16391,7 +18824,28 @@
      "purpose": "Draft a check-in message to Bruno about the conference talk proposal. The user wants to wrap it up before the end of the month. Ask where things stand and what's needed to finalize. Prepare the draft for the user to review before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "napa-wine-tasting|bruno-conference-talk-proposal",
+     "google/gemini-3.1-flash-lite": "napa-wine-tasting|bruno-conference-talk-proposal",
+     "qwen/qwen3.8-flash": "napa-wine-tasting|bruno-conference-talk-proposal"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "victor-conference-talk-proposal",
+     "hector-conference-talk-notes",
+     "yuki-conference-talk",
+     "passport-renewal-options",
+     "bruno-quarterly-okrs",
+     "napa-wine-tasting",
+     "mei-conference-talk-proposal",
+     "maui-rental-car",
+     "bruno-conference-talk-proposal",
+     "tomasz-conference-talk-proposal"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-multi_task-01",
@@ -16521,7 +18975,28 @@
      "purpose": "Reach out to Tomasz about the postmortem. The user would like to wrap up the postmortem before the end of the month. Draft a message to Tomasz conveying this and ask if that timeline works for him. Show the draft to the user for review before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "tomasz-postmortem|ASK",
+     "google/gemini-3.1-flash-lite": "tomasz-postmortem|NEW",
+     "qwen/qwen3.8-flash": "tomasz-postmortem|NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "dina-big-sur-road-trip",
+     "lucca-table-search",
+     "tomasz-postmortem",
+     "tomasz-conference-talk-proposal",
+     "imani-incident-postmortem",
+     "delfina-table-search",
+     "rintaro-table-search",
+     "victor-hiring-loop-feedback",
+     "zuni-table-search",
+     "signe-postmortem-draft"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-multi_task-02",
@@ -16657,7 +19132,28 @@
      "purpose": "Find Frank's contact info/email and draft a warm, friendly note from the user saying they're excited about Frank's retirement party and asking how they can help. Keep it short and natural. Do not send anything — return the draft (recipient, subject, body) to me so the user can review it first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "lena-school-uniform|frank-retirement-party",
+     "google/gemini-3.1-flash-lite": "lena-school-uniform|frank-retirement-party",
+     "qwen/qwen3.8-flash": "lena-school-uniform|frank-retirement-party"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ada-summer-cabin-week",
+     "frank-retirement-party",
+     "lena-swim-class",
+     "kai-school-pickup",
+     "lena-school-uniform",
+     "credit-card-dispute",
+     "hiro-summer-cabin-week",
+     "ximena-bachelor-party",
+     "flora-bachelor-party",
+     "ada-retirement-party"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-multi_task-03",
@@ -16787,7 +19283,28 @@
      "purpose": "The user wants to cancel their meal kit subscription. Find a few options for how to cancel it (e.g., different meal kit services' cancellation processes, or the specific steps/links to cancel). Identify which meal kit service the user is subscribed to if possible (check email receipts or account info), then gather the concrete cancellation options. Report back the options clearly so the user can act on them.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "meal-kit-subscription|NEW",
+     "google/gemini-3.1-flash-lite": "meal-kit-subscription|NEW",
+     "qwen/qwen3.8-flash": "meal-kit-subscription|NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "will-wedding-rsvp",
+     "ada-baby-shower",
+     "passport-renewal-options",
+     "aisha-api-migration",
+     "tariq-camping-weekend",
+     "elise-vendor-security-review",
+     "nina-park-wedding-rsvp",
+     "opal-phone-screen-notes",
+     "kai-school-pickup",
+     "meal-kit-subscription"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-multi_task-04",
@@ -16923,7 +19440,28 @@
      "purpose": "Look into tickets for the musical \"Wicked\" and recommend the best choice. Compare available options (dates/times, seating sections, prices, venues) and come back with a clear recommendation for the best overall pick. If relevant, note any good-value seats or premium options. Report the findings back with enough detail for the user to decide.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "samir-team-offsite|wicked-tickets",
+     "google/gemini-3.1-flash-lite": "samir-quarterly-okrs|wicked-tickets",
+     "qwen/qwen3.8-flash": "samir-team-offsite|wicked-tickets"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "wicked-tickets",
+     "samir-quarterly-okrs",
+     "ingrid-offsite",
+     "spa-day",
+     "nina-castillo-team-offsite",
+     "aisha-team-offsite",
+     "samir-team-offsite",
+     "adele-tickets",
+     "samir-analytics-dashboard",
+     "hector-team-offsite"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-multi_task-05",
@@ -17053,7 +19591,28 @@
      "purpose": "Reach out to Hiro and ask what dates work for everyone for the summer cabin week. Report back with Hiro's response.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "hiro-summer-cabin-week|NEW",
+     "google/gemini-3.1-flash-lite": "ada-summer-cabin-week|NEW",
+     "qwen/qwen3.8-flash": "hiro-summer-cabin-week|NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "ada-baby-shower",
+     "hiro-summer-cabin-week",
+     "kofi-integration-timeline-meeting",
+     "dina-borrowed-camera",
+     "mei-team-offsite",
+     "ada-summer-cabin-week",
+     "delia-integration-timeline",
+     "credit-card-dispute",
+     "signe-migration-meeting",
+     "hiro-christmas-call"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-multi_task-06",
@@ -17189,7 +19748,28 @@
      "purpose": "Ping Stefan about the Director of Product role. The user wants to wrap this up before the end of the month, so convey that timeline/urgency. Find the relevant thread or contact (check email and any related context for Stefan and the Director of Product role), draft an appropriate message, and get the user's confirmation before sending. Report back what you found and a proposed draft.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "watch-battery-replacement|stefan-director-of-product-role",
+     "google/gemini-3.1-flash-lite": "watch-battery-replacement|stefan-director-of-product-role",
+     "qwen/qwen3.8-flash": "watch-battery-replacement|stefan-director-of-product-role"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ada-baby-shower",
+     "nashville-flights",
+     "spa-day",
+     "clara-demo-day-slides",
+     "watch-battery-replacement",
+     "lucy-borrowed-camera",
+     "passport-renewal-options",
+     "elise-vendor-security-review",
+     "rohan-demo-day-slides",
+     "stefan-director-of-product-role"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-multi_task-07",
@@ -17327,7 +19907,28 @@
      "purpose": "Find the best way to reach Walter (check email/contacts for a Walter connected to an anniversary dinner). Draft a short, friendly message from the user asking if he's still up for the anniversary dinner. Show the draft to the user for review before sending — do not send anything yet.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW|NEW",
+     "google/gemini-3.1-flash-lite": "frank-retirement-party|NEW",
+     "qwen/qwen3.8-flash": "ASK|NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "ruth-thanksgiving",
+     "elise-vendor-security-review",
+     "frank-retirement-party",
+     "walter-anniversary-dinner",
+     "ada-baby-shower",
+     "passport-renewal-options",
+     "nashville-flights",
+     "gus-housewarming",
+     "yara-book-club-scheduling",
+     "will-wedding-rsvp"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-multi_task-08",
@@ -17478,7 +20079,28 @@
      "purpose": "Find the history of an \"analytics dashboard\" project or thread involving Hector. Look through past emails and conversation history between the user and Hector (and any related threads). Determine: what the analytics dashboard was about, whether it ever moved forward, what the latest state is, and whether anything is still pending or waiting on the user. Report back a concise summary of the timeline and current status.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "hector-analytics-dashboard|nina-park-housewarming",
+     "google/gemini-3.1-flash-lite": "hector-analytics-dashboard|nina-park-housewarming",
+     "qwen/qwen3.8-flash": "hector-analytics-dashboard|nina-park-housewarming"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "nina-park-wedding-rsvp",
+     "elise-analytics-dashboard",
+     "nina-park-big-sur-road-trip",
+     "hector-conference-talk-notes",
+     "nina-castillo-sprint-planning-notes",
+     "hector-team-offsite",
+     "gus-housewarming",
+     "nina-park-housewarming",
+     "nina-castillo-team-offsite",
+     "hector-analytics-dashboard"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-multi_task-09",
@@ -17608,7 +20230,28 @@
      "purpose": "Reach out to Trent and ask if next Tuesday morning works for the permit stuff. Wait for his reply and report back.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "trent-permit-stuff|NEW",
+     "google/gemini-3.1-flash-lite": "trent-permit-stuff|NEW",
+     "qwen/qwen3.8-flash": "trent-permit-stuff|NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "chicago-flights",
+     "nashville-flights",
+     "dublin-flights",
+     "paula-cleaning-appointment",
+     "lima-flight",
+     "austin-flights",
+     "trent-permit-stuff",
+     "oslo-flights",
+     "boston-flights",
+     "toronto-flights"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-same_name_people-00",
@@ -17728,7 +20371,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ASK",
+     "google/gemini-3.1-flash-lite": "ASK",
+     "qwen/qwen3.8-flash": "ASK"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ingrid-offsite",
+     "honolulu-flights",
+     "max-weller-nda-meeting",
+     "samir-team-offsite",
+     "rohan-quarterly-okrs",
+     "eli-half-marathon",
+     "savannah-hotels",
+     "yara-book-club-scheduling",
+     "bruno-conference-talk-proposal",
+     "max-okonkwo-half-marathon-training"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-cross_agent-00",
@@ -17857,7 +20521,28 @@
      "purpose": "Find Ollie's contact info and send them a message asking what they think the user should do about the babysitting schedule. Ask for their thoughts/recommendation and let them know to reply with what they'd suggest. Report back what was sent and any reply received.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "ollie-babysitting-schedule",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "walter-anniversary-dinner",
+     "ruth-thanksgiving",
+     "dina-camping-weekend",
+     "yosemite-campsite",
+     "hiro-summer-cabin-week",
+     "kai-school-pickup",
+     "ada-baby-shower",
+     "sam-baby-shower",
+     "flora-trivia-night",
+     "ollie-babysitting-schedule"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-cross_agent-01",
@@ -17986,7 +20671,28 @@
      "purpose": "Find the best way to reach Walter (check email/contacts for a Walter connected to an anniversary dinner). Draft a short, friendly message from the user asking if he's still up for the anniversary dinner. Show the draft to the user for review before sending — do not send anything yet.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "walter-anniversary-dinner",
+     "google/gemini-3.1-flash-lite": "walter-anniversary-dinner",
+     "qwen/qwen3.8-flash": "walter-anniversary-dinner"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ruth-thanksgiving",
+     "signe-migration-meeting",
+     "ada-baby-shower",
+     "walter-anniversary-dinner",
+     "ian-fantasy-football",
+     "ian-climbing-gym",
+     "elise-vendor-security-review",
+     "kai-school-pickup",
+     "will-wedding-rsvp",
+     "signe-analytics-dashboard"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-cross_agent-02",
@@ -18115,7 +20821,28 @@
      "purpose": "Find the NDA that needs signing by Caleb (check the user's email and docs for context on who Caleb is, which NDA, and where it stands). Then draft a polite follow-up email to Caleb asking him to sign the NDA, framing it as something the user wants wrapped up before the end of the month. Prepare the draft for the user's review — do not send it. Report back the recipient email, subject, and the full draft body.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "passport-renewal-options",
+     "max-weller-nda-meeting",
+     "jade-nda-draft",
+     "ruth-thanksgiving",
+     "walter-anniversary-dinner",
+     "kai-school-pickup",
+     "caleb-nda-signature",
+     "ivan-pilot-kickoff",
+     "ollie-babysitting-schedule",
+     "raj-nda-draft"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-cross_agent-03",
@@ -18244,7 +20971,28 @@
      "purpose": "Draft a follow-up to Nina Castillo about the launch checklist, expressing that the user would like to wrap it up before the end of the month. Return the draft (recipient, subject, body) for review before anything is sent.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "nina-castillo-launch-checklist",
+     "google/gemini-3.1-flash-lite": "nina-castillo-launch-checklist",
+     "qwen/qwen3.8-flash": "nina-castillo-launch-checklist"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "samir-team-offsite",
+     "kai-school-pickup",
+     "nina-park-big-sur-road-trip",
+     "nina-castillo-launch-checklist",
+     "nina-castillo-team-offsite",
+     "nina-castillo-sprint-planning-notes",
+     "nina-park-wedding-rsvp",
+     "marisol-key-handoff",
+     "nina-park-housewarming",
+     "ruth-thanksgiving"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-cross_agent-04",
@@ -18373,7 +21121,28 @@
      "purpose": "Reach out to Ximena and ask if she's still up for the bachelor party. Report back her response.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ximena-bachelor-party",
+     "google/gemini-3.1-flash-lite": "ximena-bachelor-party",
+     "qwen/qwen3.8-flash": "ximena-bachelor-party"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "sam-baby-shower",
+     "kai-school-pickup",
+     "flora-bachelor-party",
+     "ruth-thanksgiving",
+     "ada-retirement-party",
+     "delfina-table-search",
+     "signe-analytics-dashboard",
+     "ximena-bachelor-party",
+     "signe-migration-meeting",
+     "frank-retirement-party"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-cross_agent-05",
@@ -18502,7 +21271,28 @@
      "purpose": "Set up a 30-minute meeting with Rosa this week to go over the onsite. Check the user's calendar for availability and propose a slot, then coordinate with Rosa to confirm. Details to cover: the onsite. Report back the proposed/confirmed time and any draft message to Rosa for the user to review before anything is sent.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "rosa-onsite-meeting",
+     "google/gemini-3.1-flash-lite": "rosa-onsite-meeting",
+     "qwen/qwen3.8-flash": "rosa-onsite-meeting"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ruth-thanksgiving",
+     "hiro-summer-cabin-week",
+     "rosa-onsite-meeting",
+     "ada-baby-shower",
+     "pierce-lang-onsite",
+     "opal-phone-screen-notes",
+     "signe-analytics-dashboard",
+     "signe-migration-meeting",
+     "kai-school-pickup",
+     "will-wedding-rsvp"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-cross_agent-06",
@@ -18631,7 +21421,28 @@
      "purpose": "Draft a message to Elise asking her to send the latest analytics dashboard draft by Friday. Find the right contact/thread for Elise and prepare the message for the user's review. Do not send anything yet — just prepare the draft and surface it back.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "elise-analytics-dashboard",
+     "qwen/qwen3.8-flash": "elise-analytics-dashboard"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "hector-analytics-dashboard",
+     "elise-analytics-dashboard",
+     "max-okonkwo-half-marathon-training",
+     "signe-analytics-dashboard",
+     "eli-half-marathon",
+     "yara-book-club-scheduling",
+     "elise-vendor-security-review",
+     "elise-team-offsite",
+     "max-weller-nda-meeting",
+     "samir-analytics-dashboard"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-cross_agent-07",
@@ -18760,7 +21571,28 @@
      "purpose": "Set up a 30-minute meeting with Ivan sometime this week (week of Monday April 20, 2026, through Friday April 24) to go over the pilot kickoff. Check the user's calendar for open slots and Ivan's availability, propose/place the best 30-minute slot this week, and report back the confirmed time. If multiple options are needed, list the top choices. Do NOT send any invite or email without showing the user a draft first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "kai-school-pickup",
+     "ruth-thanksgiving",
+     "passport-renewal-options",
+     "ada-retirement-party",
+     "signe-migration-meeting",
+     "signe-analytics-dashboard",
+     "ada-summer-cabin-week",
+     "ivan-pilot-kickoff",
+     "ada-baby-shower",
+     "gustavo-onboarding-call"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-cross_agent-08",
@@ -18889,7 +21721,28 @@
      "purpose": "Set up a 30-minute meeting with Lars this week to go over the migration. Find a slot that works this week and confirm the details. Report back the proposed time so the user can approve it before anything is finalized.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "lars-migration-meeting"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "will-wedding-rsvp",
+     "ruth-thanksgiving",
+     "kai-grandma-s-recipes",
+     "signe-migration-meeting",
+     "signe-analytics-dashboard",
+     "kai-school-pickup",
+     "lars-migration-meeting",
+     "ada-baby-shower",
+     "aisha-api-migration",
+     "elise-vendor-security-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-cross_agent-09",
@@ -19018,7 +21871,28 @@
      "purpose": "Find the user's phone screen notes and share them with Opal, asking Opal to provide comments by Wednesday. If sharing involves an email or message, prepare a draft for the user to review before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "opal-phone-screen-notes",
+     "google/gemini-3.1-flash-lite": "opal-phone-screen-notes",
+     "qwen/qwen3.8-flash": "opal-phone-screen-notes"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "opal-phone-screen-notes",
+     "elise-vendor-security-review",
+     "samir-quarterly-okrs",
+     "flora-trivia-night",
+     "samir-analytics-dashboard",
+     "samir-team-offsite",
+     "ada-baby-shower",
+     "will-wedding-rsvp",
+     "kai-school-pickup",
+     "ruth-thanksgiving"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-dormant_revival-00",
@@ -19147,7 +22021,28 @@
      "purpose": "The user needs a dog sitter for next weekend. Find available dog sitting options in their area for next weekend (Saturday and Sunday). Check reputable dog sitting services (e.g., Rover, Wag, local sitters) and compile a list of available sitters with their availability, rates, and any relevant details like reviews or experience. Report back the best options.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "dog-sitter-search",
+     "google/gemini-3.1-flash-lite": "dog-sitter-search",
+     "qwen/qwen3.8-flash": "dog-sitter-search"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "elise-vendor-security-review",
+     "kofi-integration-timeline-meeting",
+     "ada-baby-shower",
+     "lucy-borrowed-camera",
+     "passport-renewal-options",
+     "ruth-thanksgiving",
+     "gus-housewarming",
+     "kai-school-pickup",
+     "will-wedding-rsvp",
+     "dog-sitter-search"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-dormant_revival-01",
@@ -19276,7 +22171,28 @@
      "purpose": "The user wants to refill their prescription and book it if it's under budget. Find their prescription details (pharmacy, medication, prior refill info) and the relevant budget threshold, then refill/order it and book/pay if the cost is under budget. If it's over budget, do not book — report the cost back so the user can decide. Report back what was found, the cost, and whether it was booked.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "prescription-refill",
+     "google/gemini-3.1-flash-lite": "prescription-refill",
+     "qwen/qwen3.8-flash": "prescription-refill"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "smoke-detector-search",
+     "contact-lens-options",
+     "ada-baby-shower",
+     "passport-renewal-options",
+     "austin-flights",
+     "prescription-refill",
+     "fishing-license-renewal",
+     "wicked-tickets",
+     "chimney-sweep-booking",
+     "haircut-booking"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-dormant_revival-02",
@@ -19405,7 +22321,28 @@
      "purpose": "Find flight options to Oslo for next weekend. Report back with the available options (airline, times, price, layovers) so the user can choose. Do not book anything yet.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "oslo-flights",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "oslo-flights"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "oslo-flights",
+     "austin-flights",
+     "chicago-flights",
+     "honolulu-flights",
+     "nashville-flights",
+     "toronto-flights",
+     "dublin-flights",
+     "athens-flight",
+     "vancouver-flight",
+     "lima-flight"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-dormant_revival-03",
@@ -19542,7 +22479,28 @@
      "purpose": "Find Ada in the user's contacts/email and ask her if the summer cabin week can be pushed back by a week. Prepare a draft message for the user to review before sending anything.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ada-summer-cabin-week",
+     "google/gemini-3.1-flash-lite": "ada-summer-cabin-week",
+     "qwen/qwen3.8-flash": "ada-summer-cabin-week"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ada-summer-cabin-week",
+     "ada-retirement-party",
+     "hiro-christmas-call",
+     "ada-baby-shower",
+     "hiro-summer-cabin-week",
+     "will-wedding-rsvp",
+     "rohan-quarterly-okrs",
+     "ingrid-offsite",
+     "signe-migration-meeting",
+     "savannah-hotels"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-dormant_revival-04",
@@ -19671,7 +22629,28 @@
      "purpose": "Find the best way to reach Walter (check email/contacts for a Walter connected to an anniversary dinner). Draft a short, friendly message from the user asking if he's still up for the anniversary dinner. Show the draft to the user for review before sending — do not send anything yet.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "walter-anniversary-dinner",
+     "google/gemini-3.1-flash-lite": "walter-anniversary-dinner",
+     "qwen/qwen3.8-flash": "walter-anniversary-dinner"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ada-baby-shower",
+     "ruth-thanksgiving",
+     "kai-school-pickup",
+     "will-wedding-rsvp",
+     "walter-anniversary-dinner",
+     "passport-renewal-options",
+     "delfina-table-search",
+     "signe-migration-meeting",
+     "elise-vendor-security-review",
+     "martha-holiday-travel"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-dormant_revival-05",
@@ -19808,7 +22787,28 @@
      "purpose": "Tell Brendan that the user can help out on the weekend for game night. Reach out to Brendan with this message and report back any response.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "ASK"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "brendan-game-night",
+     "flora-trivia-night",
+     "cole-book-club",
+     "cole-camping-weekend",
+     "dodgers-tickets",
+     "ingrid-offsite",
+     "walter-anniversary-dinner",
+     "vera-trivia-night",
+     "ada-baby-shower",
+     "brendan-camping-weekend"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-dormant_revival-06",
@@ -19945,7 +22945,28 @@
      "purpose": "Reach out to Gus and ask whether the ski trip can be pushed back a week. Report back with his response.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "gus-ski-trip"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "nina-park-big-sur-road-trip",
+     "gus-climbing-gym",
+     "yara-ski-trip",
+     "zara-big-sur-road-trip",
+     "gus-housewarming",
+     "gus-ski-trip",
+     "eli-ski-trip",
+     "dina-big-sur-road-trip",
+     "will-wedding-rsvp",
+     "lucy-ski-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-dormant_revival-07",
@@ -20074,7 +23095,28 @@
      "purpose": "Set up a 30-minute meeting with Delia this week to go over onboarding. Find a slot that works, and draft the outreach/calendar invite for the user's approval before sending anything. Report back with the proposed time and a draft of the message.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "delia-onboarding-meeting",
+     "google/gemini-3.1-flash-lite": "delia-onboarding-meeting",
+     "qwen/qwen3.8-flash": "delia-onboarding-meeting"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "delia-onboarding-meeting",
+     "credit-card-dispute",
+     "lucy-ski-trip",
+     "delia-integration-timeline",
+     "victor-on-call-rotation",
+     "ada-baby-shower",
+     "delia-procurement-notes",
+     "gustavo-onboarding-call",
+     "hiro-christmas-call",
+     "lorna-onboarding-notes"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-dormant_revival-08",
@@ -20211,7 +23253,28 @@
      "purpose": "Message Lucy and let her know the user will call her tonight about the ski trip.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "lucy-ski-trip",
+     "qwen/qwen3.8-flash": "lucy-ski-trip"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "nina-park-big-sur-road-trip",
+     "yara-ski-trip",
+     "gus-ski-trip",
+     "eli-half-marathon",
+     "lucy-ski-trip",
+     "zara-big-sur-road-trip",
+     "dina-big-sur-road-trip",
+     "eli-podcast-guest-spot",
+     "lucy-borrowed-camera",
+     "eli-ski-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-dormant_revival-09",
@@ -20340,7 +23403,28 @@
      "purpose": "Find a few current options for Dodgers game tickets (upcoming home games). Look for a handful of good options across price points and seating areas, and report back with the game dates/opponents, seat sections, and prices so the user can choose. Also note where each option is available for purchase.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "dodgers-tickets",
+     "google/gemini-3.1-flash-lite": "dodgers-tickets",
+     "qwen/qwen3.8-flash": "dodgers-tickets"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "adele-tickets",
+     "ada-baby-shower",
+     "will-wedding-rsvp",
+     "wicked-tickets",
+     "coldplay-tickets",
+     "dodgers-tickets",
+     "kokkari-reservation",
+     "hamilton-tickets",
+     "gus-housewarming",
+     "elise-vendor-security-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-typo-00",
@@ -20469,7 +23553,28 @@
      "purpose": "Find everything related to Nina Park's housewarming: the date/time/location, whether the user has RSVP'd, whether a gift or contribution was discussed or is expected, and any pending asks from Nina (e.g., help with food, drinks, setup, bringing something specific). Search the user's email and messages for the housewarming invite/threads. Report back a clear summary: what the event is, what's already handled, and what concrete things are still open or would be helpful for the user to do. Also flag if there's no such event in the inbox at all.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "nina-park-housewarming",
+     "google/gemini-3.1-flash-lite": "nina-park-housewarming",
+     "qwen/qwen3.8-flash": "nina-park-housewarming"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "gus-housewarming",
+     "nina-castillo-sprint-planning-notes",
+     "nina-park-wedding-rsvp",
+     "aisha-api-migration",
+     "nina-castillo-launch-checklist",
+     "abby-housewarming",
+     "nina-castillo-team-offsite",
+     "nina-park-big-sur-road-trip",
+     "tariq-camping-weekend",
+     "nina-park-housewarming"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-typo-01",
@@ -20598,7 +23703,28 @@
      "purpose": "The user wants to set up a 30-minute meeting with Mei this week to go over the team offsite.\n\nFind a 30-minute slot that works for both the user and Mei sometime in the next few days (this week). Check the user's calendar for open slots, propose the best options to Mei, and confirm the meeting. If it helps, reference any existing context about the team offsite.\n\nReport back with the confirmed time, or the proposed options if it's pending Mei's reply.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "mei-team-offsite",
+     "google/gemini-3.1-flash-lite": "mei-team-offsite",
+     "qwen/qwen3.8-flash": "mei-team-offsite"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "mei-team-offsite",
+     "nina-castillo-team-offsite",
+     "samir-team-offsite",
+     "aisha-team-offsite",
+     "pierce-lang-onsite",
+     "elise-team-offsite",
+     "mei-conference-talk-proposal",
+     "ingrid-offsite",
+     "hector-team-offsite",
+     "ada-baby-shower"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-typo-02",
@@ -20727,7 +23853,28 @@
      "purpose": "Find the thread or contact for Kai regarding Lena's school pickup. Draft a message to Kai that (1) asks about Lena's school pickup, and (2) lets him know the user can help out on the weekend. Prepare the draft for the user to review before sending — do not send it. Report back the recipient, subject (if email), and the full draft body.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "kai-school-pickup",
+     "google/gemini-3.1-flash-lite": "kai-school-pickup",
+     "qwen/qwen3.8-flash": "kai-school-pickup"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "credit-card-dispute",
+     "lena-school-uniform",
+     "lena-swim-class",
+     "victor-on-call-rotation",
+     "kai-grandma-s-recipes",
+     "kai-school-pickup",
+     "hiro-christmas-call",
+     "library-book-renewals",
+     "lucy-ski-trip",
+     "brendan-game-night"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-typo-03",
@@ -20856,7 +24003,28 @@
      "purpose": "Draft a short, warm message to Gus (contact for the housewarming). The user wants to say they're excited about the housewarming and ask how they can help — offer to bring something, help set up, whatever's needed. Find Gus's contact details and prepare this as a ready-to-send draft (email or text, whichever channel you have for him). Do NOT send anything — just return the exact recipient, subject (if email), and full draft text so the user can approve it first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "gus-housewarming",
+     "google/gemini-3.1-flash-lite": "gus-housewarming",
+     "qwen/qwen3.8-flash": "gus-housewarming"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "abby-housewarming",
+     "heidi-statement-of-work",
+     "nina-park-housewarming",
+     "holly-wedding-rsvp",
+     "gus-climbing-gym",
+     "max-okonkwo-half-marathon-training",
+     "sam-baby-shower",
+     "ada-baby-shower",
+     "gus-ski-trip",
+     "gus-housewarming"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-typo-04",
@@ -20985,7 +24153,28 @@
      "purpose": "Draft a message to Tomasz about the conference talk proposal. Ask him what he needs from the user to get it moving. Show the draft for approval before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "tomasz-conference-talk-proposal",
+     "google/gemini-3.1-flash-lite": "tomasz-conference-talk-proposal",
+     "qwen/qwen3.8-flash": "tomasz-conference-talk-proposal"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "victor-hiring-loop-feedback",
+     "tomasz-conference-talk-proposal",
+     "tomasz-postmortem",
+     "yuki-conference-talk",
+     "mei-conference-talk-proposal",
+     "ada-baby-shower",
+     "martha-holiday-travel",
+     "hector-conference-talk-notes",
+     "victor-conference-talk-proposal",
+     "bruno-conference-talk-proposal"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-typo-05",
@@ -21122,7 +24311,28 @@
      "purpose": "The user wants to reach out to Lucy to ask what dates work for everyone regarding the borrowed camera. Check any existing email/thread context about the borrowed camera (there are related threads about a borrowed camera with Dina and Zara) so the message makes sense in context. Then write a short, friendly message to Lucy asking which dates work for everyone for the borrowed camera. Do NOT send anything — return the draft (recipient, subject, body) so the user can review and approve it first.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "kofi-integration-timeline-meeting",
+     "google/gemini-3.1-flash-lite": "kofi-integration-timeline-meeting",
+     "qwen/qwen3.8-flash": "kofi-integration-timeline-meeting"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "lucy-ski-trip",
+     "lucy-borrowed-camera",
+     "delia-integration-timeline",
+     "clara-demo-day-slides",
+     "rohan-demo-day-slides",
+     "passport-renewal-options",
+     "kofi-integration-timeline-meeting",
+     "spa-day",
+     "elise-vendor-security-review",
+     "ada-baby-shower"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-typo-06",
@@ -21251,7 +24461,28 @@
      "purpose": "Schedule a 30-minute meeting with Delia this week to go over the integration timeline. Propose a few available slots this week and get it on the calendar. Report back with the confirmed time or the options that need a decision.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "delia-integration-timeline",
+     "google/gemini-3.1-flash-lite": "delia-integration-timeline",
+     "qwen/qwen3.8-flash": "delia-integration-timeline"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "delia-integration-timeline",
+     "delia-onboarding-meeting",
+     "wicked-tickets",
+     "bruno-quarterly-okrs",
+     "kofi-integration-timeline-meeting",
+     "martha-birthday-help",
+     "delia-procurement-notes",
+     "credit-card-dispute",
+     "hiro-christmas-call",
+     "victor-on-call-rotation"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-typo-07",
@@ -21380,7 +24611,28 @@
      "purpose": "Reach out to Zara and ask if she's still up for borrowing the camera. Report back her response.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "zara-borrowed-camera",
+     "google/gemini-3.1-flash-lite": "zara-borrowed-camera",
+     "qwen/qwen3.8-flash": "zara-borrowed-camera"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "zara-big-sur-road-trip",
+     "zara-borrowed-camera",
+     "ada-baby-shower",
+     "lucy-borrowed-camera",
+     "zara-half-marathon-training",
+     "sam-baby-shower",
+     "heidi-statement-of-work",
+     "dina-borrowed-camera",
+     "holly-wedding-rsvp",
+     "elise-team-offsite"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-typo-08",
@@ -21509,7 +24761,28 @@
      "purpose": "Reach out to Jade and ask her to send over the latest renewal draft by Friday. Report back what she says.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "jade-renewal-draft",
+     "qwen/qwen3.8-flash": "jade-renewal-draft"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "ada-baby-shower",
+     "jade-nda-draft",
+     "fishing-license-renewal",
+     "car-registration-renewal",
+     "passport-renewal-options",
+     "library-book-renewals",
+     "museum-membership-renewal",
+     "pierce-lang-onsite",
+     "emeka-renewal-draft",
+     "jade-renewal-draft"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-typo-09",
@@ -21646,7 +24919,28 @@
      "purpose": "Find the best way to reach Walter (check email/contacts for a Walter connected to an anniversary dinner). Draft a short, friendly message from the user asking if he's still up for the anniversary dinner. Show the draft to the user for review before sending — do not send anything yet.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ASK",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "bruno-quarterly-okrs",
+     "will-wedding-rsvp",
+     "max-okonkwo-half-marathon-training",
+     "heidi-statement-of-work",
+     "sam-baby-shower",
+     "holly-wedding-rsvp",
+     "walter-anniversary-dinner",
+     "frank-retirement-party",
+     "ada-baby-shower",
+     "elise-team-offsite"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-agent_result-00",
@@ -21775,7 +25069,28 @@
      "purpose": "The user wants to renew their library books. Look into their library account, find out which books are due/checked out, and determine the renewal options (how many renewals are allowed, whether any items are on hold or can't be renewed, and renewal lengths). Then identify and tell me the best choice for renewal. Report back with the specifics: which books, due dates, what can be renewed, and your recommendation.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "library-book-renewals",
+     "google/gemini-3.1-flash-lite": "library-book-renewals",
+     "qwen/qwen3.8-flash": "library-book-renewals"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "library-book-renewals",
+     "locksmith-options",
+     "car-registration-renewal",
+     "fishing-license-renewal",
+     "passport-renewal-options",
+     "museum-membership-renewal",
+     "emeka-renewal-draft",
+     "jade-renewal-draft",
+     "contact-lens-options",
+     "rug-repair-options"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-agent_result-01",
@@ -21904,7 +25219,28 @@
      "purpose": "Look into booking a table at Nopa (the restaurant in San Francisco). First determine the relevant budget for this dinner (check prior conversation/context for the budget the user is referring to). Check the estimated cost/price for the reservation against that budget. If it comes in under budget, proceed to find available reservation times and prepare to book. If it's over budget, do not book and report back the details. Report back the budget you found, the estimated cost, and available times.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "nopa-reservation",
+     "google/gemini-3.1-flash-lite": "nopa-reservation",
+     "qwen/qwen3.8-flash": "nopa-reservation"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "eye-exam-booking",
+     "teacher-gift-card",
+     "ada-baby-shower",
+     "nopa-reservation",
+     "delfina-table-search",
+     "zuni-table-search",
+     "rintaro-table-search",
+     "kokkari-reservation",
+     "will-wedding-rsvp",
+     "lucca-table-search"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-agent_result-02",
@@ -22033,7 +25369,28 @@
      "purpose": "Search the user's email, messages, and notes for any past request or thread about finding a notary (public notary, mobile notary, notary appointment, notarizing documents) from roughly the last 3-6 weeks. Determine: (1) whether such a request ever existed, (2) its current status, and (3) the details — any notary options found, rates, availability, whether an appointment was booked, and any outstanding action items. Report back exactly what you find; if nothing exists, say so clearly.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "notary-search-follow-up",
+     "google/gemini-3.1-flash-lite": "notary-search-follow-up",
+     "qwen/qwen3.8-flash": "notary-search-follow-up"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "ada-baby-shower",
+     "ada-summer-cabin-week",
+     "notary-search-follow-up",
+     "signe-migration-meeting",
+     "passport-renewal-options",
+     "contact-lens-options",
+     "elise-vendor-security-review",
+     "locksmith-options",
+     "rug-repair-options",
+     "hiro-summer-cabin-week"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-agent_result-03",
@@ -22162,7 +25519,28 @@
      "purpose": "Reach out to Zara and ask if she's still up for borrowing the camera. Report back her response.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "zara-borrowed-camera",
+     "google/gemini-3.1-flash-lite": "zara-borrowed-camera",
+     "qwen/qwen3.8-flash": "zara-borrowed-camera"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "passport-renewal-options",
+     "will-wedding-rsvp",
+     "zara-big-sur-road-trip",
+     "zara-borrowed-camera",
+     "dina-borrowed-camera",
+     "elise-vendor-security-review",
+     "heidi-statement-of-work",
+     "ada-baby-shower",
+     "lucy-borrowed-camera",
+     "zara-half-marathon-training"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-agent_result-04",
@@ -22291,7 +25669,28 @@
      "purpose": "Reach out to Kai and ask what they think we should do about grandma's recipes. If there's prior context (existing thread/email with Kai about this), reply in that thread; otherwise find the best way to contact Kai. Draft the message and show it to the user for approval before sending.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "kai-grandma-s-recipes",
+     "google/gemini-3.1-flash-lite": "kai-grandma-s-recipes",
+     "qwen/qwen3.8-flash": "kai-grandma-s-recipes"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "will-wedding-rsvp",
+     "kai-grandma-s-recipes",
+     "lucy-borrowed-camera",
+     "signe-analytics-dashboard",
+     "ada-baby-shower",
+     "passport-renewal-options",
+     "ruth-thanksgiving",
+     "kai-school-pickup",
+     "heidi-statement-of-work",
+     "elise-vendor-security-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-agent_result-05",
@@ -22420,7 +25819,28 @@
      "purpose": "Set up a 30-minute meeting with Lars this week to go over the migration. Find a slot that works this week and confirm the details. Report back the proposed time so the user can approve it before anything is finalized.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "lars-migration-meeting",
+     "google/gemini-3.1-flash-lite": "lars-migration-meeting",
+     "qwen/qwen3.8-flash": "lars-migration-meeting"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "kofi-integration-timeline-meeting",
+     "signe-migration-meeting",
+     "delia-integration-timeline",
+     "ruth-thanksgiving",
+     "ada-baby-shower",
+     "lars-migration-meeting",
+     "kai-school-pickup",
+     "elise-vendor-security-review",
+     "aisha-api-migration",
+     "will-wedding-rsvp"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-agent_result-06",
@@ -22557,7 +25977,28 @@
      "purpose": "Find the relevant context with Wanda (likely an insurance premium or similar quote) and ask Wanda how much the premium will run. Report back the amount and any details Wanda provides.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "imani-incident-postmortem",
+     "google/gemini-3.1-flash-lite": "imani-incident-postmortem",
+     "qwen/qwen3.8-flash": "imani-incident-postmortem"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "tomasz-postmortem",
+     "hiro-summer-cabin-week",
+     "credit-card-dispute",
+     "ada-summer-cabin-week",
+     "imani-quarterly-okrs",
+     "signe-postmortem-draft",
+     "ada-baby-shower",
+     "wanda-premium-quote",
+     "imani-incident-postmortem",
+     "will-wedding-rsvp"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-agent_result-07",
@@ -22686,7 +26127,28 @@
      "purpose": "Find a few flight options to Toronto for the user and send them to the user.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "toronto-flights",
+     "google/gemini-3.1-flash-lite": "toronto-flights",
+     "qwen/qwen3.8-flash": "toronto-flights"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "chicago-flights",
+     "athens-flight",
+     "dublin-flights",
+     "honolulu-flights",
+     "lima-flight",
+     "vancouver-flight",
+     "toronto-flights",
+     "nashville-flights",
+     "oslo-flights",
+     "austin-flights"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-agent_result-08",
@@ -22815,7 +26277,28 @@
      "purpose": "Reach out to Nadia and ask if next Tuesday morning works for Biscuit's checkup. Report back her response.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "nadia-biscuit-checkup",
+     "google/gemini-3.1-flash-lite": "nadia-biscuit-checkup",
+     "qwen/qwen3.8-flash": "nadia-biscuit-checkup"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "nadia-biscuit-checkup",
+     "passport-renewal-options",
+     "will-wedding-rsvp",
+     "ada-baby-shower",
+     "kai-school-pickup",
+     "elise-vendor-security-review",
+     "kofi-integration-timeline-meeting",
+     "martha-holiday-travel",
+     "ruth-thanksgiving",
+     "delia-integration-timeline"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-agent_result-09",
@@ -22944,7 +26427,28 @@
      "purpose": "Set up a 30-minute meeting with Victor sometime this week (week of June 15, 2026) to go over hiring loop feedback. Find a slot that works on both calendars and book it. Confirm the details back to me.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "victor-hiring-loop-feedback",
+     "google/gemini-3.1-flash-lite": "victor-hiring-loop-feedback",
+     "qwen/qwen3.8-flash": "victor-hiring-loop-feedback"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "passport-renewal-options",
+     "victor-landing-page-copy",
+     "victor-hiring-loop-feedback",
+     "will-wedding-rsvp",
+     "victor-conference-talk-proposal",
+     "ada-baby-shower",
+     "kai-school-pickup",
+     "elise-vendor-security-review",
+     "flora-bachelor-party",
+     "victor-on-call-rotation"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-status_question-00",
@@ -23073,7 +26577,28 @@
      "purpose": "The user wants a table at a restaurant called \"Lucca.\" Look into available table/reservation options at Lucca and determine the best choice. Find a few options (dates/times/table types/party size) and recommend the best one. Report back the shortlist with your recommendation.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "lucca-table-search",
+     "google/gemini-3.1-flash-lite": "lucca-table-search",
+     "qwen/qwen3.8-flash": "lucca-table-search"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "will-wedding-rsvp",
+     "delfina-table-search",
+     "zoo-pass",
+     "passport-renewal-options",
+     "zuni-table-search",
+     "lucca-table-search",
+     "ada-baby-shower",
+     "eli-podcast-guest-spot",
+     "rintaro-table-search",
+     "elise-vendor-security-review"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-status_question-01",
@@ -23202,7 +26727,28 @@
      "purpose": "Find Nina Park's contact info and draft a message asking what she thinks we should do for the Big Sur road trip. Do not send it — report back the draft (recipient, subject if email, and body) so the user can review before anything goes out.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "nina-park-big-sur-road-trip",
+     "qwen/qwen3.8-flash": "nina-park-big-sur-road-trip"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "nina-park-wedding-rsvp",
+     "nina-castillo-launch-checklist",
+     "dina-big-sur-road-trip",
+     "yara-ski-trip",
+     "martha-holiday-travel",
+     "nina-castillo-sprint-planning-notes",
+     "nina-castillo-team-offsite",
+     "nina-park-housewarming",
+     "nina-park-big-sur-road-trip",
+     "zara-big-sur-road-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-status_question-02",
@@ -23339,7 +26885,28 @@
      "purpose": "The user has a credit card dispute with a scheduled follow-up call. Push/reschedule that follow-up call from its current date to the following weekend (i.e., one week later). If you have a saved record of the current call date, update it. Report back the original date and the new date.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "credit-card-dispute",
+     "google/gemini-3.1-flash-lite": "credit-card-dispute",
+     "qwen/qwen3.8-flash": "credit-card-dispute"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "will-wedding-rsvp",
+     "passport-renewal-options",
+     "credit-card-dispute",
+     "kai-school-pickup",
+     "adrian-q3-roadmap-review",
+     "elise-vendor-security-review",
+     "ada-baby-shower",
+     "eli-podcast-guest-spot",
+     "ruth-thanksgiving",
+     "teacher-gift-card"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-status_question-03",
@@ -23468,7 +27035,28 @@
      "purpose": "The user needs to renew their US passport. Find a few solid renewal options for them and report back with the details. Cover the main routes available: (1) renewing by mail with Form DS-82 (confirm current eligibility rules, fees, turnaround times, and the mailing address), (2) online renewal through the State Department's online renewal portal if currently open/available, (3) expedited service options, and (4) any in-person options like regional passport agencies or an appointment at a local acceptance facility (e.g., post office, county clerk) in case they need urgent processing. Include current fees, standard vs expedited processing times, whether expedited shipping is available, and any documents/photos required. Also note any recent changes to processing times or the online renewal pilot's status. Give the user a concise comparison of the best options so they can pick one.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "passport-renewal-options",
+     "qwen/qwen3.8-flash": "passport-renewal-options"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "heidi-statement-of-work",
+     "kai-school-pickup",
+     "passport-renewal-options",
+     "savannah-hotels",
+     "martha-holiday-travel",
+     "elise-vendor-security-review",
+     "coldplay-tickets",
+     "will-wedding-rsvp",
+     "ada-baby-shower",
+     "signe-migration-meeting"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-status_question-04",
@@ -23597,7 +27185,28 @@
      "purpose": "Set up a 30-minute meeting with Lars this week to go over the migration. Find a slot that works this week and confirm the details. Report back the proposed time so the user can approve it before anything is finalized.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "lars-migration-meeting",
+     "google/gemini-3.1-flash-lite": "lars-migration-meeting",
+     "qwen/qwen3.8-flash": "lars-migration-meeting"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "aisha-api-migration",
+     "kai-school-pickup",
+     "will-wedding-rsvp",
+     "ada-baby-shower",
+     "passport-renewal-options",
+     "delia-integration-timeline",
+     "elise-vendor-security-review",
+     "lars-migration-meeting",
+     "signe-migration-meeting",
+     "martha-holiday-travel"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-status_question-05",
@@ -23726,7 +27335,28 @@
      "purpose": "The user has an urgent key handoff with Marisol and wants help. Please look into the context/history of the key handoff with Marisol (there may be prior threads or related emails about Marisol, including a recent question about the cost of a deep clean). Prepare a draft message to Marisol to coordinate the handoff — propose locking in a time and place and confirming she can receive/collect the key. Do not send anything yet; return a draft for the user to review. If there are specific details already known (dates, location), include them. Report back with the draft and any relevant context you find.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ASK",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "signe-migration-meeting",
+     "jade-renewal-draft",
+     "savannah-hotels",
+     "yara-ski-trip",
+     "martha-holiday-travel",
+     "zara-borrowed-camera",
+     "marisol-key-handoff",
+     "heidi-statement-of-work",
+     "ada-retirement-party",
+     "gus-ski-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-status_question-06",
@@ -23855,7 +27485,28 @@
      "purpose": "Draft a short, polite note to Jade asking her to send the latest NDA draft by Friday. First find Jade's correct email address (check contacts/email history). Then show me the draft note (recipient, subject, body) for the user to review before anything is sent. Do not send it.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "jade-nda-draft",
+     "google/gemini-3.1-flash-lite": "jade-nda-draft",
+     "qwen/qwen3.8-flash": "jade-nda-draft"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "caleb-nda-signature",
+     "jade-renewal-draft",
+     "odette-procurement-draft",
+     "bianca-export-follow-up",
+     "raj-nda-draft",
+     "delia-integration-timeline",
+     "ada-baby-shower",
+     "max-weller-nda-meeting",
+     "martha-holiday-travel",
+     "jade-nda-draft"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-status_question-07",
@@ -23975,7 +27626,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "lima-flight",
+     "austin-flights",
+     "oslo-flights",
+     "boston-flights",
+     "dublin-flights",
+     "athens-flight",
+     "chicago-flights",
+     "vancouver-flight",
+     "toronto-flights",
+     "nashville-flights"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-status_question-08",
@@ -24095,7 +27767,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ASK",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "ASK"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "ruth-thanksgiving",
+     "eli-podcast-guest-spot",
+     "signe-migration-meeting",
+     "will-wedding-rsvp",
+     "ada-baby-shower",
+     "passport-renewal-options",
+     "elise-vendor-security-review",
+     "kai-school-pickup",
+     "zoo-pass",
+     "martha-holiday-travel"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-status_question-09",
@@ -24215,7 +27908,28 @@
     "lived-200",
     "lived-1000"
    ],
-   "gold_agents": []
+   "gold_agents": [],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "porto-hotel",
+     "prague-hotel-search",
+     "rohan-quarterly-okrs",
+     "lucy-borrowed-camera",
+     "lyon-hotel-search",
+     "savannah-hotels",
+     "eli-ski-trip",
+     "vienna-hotel",
+     "library-book-renewals",
+     "lucy-ski-trip"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-paraphrase-00",
@@ -24344,7 +28058,28 @@
      "purpose": "Find the relevant context with Wanda (likely an insurance premium or similar quote) and ask Wanda how much the premium will run. Report back the amount and any details Wanda provides.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "wanda-premium-quote",
+     "google/gemini-3.1-flash-lite": "wanda-premium-quote",
+     "qwen/qwen3.8-flash": "wanda-premium-quote"
+    },
+    "agree": true,
+    "flag": "audit",
+    "candidates": [
+     "nina-park-wedding-rsvp",
+     "contact-lens-options",
+     "tariq-camping-weekend",
+     "rohan-quarterly-okrs",
+     "aisha-api-migration",
+     "wanda-premium-quote",
+     "eye-exam-booking",
+     "rohan-demo-day-slides",
+     "smoke-detector-search",
+     "prescription-refill"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-paraphrase-01",
@@ -24473,7 +28208,28 @@
      "purpose": "Find the contact named Edith (look through email contacts, prior threads, and messages to identify the right person). Then compose a short, casual message asking her if next Tuesday morning works for the sheet music. Do NOT send anything yet — return the draft (recipient, subject if email, and body) so I can show it to the user for approval first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "edith-sheet-music",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "edith-sheet-music"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "edith-sheet-music",
+     "nina-park-wedding-rsvp",
+     "tariq-camping-weekend",
+     "credit-card-dispute",
+     "rohan-quarterly-okrs",
+     "teacher-gift-card",
+     "kai-school-pickup",
+     "ada-baby-shower",
+     "aisha-api-migration",
+     "ruth-thanksgiving"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-paraphrase-02",
@@ -24610,7 +28366,28 @@
      "purpose": "Find hotel options in Porto, Portugal for the user's trip and determine which ones come in under budget. First confirm the user's budget and travel dates (check any prior context you have). If a suitable option comes in under budget, prepare to book it — but do NOT finalize the booking until the user confirms. Report back the recommended hotel, price, and whether it's under budget, along with anything needed to complete the booking.",
      "role": "acceptable"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "rohan-quarterly-okrs",
+     "credit-card-dispute",
+     "tariq-camping-weekend",
+     "aisha-api-migration",
+     "porto-hotel",
+     "paula-cleaning-appointment",
+     "bob-brake-repair",
+     "notary-search-follow-up",
+     "ray-clogged-drain",
+     "nina-park-wedding-rsvp"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-paraphrase-03",
@@ -24739,7 +28516,28 @@
      "purpose": "The user says the Dennis parking spot situation is getting urgent and wants to know what can be done. Find all relevant context (emails, threads, messages, notes) about the Dennis parking spot, figure out the current status and any blockers, and identify concrete options/next steps to resolve it urgently. Report back with the key facts, the current status, and specific recommended actions.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "dennis-parking-spot",
+     "google/gemini-3.1-flash-lite": "dennis-parking-spot",
+     "qwen/qwen3.8-flash": "dennis-parking-spot"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "credit-card-dispute",
+     "car-registration-renewal",
+     "sedona-rental-car",
+     "tariq-camping-weekend",
+     "nina-park-wedding-rsvp",
+     "aisha-api-migration",
+     "dennis-parking-spot",
+     "rohan-quarterly-okrs",
+     "phoenix-rental-car",
+     "maui-rental-car"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-paraphrase-04",
@@ -24868,7 +28666,28 @@
      "purpose": "Find the contact info for Bob (the auto/brake repair shop) and reach out to ask what the earliest appointment slot is for the user's brake repair. Show me (OpenPoke) a draft of the message first before sending anything, then report back Bob's earliest availability.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "bob-brake-repair",
+     "google/gemini-3.1-flash-lite": "bob-brake-repair",
+     "qwen/qwen3.8-flash": "bob-brake-repair"
+    },
+    "agree": true,
+    "flag": null,
+    "candidates": [
+     "sedona-rental-car",
+     "tariq-camping-weekend",
+     "nina-park-wedding-rsvp",
+     "aisha-api-migration",
+     "bob-brake-repair",
+     "maui-rental-car",
+     "rohan-quarterly-okrs",
+     "phoenix-rental-car",
+     "car-registration-renewal",
+     "credit-card-dispute"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-paraphrase-05",
@@ -24997,7 +28816,28 @@
      "purpose": "Draft an email/message to Ray asking whether next Tuesday morning works for the clogged drain appointment/service. Show me the draft before sending anything.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "will-wedding-rsvp",
+     "ray-clogged-drain",
+     "rohan-quarterly-okrs",
+     "tariq-camping-weekend",
+     "ada-baby-shower",
+     "aisha-api-migration",
+     "passport-renewal-options",
+     "elise-vendor-security-review",
+     "nina-park-wedding-rsvp",
+     "credit-card-dispute"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-paraphrase-06",
@@ -25126,7 +28966,28 @@
      "purpose": "Reach out to Emeka asking him to send over the latest renewal draft by Friday.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "emeka-renewal-draft"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "emeka-export-issue-meeting",
+     "erik-mom-s-birthday",
+     "tariq-camping-weekend",
+     "edith-sheet-music",
+     "credit-card-dispute",
+     "rohan-quarterly-okrs",
+     "napa-wine-tasting",
+     "emeka-renewal-draft",
+     "nina-park-wedding-rsvp",
+     "aisha-api-migration"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-paraphrase-07",
@@ -25255,7 +29116,28 @@
      "purpose": "Set up a 30-minute meeting with Ivan sometime this week (week of Monday April 20, 2026, through Friday April 24) to go over the pilot kickoff. Check the user's calendar for open slots and Ivan's availability, propose/place the best 30-minute slot this week, and report back the confirmed time. If multiple options are needed, list the top choices. Do NOT send any invite or email without showing the user a draft first.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "ivan-pilot-kickoff",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "ivan-pilot-kickoff"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "nina-park-wedding-rsvp",
+     "tariq-camping-weekend",
+     "napa-wine-tasting",
+     "passport-renewal-options",
+     "ivan-pilot-kickoff",
+     "erik-mom-s-birthday",
+     "aisha-api-migration",
+     "rohan-quarterly-okrs",
+     "edith-sheet-music",
+     "credit-card-dispute"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-paraphrase-08",
@@ -25384,7 +29266,28 @@
      "purpose": "Reach out to Nadia and ask if next Tuesday morning works for Biscuit's checkup. Report back her response.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "credit-card-dispute",
+     "ada-baby-shower",
+     "nadia-biscuit-checkup",
+     "nina-park-wedding-rsvp",
+     "rohan-quarterly-okrs",
+     "will-wedding-rsvp",
+     "contact-lens-options",
+     "tariq-camping-weekend",
+     "solar-panel-quotes",
+     "aisha-api-migration"
+    ]
+   }
   },
   {
    "id": "v2-s2-200-paraphrase-09",
@@ -25513,7 +29416,28 @@
      "purpose": "Reach out to Trent and ask if next Tuesday morning works for the permit stuff. Wait for his reply and report back.",
      "role": "gold"
     }
-   ]
+   ],
+   "check": {
+    "answers": {
+     "openai/gpt-6-luna": "NEW",
+     "google/gemini-3.1-flash-lite": "NEW",
+     "qwen/qwen3.8-flash": "NEW"
+    },
+    "agree": false,
+    "flag": "disagree",
+    "candidates": [
+     "aisha-api-migration",
+     "rohan-quarterly-okrs",
+     "tariq-camping-weekend",
+     "elise-vendor-security-review",
+     "hector-analytics-dashboard",
+     "will-wedding-rsvp",
+     "trent-permit-stuff",
+     "credit-card-dispute",
+     "nina-park-wedding-rsvp",
+     "ada-baby-shower"
+    ]
+   }
   }
  ]
 }
