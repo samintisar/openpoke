@@ -9,7 +9,7 @@ from typing import Mapping, Optional, Sequence
 from .cards import AgentCard, as_utc
 
 TRUNCATE_CHARS = 160
-SUMMARY_CHARS = 480
+SUMMARY_CHARS = 300
 
 
 def relative_time(then: datetime, now: datetime) -> str:
