@@ -5,13 +5,14 @@ from __future__ import annotations
 import json
 import sqlite3
 import threading
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
 from ...logging_config import logger
 from .cards import AgentCard, as_utc, extract_entities, normalize_name, slug_id
-from .directory import merge_entities
+from .directory import merge_entities, replace_summary_entities
 
 STATUS_CHARS = 200
 _LAST_ROUTED_KEY = "last_routed"
@@ -67,13 +68,26 @@ class SqliteAgentDirectory:
         );
         """
         with self._lock, self._connect() as conn:
-            conn.execute("PRAGMA journal_mode=WAL;")
+            for attempt in range(50):  # switching to WAL does not wait on the busy timeout when another open races it
+                try:
+                    conn.execute("PRAGMA journal_mode=WAL;")
+                    break
+                except sqlite3.OperationalError:
+                    if attempt == 49:
+                        raise
+                    time.sleep(0.05)
             conn.execute(agents_sql)
             conn.execute(meta_sql)
-            columns = {row[1] for row in conn.execute("PRAGMA table_info(agents)")}
-            if "summary" not in columns:  # databases from before Plan 6c: the summary starts as last_status
-                conn.execute("ALTER TABLE agents ADD COLUMN summary TEXT NOT NULL DEFAULT ''")
-                conn.execute("UPDATE agents SET summary = last_status")
+            conn.execute("BEGIN IMMEDIATE")  # one writer migrates; the check, ALTER and copy succeed or fail together
+            try:
+                columns = {row[1] for row in conn.execute("PRAGMA table_info(agents)")}
+                if "summary" not in columns:  # databases from before Plan 6c: the summary starts as last_status
+                    conn.execute("ALTER TABLE agents ADD COLUMN summary TEXT NOT NULL DEFAULT ''")
+                    conn.execute("UPDATE agents SET summary = last_status")
+                conn.execute("COMMIT")
+            except Exception:
+                conn.execute("ROLLBACK")
+                raise
 
     # -- AgentDirectory -------------------------------------------------------------------------------
 
@@ -159,15 +173,25 @@ class SqliteAgentDirectory:
         fields = {"purpose": purpose, "last_status": None if last_status is None else last_status.strip()[:STATUS_CHARS],
                   "status": status, "summary": None if summary is None else summary.strip()}
         updates = {k: v for k, v in fields.items() if v is not None}
-        if summary is not None:
-            card = self.get(agent_id)
-            if card is not None:
-                updates["entities"] = json.dumps(merge_entities(card.entities, [summary]))
         if not updates:
             return
-        assignments = ", ".join(f"{column} = ?" for column in updates)
         with self._lock, self._connect() as conn:
-            conn.execute(f"UPDATE agents SET {assignments} WHERE id = ?", (*updates.values(), agent_id))
+            conn.execute("BEGIN IMMEDIATE")  # read and write under one lock so a concurrent touch() is not overwritten
+            try:
+                if summary is not None:
+                    row = conn.execute("SELECT entities, summary FROM agents WHERE id = ?", (agent_id,)).fetchone()
+                    if row is not None:
+                        try:
+                            entities = [str(e) for e in json.loads(row["entities"] or "[]")]
+                        except (json.JSONDecodeError, TypeError):
+                            entities = []
+                        updates["entities"] = json.dumps(replace_summary_entities(entities, row["summary"] or "", summary))
+                assignments = ", ".join(f"{column} = ?" for column in updates)
+                conn.execute(f"UPDATE agents SET {assignments} WHERE id = ?", (*updates.values(), agent_id))
+                conn.execute("COMMIT")
+            except Exception:
+                conn.execute("ROLLBACK")
+                raise
 
     def find_by_name(self, name: str) -> Optional[AgentCard]:
         """Exact display-name match first, then normalized; oldest card wins."""

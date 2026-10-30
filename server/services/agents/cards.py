@@ -42,6 +42,7 @@ COMMON_WORDS = frozenset(
     calendar contact contacts user agent task tasks question questions info details detail item items list
     buy order return track compare research price prices prioritize pick choose decide figure gather pull
     yes no maybe sure great good thanks best regards dear subject re fw fwd do if
+    decided pending topics people summary status
     """.split()
 )
 
@@ -60,7 +61,7 @@ class AgentCard:
     purpose: str
     entities: list[str] = field(default_factory=list)
     last_status: str = ""
-    summary: str = ""  # living summary of the whole matter (Plan 6c); last_status is no longer written
+    summary: str = ""  # living summary of the whole matter (Plan 6c); last_status stops being written once the summary updater lands (Task 3)
     status: str = "active"
     created_at: datetime = EPOCH
     last_active_at: datetime = EPOCH

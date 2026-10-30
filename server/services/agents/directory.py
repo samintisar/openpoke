@@ -34,6 +34,12 @@ def merge_entities(existing: Iterable[str], texts: Iterable[str]) -> list[str]:
     return merged
 
 
+def replace_summary_entities(entities: Iterable[str], old_summary: str, new_summary: str) -> list[str]:
+    """`entities` with the old summary's contribution swapped for the new summary's (instructions' entities stay)."""
+    stale = set(extract_entities([old_summary]))
+    return merge_entities([e for e in entities if e not in stale], [new_summary])
+
+
 class InMemoryDirectory:
     """`AgentDirectory` over a dict; copies the given cards so callers' cards are never mutated."""
 
@@ -89,8 +95,9 @@ class InMemoryDirectory:
         if status is not None:
             card.status = status
         if summary is not None:
+            summary = summary.strip()
+            card.entities = replace_summary_entities(card.entities, card.summary, summary)
             card.summary = summary
-            card.entities = merge_entities(card.entities, [summary])
 
 
-__all__ = ["AgentDirectory", "InMemoryDirectory", "merge_entities"]
+__all__ = ["AgentDirectory", "InMemoryDirectory", "merge_entities", "replace_summary_entities"]
