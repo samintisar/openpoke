@@ -18,6 +18,10 @@ through `render_cards` (summaries included).
   against gold per kind and size, against the recorded IA on the same rows. One choice cannot pass multi_task.
 - j4 duplicate: for every create that went through, "which of the top 3 cards already covers this matter, or
   none"; score 1 - P(none). Precision/recall at catching duplicate_create rows across thresholds.
+- j6 clarify: one noul per user turn at 200 and 1,000 ("unclear which matter: ask first") over the cards the IA was
+  shown. Flags across thresholds against should_clarify failures and correct rows, by kind.
+- j7 message type: one choice over the probe kinds as message types (kinds that the message alone cannot tell
+  apart are merged, see KIND_CLASS), over the cards the IA was shown; accuracy and confusion vs the gold kind.
 
 The question does not show Jev the IA's proposal in j1-j3 (j2 must not be anchored on it; j1 shares j2's cache).
 `--dry-run` prints one request body and the token/cost estimate, and calls nothing. Answers are cached by request
@@ -39,7 +43,14 @@ from typing import Any, Optional, Sequence
 from server.services.agents.cards import AgentCard
 from server.services.agents.directory import InMemoryDirectory
 from server.services.agents.dispatch import dispatch
-from server.services.agents.jev import JEV_USD_PER_M_INPUT, JevError, choice_question, parse_choice
+from server.services.agents.jev import (
+    JEV_USD_PER_M_INPUT,
+    JevError,
+    choice_question,
+    noul_question,
+    parse_choice,
+    parse_noul,
+)
 from server.services.agents.render import SUMMARY_CHARS, render_cards, truncate
 # The route question (J1/J2) is the production Jev reviewer's question (Plan 6c J5).
 from server.services.agents.jev_review import (  # noqa: F401
@@ -63,7 +74,7 @@ from server.services.agents.second_look import (
 
 from .cases import Case
 from .charts import RESULTS
-from .grading import CORRECT, DUPLICATE_CREATE, ERROR, Decision, grade
+from .grading import CORRECT, DUPLICATE_CREATE, ERROR, SHOULD_CLARIFY, Decision, grade
 from .jev_llm import body_key, estimate_tokens
 from .second_look_calibration import SIZES, Proposal, _proposal, _replay, sweep, trigger_reason
 
@@ -81,6 +92,39 @@ DUP_INSTRUCTIONS = (
     "listed agent does."
 )
 NONE_CRITERION = "No listed agent already covers this matter."
+CLARIFY_QID, KIND_QID = "clarify", "message_type"
+CLARIFY_INSTRUCTIONS = (
+    "It is unclear which of the listed agents' matters the new message is about, so the assistant should ask the "
+    "user before acting."
+)
+NOUL_THRESHOLDS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+KIND_INSTRUCTIONS = (
+    "What type of message is the new message, given the conversation and the agents a personal assistant already "
+    "runs (each agent owns one matter: a person plus a subject)?"
+)
+# Message types Jev chooses from, and the probe kinds each covers. Merged: typo + paraphrase (both name an existing
+# matter indirectly: a misspelled name, or a role/company instead of the names), status_question + dormant_revival
+# (both ask where a matter stands; how long it has been idle is not in the message), vague_reference +
+# same_name_people (both leave the matter or person unresolved from the message's own words).
+MESSAGE_TYPES: dict[str, str] = {
+    "new_task": "A brand-new request about a matter none of the listed agents owns.",
+    "follow_up": "A further instruction or update on one existing matter, naming its person or subject.",
+    "status_question": "Asks how an existing matter is going, where it ended up, or whether someone replied.",
+    "vague_reference": "Refers to a matter or person only vaguely ('that', 'the thing', a first name several "
+                       "people share), so the words alone do not say which matter.",
+    "multi_task": "Two or more separate requests or matters in one message.",
+    "same_person_new_topic": "Names a person who already has a matter, but about a different subject.",
+    "indirect_reference": "Refers to an existing matter by a misspelled name, or by role or company "
+                          "('my accountant', 'my contractor') instead of the names.",
+    "cross_agent": "Passes news from one person on to another person's existing matter (two people named).",
+    "agent_result": "A report from an execution agent about its work ([SUCCESS], [FAILED]...), not from the user.",
+}
+KIND_CLASS: dict[str, str] = {
+    **{kind: kind for kind in MESSAGE_TYPES},
+    "typo": "indirect_reference", "paraphrase": "indirect_reference",
+    "dormant_revival": "status_question", "same_name_people": "vague_reference",
+}
+SAFEGUARD_KINDS = ("status_question", "multi_task", "same_person_new_topic")
 
 
 # --- what Jev sees --------------------------------------------------------------------------------------------------
@@ -285,9 +329,12 @@ class Request:
     qid: str
     criteria: tuple[tuple[str, str], ...]
     instructions: str
+    kind: str = "choice"  # or "noul": no criteria, the answer is a probability
 
     @property
     def questions(self) -> dict[str, dict[str, Any]]:
+        if self.kind == "noul":
+            return {self.qid: noul_question(self.instructions)}
         return {self.qid: choice_question(self.instructions, dict(self.criteria))}
 
     def body(self, model: str = "jev-latest") -> dict[str, Any]:
@@ -321,6 +368,12 @@ def plan(experiment: str, turns: Sequence[Turn]) -> list[Request]:
     if experiment == "j3":
         return [Request((t, -1), turn.router_state, ROUTE_QID, tuple(turn.router_criteria.items()),
                         ROUTE_INSTRUCTIONS) for t, turn in enumerate(turns)]
+    if experiment == "j6":
+        return [Request((t, -1), turn.router_state, CLARIFY_QID, (), CLARIFY_INSTRUCTIONS, "noul")
+                for t, turn in enumerate(turns) if turn.user and turn.size in SIZES]
+    if experiment == "j7":
+        return [Request((t, -1), turn.router_state, KIND_QID, tuple(MESSAGE_TYPES.items()), KIND_INSTRUCTIONS)
+                for t, turn in enumerate(turns)]
     if experiment == "j4":
         return [Request((t, call.index), call.dup_state, DUP_QID, tuple(call.dup_criteria.items()), DUP_INSTRUCTIONS)
                 for t, turn in enumerate(turns) for call in turn.calls if call.dup_state is not None]
@@ -340,19 +393,29 @@ Answer = tuple[str, dict[str, float], float]
 
 
 async def ask_all(jev: Any, requests: Sequence[Request]) -> tuple[dict[tuple[int, int], Answer], list[str]]:
-    """Every request's (choice, probabilities, confidence); a failed one is left out and its error listed."""
+    """Every request's answer (choice: (choice, probabilities, confidence); noul: the probability); a failed one is
+    left out and its error listed. Identical bodies (the k samples of a case) are sent once: concurrent cache misses
+    would each pay."""
+    groups: dict[str, list[Request]] = defaultdict(list)
+    for request in requests:
+        groups[body_key(request.body())].append(request)
+
     async def one(request: Request):
         try:
             response = await jev.ask(request.state, request.questions)
-            return request.key, parse_choice(response, request.qid, {k for k, _ in request.criteria}), None
+            if request.kind == "noul":
+                return parse_noul(response, request.qid), None
+            return parse_choice(response, request.qid, {k for k, _ in request.criteria}), None
         except JevError as exc:
-            return request.key, None, f"{request.key}: {exc}"
+            return None, str(exc)
     answers, errors = {}, []
-    for key, answer, error in await asyncio.gather(*(one(r) for r in requests)):
-        if error:
-            errors.append(error)
-        else:
-            answers[key] = answer
+    results = await asyncio.gather(*(one(group[0]) for group in groups.values()))
+    for group, (answer, error) in zip(groups.values(), results):
+        for request in group:
+            if error:
+                errors.append(f"{request.key}: {error}")
+            else:
+                answers[request.key] = answer
     return answers, errors
 
 
@@ -480,8 +543,73 @@ def score_j4(turns: Sequence[Turn], answers: dict[tuple[int, int], Answer],
     return {"rows_with_creates": len(scored), "duplicate_create_rows": positives, "table": table}
 
 
-SCORERS = {"j1": score_j1, "j2": score_j2, "j3": score_j3, "j4": score_j4}
-SIZES_FOR = {"j1": SIZES, "j2": SIZES, "j3": None, "j4": None}
+def clarify_expected(case: Case) -> bool:
+    """Gold wants a question: no target to act on (grade() calls any action SHOULD_CLARIFY)."""
+    return not case.gold_targets
+
+
+def score_j6(turns: Sequence[Turn], answers: dict[tuple[int, int], float],
+             thresholds: Sequence[float] = NOUL_THRESHOLDS) -> dict[str, Any]:
+    rows = [(turn, answers[(t, -1)]) for t, turn in enumerate(turns) if (t, -1) in answers]
+    positives = sum(turn.row["outcome"] == SHOULD_CLARIFY for turn, _ in rows)
+    expected = [turn for turn, _ in rows if clarify_expected(turn.case)]
+    table = []
+    for threshold in thresholds:
+        flags = [(turn, noul >= threshold) for turn, noul in rows]
+        flagged = [turn for turn, f in flags if f]
+        caught = sum(turn.row["outcome"] == SHOULD_CLARIFY for turn in flagged)
+        false = [turn for turn in flagged if turn.row["outcome"] == CORRECT and not clarify_expected(turn.case)]
+        by_kind: dict[str, Counter] = defaultdict(Counter)
+        for turn, f in flags:
+            cell = by_kind[turn.case.kind]
+            cell["rows"] += 1
+            cell["flagged"] += f
+            cell["should_clarify"] += turn.row["outcome"] == SHOULD_CLARIFY
+            cell["caught"] += f and turn.row["outcome"] == SHOULD_CLARIFY
+            cell["false_on_correct"] += f and turn.row["outcome"] == CORRECT and not clarify_expected(turn.case)
+        table.append({"threshold": threshold, "rows": len(rows), "flagged": len(flagged),
+                      "rate": _rate(len(flagged), len(rows)), "should_clarify_caught": caught,
+                      "should_clarify": positives, "false_on_correct": len(false),
+                      "other_flags": len(flagged) - caught - len(false),
+                      "precision": _rate(caught, len(flagged)), "recall": _rate(caught, positives),
+                      "by_kind": {k: dict(v) for k, v in sorted(by_kind.items())}})
+    kinds = sorted({turn.case.kind for turn, _ in rows})
+    mean = {k: round(sum(n for t, n in rows if t.case.kind == k) / sum(1 for t, _ in rows if t.case.kind == k), 4)
+            for k in kinds}
+    return {"rows": len(rows), "should_clarify_failures": positives, "clarify_expected_rows": len(expected),
+            "ia_clarified_expected": sum(bool(turn.row.get("clarified")) for turn in expected),
+            "ia_correct_expected": sum(turn.row["outcome"] == CORRECT for turn in expected),
+            "mean_noul_by_kind": mean, "table": table}
+
+
+def score_j7(turns: Sequence[Turn], answers: dict[tuple[int, int], Answer]) -> dict[str, Any]:
+    cells: dict[tuple[str, str], Counter] = defaultdict(Counter)
+    confusion: dict[str, Counter] = defaultdict(Counter)
+    for t, turn in enumerate(turns):
+        if (t, -1) not in answers:
+            continue
+        gold = KIND_CLASS[turn.case.kind]
+        choice = answers[(t, -1)][0]
+        confusion[gold][choice] += 1
+        for key in ((gold, turn.size), (gold, "all"), ("all", turn.size), ("all", "all")):
+            cells[key]["rows"] += 1
+            cells[key]["right"] += choice == gold
+    table = [{"type": g, "size": s, "rows": c["rows"], "accuracy": _rate(c["right"], c["rows"])}
+             for (g, s), c in sorted(cells.items())]
+    # A safeguard gated on type X: how often a row of type X is called X (recall), how often a call of X is right.
+    safeguards = {}
+    for kind in SAFEGUARD_KINDS:
+        rows = sum(confusion[kind].values())
+        called = sum(confusion[g][kind] for g in confusion)
+        right = confusion[kind][kind]
+        safeguards[kind] = {"rows": rows, "recall": _rate(right, rows), "called": called,
+                            "precision": _rate(right, called)}
+    return {"merged": {k: v for k, v in KIND_CLASS.items() if k != v}, "table": table,
+            "confusion": {g: dict(c.most_common()) for g, c in sorted(confusion.items())}, "safeguards": safeguards}
+
+
+SCORERS = {"j1": score_j1, "j2": score_j2, "j3": score_j3, "j4": score_j4, "j6": score_j6, "j7": score_j7}
+SIZES_FOR = {"j1": SIZES, "j2": SIZES, "j3": None, "j4": None, "j6": SIZES, "j7": None}
 
 
 # --- output ---------------------------------------------------------------------------------------------------------
@@ -514,6 +642,34 @@ def print_report(experiment: str, report: dict[str, Any]) -> None:
         for line in report["table"]:
             print(f"{line['kind']:24} {line['size']:11} {line['rows']:>5} {line['jev_pass']:>6.3f} "
                   f"{line['ia_pass']:>6.3f}")
+    elif experiment == "j6":
+        print(f"{report['rows']} user rows; should_clarify failures {report['should_clarify_failures']}; "
+              f"clarify-expected rows {report['clarify_expected_rows']}, IA clarified "
+              f"{report['ia_clarified_expected']}, IA correct {report['ia_correct_expected']}")
+        print(f"mean noul by kind: {report['mean_noul_by_kind']}")
+        print(f"{'noul>=':>6} {'rate':>6} {'caught':>7} {'false':>6} {'other':>6} {'prec':>5} {'recall':>6}  "
+              "flagged by kind (flagged/rows, caught, false)")
+        for line in report["table"]:
+            kinds = " ".join(f"{k}={v['flagged']}/{v['rows']},{v['caught']},{v['false_on_correct']}"
+                             for k, v in line["by_kind"].items() if v["flagged"])
+            print(f"{line['threshold']:>6.2f} {line['rate']:>6.3f} {line['should_clarify_caught']:>3}/"
+                  f"{line['should_clarify']:<3} {line['false_on_correct']:>6} {line['other_flags']:>6} "
+                  f"{line['precision']:>5.2f} {line['recall']:>6.2f}  {kinds}")
+    elif experiment == "j7":
+        print(f"merged kinds: {report['merged']}")
+        sizes = sorted({line["size"] for line in report["table"]} - {"all"}, key=lambda s: int(s.split("-")[-1]))
+        print(f"{'gold type':22} " + " ".join(f"{s:>11}" for s in sizes + ["all"]))
+        grid = {(line["type"], line["size"]): line for line in report["table"]}
+        for gold in sorted({line["type"] for line in report["table"]}):
+            cells = [grid.get((gold, s)) for s in sizes + ["all"]]
+            print(f"{gold:22} " + " ".join(f"{c['accuracy']:>5.2f} ({c['rows']:>3})" if c else f"{'-':>11}"
+                                           for c in cells))
+        print("confusion (gold -> Jev's calls):")
+        for gold, calls in report["confusion"].items():
+            print(f"  {gold:22} {calls}")
+        for kind, part in report["safeguards"].items():
+            print(f"  safeguard {kind:22} recall={part['recall']:.2f} ({part['rows']} rows)  "
+                  f"precision={part['precision']:.2f} ({part['called']} called)")
     else:
         print(f"{report['rows_with_creates']} rows with creates, {report['duplicate_create_rows']} duplicate_create")
         for line in report["table"]:

@@ -183,3 +183,66 @@ def test_without_a_key_the_run_stops(tmp_path, monkeypatch):
     monkeypatch.setattr(jx, "load_turns", lambda path, sizes, limit: ({}, _turns()))
     monkeypatch.setattr(jx, "_make_jev", lambda budget: None)
     assert jx.main(["j1", "--result", str(_result(tmp_path, 1))]) == 2
+
+
+# --- j6 clarify / j7 message type ------------------------------------------------------------------------------------
+
+def _clarify_turns():
+    ben = _turn("ben", "same_name_people", "did ben ever get back to me?", [], "should_clarify",
+                [_create("Ben Reply Check", "Check whether Ben replied.")])
+    ruth_ok = _turn("ruth2", "status_question", "did Ruth reply about Thanksgiving?", ["ruth"], CORRECT,
+                    [_reuse("ruth")], size="lived-1000")
+    return [*_turns(), ben, ruth_ok]
+
+
+def test_j6_plans_one_noul_per_user_turn_at_200_and_1000():
+    turns = _clarify_turns()
+    requests = jx.plan("j6", turns)
+    assert [r.key for r in requests] == [(0, -1), (1, -1), (2, -1), (4, -1), (5, -1)]  # no agent turn
+    body = requests[0].body()
+    assert body["questions"] == {"clarify": {"type": "noul", "instructions": jx.CLARIFY_INSTRUCTIONS}}
+    assert body["state"] == turns[0].router_state
+
+
+async def test_j6_scores_flags_by_kind():
+    turns = _clarify_turns()
+    fake = ScriptedJev(lambda s, qid, q: {"type": "noul", "noul": 0.9 if "ben" in s.split("<active_agents")[0]
+                                          else 0.5 if "Ruth reply" in s else 0.1})
+    answers, errors = await jx.ask_all(fake, jx.plan("j6", turns))
+    assert errors == [] and answers[(4, -1)] == 0.9
+    report = jx.score_j6(turns, answers, thresholds=[0.4, 0.8])
+    by_t = {line["threshold"]: line for line in report["table"]}
+    assert report["should_clarify_failures"] == 1 and report["clarify_expected_rows"] == 1
+    assert report["ia_clarified_expected"] == 0
+    assert by_t[0.8]["should_clarify_caught"] == 1 and by_t[0.8]["precision"] == 1.0 and by_t[0.8]["recall"] == 1.0
+    assert by_t[0.4]["false_on_correct"] == 1 and by_t[0.4]["by_kind"]["status_question"]["false_on_correct"] == 1
+    assert by_t[0.4]["precision"] == 0.5
+
+
+def test_j7_merges_kinds_and_scores_accuracy_and_safeguards():
+    assert set(jx.KIND_CLASS) >= {"typo", "paraphrase", "dormant_revival", "same_name_people", "multi_task"}
+    assert set(jx.KIND_CLASS.values()) == set(jx.MESSAGE_TYPES)
+    turns = _clarify_turns()
+    requests = jx.plan("j7", turns)
+    assert len(requests) == len(turns)
+    criteria = requests[0].body()["questions"]["message_type"]["criteria"]
+    assert set(criteria) == set(jx.MESSAGE_TYPES) and requests[0].body()["questions"]["message_type"]["type"] == "choice"
+    calls = {0: "same_person_new_topic", 1: "follow_up", 2: "follow_up", 3: "agent_result", 4: "vague_reference",
+             5: "status_question"}
+    report = jx.score_j7(turns, {(t, -1): (c, {}, 0.9) for t, c in calls.items()})
+    overall = next(l for l in report["table"] if (l["type"], l["size"]) == ("all", "all"))
+    assert overall["rows"] == 6 and overall["accuracy"] == pytest.approx(5 / 6, abs=1e-3)  # the paraphrase called follow_up
+    assert report["confusion"]["indirect_reference"] == {"follow_up": 1}
+    assert report["safeguards"]["status_question"] == {"rows": 1, "recall": 1.0, "called": 1, "precision": 1.0}
+    assert report["merged"]["typo"] == "indirect_reference"
+
+
+async def test_identical_requests_are_sent_once():
+    # k=3 samples of a case share a body; concurrent cache misses must not pay for it three times
+    turns = _clarify_turns()
+    requests = jx.plan("j6", turns)
+    doubled = requests + [jx.Request((99, -1), r.state, r.qid, r.criteria, r.instructions, r.kind) for r in requests]
+    fake = ScriptedJev(lambda s, qid, q: {"type": "noul", "noul": 0.3})
+    answers, errors = await jx.ask_all(fake, doubled)
+    assert len(fake.requests) == len(requests) and errors == []
+    assert set(answers) == {r.key for r in doubled}
