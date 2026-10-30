@@ -15,7 +15,7 @@ METRIC_KEYS = {
 
 
 def tiny(name="t", **overrides):
-    base = dict(name=name, layers=["routing"], n_agents=[10], k=1, cases_per_kind=1, include_handwritten=False)
+    base = dict(name=name, layers=["routing"], n_agents=[10], k=1, include_handwritten=False)
     return Config(**{**base, **overrides})
 
 
@@ -43,12 +43,12 @@ class PaidLLM:
 
 
 async def test_smoke_run_writes_results_leaderboard_and_report(tmp_path):
-    cfg = Config(name="smoke", n_agents=[10, 20], world_seeds=[1], k=2, cases_per_kind=1, budget_usd=1.0)
+    cfg = Config(name="smoke", n_agents=[10, 50], k=2, budget_usd=1.0)
     path = await run_experiment(cfg, llm=fake_llm(), out_dir=tmp_path, split="dev", final=False)
 
     data = json.loads(path.read_text(encoding="utf-8"))
-    assert {"10", "20"} <= set(data["summary"]["routing"])
-    assert {"10", "20"} <= set(data["summary"]["retrieval"])
+    assert {"lived-10", "lived-50"} <= set(data["summary"]["routing"])
+    assert {"lived-10", "lived-50"} <= set(data["summary"]["retrieval"])
     assert data["routing_rows"] and {r["sample"] for r in data["routing_rows"]} == {0, 1}
     assert data["meta"]["checksum"] and data["meta"]["valid"] is True
     assert path.stem in (tmp_path / "leaderboard.md").read_text(encoding="utf-8")
@@ -72,7 +72,7 @@ def test_unknown_config_key_is_rejected(tmp_path):
 
 def test_cli_fake_run(tmp_path, capsys):
     config = tmp_path / "c.yaml"
-    config.write_text("name: cli\nn_agents: [10]\nk: 1\ncases_per_kind: 1\ninclude_handwritten: false\n", encoding="utf-8")
+    config.write_text("name: cli\nn_agents: [10]\nk: 1\ninclude_handwritten: false\n", encoding="utf-8")
     assert main(["--config", str(config), "--fake-llm", "--out-dir", str(tmp_path)]) == 0
     assert list(tmp_path.glob("*-cli-dev.json"))
     out = capsys.readouterr().out
@@ -104,7 +104,7 @@ async def test_failed_case_is_an_error_row_with_its_partial_cost(tmp_path):
     meta = data["meta"]
     assert meta["fresh_cost_usd"] == pytest.approx(0.01 * len(rows))
     assert meta["unattributed_cost_usd"] == pytest.approx(0.0)
-    group = data["summary"]["routing"]["10"]
+    group = data["summary"]["routing"]["lived-10"]
     assert group["pass_at_1"] is None and group["error_rate"] == 1.0
 
     html = render(data)
@@ -126,20 +126,21 @@ async def test_budget_exhaustion_leaves_unrun_cases_out(tmp_path):
     assert meta["budget_spent_usd"] == pytest.approx(0.03)
     assert meta["fresh_cost_usd"] == pytest.approx(0.02)
     assert meta["unattributed_cost_usd"] == pytest.approx(0.01)  # the in-flight case's first call
-    group = data["summary"]["routing"]["10"]
+    group = data["summary"]["routing"]["lived-10"]
     assert group["error_count"] == 0
     assert group["planned_cases"] > 1 and group["incomplete_cases"] == group["planned_cases"] - 1
 
 
 async def test_planned_size_with_no_rows_still_reports(tmp_path, capsys):
-    cfg = tiny(n_agents=[10, 20], concurrency=1)
+    cfg = tiny(n_agents=[10, 50], concurrency=1)
     llm = PaidLLM(cap=0.0)
     path = await run_experiment(cfg, llm=llm, out_dir=tmp_path, split="dev", final=False)
     data = json.loads(path.read_text(encoding="utf-8"))
     assert data["routing_rows"] == []
     routing = data["summary"]["routing"]
-    assert set(routing) == {"10", "20"}
-    assert routing["20"]["pass_at_1"] is None and routing["20"]["incomplete_cases"] == routing["20"]["planned_cases"]
+    assert set(routing) == {"lived-10", "lived-50"}
+    assert routing["lived-50"]["pass_at_1"] is None
+    assert routing["lived-50"]["incomplete_cases"] == routing["lived-50"]["planned_cases"]
     render(data)
     write_leaderboard(tmp_path)
 
@@ -210,7 +211,7 @@ async def test_exception_in_routing_row_is_contained(tmp_path, monkeypatch):
 
 @pytest.mark.parametrize("body,key", [
     ("n_agents: [10, x]", "n_agents"),
-    ("world_seeds: 3", "world_seeds"),
+    ("world: synthetic", "world"),
     ("k: 0", "k"),
     ("concurrency: 1.5", "concurrency"),
     ("requests_per_minute: 0", "requests_per_minute"),
@@ -302,7 +303,7 @@ async def test_daily_quota_stops_the_run_but_keeps_it_valid(tmp_path):
 
 def test_routing_rows_carry_cached_prompt_tokens(tmp_path):
     config = tmp_path / "c.yaml"
-    config.write_text("name: cached\nn_agents: [10]\nk: 1\ncases_per_kind: 1\ninclude_handwritten: false\n", encoding="utf-8")
+    config.write_text("name: cached\nn_agents: [10]\nk: 1\ninclude_handwritten: false\n", encoding="utf-8")
     assert main(["--config", str(config), "--fake-llm", "--out-dir", str(tmp_path)]) == 0
     data = json.loads(next(tmp_path.glob("*-cached-dev.json")).read_text(encoding="utf-8"))
     assert data["routing_rows"]

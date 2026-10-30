@@ -1,6 +1,6 @@
 """Run an eval experiment.
 
-    python -m evals.run --config evals/experiments/baseline.yaml            # dev split
+    python -m evals.run --config evals/experiments/v2-retrieved.yaml        # dev split
     python -m evals.run --config evals/experiments/smoke.yaml --fake-llm    # offline
     python -m evals.run --config ... --split test --final                   # held-out, once per finalist
 
@@ -52,7 +52,6 @@ from .llm import (
 )
 from .metrics import summarize_retrieval, summarize_routing
 from .systems import get_system
-from .worlds.generator import build_world, generate_cases
 from .worlds.handwritten import load_handwritten
 from .worlds.lived import bench_v2
 from .worlds.lived.round2 import _sha256
@@ -72,9 +71,7 @@ class Config:
     model: str = "deepseek/deepseek-v4.1-flash"
     layers: list[str] = field(default_factory=lambda: ["retrieval", "routing"])
     n_agents: list[int] = field(default_factory=lambda: [10, 50, 200, 1000])
-    world_seeds: list[int] = field(default_factory=lambda: [1])
     k: int = 3
-    cases_per_kind: int = 3
     kinds: list[str] | None = None
     suite: str = "all"
     budget_usd: float = 15.0
@@ -82,7 +79,7 @@ class Config:
     requests_per_minute: int | None = None  # set for free models, which OpenRouter caps per minute
     max_retries: int = 3
     include_handwritten: bool = True
-    world: str = "synthetic"  # synthetic, lived (the frozen lived-in world; n_agents picks its sizes), or lived_v2
+    world: str = "lived"  # lived (the frozen lived-in world; n_agents picks its sizes) or lived_v2
     lived_path: str | None = None
     life: int = 1  # lived_v2 only: 1 is the dev life, 2 the sealed test life
     bench_dir: str | None = None  # lived_v2 only: where world-s{life}.json and its reviewed bench live
@@ -107,16 +104,14 @@ def _validate(cfg: Config) -> None:
     def bad(key: str, why: str) -> ValueError:
         return ValueError(f"config key {key!r}: {why}")
 
-    for key in ("n_agents", "world_seeds"):
-        v = getattr(cfg, key)
-        if not isinstance(v, list) or not all(_is_int(x) for x in v):
-            raise bad(key, "must be a list of ints")
+    if not isinstance(cfg.n_agents, list) or not all(_is_int(x) for x in cfg.n_agents):
+        raise bad("n_agents", "must be a list of ints")
     rpm = cfg.requests_per_minute
     if rpm is not None and (not _is_int(rpm) or rpm <= 0):
         raise bad("requests_per_minute", "must be null or a positive int")
     if not _is_int(cfg.max_retries) or cfg.max_retries < 0:
         raise bad("max_retries", "must be a non-negative int")
-    for key in ("k", "cases_per_kind", "concurrency"):
+    for key in ("k", "concurrency"):
         v = getattr(cfg, key)
         if not _is_int(v) or v <= 0:
             raise bad(key, "must be a positive int")
@@ -125,8 +120,8 @@ def _validate(cfg: Config) -> None:
         raise bad("budget_usd", "must be a positive number")
     if not isinstance(cfg.layers, list) or not set(cfg.layers) <= {"retrieval", "routing"}:
         raise bad("layers", "must be a list drawn from ['retrieval', 'routing']")
-    if cfg.world not in ("synthetic", "lived", "lived_v2"):
-        raise bad("world", "must be synthetic, lived or lived_v2")
+    if cfg.world not in ("lived", "lived_v2"):
+        raise bad("world", "must be lived or lived_v2")
     if not _is_int(cfg.life) or cfg.life not in (bench_v2.DEV_LIFE, bench_v2.TEST_LIFE):
         raise bad("life", "must be 1 (the dev life) or 2 (the sealed test life)")
     if cfg.bench_dir is not None and not isinstance(cfg.bench_dir, str):
@@ -173,11 +168,6 @@ def _build_units(cfg: Config, split: str) -> list[Unit]:
         for label, world, cases in bench_v2.load_v2(cfg.life, directory=_bench_dir(cfg)):
             if label in wanted:
                 units.append((label, world, filter_cases(cases, split=split, suite=cfg.suite, kinds=cfg.kinds)))
-    for seed in cfg.world_seeds if cfg.world == "synthetic" else []:
-        full = build_world(seed)
-        cases = filter_cases(generate_cases(full, cfg.cases_per_kind), split=split, suite=cfg.suite, kinds=cfg.kinds)
-        for n in cfg.n_agents:
-            units.append((n, full.truncated(n), cases))
     if cfg.include_handwritten:
         world, cases = load_handwritten()
         units.append(("handwritten", world, filter_cases(cases, split=split, suite=cfg.suite, kinds=cfg.kinds)))

@@ -16,7 +16,7 @@ Measures how well the Interaction Agent routes work to execution agents as the r
 ```bash
 python -m pytest -q                                                    # unit tests, offline
 python -m evals.run --config evals/experiments/smoke.yaml --fake-llm   # offline smoke
-python -m evals.run --config evals/experiments/baseline.yaml           # live, needs OPENROUTER_API_KEY in .env
+python -m evals.run --config evals/experiments/v2-retrieved.yaml       # live, needs OPENROUTER_API_KEY in .env
 python -m evals.view evals/results/<run>.json                          # HTML report with failing transcripts
 python -m evals.e2e_run --config evals/experiments/e2e.yaml             # L3, gate on (e2e-gate-off.yaml: ablation)
 python -m evals.e2e_run --config evals/experiments/e2e.yaml --fake-llm  # L3 offline plumbing check
@@ -33,7 +33,7 @@ python -m evals.e2e_run --interactive --scenario blank                  # L3 by 
 
 ## Rules
 - Tune on `dev`. `--split test` requires `--final` and runs once per finalist.
-- Protected files (cases, generator, grading, metrics, layers, regression suite) are checksummed;
+- Protected files (cases, worlds, grading, metrics, layers, regression suite) are checksummed;
   a run with a mismatch is marked **invalid**. Update only by deliberate commit:
   `python -m evals.integrity --update`.
 - Responses are cached in `evals/.cache/llm/`, keyed by request + sample index. Reruns are free.

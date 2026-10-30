@@ -11,15 +11,16 @@ from evals.layers.retrieval import run_retrieval_case
 from evals.layers.routing import MAX_ITERATIONS, build_messages, run_routing_case
 from evals.llm import ScriptedLLM, cache_key, tool_call
 from evals.systems.baseline import BaselineSystem
-from evals.worlds.generator import build_world, generate_cases
 from evals.worlds.lived.store import load_lived
 
 
+def lived_50():
+    return next((world, cases) for label, world, cases in load_lived() if label == "lived-50")
+
+
 def setup(kind="follow_up"):
-    full = build_world(1)
-    world = full.truncated(20)
-    case = next(c for c in generate_cases(full, per_kind=2) if c.kind == kind)
-    return world, case
+    world, cases = lived_50()
+    return world, next(c for c in cases if c.kind == kind)
 
 
 def tool_turns(messages):
@@ -97,7 +98,7 @@ def test_agent_results_use_the_agent_tag():
 def test_retrieval_baseline_shows_everything():
     world, case = setup()
     row = run_retrieval_case(case, world, BaselineSystem())
-    assert row["shown_count"] == 20
+    assert row["shown_count"] == len(world.agents) == 50
     assert row["recall"] == 1.0
     assert row["roster_tokens"] > 0
 
@@ -400,33 +401,15 @@ def mixed_script(world, case):
     return script
 
 
-# Decisions and payload cache keys for these runs, as produced by the routing layer at fa4bf6f, before
-# systems supplied the prompt, tools and handler. Equal hashes mean the baseline's payloads are unchanged.
-BASELINE_GOLDEN_SHA256 = "b8815b161431bbdcc707c84579a137d87cc96505a79fa35506b14560023b44eb"
-
-
-async def test_baseline_decisions_and_payloads_match_pre_refactor():
-    full = build_world(1)
-    world = full.truncated(20)
-    out = []
-    for case in generate_cases(full, per_kind=1)[:8]:
-        llm = KeyedLLM(mixed_script(world, case))
-        decision = await run_routing_case(case, world, BaselineSystem(), llm, model="m", sample=0)
-        fields = asdict(decision)
-        fields.pop("cached_prompt_tokens")  # accounting added after fa4bf6f; not part of the decision
-        fields.pop("second_looks")  # added in Plan 6c; empty for the baseline
-        out.append({"case": case.id, "decision": fields, "keys": llm.keys})
-    blob = json.dumps(out, indent=1, sort_keys=True).encode("utf-8")
-    assert hashlib.sha256(blob).hexdigest() == BASELINE_GOLDEN_SHA256
-
-
-# The same check on the frozen lived world (lived-50, its first 8 cases), recorded in the same run in which
-# the synthetic-world golden above still passed (Plan 6c Task 11): it carries that golden's chain of trust.
+# Decisions and payload cache keys for these runs (lived-50, its first 8 cases). Equal hashes mean the
+# baseline's payloads are unchanged since fa4bf6f, before systems supplied the prompt, tools and handler:
+# recorded in commit 5145e61, in the same run in which the original golden on the synthetic world (since
+# deleted with the generator, Plan 6c Task 11) still passed.
 BASELINE_LIVED_GOLDEN_SHA256 = "3138d603add64b442ca725eb8e0d58284787ff568104a0b8e4108aa6caafbf58"
 
 
 async def test_baseline_decisions_and_payloads_match_on_lived_world():
-    world, cases = next((w, c) for label, w, c in load_lived() if label == "lived-50")
+    world, cases = lived_50()
     out = []
     for case in cases[:8]:
         llm = KeyedLLM(mixed_script(world, case))
@@ -501,9 +484,8 @@ async def test_cached_prompt_tokens_are_summed():
 
 
 async def test_async_handlers_and_bound_llm_are_supported():
-    full = build_world(1)
-    world = full.truncated(20)
-    case = generate_cases(full, per_kind=1)[0]
+    world, cases = lived_50()
+    case = cases[0]
 
     class AsyncTurn:
         def __init__(self):

@@ -7,8 +7,12 @@ import pytest
 from evals.grading import Decision
 from evals.systems import get_system
 from evals.systems.baseline import BaselineSystem
-from evals.worlds.generator import build_world
+from evals.worlds.lived.store import load_lived
 from evals.worlds.model import AgentSpec, World
+
+
+def lived(label: str) -> World:
+    return next(world for name, world, _ in load_lived() if name == label)
 
 
 def production_roster(world: World) -> str:
@@ -22,7 +26,7 @@ def production_roster(world: World) -> str:
 
 
 def test_baseline_matches_production_rendering():
-    world = build_world(1).truncated(25)
+    world = lived("lived-50")
     assert BaselineSystem().render_roster(world, None) == production_roster(world)
 
 
@@ -52,12 +56,12 @@ def test_empty_roster_renders_none():
 
 
 def test_shows_every_agent_in_roster_order():
-    world = build_world(1).truncated(30)
+    world = lived("lived-50")
     assert BaselineSystem().shown_ids(world, None) == [a.id for a in world.roster_order()]
 
 
 def test_resolve_name_is_exact_like_production():
-    world = build_world(1).truncated(30)
+    world = lived("lived-50")
     agent = world.agents[0]
     system = BaselineSystem()
     assert system.resolve_name(world, agent.name) == agent.id
@@ -93,7 +97,7 @@ def test_signatures_cover_every_tool_schema():
 
 
 def test_new_turn_is_fresh_state():
-    world = build_world(1).truncated(20)
+    world = lived("lived-50")
     system = BaselineSystem()
     args = {"agent_name": "Brand new", "instructions": "x"}
     first, second = Decision(), Decision()

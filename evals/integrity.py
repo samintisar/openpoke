@@ -19,7 +19,6 @@ PROTECTED = (
     "evals/layers/retrieval.py",
     "evals/layers/routing.py",
     "evals/worlds/model.py",
-    "evals/worlds/generator.py",
     "evals/worlds/handwritten.py",
     "evals/worlds/handwritten_cases.yaml",
     "evals/suites/regression.txt",
