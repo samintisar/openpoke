@@ -7,7 +7,7 @@ from server.services.agents.cards import AgentCard
 from server.services.agents.directory import InMemoryDirectory
 from server.services.agents.registry import SqliteAgentDirectory
 from server.services.agents.render import render_card
-from server.services.agents.retrieval import score_cards
+from server.services.agents.retrieval import _entity_terms, score_cards
 
 NOW = datetime(2026, 10, 30, 12, tzinfo=timezone.utc)
 
@@ -29,12 +29,12 @@ def test_retrieval_reads_the_summary():
     assert score_cards("how's the bathroom remodel going?", [other, trent], NOW)[0][0].id == "trent"
 
 
-def test_in_memory_update_sets_summary_and_merges_its_people():
+def test_in_memory_update_sets_summary():
     directory = InMemoryDirectory([_card("t", "Trent - Permit Stuff", "Ask Trent about permits.")])
     directory.update_card("t", summary="Trent Hollis is coordinating with Wanda Mills.")
     card = directory.get("t")
     assert card.summary == "Trent Hollis is coordinating with Wanda Mills."
-    assert {"hollis", "wanda", "mills"} <= set(card.entities)
+    assert card.entities == []  # the summary's people are read by retrieval, not stored
 
 
 def test_sqlite_stores_summary_and_migrates_last_status(tmp_path):
@@ -49,7 +49,7 @@ def test_sqlite_stores_summary_and_migrates_last_status(tmp_path):
     assert directory.get("gary").summary == "Waiting on Gary"
     directory.update_card("gary", summary="Gary Whitman: lease renewal and the parking spot.")
     again = SqliteAgentDirectory(path).get("gary")
-    assert again.summary == "Gary Whitman: lease renewal and the parking spot." and "whitman" in again.entities
+    assert again.summary == "Gary Whitman: lease renewal and the parking spot." and again.entities == []
 
 
 def test_retrieval_finds_a_card_with_only_last_status():
@@ -59,17 +59,32 @@ def test_retrieval_finds_a_card_with_only_last_status():
     assert score_cards("bathroom remodel quote", [other, old], NOW)[0][0].id == "o"
 
 
-def test_summary_entities_are_replaced_not_accumulated():
-    directory = InMemoryDirectory([_card("t", "T", "Ask Trent about permits.")])
-    directory.update_card("t", summary="People: Trent Hollis. Decided: Wanda Mills approves. Pending: quote.")
-    first = set(directory.get("t").entities)
-    assert {"hollis", "wanda", "mills"} <= first and not {"decided", "pending", "people"} & first
-    directory.update_card("t", summary="People: Trent Hollis. Topics: Gary Whitman lease.")
-    second = set(directory.get("t").entities)
-    assert "whitman" in second and not {"wanda", "mills"} & second and "hollis" in second
-    for _ in range(5):
-        directory.update_card("t", summary="People: Trent Hollis. Topics: Gary Whitman lease.")
-    assert set(directory.get("t").entities) == second
+def test_update_card_summary_leaves_entities_alone():
+    start = datetime(2026, 10, 1, tzinfo=timezone.utc)
+    directory = InMemoryDirectory()
+    card = directory.create("Gary Lease", "Renew the lease", "Email gary@acme.com: Gary Whitman and Priyanka Shah sign.", start)
+    before = list(card.entities)
+    assert "whitman" in before
+    directory.update_card(card.id, summary="Gary Whitman and Priyanka Shah agreed on the co-signer.")
+    directory.update_card(card.id, summary="Lease signed; only parking remains.")
+    after = directory.get(card.id)
+    assert after.entities == before and "whitman" in after.entities
+
+
+def test_sqlite_update_card_summary_leaves_entities_alone(tmp_path):
+    start = datetime(2026, 10, 1, tzinfo=timezone.utc)
+    directory = SqliteAgentDirectory(tmp_path / "a.db")
+    card = directory.create("Gary Lease", "Renew the lease", "Gary Whitman and Priyanka Shah sign.", start)
+    before = list(card.entities)
+    directory.update_card(card.id, summary="Wanda Mills is the new co-signer.")
+    assert directory.get(card.id).entities == before
+
+
+def test_retrieval_boosts_a_person_named_only_in_the_summary():
+    plain = _card("a", "Lease Helper", "Handle the lease.", "Wanda Mills is the co-signer.")
+    other = _card("b", "Lease Helper Two", "Handle the lease.", "Parking spot only.")
+    assert "wanda" in _entity_terms(plain) and "wanda" not in _entity_terms(other)
+    assert score_cards("what did Wanda Mills say", [other, plain], NOW)[0][0].id == "a"
 
 
 def test_sqlite_and_in_memory_agree_on_summary_updates(tmp_path):

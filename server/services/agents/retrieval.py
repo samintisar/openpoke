@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import math
+from functools import lru_cache
 import re
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Iterable, Optional, Sequence, Union
 
-from .cards import STOPWORDS, AgentCard, as_utc, is_common, normalize_name
+from .cards import STOPWORDS, AgentCard, as_utc, extract_entities, is_common, normalize_name
 
 _TOKEN_RE = re.compile(r"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}|[a-z0-9]+")
 _PINNED_RE = re.compile(r"^\s*\[(?:SUCCESS|FAILED|PARTIAL)\]\s*([^:\n]+?)\s*:", re.MULTILINE)
@@ -84,9 +85,16 @@ def _doc_tokens(card: AgentCard) -> list[str]:
     return tokenize(f"{card.name} {card.purpose} {card.summary or card.last_status}")
 
 
+@lru_cache(maxsize=4096)
+def _summary_terms(summary: str) -> frozenset[str]:
+    """People and other entities named in a summary (cached: runs per card per query)."""
+    return frozenset(content_tokens(" ".join(extract_entities([summary])))) if summary else frozenset()
+
+
 def _entity_terms(card: AgentCard) -> set[str]:
     terms = set(content_tokens(" ".join(card.entities)))
     terms.update(content_tokens(card.name))
+    terms.update(_summary_terms(card.summary))
     return terms
 
 

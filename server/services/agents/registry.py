@@ -12,7 +12,7 @@ from typing import Any, Iterable, Optional
 
 from ...logging_config import logger
 from .cards import AgentCard, as_utc, extract_entities, normalize_name, slug_id
-from .directory import merge_entities, replace_summary_entities
+from .directory import merge_entities
 
 STATUS_CHARS = 200
 _LAST_ROUTED_KEY = "last_routed"
@@ -68,14 +68,15 @@ class SqliteAgentDirectory:
         );
         """
         with self._lock, self._connect() as conn:
-            for attempt in range(50):  # switching to WAL does not wait on the busy timeout when another open races it
-                try:
-                    conn.execute("PRAGMA journal_mode=WAL;")
-                    break
-                except sqlite3.OperationalError:
-                    if attempt == 49:
-                        raise
-                    time.sleep(0.05)
+            if str(conn.execute("PRAGMA journal_mode;").fetchone()[0]).lower() != "wal":
+                for attempt in range(50):  # switching to WAL does not wait on the busy timeout when opens race
+                    try:
+                        conn.execute("PRAGMA journal_mode=WAL;")
+                        break
+                    except sqlite3.OperationalError as exc:
+                        if attempt == 49 or not any(word in str(exc).lower() for word in ("locked", "busy")):
+                            raise
+                        time.sleep(0.05)
             conn.execute(agents_sql)
             conn.execute(meta_sql)
             conn.execute("BEGIN IMMEDIATE")  # one writer migrates; the check, ALTER and copy succeed or fail together
@@ -175,23 +176,9 @@ class SqliteAgentDirectory:
         updates = {k: v for k, v in fields.items() if v is not None}
         if not updates:
             return
-        with self._lock, self._connect() as conn:
-            conn.execute("BEGIN IMMEDIATE")  # read and write under one lock so a concurrent touch() is not overwritten
-            try:
-                if summary is not None:
-                    row = conn.execute("SELECT entities, summary FROM agents WHERE id = ?", (agent_id,)).fetchone()
-                    if row is not None:
-                        try:
-                            entities = [str(e) for e in json.loads(row["entities"] or "[]")]
-                        except (json.JSONDecodeError, TypeError):
-                            entities = []
-                        updates["entities"] = json.dumps(replace_summary_entities(entities, row["summary"] or "", summary))
-                assignments = ", ".join(f"{column} = ?" for column in updates)
-                conn.execute(f"UPDATE agents SET {assignments} WHERE id = ?", (*updates.values(), agent_id))
-                conn.execute("COMMIT")
-            except Exception:
-                conn.execute("ROLLBACK")
-                raise
+        assignments = ", ".join(f"{column} = ?" for column in updates)
+        with self._lock, self._connect() as conn:  # a single statement: entities are never read or rewritten here
+            conn.execute(f"UPDATE agents SET {assignments} WHERE id = ?", (*updates.values(), agent_id))
 
     def find_by_name(self, name: str) -> Optional[AgentCard]:
         """Exact display-name match first, then normalized; oldest card wins."""

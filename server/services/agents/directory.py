@@ -95,9 +95,7 @@ class InMemoryDirectory:
         if status is not None:
             card.status = status
         if summary is not None:
-            summary = summary.strip()
-            card.entities = replace_summary_entities(card.entities, card.summary, summary)
-            card.summary = summary
+            card.summary = summary.strip()  # entities are not touched: retrieval reads the summary's people itself
 
 
-__all__ = ["AgentDirectory", "InMemoryDirectory", "merge_entities", "replace_summary_entities"]
+__all__ = ["AgentDirectory", "InMemoryDirectory", "merge_entities"]
