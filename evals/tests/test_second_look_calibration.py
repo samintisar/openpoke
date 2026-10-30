@@ -39,8 +39,9 @@ def _create(name, purpose, **extra):
 # --- trigger_reason / first_trigger: pure thresholds over config-independent features ---------------------------
 
 def test_trigger_reason_applies_each_threshold():
-    cfg = SecondLookConfig(min_score=0.5, reuse_coverage=0.5, name_coverage=0.8)
+    cfg = SecondLookConfig(create=True, min_score=0.5, reuse_coverage=0.5, name_coverage=0.8)
     assert trigger_reason(Proposal("create", best_score=0.6, evidence=True), cfg) == "create"
+    assert trigger_reason(Proposal("create", best_score=0.6, evidence=True), SecondLookConfig()) is None  # off
     assert trigger_reason(Proposal("create", best_score=0.4, evidence=True), cfg) is None
     assert trigger_reason(Proposal("create", best_score=0.9, evidence=False), cfg) is None
     assert trigger_reason(Proposal("create", best_score=0.9, evidence=True, guarded=True), cfg) is None
@@ -65,20 +66,20 @@ def test_proposals_match_the_production_triggers():
     msg = "ask Kwame what he thinks we should do for game night"
     row = {"tool_calls": [_reuse("kwame-book")]}
     [prop] = proposals_for(row, msg, CARDS, NOW)
-    for cfg in (SecondLookConfig(), SecondLookConfig(reuse_coverage=0.1), SecondLookConfig(name_coverage=0.0)):
+    for cfg in (SecondLookConfig(), SecondLookConfig(reuse_coverage=0.1), SecondLookConfig(name_coverage=0.8)):
         assert (trigger_reason(prop, cfg) is not None) == bool(reuse_trigger(msg, KWAME_BOOK, CARDS, NOW, cfg))
     assert trigger_reason(prop, SecondLookConfig()) == "low_coverage"
 
     sedona = "book a rental car in Sedona"
     [prop] = proposals_for({"tool_calls": [_reuse("phoenix-trip")]}, sedona, CARDS, NOW)
-    assert trigger_reason(prop, SecondLookConfig()) == "unmentioned_name"
+    assert trigger_reason(prop, SecondLookConfig(name_coverage=0.8)) == "unmentioned_name"
+    assert trigger_reason(prop, SecondLookConfig()) is None  # name_coverage 0: the signal is off
     assert trigger_reason(prop, SecondLookConfig(name_coverage=0.0, reuse_coverage=0.0)) is None
 
     remodel = "any update from my contractor on the bathroom remodel?"
     [prop] = proposals_for({"tool_calls": [_create("Contractor Update", "Get an update from the contractor.")]},
                            remodel, CARDS, NOW)
-    for min_score in (0.3, 0.5, 0.9, 1.1):
-        cfg = SecondLookConfig(min_score=min_score)
+    for cfg in [SecondLookConfig()] + [SecondLookConfig(create=True, min_score=m) for m in (0.3, 0.5, 0.9, 1.1)]:
         assert (trigger_reason(prop, cfg) == "create") == bool(create_trigger(remodel, CARDS, NOW, cfg))
 
 
@@ -99,7 +100,7 @@ def test_proposals_skip_errored_calls_and_unknown_ids_and_see_in_turn_creates():
 def test_a_create_the_duplicate_guard_catches_is_guarded():
     row = {"tool_calls": [_create("Kwame Book Club Dates", "Ask Kwame which dates work for book club.")]}
     [prop] = proposals_for(row, "ask Kwame about book club dates", CARDS, NOW)
-    assert prop.guarded and trigger_reason(prop, SecondLookConfig(min_score=0.0)) is None
+    assert prop.guarded and trigger_reason(prop, SecondLookConfig(create=True, min_score=0.0)) is None
     [prop] = proposals_for(row, "ask Kwame about book club dates", CARDS, NOW, guard=False)
     assert not prop.guarded
 
@@ -120,8 +121,8 @@ ITEMS = [
 
 
 def test_sweep_counts_rates_reasons_and_failures():
-    [row] = sweep(ITEMS, [SecondLookConfig(min_score=0.6, reuse_coverage=0.5)])
-    assert row["min_score"] == 0.6 and row["reuse_coverage"] == 0.5 and row["name_coverage"] == 0.8
+    [row] = sweep(ITEMS, [SecondLookConfig(create=True, min_score=0.6, reuse_coverage=0.5, name_coverage=0.8)])
+    assert row["create"] and row["min_score"] == 0.6 and row["reuse_coverage"] == 0.5 and row["name_coverage"] == 0.8
     assert row["rows"] == 5 and row["triggered"] == 3 and row["trigger_rate"] == 0.6
     assert row["by_size"]["lived-200"]["trigger_rate"] == round(2 / 3, 4)
     assert row["by_size"]["lived-1000"]["trigger_rate"] == 0.5
@@ -150,3 +151,22 @@ def test_choose_takes_the_most_recall_under_the_cap_at_every_size():
     ]
     assert choose(table, cap=0.15) is table[3]  # ties on recall go to the lower rate
     assert choose(table, cap=0.01) is table[3]  # nothing under the cap: the lowest rate
+
+
+def test_shared_person_replay_counts_only_cards_that_outrank_the_target():
+    gus_a, gus_b = _card("gus-climb", "Gus - Climbing Gym", "Ask Gus about the meetup."), _card(
+        "gus-ski", "Gus - Ski Trip", "Ask Gus about the ski trip.")
+    msg = "ask Gus if the ski trip is still on"
+    for target, expected in ((gus_a, True), (gus_b, False)):
+        [prop] = proposals_for({"tool_calls": [_reuse(target.id)]}, msg, [gus_a, gus_b], NOW)
+        assert prop.shared_person is expected
+        assert bool(reuse_trigger(msg, target, [gus_a, gus_b], NOW, SecondLookConfig())) is expected
+
+
+def test_grid_sweeps_create_off_above_1_and_finds_the_default_line():
+    from evals.second_look_calibration import grid, is_default
+
+    configs = grid(min_scores=[0.5, 1.01], coverages=[0.2], name_coverages=[0.0])
+    assert [(c.create, c.min_score) for c in configs] == [(True, 0.5), (False, 1.01)]
+    rows = sweep(ITEMS, configs)
+    assert [is_default(row) for row in rows] == [False, True]

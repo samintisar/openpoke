@@ -48,7 +48,7 @@ from .charts import RESULTS
 from .grading import CORRECT, ERROR
 
 REASONS = ("create", "shared_person", "unmentioned_name", "low_coverage")
-# The last min_score and the 0.0 coverages switch a signal off (retrieval scores are at most 1.0).
+# The last min_score (> 1.0) sweeps the create trigger off (`create=False`); the 0.0 coverages switch a signal off.
 MIN_SCORES = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.01]
 COVERAGES = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
 NAME_COVERAGES = [0.0, 0.5, 0.6, 0.7, 0.8, 0.9]
@@ -65,7 +65,7 @@ class Proposal:
     guarded: bool = False  # create: the duplicate guard answers first
     best_score: Optional[float] = None  # create: the best card's retrieval score
     evidence: bool = False  # create: that card shares a person or MIN_SHARED_TERMS content words
-    shared_person: bool = False  # reuse: another top card shares a person with the message
+    shared_person: bool = False  # reuse: a top card that outranks the target shares a person with the message
     named_coverage: Optional[float] = None  # reuse: coverage with the unmentioned names, when there are any
     coverage: Optional[float] = None  # reuse: topic coverage on the target
 
@@ -73,7 +73,7 @@ class Proposal:
 def trigger_reason(prop: Proposal, cfg: SecondLookConfig) -> Optional[str]:
     """The trigger that fires on `prop` under `cfg` (the order of `reuse_trigger`'s checks), or None."""
     if prop.kind == "create":
-        fires = not prop.guarded and prop.evidence and prop.best_score is not None and prop.best_score >= cfg.min_score
+        fires = cfg.create and not prop.guarded and prop.evidence and prop.best_score is not None and prop.best_score >= cfg.min_score
         return "create" if fires else None
     if prop.kind == "reuse":
         if prop.shared_person:
@@ -116,8 +116,13 @@ def _proposal(args: dict[str, Any], message: str, directory: InMemoryDirectory, 
     if target is not None:  # mirrors reuse_trigger, keeping the values instead of comparing them
         known = set().union(*(_card_people(other) for other in cards), _card_people(target))
         people = _message_people(message, known)
-        shared = any(people & _card_people(card) for card, _ in top_cards(message, cards, now, rcfg)
-                     if card.id != target.id)
+        shared = False
+        for card, _ in top_cards(message, cards, now, rcfg):  # only cards that outrank the target
+            if card.id == target.id:
+                break
+            if people & _card_people(card):
+                shared = True
+                break
         target_people = _card_people(target)
         missing = people - target_people - set(tokenize(_card_text(target)))
         named = None
@@ -198,7 +203,7 @@ def sweep(items: Sequence[dict[str, Any]], configs: Iterable[SecondLookConfig],
                 covered[item["outcome"]] += 1
         triggered, hit = sum(reasons.values()), sum(covered.values())
         table.append({
-            "min_score": cfg.min_score, "reuse_coverage": cfg.reuse_coverage, "name_coverage": cfg.name_coverage,
+            "create": cfg.create, "min_score": cfg.min_score, "reuse_coverage": cfg.reuse_coverage, "name_coverage": cfg.name_coverage,
             "rows": len(items), "triggered": triggered, "trigger_rate": _rate(triggered, len(items)),
             "by_size": {size: {"rows": n, "triggered": by_size[size], "trigger_rate": _rate(by_size[size], n)}
                         for size, n in size_rows.items()},
@@ -221,8 +226,14 @@ def choose(table: Sequence[dict[str, Any]], cap: float = CAP) -> dict[str, Any]:
 
 def grid(min_scores: Sequence[float] = MIN_SCORES, coverages: Sequence[float] = COVERAGES,
          name_coverages: Sequence[float] = NAME_COVERAGES) -> list[SecondLookConfig]:
-    return [replace(DEFAULT_SECOND_LOOK, min_score=m, reuse_coverage=c, name_coverage=n)
+    return [replace(DEFAULT_SECOND_LOOK, create=m <= 1.0, min_score=m, reuse_coverage=c, name_coverage=n)
             for m, c, n in product(min_scores, coverages, name_coverages)]
+
+
+def is_default(line: dict[str, Any], cfg: SecondLookConfig = DEFAULT_SECOND_LOOK) -> bool:
+    """The grid line that triggers like `cfg` (with the create trigger off, its min_score does not matter)."""
+    same_create = line["create"] == cfg.create and (not cfg.create or line["min_score"] == cfg.min_score)
+    return same_create and (line["reuse_coverage"], line["name_coverage"]) == (cfg.reuse_coverage, cfg.name_coverage)
 
 
 # --- the run -------------------------------------------------------------------------------------------------------
@@ -289,7 +300,8 @@ def _detail(title: str, line: dict[str, Any]) -> None:
 
 def _fmt(line: dict[str, Any]) -> str:
     sizes = " ".join(f"{k}={v['trigger_rate']:.3f}" for k, v in sorted(line["by_size"].items()))
-    return (f"min_score={line['min_score']:.1f} reuse_cov={line['reuse_coverage']:.1f} "
+    create = f"min_score={line['min_score']:.1f}" if line.get("create", True) else "create=off   "
+    return (f"{create} reuse_cov={line['reuse_coverage']:.1f} "
             f"name_cov={line['name_coverage']:.1f}  rate={line['trigger_rate']:.3f} ({sizes})  "
             f"covered={line['failures_covered']}/{line['failures']}  precision={line['precision']:.2f}  "
             f"reasons={line['by_reason']}")
@@ -309,9 +321,7 @@ def main(argv: list[str] | None = None) -> None:
     tables = {"200+1000": sweep(items, configs, SIZES), "all": sweep(items, configs)}
     for size in SIZES:
         tables[size] = sweep(items, configs, (size,))
-    default = [line for line in tables["200+1000"] if (line["min_score"], line["reuse_coverage"],
-               line["name_coverage"]) == (DEFAULT_SECOND_LOOK.min_score, DEFAULT_SECOND_LOOK.reuse_coverage,
-                                          DEFAULT_SECOND_LOOK.name_coverage)]
+    default = [line for line in tables["200+1000"] if is_default(line)]
     for line in default:
         _detail("default (200+1000)", line)
     best = choose(tables["200+1000"], args.cap)

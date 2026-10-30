@@ -1,14 +1,15 @@
 """Second look: one cheap model call at the routing moments where mistakes happen (Plan 6c).
 
 Code decides when it runs:
-- create: the interaction agent creates an agent, the duplicate guard did not fire, and an existing card scores
-  at least `min_score` against the message;
-  and the best card shows absolute evidence too (a shared person, or at least two shared content words), so one
-  common word cannot fire it through score normalization;
-- reuse: the interaction agent dispatches to agent A while another top card shares a person with the message
-  (the wrong-person risk), the message names someone or somewhere A's card never mentions (Sedona on a Phoenix
-  card), or few of the message's topic words, weighted by rarity across the cards, are on A's card (same person,
-  new subject).
+- create (off by default, `create=True`): the interaction agent creates an agent, the duplicate guard did not
+  fire, an existing card scores at least `min_score` against the message, and that card shows absolute evidence
+  too (a shared person, or at least two shared content words), so one common word cannot fire it through score
+  normalization;
+- reuse: the interaction agent dispatches to agent A while a card that outranks A in retrieval shares a person
+  with the message (the wrong-person risk), the message names someone or somewhere A's card never mentions
+  (Sedona on a Phoenix card; off by default, `name_coverage=0`), or few of the message's topic words, weighted by
+  rarity across the cards, are on A's card (same person, new subject).
+Defaults come from the offline calibration on life-1 dev (Task 9): about 0.11 of turns look.
 The call sees the message, the last conversation turns and the top cards with summaries, and answers reuse,
 new or ask. `effect` turns the verdict into what the dispatch does.
 """
@@ -40,9 +41,10 @@ MIN_SHARED_TERMS = 2  # create trigger without a shared person: content words th
 
 @dataclass(frozen=True)
 class SecondLookConfig:
+    create: bool = False  # create trigger on/off: offline it could not tell duplicates from correct creates
     min_score: float = 0.5  # create trigger: the best card's retrieval score against the message
-    reuse_coverage: float = 0.5  # reuse trigger: share of the message's topic words found on the target card
-    name_coverage: float = 0.8  # reuse trigger on an unmentioned name: fires only below this coverage (names counted)
+    reuse_coverage: float = 0.2  # reuse trigger: share of the message's topic words found on the target card
+    name_coverage: float = 0.0  # unmentioned-name trigger: fires only below this coverage (names counted); 0 = off
     timeout_s: float = 10.0
 
 
@@ -142,6 +144,8 @@ def _weighted_coverage(words: set[str], card: AgentCard, cards: Optional[Sequenc
 def create_trigger(message: str, cards: Sequence[AgentCard], now: datetime, cfg: SecondLookConfig,
                    rcfg: Optional[RetrievalConfig] = None) -> Optional[str]:
     """Why to look again before creating an agent, or None."""
+    if not cfg.create:
+        return None
     best = top_cards(message, cards, now, rcfg)
     if not best or best[0][1] < cfg.min_score:
         return None
@@ -159,15 +163,17 @@ def reuse_trigger(message: str, target: AgentCard, cards: Sequence[AgentCard], n
     """Why to look again before reusing `target`, or None."""
     known = set().union(*(_card_people(other) for other in cards), _card_people(target))
     people = _message_people(message, known)
-    for card, _ in top_cards(message, cards, now, rcfg):
-        shared = people & _card_people(card) if card.id != target.id else set()
+    for card, _ in top_cards(message, cards, now, rcfg):  # retrieval order: only cards that outrank the target
+        if card.id == target.id:
+            break
+        shared = people & _card_people(card)
         if shared:
-            return f"agent {card.id} also involves {', '.join(sorted(shared))}"
+            return f"agent {card.id} also involves {', '.join(sorted(shared))} and outranks {target.id}"
     # A name the target never mentions, in a message that names none of the target's people (Sedona on a Phoenix
     # card, not "ask Carl ... as a PDF"), with the target covering little of the message, those names included.
     target_people = _card_people(target)
     missing = people - target_people - set(tokenize(_card_text(target)))
-    if missing and not people & target_people:
+    if cfg.name_coverage > 0 and missing and not people & target_people:
         names = _person_terms(message)
         words = {t for t in content_tokens(message) if t not in names} | missing
         named_coverage = _weighted_coverage(words, target, cards)

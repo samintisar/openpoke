@@ -74,7 +74,7 @@ async def test_create_redirects_to_the_owner():
     args, held, record = await gate({"name": "Kwame Book Club Check", "purpose": "Ask Kwame again about book club",
                                      "instructions": "x", "force_new": True},
                                     message="any word from Kwame on the book club dates?", context=[],
-                                    directory=_dir(), now=NOW,
+                                    directory=_dir(), now=NOW, cfg=SecondLookConfig(create=True),
                                     complete=_verdict({"decision": "reuse", "agent_id": "kwame-book", "reason": "r"}))
     assert held is None and args == {"agent_id": "kwame-book", "instructions": "x"} and record["effect"] == "redirect"
     assert record["trigger"] == "create"
@@ -255,7 +255,7 @@ async def test_noguard_looks_at_an_obvious_duplicate():
     arguments = {"name": "Kwame Book Club Dates", "purpose": "Ask Kwame which dates work for book club.",
                  "instructions": "x"}
     args, held, record = await gate(dict(arguments), message="ask Kwame about book club dates", context=[],
-                                    directory=_dir(), now=NOW, guard=False,
+                                    directory=_dir(), now=NOW, guard=False, cfg=SecondLookConfig(create=True),
                                     complete=_verdict({"decision": "reuse", "agent_id": "kwame-book", "reason": "r"}))
     assert record is not None and record["trigger"] == "create" and record["effect"] == "redirect"
     assert args == {"agent_id": "kwame-book", "instructions": "x"} and held is None

@@ -47,12 +47,15 @@ def test_reuse_trigger_sees_a_person_named_only_in_the_summary():
     other = AgentCard(id="lease", name="Lease Renewal", purpose="Handle the lease renewal.", entities=[],
                       summary="Priya Shah (landlord) wants the signed lease renewal by Friday.",
                       created_at=NOW, last_active_at=NOW)
-    why = reuse_trigger("ask Priya about the ski trip", target, [target, other], NOW, cfg)
+    # The lease card shares Priya (named only in its summary) and outranks the ski card for this message.
+    why = reuse_trigger("ask Priya about the lease renewal", target, [target, other], NOW, cfg)
     assert why and "lease" in why
+    # The ski card ranks first for a ski message, so the lease card's Priya does not trigger a look.
+    assert reuse_trigger("ask Priya about the ski trip", target, [target, other], NOW, cfg) is None
 
 
 def test_create_trigger_fires_when_a_card_matches_well():
-    cfg = SecondLookConfig(min_score=0.5)
+    cfg = SecondLookConfig(create=True, min_score=0.5)
     assert create_trigger("any update from my contractor on the bathroom remodel?", CARDS, NOW, cfg)
     assert create_trigger("book a hotel in Savannah", CARDS, NOW, cfg) is None
 
@@ -107,6 +110,10 @@ async def test_review_times_out_and_wraps_errors():
     assert verdict == Verdict("new", None, "game night is a new subject")
 
 
+# The thresholds the review rounds were written against (before Task 9's calibration lowered the defaults).
+REVIEW_CFG = SecondLookConfig(reuse_coverage=0.5, name_coverage=0.8)
+
+
 # --- Review fixes (Task 7 review) -------------------------------------------------------------------------------
 
 BAETRIZ = _card("baetriz-trivia", "Baetriz Trivia Night", "Ask Baetriz which trivia night works for her.")
@@ -159,7 +166,7 @@ def test_topic_coverage_weighs_words_by_rarity_across_the_cards():
     ("ask Baetriz what time trivia night starts", False),
 ])
 def test_reuse_trigger_on_a_same_person_adjacent_topic(message, fires):
-    assert bool(reuse_trigger(message, BAETRIZ, NIGHTS, NOW, SecondLookConfig())) is fires
+    assert bool(reuse_trigger(message, BAETRIZ, NIGHTS, NOW, REVIEW_CFG)) is fires
 
 
 PHOENIX = _card("phoenix-trip", "Phoenix Trip Planning", "Plan the Phoenix trip, including a rental car.")
@@ -167,7 +174,7 @@ GARY = _card("gary-parking", "Gary Whitman Parking Spot", "Ask Gary Whitman abou
 
 
 def test_reuse_trigger_fires_on_a_place_the_target_card_never_mentions():
-    why = reuse_trigger("book a rental car in Sedona", PHOENIX, [PHOENIX, CARL], NOW, SecondLookConfig())
+    why = reuse_trigger("book a rental car in Sedona", PHOENIX, [PHOENIX, CARL], NOW, REVIEW_CFG)
     assert why and "sedona" in why
 
 
@@ -179,9 +186,12 @@ def test_reuse_trigger_ignores_weekdays_and_names_on_the_card():
 def test_reuse_trigger_counts_a_person_in_another_card_name():
     game = _card("kwame-game-night", "Kwame Game Night Ideas", "Collect ideas for game night.")
     assert "kwame" not in game.entities  # the Title Case name is not extracted; the purpose omits Kwame
-    why = reuse_trigger("ask Kwame about the book club dates", KWAME_BOOK, [KWAME_BOOK, game, CARL], NOW,
-                        SecondLookConfig())
+    roster = [KWAME_BOOK, game, CARL]
+    # The game-night card shares Kwame and outranks the target for a game-night message.
+    why = reuse_trigger("ask Kwame about game night", KWAME_BOOK, roster, NOW, SecondLookConfig())
     assert why and "kwame-game-night" in why
+    # For a book-club message the target ranks first: another Kwame card below it is no reason to look.
+    assert reuse_trigger("ask Kwame about the book club dates", KWAME_BOOK, roster, NOW, SecondLookConfig()) is None
 
 
 def test_message_people_drop_unknown_sentence_initial_capitals():
@@ -194,7 +204,8 @@ def test_message_people_drop_unknown_sentence_initial_capitals():
 
 def test_create_trigger_needs_more_than_one_shared_word():
     insurance = _card("car-insurance", "Car Insurance Renewal", "Renew the car insurance before it lapses.")
-    assert create_trigger("rent a car in Sedona", [insurance, KWAME_BOOK], NOW, SecondLookConfig()) is None
+    assert create_trigger("rent a car in Sedona", [insurance, KWAME_BOOK], NOW,
+                          SecondLookConfig(create=True)) is None
 
 
 def test_effect_rejects_an_unknown_proposal():
@@ -236,7 +247,7 @@ def test_a_topic_word_on_no_card_weighs_the_most():
     ("ask Baetriz what time trivia night starts", False),
 ])
 def test_reuse_trigger_on_a_new_subject_no_card_mentions(message, fires):
-    assert bool(reuse_trigger(message, BAETRIZ, NO_GAME, NOW, SecondLookConfig())) is fires
+    assert bool(reuse_trigger(message, BAETRIZ, NO_GAME, NOW, REVIEW_CFG)) is fires
 
 
 CARL_MATTER = _card("carl-remodel", "Carl Remodel Urgency Check", "Ask Carl how urgent the remodel is.",
@@ -252,11 +263,39 @@ CARL_MATTER = _card("carl-remodel", "Carl Remodel Urgency Check", "Ask Carl how 
 ])
 def test_reuse_trigger_ignores_new_names_in_a_same_matter_follow_up(message):
     # No Thanksgiving card here: "Ruth Thanksgiving" would fire the shared-name rule (name words count as people).
-    assert reuse_trigger(message, CARL_MATTER, [CARL_MATTER, PHOENIX, GARY], NOW, SecondLookConfig()) is None
+    for cfg in (SecondLookConfig(), REVIEW_CFG):
+        assert reuse_trigger(message, CARL_MATTER, [CARL_MATTER, PHOENIX, GARY], NOW, cfg) is None
 
 
-def test_name_coverage_defaults_to_0_8_and_gates_the_name_signal():
-    assert SecondLookConfig().name_coverage == 0.8
+def test_name_coverage_gates_the_name_signal_and_zero_turns_it_off():
     msg = "book a rental car in Sedona"
-    assert reuse_trigger(msg, PHOENIX, [PHOENIX, CARL], NOW, SecondLookConfig())
+    assert reuse_trigger(msg, PHOENIX, [PHOENIX, CARL], NOW, SecondLookConfig(name_coverage=0.8))
     assert reuse_trigger(msg, PHOENIX, [PHOENIX, CARL], NOW, SecondLookConfig(name_coverage=0.5)) is None
+    assert reuse_trigger(msg, PHOENIX, [PHOENIX, CARL], NOW, SecondLookConfig(name_coverage=0.0)) is None
+
+
+# --- Task 9 calibration: the shipped defaults ------------------------------------------------------------------
+
+def test_defaults_follow_the_calibration():
+    cfg = SecondLookConfig()
+    assert (cfg.create, cfg.min_score, cfg.reuse_coverage, cfg.name_coverage) == (False, 0.5, 0.2, 0.0)
+
+
+def test_create_trigger_is_off_by_default():
+    msg = "any update from my contractor on the bathroom remodel?"
+    assert create_trigger(msg, CARDS, NOW, SecondLookConfig()) is None
+    assert create_trigger(msg, CARDS, NOW, SecondLookConfig(create=True))
+
+
+def test_default_reuse_coverage_fires_only_on_little_overlap():
+    assert reuse_trigger("ask Kwame what he thinks we should do for game night", KWAME_BOOK, CARDS, NOW,
+                         SecondLookConfig())  # coverage 0.0
+    assert reuse_trigger("ask Baetriz about game night", BAETRIZ, NIGHTS, NOW, SecondLookConfig()) is None  # 0.33
+
+
+def test_shared_person_fires_only_when_the_other_card_outranks_the_target():
+    gus_a, gus_b = _card("gus-climb", "Gus - Climbing Gym", "Ask Gus about the meetup."), _card(
+        "gus-ski", "Gus - Ski Trip", "Ask Gus about the ski trip.")
+    msg = "ask Gus if the ski trip is still on"
+    assert "gus-ski" in reuse_trigger(msg, gus_a, [gus_a, gus_b], NOW, SecondLookConfig())  # ski card ranks first
+    assert reuse_trigger(msg, gus_b, [gus_a, gus_b], NOW, SecondLookConfig()) is None  # the climbing card ranks below

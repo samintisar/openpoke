@@ -1,3 +1,4 @@
+from dataclasses import replace
 import json
 
 from evals.cases import Case
@@ -138,11 +139,13 @@ async def test_noguard_still_looks_at_an_obvious_duplicate():
     message = "ask Kwame about book club dates"
     verdict = {"decision": "reuse", "agent_id": "kwame-book", "reason": "r"}
     noguard = RetrievedNoGuardSystem().new_turn(_world(), _case(message))
+    noguard.second_look_cfg = replace(noguard.second_look_cfg, create=True)  # the create trigger is off by default
     noguard.bind_llm(_verdict_llm(verdict), model="m", sample=0)
     decision = Decision()
     await noguard.handle("send_message_to_agent", dict(duplicate), decision)
     assert decision.second_looks[0]["trigger"] == "create" and decision.dispatched_ids == ["kwame-book"]
     guarded = RetrievedSystem().new_turn(_world(), _case(message))
+    guarded.second_look_cfg = replace(guarded.second_look_cfg, create=True)
     guarded.bind_llm(_verdict_llm(verdict), model="m", sample=0)
     decision = Decision()
     result = await guarded.handle("send_message_to_agent", dict(duplicate), decision)
