@@ -52,6 +52,8 @@ PROTECTED = (
     "evals/worlds/lived/agent-logs-s1.json",
     "evals/worlds/lived/agent-logs-s2.json",
     "evals/worlds/lived/summaries.py",
+    "evals/worlds/lived/summaries-s1.json",
+    "evals/worlds/lived/summaries-s2.json",
     "evals/worlds/memory_gen.py",
     "evals/layers/memory.py",
     "evals/memory_run.py",
