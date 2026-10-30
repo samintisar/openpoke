@@ -422,6 +422,9 @@ def load_v2(seed: int, *, directory: Path | None = None) -> list[tuple[str, Worl
         if body.get("world_sha256") != hashlib.sha256(path.read_bytes()).hexdigest():
             raise ValueError(f"{summary_file.name} was made for a different world than {path.name}; rebuild it")
         summaries = body["sizes"]
+        missing = [entry["label"] for entry in data["sizes"] if entry["label"] not in summaries]
+        if missing:
+            raise ValueError(f"{summary_file.name} has no summaries for {missing}; rebuild it")
     split = "dev" if seed == DEV_LIFE else "test"
     by_label: dict[str, list[Case]] = {}
     for probe in json.loads(reviewed.read_text(encoding="utf-8"))["probes"]:

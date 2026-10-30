@@ -375,11 +375,22 @@ def test_load_v2_attaches_summaries_for_the_same_world(tmp_path):
     write_v2_fixture(tmp_path, 1)
     sha = hashlib.sha256(world_path(1, tmp_path).read_bytes()).hexdigest()
     (tmp_path / "summaries-s1.json").write_text(json.dumps({"format": 1, "seed": 1, "world_sha256": sha,
-        "sizes": {"lived-10": {"a1": "Ann: ski trip."}}}), encoding="utf-8")
+        "sizes": {"lived-10": {"a1": "Ann: ski trip."}, "lived-200": {}, "lived-1000": {}}}), encoding="utf-8")
     units = {label: world for label, world, _ in load_v2(1, directory=tmp_path)}
     assert {a.id: a.summary for a in units["lived-10"].agents} == {"a1": "Ann: ski trip.", "a2": "", "a3": ""}
     assert all(a.summary == "" for a in units["lived-200"].agents)
     (tmp_path / "summaries-s1.json").write_text(json.dumps({"format": 1, "seed": 1, "world_sha256": "0" * 64,
         "sizes": {}}), encoding="utf-8")
     with pytest.raises(ValueError, match="different world"):
+        load_v2(1, directory=tmp_path)
+
+
+def test_load_v2_refuses_a_summaries_file_missing_a_size(tmp_path):
+    import hashlib
+    from evals.worlds.lived.bench_v2 import load_v2, world_path
+    write_v2_fixture(tmp_path, 1)
+    sha = hashlib.sha256(world_path(1, tmp_path).read_bytes()).hexdigest()
+    (tmp_path / "summaries-s1.json").write_text(json.dumps({"format": 1, "seed": 1, "world_sha256": sha,
+        "sizes": {"lived-10": {}, "lived-200": {}}}), encoding="utf-8")
+    with pytest.raises(ValueError, match="lived-1000"):
         load_v2(1, directory=tmp_path)

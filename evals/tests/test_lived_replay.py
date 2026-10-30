@@ -6,7 +6,7 @@ import pytest
 
 from evals.worlds.lived import replay
 from evals.worlds.lived.grow import GrowthResult
-from evals.worlds.lived.model import Snapshot
+from evals.worlds.lived.model import Event, Intent, LifePlan, Snapshot
 
 STAMP = "2026-06-01T09:30:00+00:00"
 
@@ -36,12 +36,25 @@ LOGS = {"a": [(1, "instruction", "plan the trip"), (3, "result", "Flights found.
         "b": [(4, "instruction", "find a plumber")]}
 
 
-def _fake_generate(regenerated, seen, logs=LOGS):
+def _plan(seed):
+    # Agent messages at 0 (skipped: no agent yet), 3 (a's report), 6 (after the cutoff), 8 (skipped: writer failed).
+    kinds = ["agent", "user", "user", "agent", "user", "user", "agent", "user", "agent"]
+    return LifePlan(seed=seed, persona="Sam", contacts=[], threads=[], events=[
+        Event(f"e{i:04d}", float(i), Intent(kind="x", thread_ids=(), message_type=k)) for i, k in enumerate(kinds)])
+
+
+@pytest.fixture(autouse=True)
+def _small_plan(monkeypatch):
+    monkeypatch.setattr(replay, "build_plan", _plan)
+
+
+def _fake_generate(regenerated, seen, logs=LOGS, skipped=(("e0000", "no agent"), ("e0008", "writer"))):
     async def generate(*, seed, model, llm, per_kind, out, log=print, on_grown=None):
         seen.update(seed=seed, model=model, per_kind=per_kind)
         snapshots = [Snapshot(size=n, day=5.0, agents=[], transcript=[], thread_agents={}, thread_last_day={},
                               event_index=i) for n, i in ((1, 2), (2, 5), (3, 5))]
-        on_grown(GrowthResult(snapshots=snapshots[:2], agents=[], transcript=[], logs=logs), snapshots)
+        on_grown(GrowthResult(snapshots=snapshots[:2], agents=[], transcript=[], logs=logs, skipped=list(skipped)),
+                 snapshots)
         out.write_text(json.dumps(regenerated, indent=1), encoding="utf-8")
         return out
     return generate
@@ -82,6 +95,14 @@ async def test_replay_refuses_logs_that_disagree_with_the_histories(tmp_path, mo
     logs = {**LOGS, "b": [(4, "instruction", "find an electrician")]}
     monkeypatch.setattr(replay, "generate", _fake_generate(world, {}, logs))
     with pytest.raises(replay.ReplayMismatch, match="lived-2: b"):
+        await replay.replay(1, llm=object(), directory=tmp_path, log=lambda _: None)
+
+
+async def test_replay_refuses_logs_missing_a_report(tmp_path, monkeypatch):
+    world = _world()
+    _write(tmp_path, world)
+    monkeypatch.setattr(replay, "generate", _fake_generate(world, {}, skipped=[]))
+    with pytest.raises(replay.ReplayMismatch, match="1 result entries up to event 5, expected 2"):
         await replay.replay(1, llm=object(), directory=tmp_path, log=lambda _: None)
 
 

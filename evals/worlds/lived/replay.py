@@ -7,10 +7,13 @@ agent's instructions with empty results. Every growth call is cached, so generat
 (meta.model) with a zero budget: a cache miss raises BudgetExceeded, and no request can be sent. The regenerated world
 must equal the committed one apart from meta.generated_at, or nothing is written.
 
-Probes are not growth and are not replayed (per_kind=0): life 1's were drafted by an older probes.py whose prompts are
-no longer cached, so each size's `cases` are left out of the comparison. Entries saved before the world file kept its
+Probes are not growth and are not replayed (per_kind=0), so each size's `cases` are left out of the comparison for
+both lives; the logs do not depend on them (life 1's were drafted by an older probes.py whose prompts are no longer
+cached). Entries saved before the world file kept its
 probe state (life 1) have that state checked instead against the probes' shared context and the plan
-(round2.rebuild_snapshot). Each agent's logged instructions must also equal its saved history at every size.
+(round2.rebuild_snapshot). Each agent's logged instructions must also equal its saved history at every size, and
+the reports logged up to the largest grown size's cutoff must number the agent-message events played up to it, less
+those growth skipped.
 
 Output: {format, seed, world_sha256, cutoffs: {label: event index}, logs: {agent id: [[event index, kind, text], ...]}},
 kind "instruction" or "result". A size's agents saw their log entries up to its cutoff (the 1,000 size shares the 200
@@ -108,6 +111,16 @@ def history_mismatches(world: dict[str, Any], body: dict[str, Any]) -> list[str]
     return out
 
 
+def result_count_mismatch(plan: LifePlan, skipped: list[tuple[str, str]], logs: dict[str, list[list[Any]]],
+                          cutoff: int) -> str | None:
+    """Why the logged reports up to `cutoff` are not one per agent-message event growth played, or None."""
+    skipped_ids = {event_id for event_id, _ in skipped}
+    expected = sum(1 for event in plan.events[: cutoff + 1]
+                   if event.intent.message_type == "agent" and event.id not in skipped_ids)
+    found = sum(1 for entries in logs.values() for entry in _upto(entries, cutoff) if entry[1] == "result")
+    return None if found == expected else f"{found} result entries up to event {cutoff}, expected {expected}"
+
+
 def counts(world: dict[str, Any], body: dict[str, Any]) -> dict[str, dict[str, int]]:
     """Per size: agents, agents with a log, result entries they saw, and agents that saw at least one result."""
     out = {}
@@ -128,15 +141,16 @@ async def replay(seed: int, *, llm, directory: Path | None = None, log=print) ->
     grown: dict[str, Any] = {}
 
     def keep(growth: GrowthResult, snapshots: list[Snapshot]) -> None:
-        grown.update(logs=growth.logs, cutoffs={f"lived-{s.size}": s.event_index for s in snapshots})
+        grown.update(logs=growth.logs, skipped=growth.skipped, grown_cutoff=growth.snapshots[-1].event_index,
+                     cutoffs={f"lived-{s.size}": s.event_index for s in snapshots})
 
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / path.name
         await generate(seed=seed, model=committed["meta"]["model"], llm=llm, per_kind=0, out=out, log=log,
                        on_grown=keep)
         regenerated = json.loads(out.read_text(encoding="utf-8"))
-    diffs = differences(committed, regenerated, build_plan(seed) if any(
-        "transcript" not in entry for entry in committed["sizes"]) else None)
+    plan = build_plan(seed)
+    diffs = differences(committed, regenerated, plan)
     if diffs:
         raise ReplayMismatch(f"life {seed}: the replay differs from {path.name} at {', '.join(diffs[:20])}")
     body = {
@@ -146,6 +160,9 @@ async def replay(seed: int, *, llm, directory: Path | None = None, log=print) ->
     bad = history_mismatches(committed, body)
     if bad:
         raise ReplayMismatch(f"life {seed}: logged instructions differ from the saved history for {', '.join(bad[:20])}")
+    wrong = result_count_mismatch(plan, grown["skipped"], body["logs"], grown["grown_cutoff"])
+    if wrong:
+        raise ReplayMismatch(f"life {seed}: {wrong}")
     return body
 
 
