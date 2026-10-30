@@ -167,6 +167,9 @@ class RetrievedTurn:
         return _success(name, args, result.payload)
 
 
+_STATUS_SEARCH_CLAUSE = ", or with `search_agents` if none fits"
+
+
 class RetrievedSystem:
     """Shows the cards `select` picks for the turn: pinned, hot, then the top K by relevance."""
 
@@ -181,7 +184,7 @@ class RetrievedSystem:
         self.lifecycle = lifecycle
         # Eval-only ablation switches; the defaults are production behaviour.
         self.guard = guard  # False: creates skip the duplicate guard
-        self.search = search  # False: no search_agents tool and no prompt rule for it
+        self.search = search  # False: no search_agents tool, no prompt rule for it, and no search clause in the status rule
         self.summaries = summaries  # False: cards carry no living summary (the summaries ablation)
         self.status_policy = status_policy  # False: no status-question rule
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
@@ -210,6 +213,10 @@ class RetrievedSystem:
     def system_prompt(self) -> str:
         prompt = build_system_prompt(status_policy=self.status_policy)
         if not self.search:
+            if self.status_policy:
+                if _STATUS_SEARCH_CLAUSE not in prompt:
+                    raise ValueError("the status rule's search clause moved; update _STATUS_SEARCH_CLAUSE")
+                prompt = prompt.replace(_STATUS_SEARCH_CLAUSE, "")
             return without_tool_lines(prompt, SEARCH_TOOL)
         return prompt
 

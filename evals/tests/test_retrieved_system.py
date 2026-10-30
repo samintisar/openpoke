@@ -490,11 +490,13 @@ def test_only_nosearch_changes_the_prompt_and_tools():
     assert sorted(system.tool_signatures()) == sorted(names)
     prompt, full = system.system_prompt().split("\n"), build_system_prompt().split("\n")
     assert "search_agents" not in system.system_prompt()
-    removed = [line for line in full if line not in prompt]
-    # The two lines naming the tool: the search rule and the status rule's first line.
-    assert len(removed) == 2 and "call `search_agents` before creating" in removed[0]
-    assert "progress question" in removed[1]
-    assert len(full) - len(prompt) == 2
+    removed = [line for line in full if line not in prompt and not line.startswith('- A progress question')]
+    assert len(removed) == 1 and "call `search_agents` before creating" in removed[0]
+    assert len(full) - len(prompt) == 1  # the status bullet is edited in place, not dropped
+    # The status rule survives, minus its search clause.
+    assert "Never create a new agent only to check" in system.system_prompt()
+    assert any(l.startswith('- A progress question') and l.endswith("Find it among the listed agents.")
+               for l in prompt)
 
 
 def test_without_tool_lines_drops_only_lines_naming_the_tool():
