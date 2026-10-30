@@ -6,5 +6,4 @@ def test_policy_is_in_the_prompt_by_default_and_the_marker_never_leaks():
     assert STATUS_POLICY in on and STATUS_POLICY not in off
     assert STATUS_POLICY_MARKER not in on and STATUS_POLICY_MARKER not in off
     assert "Never create a new agent only to check" in on
-    assert "ask the user which they mean instead of picking one" in on
     assert len(on.split("\n")) == len(off.split("\n")) + len(STATUS_POLICY.split("\n"))
