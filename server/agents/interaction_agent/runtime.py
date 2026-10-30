@@ -9,6 +9,9 @@ from .agent import build_system_prompt, prepare_message_with_history
 from .second_look_gate import gate as second_look_gate, openrouter_complete as second_look_complete
 from .tools import ToolResult, get_tool_schemas, handle_tool_call
 from .turn import TurnContext, current_turn
+from ...services.agents.second_look import CONTEXT_TURNS
+from ...services.conversation.log import _TURN_TAGS
+from ...services.conversation.summarization.state import omitted_user_entries
 from ...config import get_settings
 from ...services.agents.registry import get_agent_directory
 from ...services.conversation import get_conversation_log, get_working_memory_log
@@ -94,10 +97,13 @@ class InteractionAgentRuntime:
         token = None
         try:
             transcript_before = self._load_conversation_transcript(omit_user_messages=recorded)
+            context = self._turns_before(recorded)
             if not recorded:
                 self.conversation_log.record_user_message(user_message)
             moment = (user_message_at or datetime.now(timezone.utc)).astimezone(timezone.utc)
-            token = current_turn.set(TurnContext(origin="user", user_message_at=moment, latest_text=user_message))
+            token = current_turn.set(TurnContext(
+                origin="user", user_message_at=moment, latest_text=user_message, context=context
+            ))
 
             system_prompt = build_system_prompt()
             messages = prepare_message_with_history(
@@ -238,6 +244,20 @@ class InteractionAgentRuntime:
 
         return summary
 
+    # The conversation turns before this user turn's message(s), for the second look
+    def _turns_before(self, recorded: Sequence[str]) -> tuple[str, ...]:
+        """The last CONTEXT_TURNS turn texts, leaving out this turn's `recorded` messages. Never raises."""
+        try:
+            entries = [
+                (tag, payload) for tag, _, payload in self.conversation_log.iter_entries() if tag in _TURN_TAGS
+            ]
+            omitted = omitted_user_entries(entries, recorded)
+            texts = [payload for index, (_, payload) in enumerate(entries) if index not in omitted]
+            return tuple(texts[-CONTEXT_TURNS:])
+        except Exception as exc:
+            logger.warning("Could not read the turn context for the second look", extra={"error": str(exc)})
+            return ()
+
     # Second look: one cheap review of a risky routing decision before it is dispatched
     async def _second_look(self, tool_call: _ToolCall, summary: _LoopSummary) -> tuple[_ToolCall, Optional[Dict[str, Any]]]:
         """At most one second look per turn, on user turns only. Never raises; on any failure the call stands."""
@@ -245,11 +265,10 @@ class InteractionAgentRuntime:
         if turn is None or turn.origin != "user" or "__invalid_arguments__" in tool_call.arguments:
             return tool_call, None
         try:
-            context = self.conversation_log.recent_texts(7)[:-1]  # the turns before the message itself
             arguments, held, record = await second_look_gate(
                 dict(tool_call.arguments),
                 message=turn.latest_text,
-                context=context,
+                context=list(turn.context),
                 directory=get_agent_directory(),
                 now=datetime.now(timezone.utc),
                 complete=second_look_complete,

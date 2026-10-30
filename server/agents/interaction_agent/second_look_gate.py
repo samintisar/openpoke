@@ -3,6 +3,7 @@
 Shared by the production runtime and the eval. Returns the arguments to send (possibly redirected to another
 agent), a held payload when nothing should be sent, and a record of what happened (None when no trigger fired).
 A failed or timed-out call never blocks the dispatch: the arguments come back unchanged with an "error" record.
+`guard=False` (the eval's no-guard ablation) looks at creates the duplicate guard would have caught, too.
 """
 
 from __future__ import annotations
@@ -44,6 +45,7 @@ async def gate(
     complete: Complete,
     cfg: SecondLookConfig = DEFAULT_SECOND_LOOK,
     rcfg: Optional[RetrievalConfig] = None,
+    guard: bool = True,
 ) -> tuple[dict[str, Any], Optional[dict[str, Any]], Optional[dict[str, Any]]]:
     cards = directory.list_cards()
     agent_id = str(arguments.get("agent_id") or "").strip()
@@ -53,7 +55,8 @@ async def gate(
         described = f"Send the message to existing agent {target.id} ({target.name})."
     elif not agent_id and arguments.get("name") and arguments.get("purpose"):
         name, purpose = str(arguments["name"]), str(arguments["purpose"])
-        if not _force_new(arguments.get("force_new")) and find_duplicate(name, purpose, cards, now, rcfg):
+        guarded = guard and not _force_new(arguments.get("force_new"))
+        if guarded and find_duplicate(name, purpose, cards, now, rcfg):
             return arguments, None, None  # the duplicate guard answers first, for free
         proposal, reason = "create", create_trigger(message, cards, now, cfg, rcfg)
         described = f"Create a new agent named {name!r} (purpose: {purpose})."

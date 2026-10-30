@@ -14,6 +14,7 @@ from typing import Any
 
 from server.agents.interaction_agent.agent import build_system_prompt
 from server.agents.interaction_agent.second_look_gate import gate
+from server.services.agents.second_look import DEFAULT_SECOND_LOOK
 from server.agents.interaction_agent.tools import SEND_DRAFT_ARGUMENTS_ERROR
 from server.services.agents.cards import AgentCard, as_utc
 from server.services.agents.directory import InMemoryDirectory
@@ -36,6 +37,8 @@ from .cards_from_world import cards_for
 QUERY_CONTEXT_ENTRIES = 6
 # Stand-in for the previous turn's routing: agents active this recently.
 LAST_ROUTED_WINDOW = timedelta(hours=1)
+# The eval's second look waits out the client's own timeout and retries, so results never depend on wall-clock.
+EVAL_SECOND_LOOK = replace(DEFAULT_SECOND_LOOK, timeout_s=180.0)
 SEARCH_TOOL = "search_agents"
 
 
@@ -123,6 +126,7 @@ class RetrievedTurn:
         self.guard = guard
         self.case = case
         self.second_look = second_look
+        self.second_look_cfg = EVAL_SECOND_LOOK
         self.directory = InMemoryDirectory(cards, last_routed=_last_routed(cards, world))
         self.created_ids: set[str] = set()
         self._llm: Any = None  # bound by the routing layer: the second look uses the run's client
@@ -161,7 +165,8 @@ class RetrievedTurn:
             context = [entry[1] for entry in self.case.context[-QUERY_CONTEXT_ENTRIES:]]
             args, held, record = await gate(dict(args), message=self.case.message, context=context,
                                             directory=self.directory, now=self.world.now,
-                                            complete=self._complete(decision), rcfg=self.cfg)
+                                            complete=self._complete(decision), cfg=self.second_look_cfg,
+                                            rcfg=self.cfg, guard=self.guard)
             if record is not None:
                 self._looked = True
                 decision.second_looks.append(record)
@@ -288,8 +293,8 @@ class RetrievedNoLifecycleSystem(RetrievedSystem):
 
     name = "retrieved_nolife"
 
-    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
-        super().__init__(cfg, lifecycle=False)
+    def __init__(self, cfg: RetrievalConfig | None = None, **options: Any) -> None:
+        super().__init__(cfg, lifecycle=False, **options)
 
 
 class RetrievedNoGuardSystem(RetrievedSystem):
@@ -297,8 +302,8 @@ class RetrievedNoGuardSystem(RetrievedSystem):
 
     name = "retrieved_noguard"
 
-    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
-        super().__init__(cfg, guard=False)
+    def __init__(self, cfg: RetrievalConfig | None = None, **options: Any) -> None:
+        super().__init__(cfg, guard=False, **options)
 
 
 class RetrievedNoSearchSystem(RetrievedSystem):
@@ -306,8 +311,8 @@ class RetrievedNoSearchSystem(RetrievedSystem):
 
     name = "retrieved_nosearch"
 
-    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
-        super().__init__(cfg, search=False)
+    def __init__(self, cfg: RetrievalConfig | None = None, **options: Any) -> None:
+        super().__init__(cfg, search=False, **options)
 
 
 class RetrievedNoFuzzySystem(RetrievedSystem):
@@ -315,8 +320,8 @@ class RetrievedNoFuzzySystem(RetrievedSystem):
 
     name = "retrieved_nofuzzy"
 
-    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
-        super().__init__(replace(cfg or RetrievalConfig(), fuzzy=False))
+    def __init__(self, cfg: RetrievalConfig | None = None, **options: Any) -> None:
+        super().__init__(replace(cfg or RetrievalConfig(), fuzzy=False), **options)
 
 
 class RetrievedNoLastRoutedSystem(RetrievedSystem):
@@ -324,8 +329,8 @@ class RetrievedNoLastRoutedSystem(RetrievedSystem):
 
     name = "retrieved_nolastrouted"
 
-    def __init__(self, cfg: RetrievalConfig | None = None) -> None:
-        super().__init__(replace(cfg or RetrievalConfig(), last_routed_boost=0.0))
+    def __init__(self, cfg: RetrievalConfig | None = None, **options: Any) -> None:
+        super().__init__(replace(cfg or RetrievalConfig(), last_routed_boost=0.0), **options)
 
 
 __all__ = [

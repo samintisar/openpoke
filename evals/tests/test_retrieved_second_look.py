@@ -5,7 +5,15 @@ from evals.grading import Decision
 from evals.layers.routing import run_routing_case
 from evals.llm import ScriptedLLM, tool_call
 from evals.systems.full_cards import FullCardsSystem
-from evals.systems.retrieved import RetrievedSystem
+from evals.systems import get_system
+from evals.systems.retrieved import (
+    RetrievedNoFuzzySystem,
+    RetrievedNoGuardSystem,
+    RetrievedNoLastRoutedSystem,
+    RetrievedNoLifecycleSystem,
+    RetrievedNoSearchSystem,
+    RetrievedSystem,
+)
 from evals.worlds.model import AgentSpec, World
 
 GAME_NIGHT = "ask Kwame what he thinks we should do for game night"
@@ -106,3 +114,50 @@ async def test_routing_layer_binds_the_run_client():
     decision = await run_routing_case(_case(GAME_NIGHT), _world(), RetrievedSystem(), ScriptedLLM(script),
                                       model="m", sample=0)
     assert decision.second_looks[0]["effect"] == "hold" and decision.dispatched_ids == []
+
+
+def _two_cards_world():
+    world = _world()
+    world.agents.append(AgentSpec(id="kwame-games", name="Kwame Game Night", purpose="Plan game night with Kwame.",
+                                  entities=[], last_active_days=2.0, created_days=6.0))
+    return world
+
+
+async def test_a_reuse_redirect_is_dispatched_to_the_verdicts_agent():
+    turn = RetrievedSystem().new_turn(_two_cards_world(), _case(GAME_NIGHT))
+    turn.bind_llm(_verdict_llm({"decision": "reuse", "agent_id": "kwame-games", "reason": "r"}), model="m", sample=0)
+    decision = Decision()
+    result = await turn.handle("send_message_to_agent", dict(SEND), decision)
+    assert result["status"] == "success" and result["arguments"] == {"agent_id": "kwame-games", "instructions": "x"}
+    assert decision.dispatched_ids == ["kwame-games"] and decision.second_looks[0]["effect"] == "redirect"
+
+
+async def test_noguard_still_looks_at_an_obvious_duplicate():
+    duplicate = {"name": "Kwame Book Club Dates", "purpose": "Ask Kwame which dates work for book club.",
+                 "instructions": "x"}
+    message = "ask Kwame about book club dates"
+    verdict = {"decision": "reuse", "agent_id": "kwame-book", "reason": "r"}
+    noguard = RetrievedNoGuardSystem().new_turn(_world(), _case(message))
+    noguard.bind_llm(_verdict_llm(verdict), model="m", sample=0)
+    decision = Decision()
+    await noguard.handle("send_message_to_agent", dict(duplicate), decision)
+    assert decision.second_looks[0]["trigger"] == "create" and decision.dispatched_ids == ["kwame-book"]
+    guarded = RetrievedSystem().new_turn(_world(), _case(message))
+    guarded.bind_llm(_verdict_llm(verdict), model="m", sample=0)
+    decision = Decision()
+    result = await guarded.handle("send_message_to_agent", dict(duplicate), decision)
+    assert decision.second_looks == [] and result["error"]["status"] == "possible_duplicate"
+
+
+def test_the_eval_timeout_outlasts_the_client():
+    turn = RetrievedSystem().new_turn(_world(), _case(GAME_NIGHT))
+    assert turn.second_look_cfg.timeout_s >= 180
+
+
+def test_ablation_subclasses_take_the_switches():
+    for cls in (RetrievedNoLifecycleSystem, RetrievedNoGuardSystem, RetrievedNoSearchSystem, RetrievedNoFuzzySystem,
+                RetrievedNoLastRoutedSystem):
+        assert cls(second_look=False).second_look is False and cls().second_look is True
+    system = get_system("retrieved_noguard", {"second_look": False, "status_policy": False})
+    assert system.second_look is False and system.status_policy is False and system.guard is False
+    assert RetrievedNoFuzzySystem(second_look=False).cfg.fuzzy is False

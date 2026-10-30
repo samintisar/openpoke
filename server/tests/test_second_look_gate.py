@@ -102,18 +102,14 @@ async def test_unknown_ids_and_malformed_calls_pass_through():
 # -- runtime wiring ------------------------------------------------------------------------------------------
 
 
-class _Log:
-    def recent_texts(self, limit):
-        return ["earlier", "latest"][-limit:]
-
-
-def _runtime(calls):
+def _runtime(calls, log=None):
     runtime = InteractionAgentRuntime.__new__(InteractionAgentRuntime)
-    runtime.conversation_log = _Log()
+    runtime.conversation_log = log
     replies = iter([
         {"choices": [{"message": {"content": "", "tool_calls": [
-            {"id": str(i), "function": {"name": "send_message_to_agent", "arguments": json.dumps(args)}}
-            for i, args in enumerate(calls)
+            {"id": str(i), "function": {"name": name, "arguments": json.dumps(args)}}
+            for i, (name, args) in enumerate(
+                call if isinstance(call, tuple) else ("send_message_to_agent", call) for call in calls)
         ]}}]},
         {"choices": [{"message": {"content": "done"}}]},
     ])
@@ -129,8 +125,9 @@ def _runtime(calls):
 def wired(monkeypatch):
     seen = {"gate": [], "tools": []}
 
-    async def fake_gate(arguments, *, message, context, directory, now, complete):
+    async def fake_gate(arguments, *, message, context, directory, now, complete, **kwargs):
         seen["gate"].append((dict(arguments), message, list(context)))
+        seen["gate_kwargs"] = kwargs
         return arguments, {"status": "held_by_second_look"}, {"trigger": "reuse", "effect": "hold"}
 
     def fake_tool(name, args):
@@ -156,9 +153,10 @@ async def _loop(runtime, turn):
 async def test_runtime_holds_once_per_user_turn(wired):
     calls = [{"agent_id": "kwame-book", "instructions": "x"}, {"agent_id": "kwame-book", "instructions": "y"}]
     summary, messages = await _loop(_runtime(calls), TurnContext(origin="user", user_message_at=NOW,
-                                                                 latest_text=GAME_NIGHT))
+                                                                 latest_text=GAME_NIGHT, context=("earlier",)))
     assert [g[1] for g in wired["gate"]] == [GAME_NIGHT]  # one look per turn
-    assert wired["gate"][0][2] == ["earlier"]  # the context leaves out the message itself
+    assert wired["gate"][0][2] == ["earlier"]  # the turn's context snapshot
+    assert wired["gate_kwargs"].get("guard", True) is True  # production keeps the duplicate guard
     assert wired["tools"] == [{"agent_id": "kwame-book", "instructions": "y"}]
     held = json.loads(messages[1]["content"])
     assert held["status"] == "error" and held["error"]["status"] == "held_by_second_look"
@@ -215,3 +213,49 @@ async def test_production_complete_uses_the_cheap_model(monkeypatch):
     monkeypatch.setattr(gate_module, "request_chat_completion", fake_request)
     assert await gate_module.openrouter_complete("sys", "usr") == '{"decision": "new"}'
     assert sent["model"] == gate_module.get_settings().summarizer_model and sent["system"] == "sys"
+
+
+async def test_runtime_context_is_snapshotted_before_the_turn_writes(wired, monkeypatch, tmp_path):
+    """The context is the turns before the message, even after the IA acks mid-loop (a poke_reply)."""
+    from server.services.conversation.log import ConversationLog
+
+    log = ConversationLog(tmp_path / "log.txt")
+    for i in range(4):
+        log.record_user_message(f"user {i}")
+        log.record_reply(f"reply {i}")
+    log.record_user_message("already posted")  # recorded by the inbox before the turn
+
+    def fake_tool(name, args):
+        if name == "send_message_to_user":
+            log.record_reply(args["message"])
+        wired["tools"].append(args)
+        return ToolResult(success=True, payload={"status": "submitted", "agent_id": args.get("agent_id")})
+
+    monkeypatch.setattr(runtime_module, "handle_tool_call", fake_tool)
+    monkeypatch.setattr(runtime_module, "build_system_prompt", lambda: "system")
+    monkeypatch.setattr(runtime_module, "prepare_message_with_history", lambda text, transcript, message_type: [])
+    calls = [("send_message_to_user", {"message": "on it"}), {"agent_id": "kwame-book", "instructions": "x"}]
+    runtime = _runtime(calls, log)
+    runtime.settings = type("S", (), {"summarization_enabled": False})()
+    result = await runtime.execute("already posted", recorded=["already posted"])
+    assert result.success
+    assert wired["gate"][0][2] == ["user 1", "reply 1", "user 2", "reply 2", "user 3", "reply 3"]
+
+    log.clear()
+    log.record_user_message("before")
+    log.record_reply("ack")
+    wired["gate"].clear()
+    runtime = _runtime(calls, log)
+    runtime.settings = type("S", (), {"summarization_enabled": False})()
+    await runtime.execute("fresh message")  # recorded by execute itself
+    assert wired["gate"][0][2] == ["before", "ack"]
+
+
+async def test_noguard_looks_at_an_obvious_duplicate():
+    arguments = {"name": "Kwame Book Club Dates", "purpose": "Ask Kwame which dates work for book club.",
+                 "instructions": "x"}
+    args, held, record = await gate(dict(arguments), message="ask Kwame about book club dates", context=[],
+                                    directory=_dir(), now=NOW, guard=False,
+                                    complete=_verdict({"decision": "reuse", "agent_id": "kwame-book", "reason": "r"}))
+    assert record is not None and record["trigger"] == "create" and record["effect"] == "redirect"
+    assert args == {"agent_id": "kwame-book", "instructions": "x"} and held is None
