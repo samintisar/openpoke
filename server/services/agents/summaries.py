@@ -48,6 +48,7 @@ def _safe(text: str) -> str:
 
 
 def build_summary_input(name: str, purpose: str, current: str, instructions: str, result: str) -> str:
+    name, purpose = _safe(name), _safe(purpose)
     current, instructions, result = _safe(current), _safe(instructions), _safe(result)
     return (
         f"Agent: {name}\nPurpose: {purpose}\n\n"

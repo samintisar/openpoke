@@ -15,24 +15,28 @@ from typing import Any, Mapping, Optional
 
 TAG = "untrusted_email"
 
-# Opening or closing tag, case-insensitive, tolerating whitespace after "<" or "</".
-_TAG_PATTERN = re.compile(r"<(\s*/?\s*untrusted_email)", re.IGNORECASE)
-
 # Fields in Composio/Gmail message payloads that carry message text.
 MESSAGE_TEXT_FIELDS = ("messageText", "snippet", "textBody", "htmlBody")
 
 
+# Whitespace or zero-width characters tolerated after "<" and after "</".
+_GAP = r"[\s\u200b-\u200d\u2060\ufeff]*"
+
+
 def escape_tags(text: str, *tags: str) -> str:
-    """Neutralize any opening or closing ``tags`` inside ``text`` so it cannot close or open a wrapper."""
+    """Neutralize any opening or closing ``tags`` inside ``text`` so it cannot close or open a wrapper.
+
+    Case-insensitive; tolerates whitespace and zero-width characters after "<" and "</".
+    """
 
     names = "|".join(re.escape(tag) for tag in tags)
-    return re.sub(rf"<(\s*/?\s*(?:{names}))", r"&lt;\1", text, flags=re.IGNORECASE)
+    return re.sub(rf"<({_GAP}/?{_GAP}(?:{names}))", r"&lt;\1", text, flags=re.IGNORECASE)
 
 
 def escape_untrusted(text: str) -> str:
     """Neutralize any untrusted_email tag inside ``text`` so it cannot close or open a wrapper."""
 
-    return _TAG_PATTERN.sub(r"&lt;\1", text)
+    return escape_tags(text, TAG)
 
 
 def _attribute(value: Optional[str]) -> str:
@@ -91,7 +95,6 @@ def wrap_message_text_fields(payload: Any) -> Any:
 __all__ = [
     "MESSAGE_TEXT_FIELDS",
     "TAG",
-    "escape_tags",
     "escape_tags",
     "escape_untrusted",
     "wrap_message_text_fields",
