@@ -147,9 +147,12 @@ def test_parse_variants():
 
 
 def test_agrees_rules():
-    p = _probe(gold=("x", "NEW"), acceptable=("y",))
-    assert agrees("x", p) and agrees("y", p) and agrees("NEW", p)
-    assert not agrees("ASK", p) and not agrees("z", p) and not agrees("INVALID", p)
+    p = _probe(gold=("x",), acceptable=("y",))
+    assert agrees("x", p) and agrees("y", p)
+    assert not agrees("ASK", p) and not agrees("z", p) and not agrees("INVALID", p) and not agrees("NEW", p)
+    assert agrees("NEW", _probe(gold=("NEW",)))
+    two = _probe(gold=("x", "NEW"), acceptable=("y",))  # two requests: one answer per request
+    assert agrees("x|NEW", two) and agrees("y|NEW", two) and not agrees("x", two) and not agrees("NEW", two)
     assert not agrees("NEW", _probe(gold=("x",)))
     assert not agrees("INVALID", _probe(gold=(), clarify=True))
 
@@ -202,3 +205,17 @@ def test_cli_fake_llm_rewrites_bench(tmp_path, capsys):
     assert body["probes"][0]["check"]["agree"] is True
     out = capsys.readouterr().out
     assert "disagree" in out and "audit" in out and "clean" in out and "spent" in out
+
+
+def test_multi_request_probes_get_one_answer_per_request():
+    from evals.worlds.lived.checkers import SYSTEM_MULTI, agrees, parse, prompt
+
+    probe = {"id": "p", "message": "tell A x and tell B y", "context": [], "gold_targets": ["a", "b"],
+             "acceptable_ids": [], "clarify_ok": False}
+    cards = [{"id": "a", "name": "A", "purpose": ""}, {"id": "b", "name": "B", "purpose": ""}]
+    assert prompt(probe, cards)[0] == SYSTEM_MULTI
+    assert parse('{"answers": ["1", "2"]}', cards) == "a|b"
+    assert agrees("a|b", probe) and agrees("b|a", probe)
+    assert not agrees("a|NEW", probe) and not agrees("a", probe) and not agrees("NEW", probe)
+    new_probe = {**probe, "gold_targets": ["a", "NEW"]}
+    assert agrees("a|NEW", new_probe) and not agrees("a|b", new_probe)

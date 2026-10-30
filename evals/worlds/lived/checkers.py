@@ -56,6 +56,17 @@ SYSTEM = (
     "needs a new helper, or ASK if a careful assistant should ask the user which one is meant. Reply with "
     'JSON only: {"answer": "<number>" | "NEW" | "ASK"}.'
 )
+SYSTEM_MULTI = (
+    "A personal assistant delegates work to helper agents. The user's new message may hold several separate "
+    "requests. For each request, decide where it should go: one helper's number, NEW if it needs a new helper, "
+    "or ASK if a careful assistant should ask the user which one is meant. Reply with JSON only, one answer per "
+    'request in the order they appear: {"answers": ["<number>" | "NEW" | "ASK", ...]}.'
+)
+
+
+def multi_request(probe: dict[str, Any]) -> bool:
+    """Probes whose key has several targets (multi_task): one answer per request, not one overall."""
+    return len(probe.get("gold_targets", [])) > 1
 
 
 # --- worlds -------------------------------------------------------------------------------------
@@ -132,7 +143,7 @@ def prompt(probe: dict[str, Any], cards: list[dict[str, str]]) -> tuple[str, str
         lines.append("New message from the user:")
     lines += [probe["message"], "", "Helpers:"]
     lines += [f"{n}. {card['name']} — {card['purpose']}" for n, card in enumerate(cards, 1)]
-    return SYSTEM, "\n".join(lines)
+    return (SYSTEM_MULTI if multi_request(probe) else SYSTEM), "\n".join(lines)
 
 
 _FENCE = re.compile(r"```(?:json)?\s*(.*?)```", re.S | re.I)
@@ -164,7 +175,7 @@ def _value(raw: Any, cards: list[dict[str, str]]) -> str:
 
 
 def parse(text: str | None, cards: list[dict[str, str]]) -> str:
-    """An agent id, NEW, ASK or INVALID."""
+    """An agent id, NEW, ASK or INVALID; a multi-request reply joins its answers with "|"."""
     if not text or not text.strip():
         return INVALID
     for candidate in _objects(text):
@@ -172,6 +183,8 @@ def parse(text: str | None, cards: list[dict[str, str]]) -> str:
             data = json.loads(candidate)
         except json.JSONDecodeError:
             continue
+        if isinstance(data, dict) and isinstance(data.get("answers"), list) and data["answers"]:
+            return "|".join(_value(raw, cards) for raw in data["answers"])
         if isinstance(data, dict) and "answer" in data:
             return _value(data["answer"], cards)
     match = _ANSWER.search(text)
@@ -179,6 +192,8 @@ def parse(text: str | None, cards: list[dict[str, str]]) -> str:
 
 
 def agrees(answer: str, probe: dict[str, Any]) -> bool:
+    if "|" in answer or multi_request(probe):
+        return _agrees_multi(answer.split("|"), probe)
     gold = probe.get("gold_targets", [])
     clarify = bool(probe.get("clarify_ok"))
     if answer in (INVALID, ERROR):
@@ -188,6 +203,20 @@ def agrees(answer: str, probe: dict[str, Any]) -> bool:
     if answer == NEW:
         return NEW in gold or (not gold and clarify)
     return answer in gold or answer in probe.get("acceptable_ids", [])
+
+
+def _agrees_multi(answers: list[str], probe: dict[str, Any]) -> bool:
+    """Every target is covered by some answer, and no answer points outside the key."""
+    gold = probe.get("gold_targets", [])
+    acceptable = set(probe.get("acceptable_ids", []))
+    if any(a in (INVALID, ERROR) for a in answers):
+        return False
+    if any(a == ASK for a in answers) and not probe.get("clarify_ok"):
+        return False
+    if any(a not in (NEW, ASK) and a not in gold and a not in acceptable for a in answers):
+        return False
+    covered = [g for g in gold if g in answers or (g != NEW and acceptable & set(answers))]
+    return len(covered) == len(gold)
 
 
 # --- checking -----------------------------------------------------------------------------------

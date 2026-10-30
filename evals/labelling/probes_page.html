@@ -216,7 +216,8 @@ function renderSheet() {
   flags.forEach(f => gold.append(el("div", { class: "flag", text: f })));
   if (p.check) {
     // What the independent checker models answered, by their short names.
-    const said = (a) => a === "NEW" ? "New agent" : a === "ASK" ? "Ask the user" : (byId[a] ? byId[a].name : "Unclear");
+    const one = (a) => a === "NEW" ? "New agent" : a === "ASK" ? "Ask the user" : (byId[a] ? byId[a].name : "Unclear");
+    const said = (a) => String(a).split("|").map(one).join(" + ");  // a multi-request answer: one per request
     const parts = Object.entries(p.check.answers || {}).map(([m, a]) => `${m.split("/").pop()}: ${said(a)}`);
     const why = { audit: "Random check: the checkers agreed.", disagree: "The checkers disagreed with this answer." }[p.check.flag];
     if (why) gold.append(el("div", { class: "flag", text: why }));
