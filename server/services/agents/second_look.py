@@ -42,6 +42,7 @@ MIN_SHARED_TERMS = 2  # create trigger without a shared person: content words th
 class SecondLookConfig:
     min_score: float = 0.5  # create trigger: the best card's retrieval score against the message
     reuse_coverage: float = 0.5  # reuse trigger: share of the message's topic words found on the target card
+    name_coverage: float = 0.8  # reuse trigger on an unmentioned name: fires only below this coverage (names counted)
     timeout_s: float = 10.0
 
 
@@ -117,22 +118,25 @@ def topic_coverage(message: str, card: AgentCard, cards: Optional[Sequence[Agent
     """Weighted share of the message's topic words (content words that are not names) on `card`; None without any.
 
     Each word weighs its IDF over `cards` (default: `card` alone), log(1 + N / df), so a word few cards use ("game")
-    counts more than one many cards use ("night"). A word no card uses weighs the minimum, log 2: it says nothing
-    about which matter the message belongs to ("what time ... starts").
+    counts more than one many cards use ("night"). A word no card uses weighs as if one card used it, the maximum:
+    a new matter's subject is usually on no card yet.
     """
     names = _person_terms(message)
-    topic = {t for t in content_tokens(message) if t not in names}
-    if not topic:
+    return _weighted_coverage({t for t in content_tokens(message) if t not in names}, card, cards)
+
+
+def _weighted_coverage(words: set[str], card: AgentCard, cards: Optional[Sequence[AgentCard]]) -> Optional[float]:
+    if not words:
         return None
     pool = list(cards) if cards else [card]
     if all(other.id != card.id for other in pool):
         pool.append(card)
     df: Counter[str] = Counter()
     for other in pool:
-        df.update(topic & set(tokenize(_card_text(other))))
-    weight = {t: math.log(1 + len(pool) / df[t]) if df[t] else math.log(2) for t in topic}
+        df.update(words & set(tokenize(_card_text(other))))
+    weight = {t: math.log(1 + len(pool) / max(df[t], 1)) for t in words}
     doc = set(tokenize(_card_text(card)))
-    return sum(weight[t] for t in topic & doc) / sum(weight.values())
+    return sum(weight[t] for t in words & doc) / sum(weight.values())
 
 
 def create_trigger(message: str, cards: Sequence[AgentCard], now: datetime, cfg: SecondLookConfig,
@@ -159,9 +163,16 @@ def reuse_trigger(message: str, target: AgentCard, cards: Sequence[AgentCard], n
         shared = people & _card_people(card) if card.id != target.id else set()
         if shared:
             return f"agent {card.id} also involves {', '.join(sorted(shared))}"
-    missing = people - _card_people(target) - set(tokenize(_card_text(target)))
-    if missing:
-        return f"{target.id} never mentions {', '.join(sorted(missing))}"
+    # A name the target never mentions, in a message that names none of the target's people (Sedona on a Phoenix
+    # card, not "ask Carl ... as a PDF"), with the target covering little of the message, those names included.
+    target_people = _card_people(target)
+    missing = people - target_people - set(tokenize(_card_text(target)))
+    if missing and not people & target_people:
+        names = _person_terms(message)
+        words = {t for t in content_tokens(message) if t not in names} | missing
+        named_coverage = _weighted_coverage(words, target, cards)
+        if named_coverage is not None and named_coverage < cfg.name_coverage:
+            return f"{target.id} never mentions {', '.join(sorted(missing))} ({named_coverage:.0%} covered)"
     coverage = topic_coverage(message, target, cards)
     if coverage is not None and coverage < cfg.reuse_coverage:
         return f"only {coverage:.0%} of the message's topic words are on {target.id}"

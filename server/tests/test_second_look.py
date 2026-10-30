@@ -214,3 +214,49 @@ def test_review_timeout_default_comes_from_the_config():
     from server.services.agents.second_look import DEFAULT_SECOND_LOOK
 
     assert inspect.signature(review).parameters["timeout_s"].default == DEFAULT_SECOND_LOOK.timeout_s
+
+
+# --- Re-review fixes ----------------------------------------------------------------------------------------------
+
+NO_GAME = [  # no card mentions "game"; "night" is on two cards
+    BAETRIZ,
+    _card("movie-night", "Movie Night with Sam", "Pick a movie for movie night with Sam."),
+    CARL,
+    CARDS[2],
+]
+
+
+def test_a_topic_word_on_no_card_weighs_the_most():
+    assert topic_coverage("ask Baetriz about game night", BAETRIZ, NO_GAME) < 0.5
+
+
+@pytest.mark.parametrize("message, fires", [
+    ("ask Baetriz about game night", True),
+    ("ask Baetriz if she wants to host a game night on Friday", True),
+    ("ask Baetriz what time trivia night starts", False),
+])
+def test_reuse_trigger_on_a_new_subject_no_card_mentions(message, fires):
+    assert bool(reuse_trigger(message, BAETRIZ, NO_GAME, NOW, SecondLookConfig())) is fires
+
+
+CARL_MATTER = _card("carl-remodel", "Carl Remodel Urgency Check", "Ask Carl how urgent the remodel is.",
+                    "Carl Jensen (contractor): bathroom remodel. He is sending a quote; tiles still to choose; "
+                    "the start can wait for the holidays.")
+
+
+@pytest.mark.parametrize("message", [
+    "ask Carl if he can send the quote as a PDF",
+    "tell Carl we can do a Zoom call Thursday",
+    "ask Carl whether Home Depot has the tiles",
+    "ask Carl if the remodel can wait until after Thanksgiving",
+])
+def test_reuse_trigger_ignores_new_names_in_a_same_matter_follow_up(message):
+    # No Thanksgiving card here: "Ruth Thanksgiving" would fire the shared-name rule (name words count as people).
+    assert reuse_trigger(message, CARL_MATTER, [CARL_MATTER, PHOENIX, GARY], NOW, SecondLookConfig()) is None
+
+
+def test_name_coverage_defaults_to_0_8_and_gates_the_name_signal():
+    assert SecondLookConfig().name_coverage == 0.8
+    msg = "book a rental car in Sedona"
+    assert reuse_trigger(msg, PHOENIX, [PHOENIX, CARL], NOW, SecondLookConfig())
+    assert reuse_trigger(msg, PHOENIX, [PHOENIX, CARL], NOW, SecondLookConfig(name_coverage=0.5)) is None
