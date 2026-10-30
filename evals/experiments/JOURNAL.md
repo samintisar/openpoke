@@ -234,3 +234,49 @@ One compaction call failed (tahoe-cabin). It fell back to the full history, so r
   - concurrent-results-coalesce passed.
   - approve-draft-happy went **off script**: the assistant described the draft instead of showing it with `send_draft`. That's one sample, and it's watched in the v2 L3 runs.
 - **Decision:** proceed to Plan 6b on DeepSeek. Re-estimated v2 total: about $12–20, down from $25–40, from the measured per-decision cost.
+
+## 2026-10-30 · Benchmark v2 dev re-baseline on life 1 (Plan 6b Task 12)
+- **Benchmark:** v2 reviewed, life 1 (dev): 185 probes (27 / 48 / 110 at 10 / 50 / 200; 1000 reuses the 200 probes). The review covered 68 probes (54 accepted, 9 fixed, 5 rejected; audit 0/20 changed), plus 12 curator corrections for answer keys that counted another person's helper (`bench-v2-corrections.json`).
+- **Runs** (DeepSeek V4.1 Flash, k=3; $2.46 in total):
+  - `20261030-033628-v2-baseline-dev.json` (original OpenPoke, $0.66);
+  - `20261030-034838-v2-retrieved-dev.json` (v1 retrieval, $1.13);
+  - `20261030-040630-v2-full-cards-dev.json` (every card in the prompt, ≤200, $0.67).
+- **pass@1, 95% bootstrap over cases** (`python -m evals.charts --runs v2-dev`):
+
+  | Agents | Original | Full cards | Retrieval | Retrieval − original (paired) |
+  |---|---|---|---|---|
+  | 10 | 0.86 [0.74, 0.96] | 0.95 [0.89, 1.00] | 0.93 [0.84, 0.99] | +0.06 [−0.02, +0.16] |
+  | 50 | 0.87 [0.77, 0.95] | 0.90 [0.82, 0.96] | 0.88 [0.79, 0.96] | +0.01 [−0.07, +0.10] |
+  | 200 | 0.84 [0.78, 0.90] | 0.86 [0.80, 0.92] | 0.87 [0.81, 0.92] | +0.03 [−0.03, +0.08] |
+  | 1000 | 0.81 [0.74, 0.87] | — | 0.86 [0.80, 0.92] | +0.05 [+0.00, +0.11] |
+
+- **Other rates** (share of samples, interval over cases):
+
+  | System, agents | pass^k | harmful | costly | duplicate | prompt tokens / decision |
+  |---|---|---|---|---|---|
+  | Original, 200 | 0.75 | 0.03 [0.01, 0.05] | 0.07 [0.03, 0.12] | 0.07 | 14.7k |
+  | Original, 1000 | 0.70 | 0.04 [0.02, 0.07] | 0.08 [0.04, 0.13] | 0.08 | 36.1k |
+  | Full cards, 200 | 0.82 | 0.04 [0.01, 0.07] | 0.07 [0.03, 0.11] | 0.07 | 62.0k |
+  | Retrieval, 200 | 0.82 | 0.05 [0.02, 0.08] | 0.06 [0.02, 0.10] | 0.06 | 22.1k |
+  | Retrieval, 1000 | 0.81 | 0.04 [0.01, 0.07] | 0.06 [0.02, 0.10] | 0.06 | 22.0k |
+
+- **Per kind at 200** (pass@1; 10 probes × 3 samples each):
+
+  | Kind | Original | Full cards | Retrieval |
+  |---|---|---|---|
+  | paraphrase | 0.30 | 0.19 | 0.26 |
+  | status_question | 0.90 | 0.70 | 0.73 |
+  | vague_reference | 0.80 | 0.90 | 0.93 |
+
+- **Read:**
+  - Retrieval beats the original most at 1000 (+0.05, interval just above zero) and holds flat from 200 to 1000 at a fixed ~22k tokens, while the original falls and its prompt grows to 36k.
+  - Full cards fails paraphrases too (0.19). The right card is shown and still not chosen, so the problem is what the cards say, not search.
+  - Status questions got worse with cards (0.90 → 0.73): with cards, the model more often opens a "status check" helper for something it can't find instead of asking.
+- **Failure clusters, retrieval at 200** (43 of the 60 failed samples of 330; the rest are single cases):
+  1. **Out-of-date cards → duplicate helper (19 samples).** A person's later topic lives on their first helper, whose card only shows the first request. "hey, any update from my contractor on the bathroom job?" created *Bathroom Job Contractor Update* while *Carl Remodel Urgency Check* holds the thread. Same for "how's the parking going?" → *Parking Status Check*. → living summaries (6c §4.1).
+  2. **Same person, new topic → reused that person's helper (6).** "can you ask Kwame what he thinks we should do for game night" went to *Kwame Book Club Dates*; also Noah, Felix, Simon. → second look on reuse when the topic doesn't match the card (extends 6c §4.3, whose spec trigger is only the wrong-person case).
+  3. **Status question about something no helper holds → new "status" helper instead of asking (6).** "how's the Athens flight going?" created *Athens Flight Status Update*. → status policy (6c §4.2).
+  4. **Topic-adjacent wrong reuse (9).** "tell Baetriz i'll call her tonight about game night" went to *Beatriz Trivia Night Note*; "rental cars in Sedona" went to the Phoenix rental-car helper; the cleaner's biweekly schedule went to the dentist's cleaning helper. → second look.
+  5. **Two-request messages done halfway (3).** "confirm the deep clean time with Rita, also …" created a new Rita helper instead of using hers. → living summaries should help; re-measure.
+- **Spend so far on v2:** about $4.40 (gate $0.09, life 2 growth $1.16, probes $0.10, checks $0.58, re-baseline $2.46).
+- **Next:** Plan 6c, written from these clusters.

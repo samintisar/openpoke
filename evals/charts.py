@@ -1,6 +1,7 @@
 """Charts and confidence intervals for the write-up, from committed result files. No plotting dependency: writes SVG.
 
     python -m evals.charts                      # the final test runs named below -> docs/figures/routing-test.svg
+    python -m evals.charts --runs v2-dev        # benchmark v2, life 1 (dev): intervals only, no figure
 
 pass@1 per size is the mean over cases of each case's share of correct samples. The 95% interval is a bootstrap over
 cases (10,000 resamples, seed 0), since the k samples of one case are not independent. The paired difference
@@ -23,7 +24,13 @@ FINAL = {  # system label -> final test-split run (Plan 5 Task 5)
     "Full cards": "20261029-213620-full-cards-lived-test.json",
     "Retrieval (this work)": "20261029-212710-retrieved-lived-test.json",
 }
+V2_DEV = {  # benchmark v2 re-baseline on life 1 (Plan 6b Task 12)
+    "Original OpenPoke": "20261030-033628-v2-baseline-dev.json",
+    "Full cards": "20261030-040630-v2-full-cards-dev.json",
+    "Retrieval (this work)": "20261030-034838-v2-retrieved-dev.json",
+}
 SIZES = ("lived-50", "lived-200", "lived-1000")
+V2_SIZES = ("lived-10", *SIZES)
 COLORS = {"Original OpenPoke": "#9aa4b1", "Full cards": "#d9a441", "Retrieval (this work)": "#2f6fdf"}
 
 
@@ -41,13 +48,13 @@ def bootstrap(values: list[float], resamples: int = 10_000, seed: int = 0) -> tu
     return means[int(0.025 * resamples)], means[int(0.975 * resamples)]
 
 
-def summary(runs: dict[str, str] = FINAL) -> dict[str, dict[str, tuple[float, float, float, int]]]:
+def summary(runs: dict[str, str] = FINAL, sizes: tuple[str, ...] = SIZES) -> dict[str, dict[str, tuple[float, float, float, int]]]:
     """system -> size -> (pass@1, low, high, cases); sizes a run doesn't cover are left out."""
     out: dict[str, dict[str, tuple[float, float, float, int]]] = {}
     for label, name in runs.items():
         rows = json.loads((RESULTS / name).read_text(encoding="utf-8"))["routing_rows"]
         out[label] = {}
-        for size in SIZES:
+        for size in sizes:
             scores = list(case_scores(rows, size).values())
             if scores:
                 out[label][size] = (sum(scores) / len(scores), *bootstrap(scores), len(scores))
@@ -97,17 +104,24 @@ def routing_svg(data: dict[str, dict[str, tuple[float, float, float, int]]]) -> 
     return "\n".join(parts)
 
 
-def main() -> None:
-    data = summary()
-    FIGURES.mkdir(parents=True, exist_ok=True)
-    (FIGURES / "routing-test.svg").write_text(routing_svg(data), encoding="utf-8")
-    for label, sizes in data.items():
-        for size, (mean, low, high, n) in sizes.items():
+def main(argv: list[str] | None = None) -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--runs", choices=["final", "v2-dev"], default="final")
+    args = parser.parse_args(argv)
+    runs, sizes = (V2_DEV, V2_SIZES) if args.runs == "v2-dev" else (FINAL, SIZES)
+    data = summary(runs, sizes)
+    for label, by_size in data.items():
+        for size, (mean, low, high, n) in by_size.items():
             print(f"{label:24} {size:11} {mean:.2f} [{low:.2f}, {high:.2f}]  cases={n}")
-    for size in SIZES:
-        mean, low, high = paired_difference(FINAL["Retrieval (this work)"], FINAL["Original OpenPoke"], size)
+    for size in sizes:
+        mean, low, high = paired_difference(runs["Retrieval (this work)"], runs["Original OpenPoke"], size)
         print(f"retrieval - original     {size:11} {mean:+.2f} [{low:+.2f}, {high:+.2f}]")
-    print(f"wrote {FIGURES / 'routing-test.svg'}")
+    if args.runs == "final":
+        FIGURES.mkdir(parents=True, exist_ok=True)
+        (FIGURES / "routing-test.svg").write_text(routing_svg(data), encoding="utf-8")
+        print(f"wrote {FIGURES / 'routing-test.svg'}")
 
 
 if __name__ == "__main__":
