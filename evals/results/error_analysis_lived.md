@@ -1,6 +1,6 @@
 # Lived-in world: baseline error analysis
 
-- **Run:** `20261028-101527-baseline-lived-dev.json` (baseline system, `anthropic/claude-haiku-5.5`, k=3, $1.00).
+- **Run:** `20261028-101527-baseline-lived-dev.json` (baseline system, `anthropic/claude-haiku-5.5`, k=3).
 - **World:** `evals/worlds/lived/world-s1.json`. The roster was grown by the IA from 789 life events, with
   the IA's own agent names; probes are held-out next events with real conversation history. The
   1,000-agent size uses **the same probes** as the 200 size, so those two columns compare like for like.

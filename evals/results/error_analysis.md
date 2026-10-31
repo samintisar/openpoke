@@ -1,7 +1,7 @@
 # Baseline error analysis
 
 - **Runs:** `20261028-074635-baseline-dev.json` (first grading) and
-  `20261028-075013-baseline-dev.json` (regraded after the eval fix below; same cached responses, $0).
+  `20261028-075013-baseline-dev.json` (regraded after the eval fix below; same cached responses).
 - **Model:** `anthropic/claude-haiku-5.5`, k=3, roster sizes 10 / 50 / 200 / 1000 plus handwritten.
 - **Sampled:** all failing samples were read in full: 49 in the first grading, 18 after the fix.
 

@@ -249,7 +249,7 @@ From v1's ablations on the older dev set: the duplicate guard is the v1 piece th
 
 ### Jev: where a classifier helps and where it doesn't
 
-I tested TypeSafe's Jev in seven ways on dev replays before giving it a role (about $0.40):
+I tested TypeSafe's Jev in seven ways on dev replays before giving it a role:
 
 | Use | Result | Verdict |
 |---|---|---|
@@ -394,4 +394,4 @@ python -m evals.status_wording                                                  
 python -m evals.e2e_run --interactive --scenario blank                           # try to trick it yourself
 ```
 
-Model responses are cached, so rerunning a committed run is free. v1 cost about $24 on OpenRouter. v2 cost about $20: $17.35 recorded in result files, plus growing life 2, checking probes, generating summaries and the Jev experiments. The sealed life-2 run cost $3.44.
+Model responses are cached, so rerunning a committed run makes no new model calls.

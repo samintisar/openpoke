@@ -292,7 +292,7 @@ not used in the write-up, charts or leaderboard comparisons.
    200 snapshot plus 800 background agents: generic errands, each named by a real single IA turn with
    an empty roster. A name equal to an existing one merges, as in production. Background tasks never
    mention core contacts or thread topics. That size reuses the 200 snapshot's probes.
-5. **Frozen.** Generation runs once (Haiku 5.5, about $4, cached) and writes
+5. **Frozen.** Generation runs once (Haiku 5.5, cached) and writes
    `evals/worlds/lived/world-s1.json`, which is committed and protected. Every system is measured
    against the same lived-in roster, like migrating a real user's existing agents.
 
