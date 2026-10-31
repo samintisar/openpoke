@@ -381,7 +381,7 @@ The result matches what a sealed test should show: final's gain shrank from dev 
 ## 9. Reproduce
 
 ```bash
-python -m pytest -q                                                              # 943 unit tests, offline
+python -m pytest -q                                                              # 936 unit tests, offline
 python -m evals.run --config evals/experiments/v2-full.yaml --split dev          # final system, life 1 (needs OPENROUTER_API_KEY)
 python -m evals.run --config evals/experiments/v2-baseline.yaml --split dev      # the original OpenPoke on the same world
 python -m evals.compare <base result file> <new result file>                     # paired differences with intervals
