@@ -175,7 +175,7 @@ An execution agent's old history is folded into a summary plus a list of identif
 
 ### Routing on the sealed held-out world (life 2)
 
-One run per system, frozen at `825473b`, DeepSeek V4.1 Flash, k=3. "v1" is the current code with the four v2 changes switched off; on dev it reproduces the original v1 run (0.86 / 0.85 against 0.867 / 0.861).
+One run per system, frozen at `82b6c1a`, DeepSeek V4.1 Flash, k=3. "v1" is the current code with the four v2 changes switched off; on dev it reproduces the original v1 run (0.86 / 0.85 against 0.867 / 0.861).
 
 ![pass@1, tokens and latency against roster size on life 2](figures/scaling-test.svg)
 
@@ -304,7 +304,7 @@ Summaries are folded run after run, so they could drift away from the truth. `ev
 - **The card hid the current state.** 187 of 200 summaries were longer than the card shows, and the latest status came last, so it was cut off. "Current" in the card view fell to 0.60 for agents with 4 or more runs.
 - **Details drifted with folding.** Judging the full summary, "supported" fell from 0.87 after one run to 0.45 after four or more. Of 8 failures I read, about 3 were real errors, about 3 came from the summarizer guessing from an empty report, and about 2 were the judge being strict.
 
-**The fix** (`3b1e95c`): the summary now leads with "Now", then the matter, then topics, in at most 70 words. An empty result is written as "awaiting a report" rather than guessed from. Every fifth run, the summary is rebuilt from the agent's run log instead of folded.
+**The fix** (`f17f910`): the summary now leads with "Now", then the matter, then topics, in at most 70 words. An empty result is written as "awaiting a report" rather than guessed from. Every fifth run, the summary is rebuilt from the agent's run log instead of folded.
 
 | Card view, agents with 4+ runs | Before | After |
 |---|---|---|
@@ -326,7 +326,7 @@ I changed the status rule's wording once after reading dev failures, so its dev 
 
 **A test-design flaw, found after the run:** 27 rewordings dropped the person's name, which made them truly ambiguous (the world has 8 renewal agents). I score them apart and say so in the script. On those, final guessed one agent 17 times and asked 10 times.
 
-**A fix I tried and reverted.** I added "if more than one agent could be the one, ask which". It worked on its target (asked 21 of 27), but broke the keep rule on dev routing: pass@1 −0.083 at 50 agents, duplicates +0.026 at 1,000, and clear rewordings 0.99 → 0.93. It was reverted (`9cd38b6`), and ambiguous status questions remain a known gap.
+**A fix I tried and reverted.** I added "if more than one agent could be the one, ask which". It worked on its target (asked 21 of 27), but broke the keep rule on dev routing: pass@1 −0.083 at 50 agents, duplicates +0.026 at 1,000, and clear rewordings 0.99 → 0.93. It was reverted (`d1077a8`), and ambiguous status questions remain a known gap.
 
 ## 6. How I avoided tuning to the benchmark
 
