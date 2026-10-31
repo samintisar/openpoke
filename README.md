@@ -79,6 +79,8 @@ This fork reworks how the assistant routes work across hundreds of agents. It ad
 
 The web app proxies API calls to the Python server using the values in `.env`, so keeping both processes running is required for end-to-end flows.
 
+**Trying it without a real Gmail account.** Start the server with `OPENPOKE_FAKE_GMAIL=1` (for example `OPENPOKE_FAKE_GMAIL=1 python -m server.server` in bash) and skip step 9. Every Gmail call then goes to an in-memory mailbox seeded with a few emails, and nothing leaves your machine. Open *Mailbox* in the chat header (or [http://localhost:3000/mailbox](http://localhost:3000/mailbox)) to deliver emails to the inbox and see drafts, sent mail and the sends the approval gate blocked. The mailbox resets when the server restarts; the agents, conversation and approvals in `server/data/` do not.
+
 ## Project Layout
 - `server/` – FastAPI application and agents
 - `web/` – Next.js app

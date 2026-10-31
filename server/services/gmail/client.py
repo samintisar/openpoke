@@ -13,6 +13,7 @@ from ...config import Settings, get_settings
 from ...logging_config import logger
 from ...models import GmailConnectPayload, GmailDisconnectPayload, GmailStatusPayload
 from ...utils import error_response
+from . import fake
 
 
 _CLIENT_LOCK = threading.Lock()
@@ -36,6 +37,8 @@ def _set_active_gmail_user_id(user_id: Optional[str]) -> None:
 
 
 def get_active_gmail_user_id() -> Optional[str]:
+    if fake.enabled():
+        return fake.FAKE_USER_ID
     with _ACTIVE_USER_ID_LOCK:
         return _ACTIVE_USER_ID
 
@@ -204,7 +207,14 @@ def _fetch_profile_from_composio(user_id: Optional[str]) -> Optional[Dict[str, A
 
 
 # Start Gmail OAuth connection process and return redirect URL
+def _fake_status() -> JSONResponse:
+    return JSONResponse({"ok": True, "connected": True, "status": "FAKE_MAILBOX", "email": fake.FAKE_OWNER,
+                         "user_id": fake.FAKE_USER_ID, "profile": None, "profile_source": "fake"})
+
+
 def initiate_connect(payload: GmailConnectPayload, settings: Settings) -> JSONResponse:
+    if fake.enabled():
+        return _fake_status()
     auth_config_id = payload.auth_config_id or settings.composio_gmail_auth_config_id or ""
     if not auth_config_id:
         return error_response(
@@ -236,6 +246,8 @@ def initiate_connect(payload: GmailConnectPayload, settings: Settings) -> JSONRe
 
 # Check Gmail connection status and retrieve user account information
 def fetch_status(payload: GmailStatusPayload) -> JSONResponse:
+    if fake.enabled():
+        return _fake_status()
     connection_request_id = _normalized(payload.connection_request_id)
     user_id = _normalized(payload.user_id)
 
@@ -332,6 +344,9 @@ def fetch_status(payload: GmailStatusPayload) -> JSONResponse:
 
 
 def disconnect_account(payload: GmailDisconnectPayload) -> JSONResponse:
+    if fake.enabled():
+        return error_response("The fake mailbox can't be disconnected; restart without OPENPOKE_FAKE_GMAIL.",
+                              status_code=status.HTTP_400_BAD_REQUEST)
     connection_id = _normalized(payload.connection_id) or _normalized(payload.connection_request_id)
     user_id = _normalized(payload.user_id)
 
@@ -477,6 +492,9 @@ def execute_gmail_tool(
                 prepared_arguments[key] = value
 
     prepared_arguments.setdefault("user_id", "me")
+
+    if fake.enabled():
+        return fake.execute(tool_name, prepared_arguments)
 
     try:
         client = _get_composio_client()

@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "server-fake-gmail",
+      "runtimeExecutable": ".venv/Scripts/python",
+      "runtimeArgs": ["-m", "server.server"],
+      "env": { "OPENPOKE_FAKE_GMAIL": "1" },
+      "port": 8001
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "web"],
+      "port": 3000
+    }
+  ]
+}
