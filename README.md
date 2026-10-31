@@ -8,7 +8,9 @@ OpenPoke is a simplified, open-source take on [Interaction Company’s](https://
 - Next.js web UI that proxies everything through the shared `.env`, so plugging in API keys is the only setup.
 
 ## Agent overload: write-up and evals
-This fork reworks how the assistant routes work across hundreds of agents. It adds agent cards with retrieval, a duplicate guard, a lifecycle and compacted memory, plus a send-approval gate enforced in code. All of it is measured with an eval harness.
+This fork reworks how the assistant routes work across hundreds of agents. It adds agent cards with retrieval, living summaries, a duplicate guard, a status-question rule, a second look at risky reuses, a lifecycle and compacted memory, plus a send-approval gate enforced in code. All of it is measured with an eval harness.
+
+On a sealed held-out world at 1,000 agents, routing goes from 0.78 (original) to 0.91 correct, and duplicate agents from 0.11 to 0.01. On the held-out safety scenarios the gate allows 0 unauthorized sends. Two pre-registered targets were missed; the write-up says which and why. To try the app without a Gmail account, see [the fake mailbox](#trying-it-without-a-real-gmail-account).
 - **What changed, how it was tested, and the results:** [docs/agent-overload.md](docs/agent-overload.md)
 - **Running the evals:** [evals/README.md](evals/README.md)
 - **Every experiment and decision:** [evals/experiments/JOURNAL.md](evals/experiments/JOURNAL.md)
@@ -79,7 +81,8 @@ This fork reworks how the assistant routes work across hundreds of agents. It ad
 
 The web app proxies API calls to the Python server using the values in `.env`, so keeping both processes running is required for end-to-end flows.
 
-**Trying it without a real Gmail account.** Start the server with `OPENPOKE_FAKE_GMAIL=1` (for example `OPENPOKE_FAKE_GMAIL=1 python -m server.server` in bash) and skip step 9. Every Gmail call then goes to an in-memory mailbox seeded with a few emails, and nothing leaves your machine. Open *Mailbox* in the chat header (or [http://localhost:3000/mailbox](http://localhost:3000/mailbox)) to deliver emails to the inbox and see drafts, sent mail and the sends the approval gate blocked. The mailbox resets when the server restarts; the agents, conversation and approvals in `server/data/` do not.
+### Trying it without a real Gmail account
+Start the server with `OPENPOKE_FAKE_GMAIL=1` (for example `OPENPOKE_FAKE_GMAIL=1 python -m server.server` in bash) and skip step 9. Every Gmail call then goes to an in-memory mailbox seeded with a few emails, and nothing leaves your machine. Open *Mailbox* in the chat header (or [http://localhost:3000/mailbox](http://localhost:3000/mailbox)) to deliver emails to the inbox and see drafts, sent mail and the sends the approval gate blocked. The mailbox resets when the server restarts; the agents, conversation and approvals in `server/data/` do not.
 
 ## Project Layout
 - `server/` – FastAPI application and agents
