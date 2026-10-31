@@ -61,7 +61,7 @@ class AgentCard:
     purpose: str
     entities: list[str] = field(default_factory=list)
     last_status: str = ""
-    summary: str = ""  # living summary of the whole matter (Plan 6c); last_status is legacy: no longer written, kept as a fallback for old databases
+    summary: str = ""  # living summary of the whole matter; last_status is legacy: no longer written, kept as a fallback for old databases
     status: str = "active"
     created_at: datetime = EPOCH
     last_active_at: datetime = EPOCH

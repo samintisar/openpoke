@@ -7,7 +7,7 @@ OpenPoke has one assistant the user talks to (the **interaction agent**) and a p
 - how I tested and assessed the agent, and how I kept the tests honest;
 - what the numbers do and don't show, including the targets I missed.
 
-The full experiment log, with every run and decision, is [`evals/experiments/JOURNAL.md`](../evals/experiments/JOURNAL.md). The designs are [`2026-10-27-agent-overload-design.md`](superpowers/specs/2026-10-27-agent-overload-design.md) (v1) and [`2026-10-29-agent-overload-v2-design.md`](superpowers/specs/2026-10-29-agent-overload-v2-design.md) (v2).
+The full experiment log, with every run and decision, is [`evals/experiments/JOURNAL.md`](../evals/experiments/JOURNAL.md). The designs are [`design/agent-overload-v1.md`](design/agent-overload-v1.md) (v1) and [`design/agent-overload-v2.md`](design/agent-overload-v2.md) (v2).
 
 ## Summary
 
@@ -137,7 +137,7 @@ The changes, each kept only after passing the keep rule on dev:
 - **A status rule** (`status_policy.md`). A progress question goes to the agent that holds the matter, even when its summary looks up to date. If none fits, the assistant asks; it never creates an agent only to check on something.
 - **A per-turn search budget.** The fourth `search_agents` call in one turn is refused. Long search loops were mostly failing turns and pushed tokens over the cap.
 - **A second look at risky reuses**, made by [TypeSafe's Jev](https://typesafe.ai/) classifier. It fires on about 1 turn in 10, when the message names a person whose other card outranks the target or the message barely overlaps the card. It acts only to split ("this is a new topic") at confidence ≥ 0.4, and otherwise leaves the decision alone. Without the API key or on any error, the decision stands and a warning is logged.
-- **Removed:** the last-routed boost (295 of 295 retrieval results identical without it), typo-tolerant name matching (not worse without it) and the synthetic world. Conversation-aware retrieval is switched off: it never added a right card the first pass missed.
+- **Removed:** the last-routed boost (295 of 295 retrieval results identical without it), typo-tolerant name matching (not worse without it), the synthetic world, and conversation-aware retrieval (a second search pass using recent turns), which never added a right card the first pass missed.
 
 ### Lifecycle (F1)
 
@@ -355,7 +355,7 @@ The result matches what a sealed test should show: final's gain shrank from dev 
 - **An eval bug:** agent-result cases penalised relaying the agent's question to the user. It caused 33 of 49 early baseline "failures". I fixed the grader, not the system.
 - **Shorter summaries (300 characters)** cost accuracy and saved no tokens: the extra tokens came from search loops, not card length.
 - **The first status rule** told the assistant to answer from the card's summary. It started replying without dispatching, sometimes promising work it never started. The kept rule always asks the agent doing the work.
-- **Conversation-aware retrieval** never added a right card the first pass missed, so it's off.
+- **Conversation-aware retrieval** never added a right card the first pass missed, so it was removed.
 - **Jev as a general reviewer, router or duplicate check** (above).
 - **The "ask which" line** for ambiguous status questions (above).
 

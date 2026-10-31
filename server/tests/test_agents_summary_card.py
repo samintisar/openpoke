@@ -39,7 +39,7 @@ def test_in_memory_update_sets_summary():
 
 def test_sqlite_stores_summary_and_migrates_last_status(tmp_path):
     path = tmp_path / "agents.db"
-    with sqlite3.connect(path) as conn:  # the schema before Plan 6c
+    with sqlite3.connect(path) as conn:  # the schema before summaries
         conn.execute("CREATE TABLE agents (id TEXT PRIMARY KEY, name TEXT NOT NULL, purpose TEXT NOT NULL, entities TEXT "
                      "NOT NULL DEFAULT '[]', last_status TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'active', "
                      "created_at TEXT NOT NULL, last_active_at TEXT NOT NULL, run_count INTEGER NOT NULL DEFAULT 0)")

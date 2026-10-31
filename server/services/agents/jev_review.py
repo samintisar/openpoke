@@ -1,13 +1,13 @@
-"""Jev as the second look's reviewer, split-only: the default since J5 (life-1 dev: kept; Plan 6c).
+"""Jev as the second look's reviewer, split-only (the default reviewer).
 
-The question is the one the offline experiments asked (`evals.jev_experiments` J1/J2 import it from here): one
+The question is the one the offline experiments asked (`evals.jev_experiments` imports it from here): one
 choice over the gate's cards plus "new" and "ask", over the second look's input without the proposal block, so Jev
 is not anchored on the interaction agent's choice.
 
 Split-only: Jev may only turn a reuse into "create a new agent" (the second look's "new on a reuse" hold), and only
 when it chooses "new" with confidence at least `min_confidence`. Every other answer (a card, "ask", a low-confidence
-"new") leaves the decision as it was. J1 showed Jev's fixes were all "new" on reuse proposals, and almost all its
-breaks were "ask" on correct multi-request messages.
+"new") leaves the decision as it was. In the offline replays Jev's fixes were all "new" on reuse proposals, and almost
+all its mistakes were "ask" on correct multi-request messages.
 """
 
 from __future__ import annotations

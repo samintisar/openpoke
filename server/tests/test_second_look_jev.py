@@ -1,4 +1,4 @@
-"""Jev as the second look's reviewer, split-only (Plan 6c J5). Fake Jev only: no live calls."""
+"""Jev as the second look's reviewer, split-only. Fake Jev only: no live calls."""
 
 import asyncio
 from datetime import datetime, timezone

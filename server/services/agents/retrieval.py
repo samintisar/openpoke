@@ -142,11 +142,8 @@ def select(
     cfg: Optional[RetrievalConfig] = None,
     pinned: Iterable[Union[AgentCard, str]] = (),
     open_work: Iterable[str] = (),
-    context_query: Optional[str] = None,
 ) -> list[AgentCard]:
     """Pinned cards, then the hot set, then the top K relevant cards; deduped, in that order.
-
-    With `context_query`, up to CONTEXT_EXTRA more cards from that query follow the top K.
 
     Archived cards are never hot and enter the top K only with score >= `archived_min_score`, so a
     month-old matter the user names ("whatever happened with Gary's lease?") still surfaces.
@@ -186,16 +183,6 @@ def select(
         if card.id not in seen:
             take(card)
             added += 1
-    if context_query:
-        extra = 0
-        for card, score in score_cards(context_query, cards, now, cfg):
-            if extra >= CONTEXT_EXTRA or score < cfg.min_score:
-                break
-            if card.status == "archived" and score < cfg.archived_min_score:
-                continue
-            if card.id not in seen:
-                take(card)
-                extra += 1
     return chosen
 
 
@@ -225,43 +212,6 @@ def build_query(message: str, recent_texts: Sequence[str] = ()) -> str:
     return "\n".join(part for part in parts if part)
 
 
-_PROGRESS_RE = re.compile(
-    r"\b(how'?s|how is|how are|any (?:word|update|news)|did (?:they|he|she|you) (?:get back|reply|hear)|"
-    r"heard back|still waiting|where (?:are|do) things|status of)\b",
-    re.IGNORECASE,
-)
-CONTEXT_EXTRA = 3  # cards a context query may add beyond the top K
-CONTEXT_WEAK_SCORE = 0.35  # best first-pass score below which a vague message gets the context pass
-
-
-def needs_context(message: str) -> bool:
-    """A progress question, or a message that names no one: earlier turns may say what it is about."""
-    message = (message or "").replace("’", "'")
-    return bool(_PROGRESS_RE.search(message)) or not extract_entities([message])
-
-
-def context_query(
-    message: str,
-    recent_texts: Sequence[str] = (),
-    cards: Optional[Sequence[AgentCard]] = None,
-    now: Optional[datetime] = None,
-    cfg: Optional[RetrievalConfig] = None,
-) -> Optional[str]:
-    """The message plus the last 3 turns, for a second retrieval pass.
-
-    None unless the message needs context AND the first pass is weak: the message alone has at most 2
-    content words, or (when `cards` and `now` are given) its best card scores below CONTEXT_WEAK_SCORE.
-    """
-    if not needs_context(message):
-        return None
-    if len(content_tokens(message)) > 2 and cards is not None and now is not None:
-        scored = score_cards(message, cards, now, cfg)
-        if scored and scored[0][1] >= CONTEXT_WEAK_SCORE:
-            return None
-    parts = [message, *list(recent_texts)[-3:]]
-    return "\n".join(part for part in parts if part)
-
-
 def pinned_from_agent_message(message: str, cards: Sequence[AgentCard]) -> list[AgentCard]:
     """Cards named by `[SUCCESS|FAILED] <name>:` lines in an execution-agent result."""
     by_name = {card.name: card for card in cards}
@@ -276,14 +226,10 @@ def pinned_from_agent_message(message: str, cards: Sequence[AgentCard]) -> list[
 
 
 __all__ = [
-    "CONTEXT_EXTRA",
-    "CONTEXT_WEAK_SCORE",
     "DEFAULT_CONFIG",
     "RetrievalConfig",
     "build_query",
     "content_tokens",
-    "context_query",
-    "needs_context",
     "pinned_from_agent_message",
     "recency",
     "score_cards",

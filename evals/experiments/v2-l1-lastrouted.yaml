@@ -9,4 +9,4 @@ include_handwritten: false
 budget_usd: 0.01  # retrieval layer only: no model calls
 concurrency: 4
 layers: [retrieval]
-system_options: {context_query: false}
+system_options: {}

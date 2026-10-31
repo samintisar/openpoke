@@ -8,4 +8,4 @@ k: 3
 include_handwritten: false
 budget_usd: 3.0
 concurrency: 4
-system_options: {second_look: false, context_query: false}
+system_options: {second_look: false}

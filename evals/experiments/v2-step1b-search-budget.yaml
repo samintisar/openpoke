@@ -1,6 +1,6 @@
 name: v2-step1b-search-budget
 system: retrieved
-system_options: {status_policy: false, second_look: false, context_query: false}
+system_options: {status_policy: false, second_look: false}
 model: deepseek/deepseek-v4.1-flash
 world: lived_v2
 life: 1

@@ -1,4 +1,4 @@
-"""Per-agent memory compaction (spec §5).
+"""Per-agent memory compaction.
 
 An execution agent's prompt history is its latest `<agent_memory>`, the `<agent_identifiers>` seen so far, and the
 raw log entries after the memory. Once the un-compacted entries before the newest `history_token_budget` worth

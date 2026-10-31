@@ -1,4 +1,4 @@
-"""Second look: one cheap review at the routing moments where mistakes happen (Plan 6c; Jev by default since J5).
+"""Second look: one cheap review at the routing moments where mistakes happen.
 
 Code decides when it runs:
 - create (off by default, `create=True`): the interaction agent creates an agent, the duplicate guard did not
@@ -9,8 +9,8 @@ Code decides when it runs:
   with the message (the wrong-person risk), the message names someone or somewhere A's card never mentions
   (Sedona on a Phoenix card; off by default, `name_coverage=0`), or few of the message's topic words, weighted by
   rarity across the cards, are on A's card (same person, new subject).
-Defaults come from the offline calibration on life-1 dev (Task 9): about 0.11 of turns look.
-The reviewer is Jev, split-only (`jev_review.py`; kept on life-1 dev in J5): it can only hold a reuse it
+Defaults come from an offline calibration on the dev benchmark (`evals.second_look_calibration`): about 0.11
+of turns look. The reviewer is Jev, split-only (`jev_review.py`): it can only hold a reuse it
 confidently calls a new matter. `reviewer="llm"` is the earlier reviewer: one cheap LLM call that sees the message,
 the last conversation turns and the top cards with summaries, and answers reuse, new or ask; `effect` turns that
 verdict into what the dispatch does.

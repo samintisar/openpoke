@@ -110,11 +110,11 @@ async def test_review_times_out_and_wraps_errors():
     assert verdict == Verdict("new", None, "game night is a new subject")
 
 
-# The thresholds the review rounds were written against (before Task 9's calibration lowered the defaults).
+# The thresholds the review rounds were written against (before the calibration lowered the defaults).
 REVIEW_CFG = SecondLookConfig(reuse_coverage=0.5, name_coverage=0.8)
 
 
-# --- Review fixes (Task 7 review) -------------------------------------------------------------------------------
+# --- Review fixes -------------------------------------------------------------------------------
 
 BAETRIZ = _card("baetriz-trivia", "Baetriz Trivia Night", "Ask Baetriz which trivia night works for her.")
 NIGHTS = [
@@ -274,7 +274,7 @@ def test_name_coverage_gates_the_name_signal_and_zero_turns_it_off():
     assert reuse_trigger(msg, PHOENIX, [PHOENIX, CARL], NOW, SecondLookConfig(name_coverage=0.0)) is None
 
 
-# --- Task 9 calibration: the shipped defaults ------------------------------------------------------------------
+# --- Calibration: the shipped defaults ------------------------------------------------------------------
 
 def test_defaults_follow_the_calibration():
     cfg = SecondLookConfig()

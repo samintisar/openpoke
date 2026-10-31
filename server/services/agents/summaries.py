@@ -1,4 +1,4 @@
-"""Living summaries on agent cards (Plan 6c; reworked in Plan 6d after the drift check).
+"""Living summaries on agent cards.
 
 After every execution-agent run, one cheap model call folds the run's instructions and result into the card's
 summary. The summary leads with where things stand ("Now"), then the matter and people, then other topics, so the

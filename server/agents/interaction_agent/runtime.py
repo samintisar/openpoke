@@ -48,7 +48,7 @@ class _LoopSummary:
     tool_names: List[str] = field(default_factory=list)
     execution_agents: Set[str] = field(default_factory=set)
     dispatched_ids: List[str] = field(default_factory=list)
-    second_look_done: bool = False  # at most one second look per turn (Plan 6c)
+    second_look_done: bool = False  # at most one second look per turn
     searches: int = 0  # search_agents calls run this turn, against SEARCH_BUDGET
 
 

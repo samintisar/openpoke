@@ -1,6 +1,6 @@
 # Agent overload v2: a trustworthy benchmark and targeted routing fixes
 
-Date: 2026-10-29. Builds on [2026-10-27-agent-overload-design.md](2026-10-27-agent-overload-design.md); everything there that isn't changed here stays.
+Date: 2026-10-29. Builds on [agent-overload-v1.md](agent-overload-v1.md); everything there that isn't changed here stays.
 
 ## 1. Why v2
 

@@ -49,7 +49,7 @@ def test_bm25_orders_by_topic():
 
 
 def test_entities_match_exactly_only():
-    # Typo-tolerant matching was removed in Plan 6c Task 11 (fuzzy ablation: not worse on dev).
+    # Typo-tolerant matching was removed: routing was not worse without it on the dev benchmark.
     import server.services.agents.retrieval as retrieval_module
     cfg = RetrievalConfig(w_kw=0.0, w_rec=0.0)
     exact = dict((c.id, s) for c, s in score_cards("maya", CARDS, NOW, cfg=cfg))
@@ -71,11 +71,10 @@ def test_recency_ranks_twin_cards():
 
 
 def test_no_last_routed_boost_anywhere():
-    # Removed in Plan 6c Task 11: the boost never changed the shown cards on dev (L1 check).
+    # Removed: the boost never changed which cards were shown on the dev benchmark.
     import inspect
-    from server.services.agents.retrieval import context_query
     assert not hasattr(RetrievalConfig(), "last_routed_boost")
-    for fn in (score_cards, select, context_query):
+    for fn in (score_cards, select):
         assert "last_routed" not in inspect.signature(fn).parameters
     cfg = RetrievalConfig(w_kw=0.0, w_rec=0.0)
     assert score_cards("ben", [card("b", "Ben", "Ben", ["ben"])], NOW, cfg)[0][1] == pytest.approx(cfg.w_ent)

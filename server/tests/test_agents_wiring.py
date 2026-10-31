@@ -250,7 +250,7 @@ async def test_runtime_collects_dispatched_ids(tmp_path, monkeypatch):
     runtime = bare_runtime()
     summary = await runtime._run_interaction_loop("system", [])
     assert summary.dispatched_ids == ["a", "b"]
-    assert not hasattr(runtime, "_update_last_routed")  # the last-routed boost is gone (Plan 6c Task 11)
+    assert not hasattr(runtime, "_update_last_routed")  # the last-routed boost is gone
 
 
 # -- execution side: status and the [SUCCESS] payload --------------------------------------------------

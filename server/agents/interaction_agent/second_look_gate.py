@@ -1,4 +1,4 @@
-"""Apply the second look to one `send_message_to_agent` call, before it reaches `dispatch` (Plan 6c).
+"""Apply the second look to one `send_message_to_agent` call, before it reaches `dispatch`.
 
 Shared by the production runtime and the eval. Returns the arguments to send (possibly redirected to another
 agent), a held payload when nothing should be sent, and a record of what happened (None when no trigger fired).

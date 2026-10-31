@@ -69,7 +69,7 @@ def test_the_switch_defaults_to_jev_and_validates():
 
 
 def test_the_switch_is_forwarded_through_options():
-    system = get_system("retrieved", {"context_query": False, "second_look_reviewer": "jev"})
+    system = get_system("retrieved", {"second_look_reviewer": "jev"})
     assert system.second_look_reviewer == "jev"
     for name in ("retrieved_nolife", "retrieved_noguard", "retrieved_nosearch"):
         assert get_system(name, {"second_look_reviewer": "jev"}).second_look_reviewer == "jev"

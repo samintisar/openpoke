@@ -23,7 +23,6 @@ from server.services.agents.render import render_cards
 from server.services.agents.retrieval import (
     RetrievalConfig,
     build_query,
-    context_query,
     pinned_from_agent_message,
     select,
 )
@@ -237,7 +236,7 @@ class RetrievedSystem:
     def __init__(
         self, cfg: RetrievalConfig | None = None, lifecycle: bool = True, guard: bool = True, search: bool = True,
         summaries: bool = True, status_policy: bool = True, second_look: bool = True,
-        context_query: bool = False, search_budget: int | None = SEARCH_BUDGET,
+        search_budget: int | None = SEARCH_BUDGET,
         second_look_reviewer: str = "jev", jev_client: Any = None,
     ) -> None:
         self.cfg = cfg or RetrievalConfig()
@@ -249,11 +248,10 @@ class RetrievedSystem:
         self.summaries = summaries  # False: cards carry no living summary (the summaries ablation)
         self.status_policy = status_policy  # False: no status-question rule
         self.second_look = second_look  # False: no second look before risky dispatches
-        self.context_query = context_query  # off by default: no gold-card gain on dev (Plan 6c Task 10)
         self.search_budget = search_budget  # searches per turn before a refusal; None = unlimited
         if second_look_reviewer not in REVIEWERS:
             raise ValueError(f"second_look_reviewer {second_look_reviewer!r} is not one of {REVIEWERS}")
-        self.second_look_reviewer = second_look_reviewer  # "jev" (split-only, kept in J5) or "llm"
+        self.second_look_reviewer = second_look_reviewer  # "jev" (split-only, the default) or "llm"
         self.jev_client = jev_client  # tests: a scripted Jev; None: see _jev_for
         self._jevs: dict[int, tuple[Any, Any]] = {}  # id(run client) -> (client, its Jev)
         # id(world) -> (world, cards); holding the world keeps its id from being reused.
@@ -271,12 +269,7 @@ class RetrievedSystem:
         pinned: list[AgentCard] = []
         if case is not None and case.message_type == "agent":
             pinned = pinned_from_agent_message(case.message, cards)
-        extra = None
-        if self.context_query and case is not None and case.message_type == "user":
-            texts = [entry[1] for entry in case.context[-QUERY_CONTEXT_ENTRIES:]]
-            extra = context_query(case.message, texts, cards, world.now, self.cfg)
-        return select(_query(case), cards, world.now, self.cfg, pinned=pinned,
-                      context_query=extra)
+        return select(_query(case), cards, world.now, self.cfg, pinned=pinned)
 
     def render_roster(self, world: World, case: Case | None) -> str:
         return render_cards(self.selected(world, case), len(self.cards(world)), world.now)

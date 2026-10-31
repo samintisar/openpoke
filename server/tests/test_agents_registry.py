@@ -55,7 +55,7 @@ def test_dispatch_over_registry(tmp_path):
 def test_drops_the_old_last_routed_meta_table(tmp_path):
     import sqlite3
     path = tmp_path / "agents.db"
-    with sqlite3.connect(path) as conn:  # a database from before Plan 6c Task 11
+    with sqlite3.connect(path) as conn:  # a database from before last_routed was removed
         conn.execute("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
         conn.execute("INSERT INTO meta VALUES ('last_routed', '[\"a\"]')")
     d = SqliteAgentDirectory(path)

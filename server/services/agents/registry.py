@@ -71,11 +71,11 @@ class SqliteAgentDirectory:
                             raise
                         time.sleep(0.05)
             conn.execute(agents_sql)
-            conn.execute("DROP TABLE IF EXISTS meta")  # it held only last_routed, removed in Plan 6c
+            conn.execute("DROP TABLE IF EXISTS meta")  # it held only last_routed, which is no longer used
             conn.execute("BEGIN IMMEDIATE")  # one writer migrates; the check, ALTER and copy succeed or fail together
             try:
                 columns = {row[1] for row in conn.execute("PRAGMA table_info(agents)")}
-                if "summary" not in columns:  # databases from before Plan 6c: the summary starts as last_status
+                if "summary" not in columns:  # databases from before summaries: the summary starts as last_status
                     conn.execute("ALTER TABLE agents ADD COLUMN summary TEXT NOT NULL DEFAULT ''")
                     conn.execute("UPDATE agents SET summary = last_status")
                 conn.execute("COMMIT")
