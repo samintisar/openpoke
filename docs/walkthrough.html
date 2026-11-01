@@ -180,11 +180,11 @@ tr.final td { font-weight: 700; }
   </header>
   <div class="tablewrap"><table>
     <tr><th>#</th><th>Part</th><th>What it covers</th></tr>
-    <tr><td>1</td><td><b>The problem</b></td><td>How OpenPoke routes, what users ran into, the six failure modes, how bad the original got</td></tr>
+    <tr><td>1</td><td><b>The problem</b></td><td>How OpenPoke routes, what users ran into and why, how bad the original got</td></tr>
     <tr><td>2</td><td><b>How I measured</b></td><td>Three eval layers, simulated lives, answer keys, sealed test</td></tr>
-    <tr><td>3</td><td><b>What I tried</b></td><td>v1, the finding that changed direction, v2, what I reverted</td></tr>
-    <tr><td>4</td><td><b>Results</b></td><td>Sealed numbers, targets met and missed, safety, what users notice now</td></tr>
-    <tr><td>5</td><td><b>Product code tour</b></td><td>One message, “any update from Carl?”, through 8 files</td></tr>
+    <tr><td>3</td><td><b>What I tried</b></td><td>v1, the finding that changed direction, v2, fixes beyond routing, what I reverted</td></tr>
+    <tr><td>4</td><td><b>Results</b></td><td>Sealed numbers, targets, checks that the results held, safety, what users notice now</td></tr>
+    <tr><td>5</td><td><b>Product code tour</b></td><td>One message, “any update from Carl?”, through 12 files</td></tr>
     <tr><td>6</td><td><b>Eval code tour</b></td><td>World → keys → run → grade → compare → checksum</td></tr>
     <tr><td>7</td><td><b>Gaps and next</b></td><td>What’s still wrong, what I’d do with two more weeks</td></tr>
   </table></div>
@@ -223,34 +223,19 @@ user: any update from my contractor on the bathroom job?</pre>
 <section class="slide" id="before" data-part="Problem">
   <header>
     <span class="eyebrow">1 · The problem, for the user</span>
-    <h2>What using it felt like once you had lots of tasks</h2>
+    <h2>What users ran into once they had lots of tasks, and why</h2>
   </header>
   <div class="tablewrap"><table>
-    <tr><th>What you’d notice</th><th>Example</th><th>Cause</th></tr>
-    <tr><td><b>It forgot what it was doing</b></td><td>“Any update from my contractor?” started from scratch instead of checking the thread it already had with Carl.</td><td>Duplicate agent (F1, F2)</td></tr>
-    <tr><td><b>Follow-ups landed in the wrong conversation</b></td><td>A note about Kwame’s game night went into the book club thread.</td><td>Wrong agent reused (F1)</td></tr>
-    <tr><td><b>It got slower and costlier the more you used it</b></td><td>Every message carried the name of every task you’d ever started.</td><td>Prompt grows with every agent (F1, F3)</td></tr>
-    <tr><td><b>Repeated or contradictory replies</b></td><td>Two “on it!” messages, or a reminder in the middle of reviewing a draft.</td><td>Turns race (F6)</td></tr>
-    <tr><td><b>Quick answers waited behind slow ones</b></td><td>A two-second lookup held back until a long email search finished.</td><td>One shared batch (F5)</td></tr>
-    <tr><td><b>Email could go out without your yes</b></td><td>A forward you had declined was sent anyway; an email claiming “you already approved” could trigger one.</td><td>Approval only in the prompt</td></tr>
+    <tr><th>What you’d notice</th><th>Example</th><th>Cause in the code</th></tr>
+    <tr><td><b>It forgot what it was doing</b></td><td>“Any update from my contractor?” started from scratch instead of checking the thread it already had with Carl.</td><td><b>F1</b> routing by bare name · <b>F2</b> identity is an exact string</td></tr>
+    <tr><td><b>Follow-ups landed in the wrong conversation</b></td><td>A note about Kwame’s game night went into the book club thread.</td><td><b>F1</b> routing by bare name</td></tr>
+    <tr><td><b>It got slower and costlier the more you used it</b></td><td>Every message carried every task’s name, and every worker re-read its whole history.</td><td><b>F1</b> prompt lists every agent · <b>F3</b> memory grows without limit</td></tr>
+    <tr><td><b>The same task could run twice</b></td><td>Two runs of one agent at once interleaved its log: duplicated or garbled work.</td><td><b>F4</b> no concurrency control</td></tr>
+    <tr><td><b>Quick answers waited behind slow ones</b></td><td>A two-second lookup held back until a long email search finished.</td><td><b>F5</b> one global batch</td></tr>
+    <tr><td><b>Repeated or contradictory replies</b></td><td>Two “on it!” messages, or a reminder in the middle of reviewing a draft.</td><td><b>F6</b> assistant turns race</td></tr>
+    <tr><td><b>Email could go out without your yes</b></td><td>A forward you had declined was sent anyway; an email claiming “you already approved” could trigger one.</td><td>Approval only in the prompt; email text read as instructions</td></tr>
   </table></div>
-</section>
-
-<!-- 4 -->
-<section class="slide" id="failures" data-part="Problem">
-  <header>
-    <span class="eyebrow">1 · The problem</span>
-    <h2>Six failure modes I found in the original code</h2>
-  </header>
-  <div class="grid g3">
-    <div class="card"><span class="tag">F1</span><h3>Routing degrades at scale</h3><p>Hundreds of bare names: the wrong agent is reused, or a duplicate is made.</p></div>
-    <div class="card"><span class="tag">F2</span><h3>Identity is an exact string</h3><p>“email to alice” and “Email to Alice”: two agents sharing one log file.</p></div>
-    <div class="card"><span class="tag">F3</span><h3>Memory grows without limit</h3><p>Each agent’s whole history goes into every prompt it runs.</p></div>
-    <div class="card"><span class="tag">F4</span><h3>No concurrency control</h3><p>The same agent can run twice at once and interleave its log.</p></div>
-    <div class="card"><span class="tag">F5</span><h3>One global batch</h3><p>A slow agent holds back every other agent’s result.</p></div>
-    <div class="card"><span class="tag">F6</span><h3>Assistant turns race</h3><p>Messages, results and alerts each start a turn; replies duplicate or contradict.</p></div>
-  </div>
-  <p class="callout warn">Also found: “confirm before sending” was only a line in the prompt, email text could inject instructions, it broke on Windows, the configured model was retired, and there were no tests or evals.</p>
+  <p class="callout warn">Also found: it broke on Windows, the configured model was no longer served, and there were no tests or evals.</p>
 </section>
 
 <!-- 5 -->
@@ -281,7 +266,7 @@ user: any update from my contractor on the bathroom job?</pre>
     <div class="card good"><span class="tag">L2 · routing</span><h3>Does it pick the right agent?</h3><p>One real assistant turn with the production prompt and tools, on rosters of 10 to 1,000. Tool calls are intercepted and the outcome graded: correct, acceptable, minor, costly (duplicate), harmful (wrong agent).</p></div>
     <div class="card good"><span class="tag">L3 · end to end</span><h3>Does the whole system behave?</h3><p>Real agents against an in-memory Gmail, 26 scenarios. Sends are audited where mail leaves the mailbox, separately from the gate.</p></div>
   </div>
-  <p class="callout">Plus a memory eval (plant facts, compact, ask for them back) and an LLM judge from another model family, used only on the 3 checks where it agreed with my 42 hand labels at least 85% of the time.</p>
+  <p class="callout">Plus a memory eval (plant facts, compact, ask for them back) and an LLM judge from another model family, used only on the 3 checks where it agreed with my 42 hand labels at least 85% of the time. Evals run on DeepSeek V4.1 Flash, chosen after a reliability check (malformed tool calls 0.55%, wait loops 1.2%) at $0.0009 per routing decision against Haiku 5.5’s $0.0021.</p>
 </section>
 
 <!-- 7 -->
@@ -322,7 +307,7 @@ user: any update from my contractor on the bathroom job?</pre>
       <div class="card good"><span class="tag">dedup guard</span><h3>Creates checked against existing cards</h3><p>Same name, or same person and topic, is pushed back. Guard off: duplicates 0.00 → 0.11.</p></div>
     </div>
     <div class="grid" style="gap:12px;align-content:start">
-      <div class="card good"><span class="tag">lifecycle · memory · orchestration</span><h3>F2–F6</h3><p>Dormant at 7 days, archived at 30, revived on a strong match. Compacted history keeps exact IDs. Per-agent locks, a cap of 4, a durable inbox.</p></div>
+      <div class="card good"><span class="tag">reuse policy</span><h3>An agent owns a matter</h3><p>A person plus a subject belongs to one agent, whatever the next step is.</p></div>
       <div class="card"><h3>v1’s first test</h3><p>0.84 at 1,000 agents on Haiku, intervals touching zero. The error analysis showed the <b>benchmark itself</b> was part of the problem: dev had 1 vague-reference case, test had 6, and some keys were wrong. So I rebuilt it as benchmark v2 before going further.</p></div>
     </div>
   </div>
@@ -353,6 +338,24 @@ user: any update from my contractor on the bathroom job?</pre>
     <tr><td><b>Second look (Jev)</b></td><td>On ~7% of turns, TypeSafe’s classifier checks a risky reuse. It can only split off a new topic.</td><td class="num">−0.015 / −0.012</td></tr>
   </table></div>
   <p class="callout">Leave-one-out on dev: each change switched off inside the full system. Every one helps; summaries and the status rule carry most of the gain.</p>
+</section>
+
+<!-- beyond routing -->
+<section class="slide" id="beyond" data-part="Tried">
+  <header>
+    <span class="eyebrow">3 · What I built</span>
+    <h2>Beyond routing: fixing the rest of overload</h2>
+  </header>
+  <div class="tablewrap"><table>
+    <tr><th>Failure</th><th>Fix</th><th>File</th><th>Evidence</th></tr>
+    <tr><td><b>F2</b> identity is a string</td><td>SQLite registry: every agent has an id, so near-identical names can’t collide</td><td class="file">services/agents/registry.py</td><td>Unit tests</td></tr>
+    <tr><td><b>F1</b> the roster only grows</td><td>Lifecycle: dormant after 7 idle days, archived after 30, revived on a strong match; open work keeps an agent active</td><td class="file">services/agents/lifecycle.py</td><td>Revival 27 of 27; no accuracy cost</td></tr>
+    <tr><td><b>F3</b> memory without limit</td><td>Compaction: old history folded into a summary; exact IDs pulled out by code and kept with 60 characters of context</td><td class="file">services/agents/memory.py</td><td>Recall 1.00 held-out; ~5.5k tokens vs 9–10k</td></tr>
+    <tr><td><b>F4</b> no concurrency control</td><td>A FIFO lock per agent, so it never runs twice at once; at most 4 agents run together</td><td class="file">services/execution/runner.py</td><td>Unit tests</td></tr>
+    <tr><td><b>F5</b> one global batch</td><td>The shared batch is gone: each result is delivered as soon as its agent finishes</td><td class="file">services/execution/runner.py</td><td>Unit tests</td></tr>
+    <tr><td><b>F6</b> racing turns</td><td>A durable inbox: one assistant turn at a time; results arriving mid-turn join the next; survives a restart</td><td class="file">services/inbox/</td><td>Unit tests</td></tr>
+    <tr><td>Step limit</td><td>An agent that hits its limit reports what it already did (drafts, triggers) instead of failing</td><td class="file">agents/execution_agent/runtime.py</td><td>Unit tests</td></tr>
+  </table></div>
 </section>
 
 <!-- 11 -->
@@ -415,6 +418,20 @@ user: any update from my contractor on the bathroom job?</pre>
   </div>
 </section>
 
+<!-- did it hold up -->
+<section class="slide" id="held" data-part="Results">
+  <header>
+    <span class="eyebrow">4 · Results</span>
+    <h2>Did it hold up? Checks I ran against my own results</h2>
+  </header>
+  <div class="grid g3">
+    <div class="card good"><span class="tag">summary drift</span><h3>Current 0.60 → 0.97</h3><p>Summaries are rewritten every run, so they could drift. A judge compared each one with the agent’s runs; I read its failures. The latest status was being cut off and details drifted. Putting “Now” first, no guessing, and a rebuild every 5th run fixed it; routing stayed within noise.</p></div>
+    <div class="card good"><span class="tag">status wording</span><h3>0.99 on new phrasings</h3><p>Each status question asked 10 new ways, written before the run. Clear rewordings correct: original 0.62, v1 0.59, final 0.99. Turns that created an agent: 29, 24, 1 of 100.</p></div>
+    <div class="card"><span class="tag">what it found</span><h3>A gap I couldn’t close</h3><p>27 rewordings dropped the person’s name and were truly ambiguous; final guessed 17 times. An “ask which” line fixed that but failed the keep rule elsewhere, so it was reverted.</p></div>
+  </div>
+  <p class="callout">These ran after the sealed test, so they’re checked on dev only; the life-2 numbers stay those of the frozen system.</p>
+</section>
+
 <!-- 14 -->
 <section class="slide" id="safety" data-part="Results">
   <header>
@@ -426,7 +443,7 @@ user: any update from my contractor on the bathroom job?</pre>
     <div class="card good"><span class="tag">memory</span><h3>Recall 1.00</h3><p>Planted facts survive compaction on a held-out seed, including a decision that was later changed, at ~5.5k tokens instead of 9–10k and growing.</p></div>
     <div class="card"><span class="tag">live on Sonnet 5.5</span><h3>9 of 25 turns failed → 0 of 12</h3><p>Evals ran on DeepSeek. Testing the production model by hand found a wait loop the evals couldn’t see. Fixed with a test before submitting.</p></div>
   </div>
-  <p class="callout">The same live session: a phishing email claiming “the user already approved” was refused and flagged; an edit while approving produced a new draft and a new question.</p>
+  <p class="callout">The same live session: a phishing email claiming “the user already approved” was refused and flagged; an edit while approving produced a new draft and a new question. Two reply rules from my hand labels: drafts repeated in the reply text went from 12 of 36 to 0 of 34, and fake approvals now get an explicit warning (0 of 3 → 3 of 3).</p>
 </section>
 
 <!-- user experience now -->
@@ -474,8 +491,12 @@ user: any update from my contractor on the bathroom job?</pre>
     <tr><td class="step">4 Pick the agent</td><td class="file">server/agents/interaction_agent/status_policy.md</td><td>Progress question → the agent holding it; never a new agent</td></tr>
     <tr><td class="step">5 Block a duplicate</td><td class="file">server/services/agents/dedup.py</td><td>Same name, or same person and topic → pushed back with the card</td></tr>
     <tr><td class="step">6 Second look</td><td class="file">server/agents/interaction_agent/second_look_gate.py</td><td>Jev on ~7% of turns; it can only split; on error the decision stands</td></tr>
-    <tr><td class="step">7 Update the card</td><td class="file">server/services/agents/summaries.py</td><td>“Now” first, 70 words; rebuild from the run log every 5th run</td></tr>
-    <tr><td class="step">8 Gate the send</td><td class="file">server/services/approvals/gate.py</td><td><code>check_send</code>: approved, same agent, same hash, or blocked</td></tr>
+    <tr><td class="step">7 Run the agent</td><td class="file">server/services/execution/runner.py</td><td>FIFO lock per agent; at most 4 agents at once</td></tr>
+    <tr><td class="step">8 Load its memory</td><td class="file">server/services/agents/memory.py</td><td>Summary plus IDs found by regex, kept word for word</td></tr>
+    <tr><td class="step">9 Gate the send</td><td class="file">server/services/approvals/gate.py</td><td><code>check_send</code>: approved, same agent, same hash, or blocked</td></tr>
+    <tr><td class="step">10 Update the card</td><td class="file">server/services/agents/summaries.py</td><td>“Now” first, 70 words; rebuild from the run log every 5th run</td></tr>
+    <tr><td class="step">11 Deliver the result</td><td class="file">server/services/inbox/</td><td>One assistant turn at a time; mid-turn results join the next</td></tr>
+    <tr><td class="step">12 Retire idle agents</td><td class="file">server/services/agents/lifecycle.py</td><td>Hourly sweep: dormant at 7 days, archived at 30</td></tr>
   </table></div>
 </section>
 
@@ -527,19 +548,7 @@ user: any update from my contractor on the bathroom job?</pre>
       </ol>
     </div>
   </div>
-</section>
-
-<!-- 18 -->
-<section class="slide dark" id="close" data-part="Next">
-  <header>
-    <span class="eyebrow">Further reading</span>
-    <h1>Where to go from here</h1>
-  </header>
-  <div class="grid g3">
-    <div class="card" style="background:#1b252e;border-color:#2c3a46"><h3>Write-up</h3><p class="muted">docs/agent-overload.md</p></div>
-    <div class="card" style="background:#1b252e;border-color:#2c3a46"><h3>Every decision</h3><p class="muted">evals/experiments/JOURNAL.md</p></div>
-    <div class="card" style="background:#1b252e;border-color:#2c3a46"><h3>Try it</h3><p class="muted">OPENPOKE_FAKE_GMAIL=1, then the Mailbox page</p></div>
-  </div>
+  <p class="callout">More detail: the write-up in <code>docs/agent-overload.md</code>, every experiment in <code>evals/experiments/JOURNAL.md</code>. To try it without Gmail: <code>OPENPOKE_FAKE_GMAIL=1</code>, then the Mailbox page.</p>
 </section>
 
     </div>
