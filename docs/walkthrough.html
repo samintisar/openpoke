@@ -148,7 +148,7 @@ tr.final td { font-weight: 700; }
     <span class="title">OpenPoke · agent overload · walkthrough</span>
     <div class="controls">
       <button class="btn" id="prev" type="button">← Back</button>
-      <span class="count" id="count" aria-live="polite">1 / 18</span>
+      <span class="count" id="count" aria-live="polite">1 / 20</span>
       <button class="btn" id="next" type="button">Next →</button>
     </div>
   </div>
@@ -179,10 +179,10 @@ tr.final td { font-weight: 700; }
   </header>
   <div class="tablewrap"><table>
     <tr><th>#</th><th>Part</th><th>What it covers</th></tr>
-    <tr><td>1</td><td><b>The problem</b></td><td>How OpenPoke routes, the six failure modes, how bad the original got</td></tr>
+    <tr><td>1</td><td><b>The problem</b></td><td>How OpenPoke routes, what users ran into, the six failure modes, how bad the original got</td></tr>
     <tr><td>2</td><td><b>How I measured</b></td><td>Three eval layers, simulated lives, answer keys, sealed test</td></tr>
     <tr><td>3</td><td><b>What I tried</b></td><td>v1, the finding that changed direction, v2, what I reverted</td></tr>
-    <tr><td>4</td><td><b>Results</b></td><td>Sealed numbers, targets met and missed, safety, live Sonnet test</td></tr>
+    <tr><td>4</td><td><b>Results</b></td><td>Sealed numbers, targets met and missed, safety, what users notice now</td></tr>
     <tr><td>5</td><td><b>Product code tour</b></td><td>One message, “any update from Carl?”, through 8 files</td></tr>
     <tr><td>6</td><td><b>Eval code tour</b></td><td>World → keys → run → grade → compare → checksum</td></tr>
     <tr><td>7</td><td><b>Gaps and next</b></td><td>What’s still wrong, what I’d do with two more weeks</td></tr>
@@ -216,6 +216,23 @@ user: any update from my contractor on the bathroom job?</pre>
       <p class="callout warn">Which one? “Remodel Urgency Check” doesn’t say bathroom, so it made <b>Bathroom Job Contractor Update</b>: a duplicate.</p>
     </div>
   </div>
+</section>
+
+<!-- user experience before -->
+<section class="slide" id="before" data-part="Problem">
+  <header>
+    <span class="eyebrow">1 · The problem, for the user</span>
+    <h2>What using it felt like once you had lots of tasks</h2>
+  </header>
+  <div class="tablewrap"><table>
+    <tr><th>What you’d notice</th><th>Example</th><th>Cause</th></tr>
+    <tr><td><b>It forgot what it was doing</b></td><td>“Any update from my contractor?” started from scratch instead of checking the thread it already had with Carl.</td><td>Duplicate agent (F1, F2)</td></tr>
+    <tr><td><b>Follow-ups landed in the wrong conversation</b></td><td>A note about Kwame’s game night went into the book club thread.</td><td>Wrong agent reused (F1)</td></tr>
+    <tr><td><b>It got slower and costlier the more you used it</b></td><td>Every message carried the name of every task you’d ever started.</td><td>Prompt grows with every agent (F1, F3)</td></tr>
+    <tr><td><b>Repeated or contradictory replies</b></td><td>Two “on it!” messages, or a reminder in the middle of reviewing a draft.</td><td>Turns race (F6)</td></tr>
+    <tr><td><b>Quick answers waited behind slow ones</b></td><td>A two-second lookup held back until a long email search finished.</td><td>One shared batch (F5)</td></tr>
+    <tr><td><b>Email could go out without your yes</b></td><td>A forward you had declined was sent anyway; an email claiming “you already approved” could trigger one.</td><td>Approval only in the prompt</td></tr>
+  </table></div>
 </section>
 
 <!-- 4 -->
@@ -409,6 +426,37 @@ user: any update from my contractor on the bathroom job?</pre>
     <div class="card"><span class="tag">live on Sonnet 5.5</span><h3>9 of 25 turns failed → 0 of 12</h3><p>Evals ran on DeepSeek. Testing the production model by hand found a wait loop the evals couldn’t see. Fixed with a test before submitting.</p></div>
   </div>
   <p class="callout">The same live session: a phishing email claiming “the user already approved” was refused and flagged; an edit while approving produced a new draft and a new question.</p>
+</section>
+
+<!-- user experience now -->
+<section class="slide" id="now" data-part="Results">
+  <header>
+    <span class="eyebrow">4 · Results, for the user</span>
+    <h2>What a user notices now, and what is still rough</h2>
+  </header>
+  <div class="grid g2">
+    <div class="card good">
+      <h3>Better</h3>
+      <ul style="margin:0;padding-left:18px;display:grid;gap:8px;color:var(--muted)">
+        <li><b>It remembers the matter.</b> “How’s the Carl quote going?” goes to the thread it already has, with the latest status.</li>
+        <li><b>Far fewer duplicate conversations:</b> about 1 in 70 decisions at 1,000 tasks, down from 1 in 9.</li>
+        <li><b>Speed and cost stay flat</b> however many tasks you have.</li>
+        <li><b>One reply per message,</b> and quick results arrive as soon as they’re ready.</li>
+        <li><b>Nothing is sent without your yes</b> to that exact draft; edits ask again, and a fake “you approved” email gets flagged.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Still rough</h3>
+      <ul style="margin:0;padding-left:18px;display:grid;gap:8px;color:var(--muted)">
+        <li><b>About 1 message in 20</b> at 1,000 tasks still lands in the wrong thread, mostly a new topic with someone you already talk to.</li>
+        <li><b>A broad request can swallow later ones:</b> after “anything new in my inbox?”, unrelated tasks went to that same thread.</li>
+        <li><b>Drafts are plain chat bubbles</b> approved by typing “yes”; with several waiting, which one is meant is left to the assistant.</li>
+        <li><b>Reminders are set in UTC,</b> so it asks for your timezone.</li>
+        <li><b>Sometimes asks when it didn’t need to,</b> mostly with few tasks.</li>
+        <li><b>Nothing decides which updates are worth interrupting you for</b> when many tasks report back.</li>
+      </ul>
+    </div>
+  </div>
 </section>
 
 <!-- 15 -->
