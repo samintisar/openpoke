@@ -87,7 +87,7 @@ So v2 rebuilt it ([`bench_v2.py`](../evals/worlds/lived/bench_v2.py)):
 
 ### Model
 
-Evals run on **DeepSeek V4.1 Flash**: $0.0009 per routing decision against Haiku 5.5's $0.0021, after a gate on malformed tool calls (0.55%), wait loops (1.2%) and error rows (0%). v2 re-baselined every system on DeepSeek, so v1's Haiku numbers aren't directly comparable with v2's. Production defaults to Claude Sonnet 5.5, which these evals don't measure.
+Evals run on **DeepSeek V4.1 Flash**: $0.0009 per routing decision against Haiku 5.5's $0.0021, after a gate on malformed tool calls (0.55%), wait loops (1.2%) and error rows (0%). Production defaults to Claude Sonnet 5.5, which these evals don't measure.
 
 ### Discipline
 
