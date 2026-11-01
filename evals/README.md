@@ -6,7 +6,7 @@ Measures how well the Interaction Agent routes work to execution agents as the r
 - **L1 retrieval** (no LLM): is the right agent among what the system shows? recall, MRR, roster tokens.
 - **L2 routing** (live): one real Interaction Agent turn with the server's own prompt; tools are
   intercepted and the decision is graded by outcome (reuse / create / clarify).
-- **L3 end-to-end** (live): ~25 handwritten multi-step scenarios (`worlds/e2e_scenarios.yaml`) run the real
+- **L3 end-to-end** (live): 26 handwritten multi-step scenarios (`worlds/e2e_scenarios.yaml`) run the real
   Interaction and Execution agents, inbox and runner against an in-memory Gmail (`fakes/gmail.py`). Graded by code
   on the end state: unauthorized sends (judged from approval rows and the trace, not the gate's verdict),
   attempted unauthorized sends (gate blocks), required sends, questions asked, duplicate replies, agent reuse.
@@ -14,6 +14,7 @@ Measures how well the Interaction Agent routes work to execution agents as the r
 
 ## Run
 ```bash
+pip install -r requirements-dev.txt                                    # pytest, pyyaml
 python -m pytest -q                                                    # unit tests, offline
 python -m evals.run --config evals/experiments/smoke.yaml --fake-llm   # offline smoke
 python -m evals.run --config evals/experiments/v2-retrieved.yaml       # live, needs OPENROUTER_API_KEY in .env

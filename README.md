@@ -15,6 +15,12 @@ On a sealed held-out world at 1,000 agents, routing goes from 0.78 (original) to
 - **Running the evals:** [evals/README.md](evals/README.md)
 - **Every experiment and decision:** [evals/experiments/JOURNAL.md](evals/experiments/JOURNAL.md)
 
+To run the tests (offline, no API keys needed), after creating the virtualenv in step 4 below:
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -q
+```
+
 ## Requirements
 - Python 3.10+
 - Node.js 18+
@@ -82,7 +88,7 @@ On a sealed held-out world at 1,000 agents, routing goes from 0.78 (original) to
 The web app proxies API calls to the Python server using the values in `.env`, so keeping both processes running is required for end-to-end flows.
 
 ### Trying it without a real Gmail account
-Start the server with `OPENPOKE_FAKE_GMAIL=1` (for example `OPENPOKE_FAKE_GMAIL=1 python -m server.server` in bash) and skip step 9. Every Gmail call then goes to an in-memory mailbox seeded with a few emails, and nothing leaves your machine. Open *Mailbox* in the chat header (or [http://localhost:3000/mailbox](http://localhost:3000/mailbox)) to deliver emails to the inbox and see drafts, sent mail and the sends the approval gate blocked. The mailbox resets when the server restarts; the agents, conversation and approvals in `server/data/` do not.
+Start the server with `OPENPOKE_FAKE_GMAIL=1` (for example `OPENPOKE_FAKE_GMAIL=1 python -m server.server` in bash) and skip step 9. Every Gmail call then goes to an in-memory mailbox seeded with a few emails, and nothing leaves your machine. Open *Mailbox* in the chat header (or [http://localhost:3000/mailbox](http://localhost:3000/mailbox)) to deliver emails to the inbox and see drafts, sent mail and the sends the approval gate blocked. The mailbox resets when the server restarts; the agents, conversation and approvals in `server/data/` do not, so press *Clear* after a restart, or drafts in the old chat will point at emails that no longer exist.
 
 ## Project Layout
 - `server/` – FastAPI application and agents
