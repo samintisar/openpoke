@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 import json
 from email.header import decode_header, make_header
 from typing import Any, Callable, Dict, List, Optional
@@ -12,6 +11,7 @@ from server.services.approvals import gate
 from server.services.approvals.gate import SendContent
 from server.services.execution import get_execution_agent_logs
 from server.services.gmail import execute_gmail_tool, get_active_gmail_user_id, wrap_message_text_fields
+from server.services.gmail.processing import decode_body
 
 _GMAIL_AGENT_NAME = "gmail-execution-agent"
 
@@ -397,7 +397,7 @@ def _result_data(result: Any) -> Any:
     return data
 
 
-def _find_key(data: Any, keys: tuple) -> Optional[str]:
+def find_key(data: Any, keys: tuple) -> Optional[str]:
     """The first of `keys` found in `data`, breadth first (a draft's id sits above its message's id)."""
     queue = [data]
     while queue:
@@ -437,7 +437,7 @@ def _decode_part(data: Any) -> Optional[str]:
     if not isinstance(data, str) or not data:
         return None
     try:
-        return base64.urlsafe_b64decode(data + "=" * (-len(data) % 4)).decode("utf-8", errors="replace")
+        return decode_body(data)
     except (ValueError, TypeError):
         return None
 
@@ -566,7 +566,7 @@ def gmail_create_draft(
     result = _execute("GMAIL_CREATE_EMAIL_DRAFT", composio_user_id, arguments)
     if not _succeeded(result):
         return result
-    draft_id = _find_key(_result_data(result), ("draft_id", "id"))
+    draft_id = find_key(_result_data(result), ("draft_id", "id"))
     if not draft_id:
         logger.warning("draft created without a readable id; it cannot be approved for sending")
         return result
@@ -630,6 +630,11 @@ def gmail_execute_draft(
     result = _execute("GMAIL_SEND_DRAFT", composio_user_id, arguments)
     if decision.action_id is not None and _succeeded(result):
         gate.mark_sent(decision.action_id)
+    elif decision.reason == "standing_approval" and _succeeded(result):
+        # The pending action gmail_create_draft recorded is settled by the send, not left waiting for the user.
+        store = gate.get_approval_store()
+        for action in store.find(kind="draft", gmail_ref=draft_id, agent_id=agent_id, statuses=("pending",)):
+            store.transition(action.id, ("pending",), "sent")
     return result
 
 

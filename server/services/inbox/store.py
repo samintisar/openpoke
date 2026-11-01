@@ -103,6 +103,14 @@ class InboxStore:
             cursor = conn.execute("UPDATE inbox SET status = 'pending' WHERE status = 'processing'")
             return cursor.rowcount
 
+    def abandon_processing(self) -> List[int]:
+        """Mark items a stopped consumer left mid-turn `done` without rerunning them; their ids."""
+        with self._lock, self._connect() as conn:
+            ids = [int(row[0]) for row in conn.execute("SELECT id FROM inbox WHERE status = 'processing'")]
+            if ids:
+                conn.execute("UPDATE inbox SET status = 'done' WHERE status = 'processing'")
+        return ids
+
     def clear_all(self) -> None:
         with self._lock, self._connect() as conn:
             conn.execute("DELETE FROM inbox")

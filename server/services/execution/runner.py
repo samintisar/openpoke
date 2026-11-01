@@ -16,6 +16,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from ...agents.execution_agent.runtime import ExecutionAgentRuntime, ExecutionResult
+from ...agents.execution_agent.tools.gmail import find_key
 from ...config import get_settings
 from ...logging_config import logger
 from ..agents.memory import maybe_compact
@@ -127,20 +128,17 @@ def _parse_response(text: str) -> Optional[Any]:
     return data
 
 
-def _find_id(data: Any, keys: tuple[str, ...]) -> Optional[str]:
-    """The first of `keys` found in `data`, breadth first (a draft's id sits above its message's id)."""
-    queue = [data]
-    while queue:
-        node = queue.pop(0)
-        if isinstance(node, dict):
-            for key in keys:
-                value = node.get(key)
-                if isinstance(value, (str, int)) and not isinstance(value, bool) and str(value):
-                    return str(value)
-            queue.extend(node.values())
-        elif isinstance(node, list):
-            queue.extend(node)
-    return None
+def _sent_action(args: str) -> Optional[Any]:
+    """The stored send action a call passed as `action_id`, if any (never raises)."""
+    action_id = _field(args, "action_id")
+    if not action_id:
+        return None
+    try:
+        from ..approvals import get_action
+
+        return get_action(int(action_id))
+    except Exception:  # pragma: no cover - defensive: the description is best effort
+        return None
 
 
 def _describe(tool: str, args: str, response: str, data: Any) -> Optional[str]:
@@ -150,20 +148,27 @@ def _describe(tool: str, args: str, response: str, data: Any) -> Optional[str]:
         # The send gate held it: nothing went out, the user has to approve it first.
         return f"{tool.removeprefix('gmail_')} held for approval (action {data.get('action_id')})"
     if tool == "gmail_create_draft":
-        draft_id = _find_id(data, ("draft_id", "id")) or _field(response, "id") or "(id unknown)"
+        draft_id = find_key(data, ("draft_id", "id")) or _field(response, "id") or "(id unknown)"
         return f"draft {draft_id} to {to}" if to else f"draft {draft_id}"
+    ref = None
+    action = _sent_action(args) if tool in {"gmail_execute_draft", "gmail_reply_to_thread", "gmail_forward_email"} else None
+    if action is not None:  # sent by action_id: the stored action says where it went
+        ref = action.gmail_ref
+        to = to or ", ".join(action.recipients.get("to") or []) or None
     if tool == "gmail_execute_draft":
-        return f"sent draft {_field(args, 'draft_id') or '(id unknown)'}"
+        return f"sent draft {_field(args, 'draft_id') or ref or '(id unknown)'}" + (f" to {to}" if action else "")
     if tool == "gmail_reply_to_thread":
-        return f"replied to {to or '(recipient unknown)'} on thread {_field(args, 'thread_id') or '(unknown)'}"
+        thread = _field(args, "thread_id") or ref or "(unknown)"
+        return f"replied to {to or '(recipient unknown)'} on thread {thread}"
     if tool == "gmail_forward_email":
-        return f"forwarded message {_field(args, 'message_id') or '(unknown)'} to {to or '(recipient unknown)'}"
+        message = _field(args, "message_id") or ref or "(unknown)"
+        return f"forwarded message {message} to {to or '(recipient unknown)'}"
     if tool == "gmail_delete_draft":
         return f"deleted draft {_field(args, 'draft_id') or '(id unknown)'}"
     if tool == "createTrigger":
-        return f"trigger {_find_id(data, ('trigger_id', 'id')) or _field(response, 'trigger_id') or '(id unknown)'} set"
+        return f"trigger {find_key(data, ('trigger_id', 'id')) or _field(response, 'trigger_id') or '(id unknown)'} set"
     if tool == "updateTrigger":
-        trigger_id = _field(args, "trigger_id") or _find_id(data, ("trigger_id",)) or "(id unknown)"
+        trigger_id = _field(args, "trigger_id") or find_key(data, ("trigger_id",)) or "(id unknown)"
         return f"trigger {trigger_id} {'paused' if _field(args, 'status') == 'paused' else 'updated'}"
     return None
 

@@ -15,8 +15,8 @@ from typing import Any, Mapping, Optional
 
 TAG = "untrusted_email"
 
-# Fields in Composio/Gmail message payloads that carry message text.
-MESSAGE_TEXT_FIELDS = ("messageText", "snippet", "textBody", "htmlBody")
+# Fields in Composio/Gmail message payloads that carry sender-written text (the subject included).
+MESSAGE_TEXT_FIELDS = ("messageText", "snippet", "textBody", "htmlBody", "subject")
 
 
 # Whitespace or zero-width characters tolerated after "<" and after "</".
@@ -68,8 +68,8 @@ def wrap_message_text_fields(payload: Any) -> Any:
     """Return a copy of a Composio Gmail result with every message-text field wrapped.
 
     Walks dicts and lists. In any dict, string values under ``MESSAGE_TEXT_FIELDS`` and
-    ``preview.body`` are wrapped with that dict's sender and thread id. Everything else (ids,
-    labels, headers, base64 payload parts) is left as is.
+    ``preview.body``/``preview.subject`` are wrapped with that dict's sender and thread id.
+    Everything else (ids, labels, headers, base64 payload parts) is left as is.
     """
 
     if isinstance(payload, list):
@@ -83,9 +83,11 @@ def wrap_message_text_fields(payload: Any) -> Any:
     for key, value in payload.items():
         if key in MESSAGE_TEXT_FIELDS and isinstance(value, str):
             result[key] = wrap_untrusted_email(value, sender=sender, thread_id=thread_id)
-        elif key == "preview" and isinstance(value, dict) and isinstance(value.get("body"), str):
+        elif key == "preview" and isinstance(value, dict):
             preview = dict(value)
-            preview["body"] = wrap_untrusted_email(value["body"], sender=sender, thread_id=thread_id)
+            for field in ("body", "subject"):
+                if isinstance(value.get(field), str):
+                    preview[field] = wrap_untrusted_email(value[field], sender=sender, thread_id=thread_id)
             result[key] = preview
         else:
             result[key] = wrap_message_text_fields(value)

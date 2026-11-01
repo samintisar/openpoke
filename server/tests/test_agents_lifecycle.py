@@ -117,8 +117,8 @@ def test_agent_ids_with_triggers_due(tmp_path):
     svc.create_trigger(agent_id="later", agent_name="Later", payload="p", start_time=at(timedelta(hours=48)))
     svc.create_trigger(agent_id="paused", agent_name="Paused", payload="p", start_time=at(timedelta(hours=1)),
                        status="paused")
-    assert svc.agent_ids_with_triggers_due(now) == {"soon", "overdue"}
-    assert svc.agent_ids_with_triggers_due(now, within=timedelta(hours=72)) == {"soon", "overdue", "later"}
+    assert svc.agent_ids_with_triggers_due(now) == {"soon", "overdue", "later"}  # any scheduled fire
+    assert svc.agent_ids_with_triggers_due(now, within=timedelta(hours=24)) == {"soon", "overdue"}
 
 
 # -- Scheduler hook ---------------------------------------------------------------------------------

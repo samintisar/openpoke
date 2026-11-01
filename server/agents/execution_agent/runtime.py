@@ -1,5 +1,6 @@
 """Simplified Execution Agent Runtime."""
 
+import asyncio
 import inspect
 import json
 from typing import Dict, Any, List, Optional, Tuple
@@ -246,7 +247,12 @@ class ExecutionAgentRuntime:
             return False, {"error": f"Unknown tool: {tool_name}"}
 
         try:
-            result = tool_func(**arguments)
+            if inspect.iscoroutinefunction(tool_func):
+                result = tool_func(**arguments)
+            else:
+                # Blocking tools (Composio calls) run in a thread, so the run's timeout and other runs keep going;
+                # to_thread copies the context, so the tool still sees `current_run`.
+                result = await asyncio.to_thread(tool_func, **arguments)
             if inspect.isawaitable(result):
                 result = await result
             return True, result

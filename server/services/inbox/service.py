@@ -11,8 +11,9 @@ A single consumer task runs one interaction-agent turn at a time:
    as a second turn right after.
 5. It marks the items `done`, also when the turn failed (the error is logged; items are never retried).
 
-Items that arrive during a turn wait for the next one. On start, items a previous process left `processing`
-are reset to `pending` and processed again; in-flight execution-agent runs are not resumed.
+Items that arrive during a turn wait for the next one. On start, `pending` items are processed; items a
+previous process left `processing` are marked `done` without rerunning (their turn may already have acted);
+in-flight execution-agent runs are not resumed.
 """
 
 from __future__ import annotations
@@ -90,9 +91,10 @@ class InteractionInbox:
     async def start(self) -> None:
         if self._task and not self._task.done():
             return
-        recovered = self.store.reset_processing()
-        if recovered:
-            logger.info(f"Inbox: {recovered} item(s) left mid-turn are pending again")
+        # A turn cut off mid-way may already have dispatched agents or approved sends: never replay it.
+        abandoned = self.store.abandon_processing()
+        if abandoned:
+            logger.warning(f"Inbox: item(s) {abandoned} were left mid-turn; marked done without rerunning")
         self._loop = asyncio.get_running_loop()
         self._wake = asyncio.Event()
         if self.store.pending():

@@ -116,6 +116,14 @@ class TriggerStore:
             ).fetchall()
         return [self._row_to_record(row) for row in rows]
 
+    def fetch_scheduled(self) -> List[TriggerRecord]:
+        """Active triggers with a next fire at any time."""
+        with self._lock, self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM triggers WHERE status = 'active' AND next_trigger IS NOT NULL ORDER BY next_trigger, id"
+            ).fetchall()
+        return [self._row_to_record(row) for row in rows]
+
     def fetch_due(
         self, agent_id: Optional[str], before_iso: str
     ) -> List[TriggerRecord]:

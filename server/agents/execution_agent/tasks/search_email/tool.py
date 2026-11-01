@@ -425,13 +425,13 @@ def _safe_json_dumps(payload: Any) -> str:
 
 
 def _processed_to_schema(email: ProcessedEmail) -> GmailSearchEmail:
-    """Convert shared processed email into GmailSearchEmail schema, marking the body untrusted."""
+    """Convert shared processed email into GmailSearchEmail schema, marking the subject and body untrusted."""
 
     return GmailSearchEmail(
         id=email.id,
         thread_id=email.thread_id,
         query=email.query,
-        subject=email.subject,
+        subject=wrap_untrusted_email(email.subject, sender=email.sender, thread_id=email.thread_id),
         sender=email.sender,
         recipient=email.recipient,
         timestamp=email.timestamp,

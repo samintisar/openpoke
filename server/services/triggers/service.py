@@ -23,7 +23,8 @@ from .utils import (
 
 MISSED_TRIGGER_GRACE_PERIOD = timedelta(minutes=5)
 # An agent whose trigger fires within this window has open work and is never demoted by the lifecycle.
-OPEN_WORK_WINDOW = timedelta(hours=24)
+# None: any scheduled fire counts, so a weekly or monthly agent is not archived between fires.
+OPEN_WORK_WINDOW: Optional[timedelta] = None
 
 
 class TriggerService:
@@ -202,14 +203,14 @@ class TriggerService:
         return self._store.fetch_due(agent_id, iso_cutoff)
 
     def agent_ids_with_triggers_due(
-        self, now: datetime, within: timedelta = OPEN_WORK_WINDOW
+        self, now: datetime, within: Optional[timedelta] = OPEN_WORK_WINDOW
     ) -> set[str]:
-        """Agents with an active trigger due by `now + within` (overdue included): open work for the lifecycle."""
-        return {
-            trigger.agent_id
-            for trigger in self.get_due_triggers(before=now + within)
-            if trigger.agent_id
-        }
+        """Agents with an active trigger due by `now + within` (overdue included; None: any scheduled fire):
+        open work for the lifecycle."""
+        triggers = (
+            self._store.fetch_scheduled() if within is None else self.get_due_triggers(before=now + within)
+        )
+        return {trigger.agent_id for trigger in triggers if trigger.agent_id}
 
     def backfill_agent_ids(self, resolve: Callable[[str], Optional[str]]) -> int:
         """Give rows written before agent ids existed an `agent_id`, resolved from their `agent_name`."""

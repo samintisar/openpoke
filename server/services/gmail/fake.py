@@ -49,7 +49,7 @@ def mailbox() -> Any:
     global _mailbox
     with _lock:
         if _mailbox is None:
-            from evals.fakes.gmail import FakeGmail  # imported lazily: only fake mode needs the eval package
+            from .fake_mailbox import FakeGmail  # imported lazily: only fake mode needs it
 
             class _LiveFakeGmail(FakeGmail):
                 def _now(self) -> str:

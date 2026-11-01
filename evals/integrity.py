@@ -75,6 +75,7 @@ PROTECTED = (
     "evals/layers/e2e.py",
     "evals/worlds/e2e_scenarios.yaml",
     "evals/fakes/gmail.py",
+    "server/services/gmail/fake_mailbox.py",  # the eval's FakeGmail, moved into the server
     "evals/e2e_run.py",
 )
 _MISSING = b"<missing>"

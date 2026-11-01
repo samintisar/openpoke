@@ -50,6 +50,7 @@ class _LoopSummary:
     dispatched_ids: List[str] = field(default_factory=list)
     second_look_done: bool = False  # at most one second look per turn
     searches: int = 0  # search_agents calls run this turn, against SEARCH_BUDGET
+    approved_agents: Set[str] = field(default_factory=set)  # owners of sends approved this turn (no second look)
 
 
 def _dispatched_agent_id(result: ToolResult) -> Optional[str]:
@@ -217,7 +218,11 @@ class InteractionAgentRuntime:
                 summary.tool_names.append(tool_call.name)
 
                 held = None
-                if tool_call.name == "send_message_to_agent" and not summary.second_look_done:
+                if (
+                    tool_call.name == "send_message_to_agent"
+                    and not summary.second_look_done
+                    and str(tool_call.arguments.get("agent_id") or "").strip() not in summary.approved_agents
+                ):
                     tool_call, held = await self._second_look(tool_call, summary)
                 if held is not None:
                     result = ToolResult(success=False, payload=held)
@@ -227,6 +232,12 @@ class InteractionAgentRuntime:
                     if tool_call.name == "search_agents":
                         summary.searches += 1
                     result = self._execute_tool(tool_call)
+
+                if tool_call.name == "approve_send" and result.success and isinstance(result.payload, dict):
+                    # The approved send goes back to its owner: that routing is fixed, not a second-look case.
+                    owner = result.payload.get("agent_id")
+                    if isinstance(owner, str) and owner:
+                        summary.approved_agents.add(owner)
 
                 if tool_call.name == "send_message_to_agent":
                     agent_id = _dispatched_agent_id(result)

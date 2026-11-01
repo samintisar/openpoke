@@ -15,7 +15,7 @@ from ...logging_config import logger
 from ...utils.timezones import convert_to_user_timezone
 
 
-def _decode_body(data: str) -> str:
+def decode_body(data: str) -> str:
     """Decode a Gmail base64url body; Gmail omits the `=` padding, which `urlsafe_b64decode` requires."""
     return base64.urlsafe_b64decode(data + "=" * (-len(data) % 4)).decode("utf-8", errors="replace")
 
@@ -208,7 +208,7 @@ class EmailTextCleaner:
                             data = body.get("data")
                             if isinstance(data, str):
                                 try:
-                                    return _decode_body(data)
+                                    return decode_body(data)
                                 except Exception:
                                     continue
         return message.get("htmlBody")
@@ -220,7 +220,7 @@ class EmailTextCleaner:
                 data = body.get("data")
                 if isinstance(data, str):
                     try:
-                        return _decode_body(data)
+                        return decode_body(data)
                     except Exception:
                         pass
         return message.get("textBody")

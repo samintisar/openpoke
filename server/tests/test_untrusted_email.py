@@ -154,7 +154,10 @@ def test_search_golden_composio_payload():
 
     assert next_page == "08123456789"
     assert email.id == "19a2c4f0b7e1d3a5"
-    assert email.subject == "Re: Q4 supply contract"
+    assert email.subject == (
+        '<untrusted_email from="Dana Ortiz &lt;dana@acme-supply.com&gt;" thread_id="19a2c4f0b7e1d3a5">'
+        "Re: Q4 supply contract</untrusted_email>"
+    )
     assert email.attachment_filenames == ["contract-v3.pdf"]
     assert email.clean_text == (
         '<untrusted_email from="Dana Ortiz &lt;dana@acme-supply.com&gt;" thread_id="19a2c4f0b7e1d3a5">'
@@ -176,9 +179,9 @@ def test_message_text_fields_are_wrapped_and_other_fields_kept():
     assert message["messageText"].startswith(expected_open)
     assert message["messageText"].count("</untrusted_email") == 1
     assert message["preview"]["body"] == expected_open + "Hi Sam, the revised contract is attached.</untrusted_email>"
-    assert message["preview"]["subject"] == original["preview"]["subject"]
+    assert message["preview"]["subject"] == expected_open + original["preview"]["subject"] + "</untrusted_email>"
     assert message["payload"] == original["payload"]
-    assert message["subject"] == original["subject"]
+    assert message["subject"] == expected_open + original["subject"] + "</untrusted_email>"
     assert wrapped["data"]["nextPageToken"] == "08123456789"
     # the input is not mutated
     assert original["messageText"].startswith("Hi Sam")

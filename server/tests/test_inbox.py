@@ -211,7 +211,7 @@ async def test_a_runtime_that_cannot_start_marks_items_done(tmp_path):
         await box.stop()
 
 
-async def test_restart_recovers_pending_and_processing_items(tmp_path):
+async def test_restart_runs_pending_items_and_never_replays_processing_ones(tmp_path):
     store = InboxStore(tmp_path / "inbox.db")
     stuck = store.insert("user", "was mid-turn")
     store.mark([stuck.id], "processing")
@@ -227,9 +227,9 @@ async def test_restart_recovers_pending_and_processing_items(tmp_path):
     finally:
         await box.stop()
     assert [turn[:2] for turn in runtime.turns] == [
-        ("user", "was mid-turn"),
         ("agent_result", "[SUCCESS] a: finished while down"),
     ]
+    assert store.unfinished() == []
 
 
 async def test_post_before_start_is_kept_and_processed(tmp_path):

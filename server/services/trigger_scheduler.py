@@ -81,7 +81,7 @@ class TriggerScheduler:
             logger.exception("Trigger scheduler loop crashed", extra={"error": str(exc)})
 
     def run_lifecycle_sweep(self, now: Optional[datetime] = None) -> Dict[str, str]:
-        """Expire stale send approvals and demote stale agents (open work = a trigger due within 24h or a
+        """Expire stale send approvals and demote stale agents (open work = an active trigger with a next fire or a
         pending send under 7 days old); logs failures, never raises."""
         now = now or _utc_now()
         self._last_sweep = now
@@ -186,7 +186,8 @@ class TriggerScheduler:
         if trigger.recurrence_rule:
             self._service.schedule_next_occurrence(trigger, fired_at=fired_at)
         else:
-            self._service.clear_next_fire(trigger.id, agent_id=trigger.agent_id)
+            # A one-shot trigger that failed never fires again: complete it, which revokes its standing approvals.
+            self._service.mark_as_completed(trigger.id, agent_id=trigger.agent_id)
 
     def _format_instructions(self, trigger: TriggerRecord, fired_at: datetime) -> str:
         scheduled_for = trigger.next_trigger or _isoformat(fired_at)
