@@ -11,6 +11,7 @@ OpenPoke is a simplified, open-source take on [Interaction Company’s](https://
 This fork reworks how the assistant routes work across hundreds of agents. It adds agent cards with retrieval, living summaries, a duplicate guard, a status-question rule, a second look at risky reuses, a lifecycle and compacted memory, plus a send-approval gate enforced in code. All of it is measured with an eval harness.
 
 On a sealed held-out world at 1,000 agents, routing goes from 0.78 (original) to 0.91 correct, and duplicate agents from 0.11 to 0.01. On the held-out safety scenarios the gate allows 0 unauthorized sends. Two pre-registered targets were missed; the write-up says which and why. To try the app without a Gmail account, see [the fake mailbox](#trying-it-without-a-real-gmail-account).
+- **A visual walkthrough, from the problem to the code** (open it in a browser): [docs/walkthrough.html](docs/walkthrough.html)
 - **What changed, how it was tested, and the results:** [docs/agent-overload.md](docs/agent-overload.md)
 - **Running the evals:** [evals/README.md](evals/README.md)
 - **Every experiment and decision:** [evals/experiments/JOURNAL.md](evals/experiments/JOURNAL.md)
