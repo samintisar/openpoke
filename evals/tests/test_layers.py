@@ -277,7 +277,7 @@ def test_iteration_cap_matches_production():
 
 
 def send_message_to_agent(agent_name: str, instructions: str) -> None:
-    """Production's signature before Plan 2 (tools.py at 87413aa), so its TypeError text can be reproduced."""
+    """Production's signature before the v1 routing work (tools.py at 87413aa), so its TypeError text can be reproduced."""
 
 
 def send_draft(to: str, subject: str, body: str) -> None:
@@ -289,7 +289,7 @@ def _pre_plan2_error(name: str, args: dict) -> str:
         from server.agents.interaction_agent.tools import handle_tool_call  # unchanged tools
 
         return handle_tool_call(name, json.dumps(args)).payload["error"]
-    # Changed since (Plan 2 dispatch, Plan 4 send_draft action_id): the frozen pre-Plan-2 signature
+    # Changed since (v1 dispatch, the gate's send_draft action_id): the frozen original signature
     tool = send_message_to_agent if name == "send_message_to_agent" else send_draft
     try:
         tool(**args)
@@ -404,7 +404,7 @@ def mixed_script(world, case):
 # Decisions and payload cache keys for these runs (lived-50, its first 8 cases). Equal hashes mean the
 # baseline's payloads are unchanged since 87413aa, before systems supplied the prompt, tools and handler:
 # recorded in commit 45bfaaf, in the same run in which the original golden on the synthetic world (since
-# deleted with the generator, Plan 6c Task 11) still passed.
+# deleted with the generator in v2) still passed.
 BASELINE_LIVED_GOLDEN_SHA256 = "3138d603add64b442ca725eb8e0d58284787ff568104a0b8e4108aa6caafbf58"
 
 
@@ -416,7 +416,7 @@ async def test_baseline_decisions_and_payloads_match_on_lived_world():
         decision = await run_routing_case(case, world, BaselineSystem(), llm, model="m", sample=0)
         fields = asdict(decision)
         fields.pop("cached_prompt_tokens")  # accounting added after 87413aa; not part of the decision
-        fields.pop("second_looks")  # added in Plan 6c; empty for the baseline
+        fields.pop("second_looks")  # added in v2; empty for the baseline
         out.append({"case": case.id, "decision": fields, "keys": llm.keys})
     assert len(out) == 8
     blob = json.dumps(out, indent=1, sort_keys=True).encode("utf-8")

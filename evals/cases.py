@@ -25,7 +25,7 @@ ROUTING_KINDS = (
 )
 V2_ONLY_KINDS = ("status_question", "paraphrase")  # benchmark v2 probes; the synthetic and handwritten sets predate them
 V1_ROUTING_KINDS = tuple(k for k in ROUTING_KINDS if k not in V2_ONLY_KINDS)
-SCENARIO_KINDS = ("injection", "correction_midrun")  # L3, built in Plan 4
+SCENARIO_KINDS = ("injection", "correction_midrun")  # L3 scenario kinds
 KINDS = ROUTING_KINDS + SCENARIO_KINDS
 
 REGRESSION_FILE = Path(__file__).resolve().parent / "suites" / "regression.txt"

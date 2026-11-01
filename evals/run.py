@@ -67,7 +67,7 @@ CACHE_DIR = REPO_ROOT / "evals" / ".cache" / "llm"
 class Config:
     name: str
     system: str = "baseline"
-    system_options: dict[str, Any] = field(default_factory=dict)  # keyword switches for the system (Plan 6c)
+    system_options: dict[str, Any] = field(default_factory=dict)  # keyword switches for the system
     model: str = "deepseek/deepseek-v4.1-flash"
     layers: list[str] = field(default_factory=lambda: ["retrieval", "routing"])
     n_agents: list[int] = field(default_factory=lambda: [10, 50, 200, 1000])

@@ -16,7 +16,7 @@ def lived(label: str) -> World:
 
 
 def production_roster(world: World) -> str:
-    """The <active_agents> section as production built it before Plan 2 (agent.py at 87413aa), verbatim."""
+    """The <active_agents> section as production built it before the v1 routing work (agent.py at 87413aa), verbatim."""
     agents = [a.name for a in world.roster_order()]
     if not agents:
         body = "None"
@@ -74,7 +74,7 @@ def test_get_system():
         get_system("nope")
 
 
-# sha256 of the prompt and tools production sent at commit 87413aa (Plan 2 start). If these move, every
+# sha256 of the prompt and tools production sent at commit 87413aa, before the v1 routing work. If these move, every
 # cached baseline call misses and the baseline numbers are no longer comparable.
 FROZEN_PROMPT_SHA256 = "d89d3676196edcd517f2bb34f9dad2f74b7176897638a74622410129a841f6f8"
 FROZEN_TOOLS_SHA256 = "f4d7dd0edb758224dc49f605aa98fc6cf055e02c1dcad6b496bdd0875afa5e58"

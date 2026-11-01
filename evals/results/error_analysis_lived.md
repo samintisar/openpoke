@@ -35,7 +35,7 @@ names let the model find the right agent at any size.
 the benchmark toward what the baseline gets right. They are named here so that a fix's gain is never
 attributed to them.
 
-## Plan 2 targets
+## v1 targets
 
 1. **Near-duplicates at scale (F1/F2).** The IA scans ~1,000 bare names and misses close matches. Fix:
    retrieve the top K=8 cards by person and topic, plus the hot set, so the right agent is near the top
@@ -55,7 +55,7 @@ attributed to them.
   the obvious match for anything about that person, so same-person new topics get reused.
 - The IA sometimes broadcasts to every agent matching a name (six Ben agents at once) rather than asking.
 
-## After Plan 2 (`20261028-111346-retrieved-lived-dev.json`)
+## After v1 (`20261028-111346-retrieved-lived-dev.json`)
 
 | Category | Samples | Note |
 |---|---|---|
@@ -65,4 +65,4 @@ attributed to them.
 | Multi-task partial | 2 | Pablo/Prague, where the writer blended the two requests (label noise) |
 | Asked when the answer was clear | 2 | Noah export issue at 1,000 (another person has an export-issue agent) |
 
-Near-duplicates at scale, the Plan 2 target, are gone: the duplicate rate is 0.00 at 200 and 1,000 (was 0.02 and 0.11).
+Near-duplicates at scale, the v1 target, are gone: the duplicate rate is 0.00 at 200 and 1,000 (was 0.02 and 0.11).

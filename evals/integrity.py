@@ -53,7 +53,7 @@ PROTECTED = (
     "evals/worlds/lived/summaries.py",
     "evals/worlds/lived/summaries-s1.json",
     "evals/worlds/lived/summaries-s2.json",
-    # Plan 6c system, frozen for the life-2 final run (Plan 6d)
+    # The v2 system, frozen for the life-2 final run; later changes are journalled post-run fixes
     "server/services/agents/summaries.py",
     "server/services/agents/second_look.py",
     "server/services/agents/jev_review.py",

@@ -2,8 +2,8 @@
 
     python -m evals.charts                      # the final test runs named below -> docs/figures/routing-test.svg
     python -m evals.charts --runs v2-dev        # benchmark v2, life 1 (dev): intervals only, no figure
-    python -m evals.charts --runs v2-steps      # Plan 6c steps, original -> full: rates, tokens, paired differences
-    python -m evals.charts --runs v2-test       # Plan 6d sealed life 2: scaling table -> docs/figures/scaling-test.svg
+    python -m evals.charts --runs v2-steps      # v2 steps on dev, original -> full: rates, tokens, paired differences
+    python -m evals.charts --runs v2-test       # sealed life 2: scaling table -> docs/figures/scaling-test.svg
 
 pass@1 per size is the mean over cases of each case's share of correct samples. The 95% interval is a bootstrap over
 cases (10,000 resamples, seed 0), since the k samples of one case are not independent. The paired difference
@@ -21,17 +21,17 @@ ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "evals" / "results"
 FIGURES = ROOT / "docs" / "figures"
 
-FINAL = {  # system label -> final test-split run (Plan 5 Task 5)
+FINAL = {  # system label -> v1's final test-split run
     "Original OpenPoke": "20261029-213407-baseline-lived-test.json",
     "Full cards": "20261029-213620-full-cards-lived-test.json",
     "Retrieval (this work)": "20261029-212710-retrieved-lived-test.json",
 }
-V2_DEV = {  # benchmark v2 re-baseline on life 1 (Plan 6b Task 12)
+V2_DEV = {  # benchmark v2 re-baseline on life 1
     "Original OpenPoke": "20261030-033628-v2-baseline-dev.json",
     "Full cards": "20261030-040630-v2-full-cards-dev.json",
     "Retrieval (this work)": "20261030-034838-v2-retrieved-dev.json",
 }
-V2_STEPS = {  # Plan 6c, life 1 dev: each step adds one change to the one before (labels in order)
+V2_STEPS = {  # v2 on life 1 dev: each step adds one change to the one before (labels in order)
     "original": "20261030-033628-v2-baseline-dev.json",
     "v1 retrieval": "20261030-034838-v2-retrieved-dev.json",
     "step 1 summaries": "20261030-055120-v2-step1-summaries-dev.json",
@@ -39,8 +39,8 @@ V2_STEPS = {  # Plan 6c, life 1 dev: each step adds one change to the one before
     "step 2b + status rule": "20261030-070834-v2-step2b-status-dispatch-dev.json",
     "step 3 + second look (LLM reviewer)": "20261030-072458-v2-step3-second-look-dev.json",
 }
-FULL_JEV: str | None = "20261030-082330-v2-full-dev.json"  # the full system with the Jev reviewer (frozen for Plan 6d)
-V2_TEST = {  # Plan 6d: the sealed life-2 run, once per system
+FULL_JEV: str | None = "20261030-082330-v2-full-dev.json"  # the full system with the Jev reviewer (frozen for the sealed life-2 run)
+V2_TEST = {  # the sealed life-2 run, once per system
     "Original OpenPoke": "20261030-092828-v2-test-baseline-test.json",
     "v1 retrieval": "20261030-094241-v2-test-v1-test.json",
     "Final (this work)": "20261030-100407-v2-test-full-test.json",

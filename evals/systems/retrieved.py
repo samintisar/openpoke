@@ -1,4 +1,4 @@
-"""Plan 2 routing: agent cards, retrieval of the most relevant few, and the dedup-guarded dispatch tool.
+"""v1 routing (v2 adds switches): agent cards, retrieval of the most relevant few, and the dedup-guarded dispatch tool.
 
 Everything that decides routing is production code from `server/services/agents`, run over an
 in-memory directory built from the world, so the eval measures what the server runs. The prompt is

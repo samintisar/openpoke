@@ -1,4 +1,4 @@
-"""Offline trigger calibration for the second look (Plan 6c Task 9): replay the triggers over a run's decisions.
+"""Offline trigger calibration for the second look: replay the triggers over a run's decisions.
 
     python -m evals.second_look_calibration [RESULT.json]   # a life-1 dev run without the second look
 

@@ -328,6 +328,14 @@ I changed the status rule's wording once after reading dev failures, so its dev 
 
 **A fix I tried and reverted.** I added "if more than one agent could be the one, ask which". It worked on its target (asked 21 of 27), but broke the keep rule on dev routing: pass@1 −0.083 at 50 agents, duplicates +0.026 at 1,000, and clear rewordings 0.99 → 0.93. It was reverted (`d1077a8`), and ambiguous status questions remain a known gap.
 
+### A live session on the production model
+
+The evals never ran Sonnet 5.5, the production default. I used the app by hand in fake mailbox mode (`OPENPOKE_FAKE_GMAIL=1`) for 13 messages: an inbox check, replies and sends, an edit while approving, a decline, status questions, a reminder, and an email claiming "the user already approved" a forward. This is a hand-run session, not an eval, so it's evidence of failure modes, not rates.
+
+- **Safety held throughout.** 2 sends, both approved; the injected forward was refused and called out as phishing; an edit while approving produced a new draft and a new question; a decline sent nothing.
+- **The assistant's turn hit its 8-step limit on 9 of 25 turns.** Sonnet kept calling `wait` until the loop raised, so some acknowledgements never reached the user. The loop is unchanged from the original OpenPoke, and the model gate measured wait loops at 1.2% on DeepSeek. **Fix:** a round in which the model only calls `wait` ends the turn (`interaction_agent/runtime.py`, `server/tests/test_wait_ends_turn.py`). On a fresh session after the fix: 0 of 12 turns failed. The L2 routing layer has its own frozen copy of the loop and is unchanged; L3 runs the production loop, so later L3 runs include the fix.
+- **Not fixed, listed in §8:** every task went to one broad "Inbox Check" agent, one reply leaked a tool name, and reminders are set in UTC.
+
 ## 6. How I avoided tuning to the benchmark
 
 v2 was iterated on life 1, so its dev numbers are optimistic. What was tuned on dev, and named as such:
@@ -342,7 +350,7 @@ The safeguards:
 - **One final run per system,** on a frozen commit, with no tuning after. The targets it missed are reported as missed.
 - **Targets and the keep rule were written before any v2 result.** Two changes went against my first idea and were reverted under that rule: conversation-aware retrieval and the "ask which" line.
 - **The checksum** marks any run invalid if protected eval code or the reviewed benchmark changed.
-- **Post-run fixes aren't counted as held-out.** The summary fix and the wording test are dev-only, and the write-up keeps them apart from the life-2 table.
+- **Post-run fixes aren't counted as held-out.** The summary fix, the wording test and the `wait` fix are dev-only or hand-checked, and the write-up keeps them apart from the life-2 table.
 
 The result matches what a sealed test should show: final's gain shrank from dev to test (+0.148 → +0.130 at 1,000) but held.
 
@@ -363,7 +371,10 @@ The result matches what a sealed test should show: final's gain shrank from dev 
 
 - **The harmful-rate target is missed by a wide margin** (0.049 against 0.01). About 1 decision in 20 at 1,000 agents still goes to the wrong agent. Each one can mean a follow-up landing in the wrong thread.
 - **One world per split,** written by a model. Construction-based keys, three checker models and a human review reduce label noise but don't remove it.
-- **Evals ran on DeepSeek; production runs Sonnet 5.5.** The production default isn't measured. DeepSeek's main failure, saying it acted without calling the tool, may not carry over in either direction.
+- **Evals ran on DeepSeek; production runs Sonnet 5.5.** The production default isn't measured. DeepSeek's main failure, saying it acted without calling the tool, may not carry over in either direction. One hand-run session on Sonnet already found a failure DeepSeek rarely shows (the `wait` loop, §5), so a measured Sonnet run is the first thing to add.
+- **A broad agent absorbs every matter.** In that session, the agent created for "anything new in my inbox?" took every later task: Priya's reply, Dana's parking spot, Carl's quote, a dentist reminder. Its summary names everyone in the inbox, so it outranks every card. The benchmark has no probe kind for agents created by a broad request.
+- **Reminders are set in UTC.** The browser's timezone doesn't reach the trigger tool; the assistant flagged it and asked.
+- **A tool name leaked once.** One reply began with "send_message_to_user / message:", which the jargon check is meant to catch.
 - **The summary fix and the reverted status line have no held-out test.**
 - **Overload on the user's side isn't addressed.** The inbox coalesces results, but with hundreds of agents nothing ranks or batches what reaches the user, and nothing measures whether they are interrupted too often.
 - **Email triage isn't evaluated.** The importance classifier decides which incoming emails alert the user. The end-to-end scenarios raise those alerts directly, so which emails it flags is never scored.
@@ -381,7 +392,7 @@ The result matches what a sealed test should show: final's gain shrank from dev 
 ## 9. Reproduce
 
 ```bash
-python -m pytest -q                                                              # 936 unit tests, offline
+python -m pytest -q                                                              # 939 unit tests, offline
 python -m evals.run --config evals/experiments/v2-full.yaml --split dev          # final system, life 1 (needs OPENROUTER_API_KEY)
 python -m evals.run --config evals/experiments/v2-baseline.yaml --split dev      # the original OpenPoke on the same world
 python -m evals.compare <base result file> <new result file>                     # paired differences with intervals

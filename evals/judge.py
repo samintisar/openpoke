@@ -389,7 +389,7 @@ async def calibrate(
 
 
 async def judge_results(llm: LLMClient, results_path: Path, *, checks: list[str], model: str, out_dir: Path) -> Path:
-    """Judge every row of an L3 result file (Task 5); verdicts are summarized per gate setting."""
+    """Judge every row of an L3 result file; verdicts are summarized per gate setting."""
     started = datetime.now(timezone.utc)
     transcripts, run_meta, skipped = transcripts_from_results(results_path)
     rows = await judge_transcripts(llm, transcripts, checks, model=model)

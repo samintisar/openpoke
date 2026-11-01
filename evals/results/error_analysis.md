@@ -26,7 +26,7 @@ The regraded run is the baseline from here on.
 
 18 failures of 282 samples. No duplicates, no errors, no turn hit the iteration cap.
 
-## Biggest categories → Plan 2 targets
+## Biggest categories → v1 targets
 
 1. **Identity by name only (13 of 18).** The roster shows bare names, so "Email to Ben" looks like
    it covers anything about Ben, and "Wedding RSVP with Victor" looks like it covers any wedding
@@ -46,11 +46,11 @@ The regraded run is the baseline from here on.
 - **Accuracy does not fall as the roster grows** (pass@1 0.89 / 0.95 / 0.95 / 0.97). Haiku 5.5
   reads a 1,000-name roster well when names are descriptive. On this world, overload shows up
   as **cost and consistency** (pass^k drops from 0.95 to 0.90 at n=1000), not as wrong agents.
-  Plan 2 therefore has to keep accuracy while cutting tokens. A harder world (opaque names,
+  v1 therefore has to keep accuracy while cutting tokens. A harder world (opaque names,
   more same-person agents) is needed to stress routing quality itself.
 - The n=10 roster scores lowest: with few agents, a loosely related agent ("Wedding RSVP with
   Victor") is more likely to be the only plausible match, so the model reuses it.
 - Retrieval MRR for the baseline is meaningless (it shows every agent in creation order); recall
-  is trivially 1.0. Both become informative once Plan 2's retriever ranks agents.
+  is trivially 1.0. Both become informative once v1's retriever ranks agents.
 - A free model (`nemotron-3-ultra:free`, smoke only) looped on `wait` in about 40% of turns until
   the 8-round cap. Production raises an error there. That's the iteration-limit gap, measured.

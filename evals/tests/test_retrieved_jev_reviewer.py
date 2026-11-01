@@ -1,4 +1,4 @@
-"""The eval's Jev reviewer switch (Plan 6c J5). Scripted Jev only: no live calls."""
+"""The eval's Jev reviewer switch. Scripted Jev only: no live calls."""
 
 import json
 

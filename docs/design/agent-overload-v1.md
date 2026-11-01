@@ -297,7 +297,7 @@ not used in the write-up, charts or leaderboard comparisons.
    against the same lived-in roster, like migrating a real user's existing agents.
 
 Known bias: the roster is grown by the same model that is evaluated, as in production. Not covered:
-agents actually running, concurrent turns, memory growth (Plan 4's L3).
+agents actually running, concurrent turns, memory growth (the L3 layer).
 
 ## 9. Build order & cut line
 
@@ -337,7 +337,7 @@ Recorded as they came up; each is either fixed (with where) or open (goes into t
 
 | Finding | Fix |
 |---|---|
-| The synthetic world was too clean: tidy names made 1,000 agents easy to route | Lived-in world (§8.1, Plan 1b) is the only reported benchmark |
+| The synthetic world was too clean: tidy names made 1,000 agents easy to route | Lived-in world (§8.1) is the only reported benchmark |
 | Lived-world generator bugs: repeated openers, full names everywhere, leaked rule notes, background names merging (601 not 800), date clamping making 281 agents "active now" | Writer checks and regrow; day rescaling in `grow.py` |
 | §3's "same person, new topic → `force_new`" rule doubled duplicates | Replaced by "an agent owns a matter" in the IA prompt |
 | Dev-set agent names used as prompt examples | Invented names absent from the world |

@@ -1,6 +1,6 @@
 """Today's behaviour: every agent ever created, as a bare name, matched by exact string.
 
-The prompt and tool schemas are frozen copies of production's at the time Plan 2 started
+The prompt and tool schemas are frozen copies of production's at the time the v1 routing work started
 (frozen/), so baseline numbers never drift when the server's prompt changes.
 """
 

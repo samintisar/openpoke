@@ -440,7 +440,7 @@ def test_render_roster_without_a_case():
     )
 
 
-# Plan 5 ablations: each switch changes one behaviour; the defaults are `retrieved` exactly.
+# v1 ablations: each switch changes one behaviour; the defaults are `retrieved` exactly.
 
 ABLATIONS = {
     "retrieved_noguard": RetrievedNoGuardSystem,
@@ -520,7 +520,7 @@ async def test_noguard_creates_what_the_guard_would_flag():
 
 
 def test_last_routed_boost_and_its_ablation_are_gone():
-    # Plan 6c Task 11: the boost never changed the shown cards on dev, so it was removed whole.
+    # Removed in v2: the boost never changed the shown cards on dev, so it was removed whole.
     import evals.systems.retrieved as retrieved_module
     from evals.systems import SYSTEMS
     assert "retrieved_nolastrouted" not in SYSTEMS
@@ -529,7 +529,7 @@ def test_last_routed_boost_and_its_ablation_are_gone():
 
 
 def test_fuzzy_ablation_is_gone():
-    # Plan 6c Task 11: fuzzy-off was not worse on dev, so typo-tolerant matching was removed.
+    # Removed in v2: fuzzy-off was not worse on dev, so typo-tolerant matching was removed.
     import evals.systems.retrieved as retrieved_module
     from evals.systems import SYSTEMS
     assert "retrieved_nofuzzy" not in SYSTEMS and not hasattr(retrieved_module, "RetrievedNoFuzzySystem")

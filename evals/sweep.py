@@ -4,7 +4,7 @@
 
 Every grid point runs the production `select` (lifecycle on, via `RetrievedSystem`) and the L1
 layer's `run_retrieval_case` at each roster size, and is compared with the current defaults by the
-Plan 5 decision rule: a change must beat the default by more than RECALL_MARGIN recall@shown at
+v1 decision rule: a change must beat the default by more than RECALL_MARGIN recall@shown at
 200 or 1,000 agents without adding more than TOKEN_MARGIN prompt tokens there.
 """
 

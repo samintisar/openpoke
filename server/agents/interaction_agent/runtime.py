@@ -244,6 +244,10 @@ class InteractionAgentRuntime:
                     "content": self._format_tool_result(tool_call, result),
                 }
                 messages.append(tool_message)
+
+            # A round of only `wait` means nothing more to say. Sonnet 5.5 repeated it until the limit raised.
+            if all(tool_call.name == "wait" for tool_call in parsed_tool_calls):
+                break
         else:
             raise RuntimeError("Reached tool iteration limit without final response")
 

@@ -1,4 +1,4 @@
-"""Living summaries for the lived worlds' agents, made by the production updater (Plan 6c).
+"""Living summaries for the lived worlds' agents, made by the production updater.
 
     python -m evals.worlds.lived.summaries --seed 1 --seed 2 --budget 1.5    # writes summaries-s{seed}.json
 

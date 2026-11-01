@@ -1,9 +1,9 @@
-"""Status-rule wording test (Plan 6d): does routing of progress questions survive rewording?
+"""Status-rule wording test, after the sealed run: does routing of progress questions survive rewording?
 
     python -m evals.status_wording                 # original, v1 and final on life 1 (dev) at 1,000 agents
     python -m evals.status_wording --fake-llm      # offline
 
-The status rule's wording was revised once after reading dev failures (Plan 6c step 2b), so its dev score on
+The status rule's wording was revised once after reading dev failures, so its dev score on
 the benchmark's own phrasings may flatter it. Here every dev status question at 1,000 agents is asked ten more
 ways, from TEMPLATES, written before any of these runs and never changed after. Each reworded case keeps the
 original's answer key and conversation context, so a correct answer is the same as for the original: dispatch to

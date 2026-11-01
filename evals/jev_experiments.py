@@ -52,7 +52,7 @@ from server.services.agents.jev import (
     parse_noul,
 )
 from server.services.agents.render import SUMMARY_CHARS, render_cards, truncate
-# The route question (J1/J2) is the production Jev reviewer's question (Plan 6c J5).
+# The route question (J1/J2) is the production Jev reviewer's question.
 from server.services.agents.jev_review import (  # noqa: F401
     ASK_CRITERION,
     NEW_CRITERION,

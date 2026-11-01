@@ -1,4 +1,4 @@
-"""Paired comparison of two routing runs on the same cases: the Plan 6c keep/revert rule.
+"""Paired comparison of two routing runs on the same cases: the v2 keep/revert rule.
 
     python -m evals.compare BASE.json NEW.json     # result file names under evals/results/
 

@@ -1,4 +1,4 @@
-"""Summary drift check (Plan 6d): do living summaries stay true to an agent's runs as runs are folded in?
+"""Summary drift check, after the sealed run: do living summaries stay true to an agent's runs as runs are folded in?
 
     python -m evals.summary_drift                    # life 1 (dev) only; life 2's summaries stay unread
     python -m evals.summary_drift --view full        # judge the stored summary, not the clipped card view
