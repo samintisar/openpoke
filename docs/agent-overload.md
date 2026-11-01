@@ -64,7 +64,7 @@ I built the measurement first, so every change has a before and after.
 
 ### A world that looks like real use
 
-A tidy synthetic world made 1,000 agents easy to route, so I replaced it with **lived-in worlds**:
+The rosters come from **lived-in worlds**:
 - a persona's life of several hundred events, played through the real interaction agent, so the roster carries the assistant's own inconsistent names and real history;
 - background errands spread over the same life to reach 1,000 agents.
 
@@ -137,7 +137,7 @@ The changes, each kept only after passing the keep rule on dev:
 - **A status rule** (`status_policy.md`). A progress question goes to the agent that holds the matter, even when its summary looks up to date. If none fits, the assistant asks; it never creates an agent only to check on something.
 - **A per-turn search budget.** The fourth `search_agents` call in one turn is refused. Long search loops were mostly failing turns and pushed tokens over the cap.
 - **A second look at risky reuses**, made by [TypeSafe's Jev](https://typesafe.ai/) classifier. It fires on about 1 turn in 10, when the message names a person whose other card outranks the target or the message barely overlaps the card. It acts only to split ("this is a new topic") at confidence ≥ 0.4, and otherwise leaves the decision alone. Without the API key or on any error, the decision stands and a warning is logged.
-- **Removed:** the last-routed boost (295 of 295 retrieval results identical without it), typo-tolerant name matching (not worse without it), the synthetic world, and conversation-aware retrieval (a second search pass using recent turns), which never added a right card the first pass missed.
+- **Removed:** the last-routed boost (295 of 295 retrieval results identical without it), typo-tolerant name matching (not worse without it), and conversation-aware retrieval (a second search pass using recent turns), which never added a right card the first pass missed.
 
 ### Lifecycle (F1)
 
