@@ -19,11 +19,23 @@ yarn-error.log*
 
 # OS
 .DS_Store
+Thumbs.db
+
+# Editors and local AI tooling
+.vscode/
+.idea/
+.serena/
+.claude/
 
 # Python
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
 # Database files
 *.db
@@ -48,3 +60,4 @@ server/plans/
 # Eval harness
 evals/.cache/
 evals/results/*.html
+evals/labelling/*_review.html
