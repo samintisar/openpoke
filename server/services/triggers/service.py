@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from zoneinfo import ZoneInfo
 
 from ...logging_config import logger
+from ..approvals import gate as approval_gate
 from .models import TriggerRecord
 from .store import TriggerStore
 from .utils import (
@@ -21,6 +22,9 @@ from .utils import (
 
 
 MISSED_TRIGGER_GRACE_PERIOD = timedelta(minutes=5)
+# An agent whose trigger fires within this window has open work and is never demoted by the lifecycle.
+# None: any scheduled fire counts, so a weekly or monthly agent is not archived between fires.
+OPEN_WORK_WINDOW: Optional[timedelta] = None
 
 
 class TriggerService:
@@ -32,6 +36,7 @@ class TriggerService:
     def create_trigger(
         self,
         *,
+        agent_id: str,
         agent_name: str,
         payload: str,
         recurrence_rule: Optional[str] = None,
@@ -51,6 +56,7 @@ class TriggerService:
         )
         timestamp = to_storage_timestamp(now)
         record: Dict[str, Any] = {
+            "agent_id": agent_id,
             "agent_name": agent_name,
             "payload": payload,
             "start_time": to_storage_timestamp(start_dt_local),
@@ -63,7 +69,7 @@ class TriggerService:
             "updated_at": timestamp,
         }
         trigger_id = self._store.insert(record)
-        created = self._store.fetch_one(trigger_id, agent_name)
+        created = self._store.fetch_one(trigger_id, agent_id)
         if not created:  # pragma: no cover - defensive
             raise RuntimeError("Failed to load trigger after insert")
         return created
@@ -72,7 +78,7 @@ class TriggerService:
         self,
         trigger_id: int,
         *,
-        agent_name: str,
+        agent_id: str,
         payload: Optional[str] = None,
         recurrence_rule: Optional[str] = None,
         start_time: Optional[str] = None,
@@ -81,7 +87,7 @@ class TriggerService:
         last_error: Optional[str] = None,
         clear_error: bool = False,
     ) -> Optional[TriggerRecord]:
-        existing = self._store.fetch_one(trigger_id, agent_name)
+        existing = self._store.fetch_one(trigger_id, agent_id)
         if existing is None:
             return None
 
@@ -105,6 +111,9 @@ class TriggerService:
             status_changed_to_active = (
                 normalized_status == "active" and existing.status != "active"
             )
+            if normalized_status != "active":
+                # A paused or completed trigger loses its standing send approvals; resuming does not restore them.
+                approval_gate.revoke_standing(trigger_id)
         else:
             normalized_status = existing.status
 
@@ -177,22 +186,48 @@ class TriggerService:
         if not fields:
             return existing
 
-        updated = self._store.update(trigger_id, agent_name, fields)
-        return self._store.fetch_one(trigger_id, agent_name) if updated else existing
+        updated = self._store.update(trigger_id, agent_id, fields)
+        return self._store.fetch_one(trigger_id, agent_id) if updated else existing
 
-    def list_triggers(self, *, agent_name: str) -> List[TriggerRecord]:
-        return self._store.list_for_agent(agent_name)
+    def get_trigger(self, trigger_id: int) -> Optional[TriggerRecord]:
+        """Any agent's trigger by id (the interaction agent approves recurring sends by trigger id)."""
+        return self._store.fetch_by_id(trigger_id)
+
+    def list_triggers(self, *, agent_id: str) -> List[TriggerRecord]:
+        return self._store.list_for_agent(agent_id)
 
     def get_due_triggers(
-        self, *, before: datetime, agent_name: Optional[str] = None
+        self, *, before: datetime, agent_id: Optional[str] = None
     ) -> List[TriggerRecord]:
         iso_cutoff = to_storage_timestamp(before)
-        return self._store.fetch_due(agent_name, iso_cutoff)
+        return self._store.fetch_due(agent_id, iso_cutoff)
 
-    def mark_as_completed(self, trigger_id: int, *, agent_name: str) -> None:
+    def agent_ids_with_triggers_due(
+        self, now: datetime, within: Optional[timedelta] = OPEN_WORK_WINDOW
+    ) -> set[str]:
+        """Agents with an active trigger due by `now + within` (overdue included; None: any scheduled fire):
+        open work for the lifecycle."""
+        triggers = (
+            self._store.fetch_scheduled() if within is None else self.get_due_triggers(before=now + within)
+        )
+        return {trigger.agent_id for trigger in triggers if trigger.agent_id}
+
+    def backfill_agent_ids(self, resolve: Callable[[str], Optional[str]]) -> int:
+        """Give rows written before agent ids existed an `agent_id`, resolved from their `agent_name`."""
+        return self._store.backfill_agent_ids(resolve)
+
+    def delete_trigger(self, trigger_id: int, *, agent_id: str) -> bool:
+        """Delete one of `agent_id`'s triggers, revoking its standing send approvals; False if not found."""
+        if self._store.fetch_one(trigger_id, agent_id) is None:
+            return False
+        approval_gate.revoke_standing(trigger_id)
+        return self._store.delete(trigger_id, agent_id)
+
+    def mark_as_completed(self, trigger_id: int, *, agent_id: str) -> None:
+        approval_gate.revoke_standing(trigger_id)
         self._store.update(
             trigger_id,
-            agent_name,
+            agent_id,
             {
                 "status": "completed",
                 "next_trigger": None,
@@ -207,8 +242,8 @@ class TriggerService:
         fired_at: datetime,
     ) -> Optional[TriggerRecord]:
         if not trigger.recurrence_rule:
-            self.mark_as_completed(trigger.id, agent_name=trigger.agent_name)
-            return self._store.fetch_one(trigger.id, trigger.agent_name)
+            self.mark_as_completed(trigger.id, agent_id=trigger.agent_id)
+            return self._store.fetch_one(trigger.id, trigger.agent_id)
 
         tz = resolve_timezone(trigger.timezone)
         next_fire = self._compute_next_after(trigger.recurrence_rule, fired_at, tz)
@@ -218,29 +253,31 @@ class TriggerService:
         }
         if next_fire is None:
             fields["status"] = "completed"
-        self._store.update(trigger.id, trigger.agent_name, fields)
-        return self._store.fetch_one(trigger.id, trigger.agent_name)
+            approval_gate.revoke_standing(trigger.id)
+        self._store.update(trigger.id, trigger.agent_id, fields)
+        return self._store.fetch_one(trigger.id, trigger.agent_id)
 
     def record_failure(self, trigger: TriggerRecord, error: str) -> None:
         self._store.update(
             trigger.id,
-            trigger.agent_name,
+            trigger.agent_id,
             {
                 "last_error": error,
             },
         )
 
-    def clear_next_fire(self, trigger_id: int, *, agent_name: str) -> Optional[TriggerRecord]:
+    def clear_next_fire(self, trigger_id: int, *, agent_id: str) -> Optional[TriggerRecord]:
         self._store.update(
             trigger_id,
-            agent_name,
+            agent_id,
             {
                 "next_trigger": None,
             },
         )
-        return self._store.fetch_one(trigger_id, agent_name)
+        return self._store.fetch_one(trigger_id, agent_id)
 
     def clear_all(self) -> None:
+        approval_gate.revoke_standing()  # every trigger is deleted, so every standing approval goes
         self._store.clear_all()
 
     def _compute_next_fire(
@@ -282,4 +319,4 @@ class TriggerService:
         return next_occurrence.astimezone(tz)
 
 
-__all__ = ["TriggerService", "MISSED_TRIGGER_GRACE_PERIOD"]
+__all__ = ["TriggerService", "MISSED_TRIGGER_GRACE_PERIOD", "OPEN_WORK_WINDOW"]

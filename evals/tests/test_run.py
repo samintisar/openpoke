@@ -1,0 +1,386 @@
+import json
+
+import pytest
+
+from evals.grading import ERROR
+from evals.leaderboard import write_leaderboard
+from evals.llm import Budget, BudgetExceeded, DailyQuotaExhausted, fake_llm
+from evals.run import Config, load_config, main, run_experiment
+from evals.view import render
+
+METRIC_KEYS = {
+    "n_agents", "world_seed", "case_id", "kind", "sample", "outcome", "expects_reuse", "duplicate_possible",
+    "prompt_tokens", "cost", "fresh_cost", "cached_calls", "iterations", "hit_iteration_cap", "latency_s",
+}
+
+
+def tiny(name="t", **overrides):
+    base = dict(name=name, layers=["routing"], n_agents=[10], k=1, include_handwritten=False)
+    return Config(**{**base, **overrides})
+
+
+class PaidLLM:
+    """fake_llm behaviour, but every call is uncached, costs `cost` and is charged to a Budget."""
+
+    def __init__(self, cap, cost=0.01, fail_on_iteration=None):
+        self.inner = fake_llm()
+        self.budget = Budget(cap)
+        self.cost = cost
+        self.fail_on_iteration = fail_on_iteration
+
+    async def complete(self, **kwargs):
+        iteration = 1 + sum(1 for m in kwargs["messages"] if m["role"] == "assistant")
+        if iteration == self.fail_on_iteration:
+            raise RuntimeError("upstream exploded")
+        self.budget.check()
+        self.budget.add(self.cost)
+        data = await self.inner.complete(**kwargs)
+        data["_meta"] = {**data["_meta"], "cost": self.cost, "cache_key": f"k{iteration}"}
+        return data
+
+    async def aclose(self):
+        return None
+
+
+async def test_smoke_run_writes_results_leaderboard_and_report(tmp_path):
+    cfg = Config(name="smoke", n_agents=[10, 50], k=2, budget_usd=1.0)
+    path = await run_experiment(cfg, llm=fake_llm(), out_dir=tmp_path, split="dev", final=False)
+
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert {"lived-10", "lived-50"} <= set(data["summary"]["routing"])
+    assert {"lived-10", "lived-50"} <= set(data["summary"]["retrieval"])
+    assert data["routing_rows"] and {r["sample"] for r in data["routing_rows"]} == {0, 1}
+    assert data["meta"]["checksum"] and data["meta"]["valid"] is True
+    assert path.stem in (tmp_path / "leaderboard.md").read_text(encoding="utf-8")
+
+    html = render(data)
+    assert "<details>" in html and data["routing_rows"][0]["case_id"] in html
+
+
+def test_test_split_requires_final(tmp_path):
+    config = tmp_path / "c.yaml"
+    config.write_text("name: x\n", encoding="utf-8")
+    assert main(["--config", str(config), "--split", "test", "--fake-llm", "--out-dir", str(tmp_path)]) == 2
+
+
+def test_unknown_config_key_is_rejected(tmp_path):
+    config = tmp_path / "c.yaml"
+    config.write_text("name: x\nbogus: 1\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="bogus"):
+        load_config(config)
+
+
+def test_cli_fake_run(tmp_path, capsys):
+    config = tmp_path / "c.yaml"
+    config.write_text("name: cli\nn_agents: [10]\nk: 1\ninclude_handwritten: false\n", encoding="utf-8")
+    assert main(["--config", str(config), "--fake-llm", "--out-dir", str(tmp_path)]) == 0
+    assert list(tmp_path.glob("*-cli-dev.json"))
+    out = capsys.readouterr().out
+    assert "errors=0" in out and "hit_cap=0.00" in out and "incomplete=0" in out
+
+
+async def test_routing_rows_carry_every_metric_and_viewer_key(tmp_path):
+    path = await run_experiment(tiny(), llm=fake_llm(), out_dir=tmp_path, split="dev", final=False)
+    rows = json.loads(path.read_text(encoding="utf-8"))["routing_rows"]
+    assert rows
+    for row in rows:
+        assert METRIC_KEYS <= set(row)
+        assert {"gold", "acceptable", "dispatched_ids", "created_names", "user_messages", "tool_calls",
+                "cache_keys", "message", "error"} <= set(row)
+        assert row["error"] is None
+    assert any(row["duplicate_possible"] for row in rows) and not all(row["duplicate_possible"] for row in rows)
+
+
+async def test_failed_case_is_an_error_row_with_its_partial_cost(tmp_path):
+    llm = PaidLLM(cap=10.0, cost=0.01, fail_on_iteration=2)
+    path = await run_experiment(tiny(), llm=llm, out_dir=tmp_path, split="dev", final=False)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    rows = data["routing_rows"]
+    assert rows and all(row["outcome"] == ERROR for row in rows)
+    for row in rows:
+        assert row["cost"] == pytest.approx(0.01) and row["fresh_cost"] == pytest.approx(0.01)
+        assert row["iterations"] == 1 and row["cache_keys"] == ["k1"]
+        assert "upstream exploded" in row["error"]
+    meta = data["meta"]
+    assert meta["fresh_cost_usd"] == pytest.approx(0.01 * len(rows))
+    assert meta["unattributed_cost_usd"] == pytest.approx(0.0)
+    group = data["summary"]["routing"]["lived-10"]
+    assert group["pass_at_1"] is None and group["error_rate"] == 1.0
+
+    html = render(data)
+    assert "upstream exploded" in html
+    board = (tmp_path / "leaderboard.md").read_text(encoding="utf-8")
+    assert "– / – / –" in board
+
+
+async def test_budget_exhaustion_leaves_unrun_cases_out(tmp_path):
+    cfg = tiny(concurrency=1)
+    # Each case costs two calls; the cap allows the first three calls, so case 1 completes,
+    # case 2 dies mid-flight, and the rest never start.
+    llm = PaidLLM(cap=0.025, cost=0.01)
+    path = await run_experiment(cfg, llm=llm, out_dir=tmp_path, split="dev", final=False)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    meta, rows = data["meta"], data["routing_rows"]
+    assert meta["budget_exhausted"] is True
+    assert len(rows) == 1 and rows[0]["outcome"] != ERROR
+    assert meta["budget_spent_usd"] == pytest.approx(0.03)
+    assert meta["fresh_cost_usd"] == pytest.approx(0.02)
+    assert meta["unattributed_cost_usd"] == pytest.approx(0.01)  # the in-flight case's first call
+    group = data["summary"]["routing"]["lived-10"]
+    assert group["error_count"] == 0
+    assert group["planned_cases"] > 1 and group["incomplete_cases"] == group["planned_cases"] - 1
+
+
+async def test_planned_size_with_no_rows_still_reports(tmp_path, capsys):
+    cfg = tiny(n_agents=[10, 50], concurrency=1)
+    llm = PaidLLM(cap=0.0)
+    path = await run_experiment(cfg, llm=llm, out_dir=tmp_path, split="dev", final=False)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data["routing_rows"] == []
+    routing = data["summary"]["routing"]
+    assert set(routing) == {"lived-10", "lived-50"}
+    assert routing["lived-50"]["pass_at_1"] is None
+    assert routing["lived-50"]["incomplete_cases"] == routing["lived-50"]["planned_cases"]
+    render(data)
+    write_leaderboard(tmp_path)
+
+
+def test_leaderboard_formats_none_rates(tmp_path):
+    group = {
+        "pass_at_1": None, "pass_hat_k": None, "duplicate_rate": None, "total_cost_usd": 0.0,
+        "fresh_cost_usd": 0.0, "error_count": 2, "incomplete_cases": 1,
+    }
+    data = {"meta": {"system": "baseline", "split": "dev", "valid": True}, "summary": {"routing": {"10": group}}}
+    (tmp_path / "r.json").write_text(json.dumps(data), encoding="utf-8")
+    board = write_leaderboard(tmp_path).read_text(encoding="utf-8")
+    assert "| r | baseline | dev | yes | – / – / – |" in board
+
+
+async def test_budget_exceeded_on_the_client_is_not_an_error(tmp_path):
+    class Broke:
+        budget = Budget(0.0)
+
+        async def complete(self, **kwargs):
+            raise BudgetExceeded("cap")
+
+        async def aclose(self):
+            return None
+
+    path = await run_experiment(tiny(), llm=Broke(), out_dir=tmp_path, split="dev", final=False)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data["meta"]["budget_exhausted"] is True and data["routing_rows"] == []
+
+
+async def test_unexpected_exception_in_a_job_becomes_an_error_row(tmp_path, monkeypatch):
+    from evals import grading, run as run_mod
+
+    real = grading.duplicate_possible
+    calls = {"n": 0}
+
+    def flaky(case):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("dup exploded")
+        return real(case)
+
+    monkeypatch.setattr(run_mod, "duplicate_possible", flaky)
+    path = await run_experiment(tiny(), llm=fake_llm(), out_dir=tmp_path, split="dev", final=False)
+    rows = json.loads(path.read_text(encoding="utf-8"))["routing_rows"]
+    errors = [r for r in rows if r["outcome"] == ERROR]
+    assert len(errors) == 1 and "dup exploded" in errors[0]["error"]
+    assert len(rows) > 1
+
+
+async def test_exception_in_routing_row_is_contained(tmp_path, monkeypatch):
+    from evals import run as run_mod
+
+    real = run_mod._routing_row
+    state = {"raised": False}
+
+    def flaky(*args, **kwargs):
+        if not state["raised"]:
+            state["raised"] = True
+            raise ValueError("row exploded")
+        return real(*args, **kwargs)
+
+    monkeypatch.setattr(run_mod, "_routing_row", flaky)
+    path = await run_experiment(tiny(), llm=fake_llm(), out_dir=tmp_path, split="dev", final=False)
+    rows = json.loads(path.read_text(encoding="utf-8"))["routing_rows"]
+    assert any(r["outcome"] == ERROR and "row exploded" in r["error"] for r in rows)
+
+
+@pytest.mark.parametrize("body,key", [
+    ("n_agents: [10, x]", "n_agents"),
+    ("world: synthetic", "world"),
+    ("k: 0", "k"),
+    ("concurrency: 1.5", "concurrency"),
+    ("requests_per_minute: 0", "requests_per_minute"),
+    ("max_retries: -1", "max_retries"),
+    ("budget_usd: -1", "budget_usd"),
+    ("layers: [retrieval, bogus]", "layers"),
+    ("suite: everything", "suite"),
+    ("kinds: [not_a_kind]", "kinds"),
+])
+def test_load_config_rejects_bad_values(tmp_path, body, key):
+    config = tmp_path / "c.yaml"
+    config.write_text(f"name: t\n{body}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=key):
+        load_config(config)
+
+
+def test_load_config_accepts_valid_values(tmp_path):
+    config = tmp_path / "c.yaml"
+    config.write_text("name: t\nk: 2\nbudget_usd: 5\nkinds: null\nsuite: regression\n", encoding="utf-8")
+    assert load_config(config).k == 2
+
+
+def test_run_is_invalid_when_expected_file_uncommitted(tmp_path, monkeypatch):
+    import asyncio
+
+    from evals import run as run_mod
+
+    monkeypatch.setattr(run_mod, "expected_file_committed", lambda *a, **k: False)
+    path = asyncio.run(run_experiment(tiny(), llm=fake_llm(), out_dir=tmp_path, split="dev", final=False))
+    assert json.loads(path.read_text(encoding="utf-8"))["meta"]["valid"] is False
+
+
+def test_leaderboard_skips_corrupt_files(tmp_path):
+    (tmp_path / "bad.json").write_text("{not json", encoding="utf-8")
+    (tmp_path / "binary.json").write_bytes(b"\xff\xfe\x00\xff")
+    good = {"meta": {"system": "baseline", "split": "dev", "valid": True}, "summary": {"routing": {}}}
+    (tmp_path / "good.json").write_text(json.dumps(good), encoding="utf-8")
+    with pytest.warns(UserWarning, match="skipping"):
+        out = write_leaderboard(tmp_path)
+    text = out.read_text(encoding="utf-8")
+    assert "good" in text and "bad" not in text.replace("baseline", "")
+
+
+def test_view_renders_old_style_summary():
+    data = {
+        "meta": {"name": "old", "valid": True},
+        "summary": {"routing": {"10": {"cases": 3, "pass_at_1": 0.5}}, "retrieval": {"10": {"recall": 1.0}}},
+    }
+    html = render(data)
+    assert "old" in html and "–" in html
+
+
+async def test_fatal_api_error_stops_the_run_without_error_rows(tmp_path):
+    from evals.llm import FatalAPIError
+
+    class NoCredits:
+        budget = Budget(10.0)
+
+        async def complete(self, **kwargs):
+            raise FatalAPIError("OpenRouter returned 402: Insufficient credits")
+
+        async def aclose(self):
+            return None
+
+    path = await run_experiment(tiny(), llm=NoCredits(), out_dir=tmp_path, split="dev", final=False)
+    meta = json.loads(path.read_text(encoding="utf-8"))["meta"]
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data["routing_rows"] == []
+    assert meta["budget_exhausted"] is False
+    assert "402" in meta["aborted"]
+    assert meta["valid"] is False
+
+
+async def test_daily_quota_stops_the_run_but_keeps_it_valid(tmp_path):
+    class OutOfQuota:
+        budget = Budget(1.0)
+
+        async def complete(self, **kwargs):
+            raise DailyQuotaExhausted("free-models-per-day")
+
+        async def aclose(self):
+            return None
+
+    path = await run_experiment(tiny(), llm=OutOfQuota(), out_dir=tmp_path, split="dev", final=False)
+    meta = json.loads(path.read_text(encoding="utf-8"))["meta"]
+    assert meta["aborted"].startswith("DailyQuotaExhausted") and meta["valid"] is True
+    assert meta["budget_exhausted"] is False
+
+
+def test_routing_rows_carry_cached_prompt_tokens(tmp_path):
+    config = tmp_path / "c.yaml"
+    config.write_text("name: cached\nn_agents: [10]\nk: 1\ninclude_handwritten: false\n", encoding="utf-8")
+    assert main(["--config", str(config), "--fake-llm", "--out-dir", str(tmp_path)]) == 0
+    data = json.loads(next(tmp_path.glob("*-cached-dev.json")).read_text(encoding="utf-8"))
+    assert data["routing_rows"]
+    assert all(row["cached_prompt_tokens"] == 0 for row in data["routing_rows"])
+
+
+def test_allow_long_prompts_is_a_known_config_key(tmp_path):
+    from evals.run import load_config
+    path = tmp_path / "c.yaml"
+    path.write_text("name: x\nallow_long_prompts: true\n", encoding="utf-8")
+    assert load_config(path).allow_long_prompts is True
+
+
+# --- benchmark v2 lives -------------------------------------------------------------------------
+
+
+def _v2_config(tmp_path, life, extra=""):
+    from evals.tests.test_bench_v2 import write_v2_fixture
+    write_v2_fixture(tmp_path, life)
+    config = tmp_path / "v2.yaml"
+    config.write_text(
+        f"name: v2\nworld: lived_v2\nlife: {life}\nbench_dir: {json.dumps(str(tmp_path))}\nn_agents: [10, 200]\n"
+        f"k: 1\nlayers: [routing]\ninclude_handwritten: false\n{extra}", encoding="utf-8")
+    return config
+
+
+def test_life_2_is_sealed_until_test_final(tmp_path, capsys):
+    config = _v2_config(tmp_path, 2)
+    assert main(["--config", str(config), "--fake-llm", "--out-dir", str(tmp_path)]) == 2
+    assert "life 2 is the sealed test life: run it with --split test --final" in capsys.readouterr().err
+    assert not list(tmp_path.glob("*-v2-dev.json")) and not (tmp_path / "leaderboard.md").exists()
+
+
+def test_life_1_is_dev_only(tmp_path, capsys):
+    config = _v2_config(tmp_path, 1)
+    assert main(["--config", str(config), "--split", "test", "--final", "--fake-llm", "--out-dir", str(tmp_path)]) == 2
+    assert "life 1 is the dev life" in capsys.readouterr().err
+
+
+def test_life_must_be_1_or_2(tmp_path):
+    config = tmp_path / "c.yaml"
+    config.write_text("name: x\nworld: lived_v2\nlife: 3\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="config key 'life'"):
+        load_config(config)
+
+
+async def test_run_experiment_refuses_life_2_on_dev(tmp_path):
+    _v2_config(tmp_path, 2)
+    cfg = tiny(world="lived_v2", life=2, bench_dir=str(tmp_path))
+    with pytest.raises(ValueError, match="sealed test life"):
+        await run_experiment(cfg, llm=fake_llm(), out_dir=tmp_path, split="dev", final=False)
+
+
+@pytest.mark.parametrize("life, args, split", [(1, [], "dev"), (2, ["--split", "test", "--final"], "test")])
+def test_cli_fake_run_on_v2_life(tmp_path, capsys, life, args, split):
+    from evals.worlds.lived.round2 import _sha256
+    config = _v2_config(tmp_path, life)
+    assert main(["--config", str(config), *args, "--fake-llm", "--out-dir", str(tmp_path)]) == 0
+    [path] = tmp_path.glob(f"*-v2-{split}.json")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    meta = data["meta"]
+    assert meta["world"] == "lived_v2" and meta["life"] == life and meta["split"] == split
+    assert meta["bench_sha256"] == _sha256(tmp_path / f"bench-v2-s{life}.reviewed.json")
+    assert meta["bench_file"] == f"bench-v2-s{life}.reviewed.json"
+    assert meta["summaries_sha256"] is None  # the fixture has no summaries file
+    assert {r["case_id"] for r in data["routing_rows"]} == {f"v2-s{life}-10-typo-00", f"v2-s{life}-200-typo-00"}
+    assert {r["n_agents"] for r in data["routing_rows"]} == {"lived-10", "lived-200"}
+
+
+def test_v2_configs_load():
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1] / "experiments"
+    for name, system, budget, sizes in [
+        ("v2-baseline", "baseline", 3.0, [10, 50, 200, 1000]), ("v2-retrieved", "retrieved", 3.0, [10, 50, 200, 1000]),
+        ("v2-full-cards", "full_cards", 4.0, [10, 50, 200]),
+    ]:
+        cfg = load_config(root / f"{name}.yaml")
+        assert (cfg.name, cfg.system, cfg.budget_usd, cfg.n_agents) == (name, system, budget, sizes)
+        assert (cfg.world, cfg.life, cfg.k, cfg.include_handwritten, cfg.concurrency) == ("lived_v2", 1, 3, False, 4)
+        assert cfg.model == "deepseek/deepseek-v4.1-flash"

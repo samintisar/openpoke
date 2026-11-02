@@ -1,0 +1,402 @@
+"""Run an eval experiment.
+
+    python -m evals.run --config evals/experiments/v2-retrieved.yaml        # dev split
+    python -m evals.run --config evals/experiments/smoke.yaml --fake-llm    # offline
+    python -m evals.run --config ... --split test --final                   # held-out, once per finalist
+
+world: lived_v2 runs benchmark v2: life 1 is the dev life and runs only on dev; life 2 is the
+sealed test life and runs only with --split test --final. The reviewed probe file's sha256 is in
+meta.bench_sha256.
+
+If the budget runs out, scheduling stops: the case that hit the cap and every case not yet
+started are left out of routing_rows (they count as incomplete, not as errors), and
+meta.budget_exhausted is true. If OpenRouter refuses the account (401/402/403: bad key, no
+credits), the run stops the same way, meta.aborted names the reason, the run is invalid, and
+the CLI exits 1. A free model's daily quota running out also stops the run and exits 1, but the
+rows it finished stay valid; finished calls are cached, so rerunning later resumes it. A case that fails for any other reason is an ERROR row that keeps the cost it
+ran up before failing.
+"""
+
+from __future__ import annotations
+
+import argparse
+import asyncio
+import json
+import os
+import subprocess
+import sys
+from dataclasses import asdict, dataclass, field, fields
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+from .cases import ROUTING_KINDS, Case, filter_cases
+from .grading import ERROR, Decision, duplicate_possible, grade
+from .integrity import REPO_ROOT, compute_checksum, expected_checksum, expected_file_committed
+from .layers.retrieval import run_retrieval_case
+from .layers.routing import RoutingCaseError, run_routing_case
+from .leaderboard import write_leaderboard
+from .llm import (
+    Budget,
+    BudgetExceeded,
+    DEFAULT_MAX_PROMPT_TOKENS,
+    DailyQuotaExhausted,
+    FatalAPIError,
+    LLMClient,
+    OpenRouterLLM,
+    RateLimiter,
+    RunAborted,
+    fake_llm,
+)
+from .metrics import summarize_retrieval, summarize_routing
+from .systems import get_system
+from .worlds.handwritten import load_handwritten
+from .worlds.lived import bench_v2
+from .worlds.lived.round2 import _sha256
+from .worlds.lived.store import DEFAULT_PATH as LIVED_PATH
+from .worlds.lived.store import load_lived
+from .worlds.model import World
+
+DEFAULT_OUT = REPO_ROOT / "evals" / "results"
+CACHE_DIR = REPO_ROOT / "evals" / ".cache" / "llm"
+
+
+@dataclass
+class Config:
+    name: str
+    system: str = "baseline"
+    system_options: dict[str, Any] = field(default_factory=dict)  # keyword switches for the system
+    model: str = "deepseek/deepseek-v4.1-flash"
+    layers: list[str] = field(default_factory=lambda: ["retrieval", "routing"])
+    n_agents: list[int] = field(default_factory=lambda: [10, 50, 200, 1000])
+    k: int = 3
+    kinds: list[str] | None = None
+    suite: str = "all"
+    budget_usd: float = 15.0
+    concurrency: int = 8
+    requests_per_minute: int | None = None  # set for free models, which OpenRouter caps per minute
+    max_retries: int = 3
+    include_handwritten: bool = True
+    world: str = "lived"  # lived (the frozen lived-in world; n_agents picks its sizes) or lived_v2
+    lived_path: str | None = None
+    life: int = 1  # lived_v2 only: 1 is the dev life, 2 the sealed test life
+    bench_dir: str | None = None  # lived_v2 only: where world-s{life}.json and its reviewed bench live
+    allow_long_prompts: bool = False  # true: send prompts over ~100k tokens (the guard prevents accidentally huge runs)
+
+
+def load_config(path: Path) -> Config:
+    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    unknown = set(raw) - {f.name for f in fields(Config)}
+    if unknown:
+        raise ValueError(f"unknown config keys: {sorted(unknown)}")
+    cfg = Config(**raw)
+    _validate(cfg)
+    return cfg
+
+
+def _is_int(v: Any) -> bool:
+    return isinstance(v, int) and not isinstance(v, bool)
+
+
+def _validate(cfg: Config) -> None:
+    def bad(key: str, why: str) -> ValueError:
+        return ValueError(f"config key {key!r}: {why}")
+
+    if not isinstance(cfg.n_agents, list) or not all(_is_int(x) for x in cfg.n_agents):
+        raise bad("n_agents", "must be a list of ints")
+    rpm = cfg.requests_per_minute
+    if rpm is not None and (not _is_int(rpm) or rpm <= 0):
+        raise bad("requests_per_minute", "must be null or a positive int")
+    if not _is_int(cfg.max_retries) or cfg.max_retries < 0:
+        raise bad("max_retries", "must be a non-negative int")
+    for key in ("k", "concurrency"):
+        v = getattr(cfg, key)
+        if not _is_int(v) or v <= 0:
+            raise bad(key, "must be a positive int")
+    b = cfg.budget_usd
+    if isinstance(b, bool) or not isinstance(b, (int, float)) or b <= 0:
+        raise bad("budget_usd", "must be a positive number")
+    if not isinstance(cfg.layers, list) or not set(cfg.layers) <= {"retrieval", "routing"}:
+        raise bad("layers", "must be a list drawn from ['retrieval', 'routing']")
+    if cfg.world not in ("lived", "lived_v2"):
+        raise bad("world", "must be lived or lived_v2")
+    if not _is_int(cfg.life) or cfg.life not in (bench_v2.DEV_LIFE, bench_v2.TEST_LIFE):
+        raise bad("life", "must be 1 (the dev life) or 2 (the sealed test life)")
+    if cfg.bench_dir is not None and not isinstance(cfg.bench_dir, str):
+        raise bad("bench_dir", "must be null or a path string")
+    if cfg.lived_path is not None and not isinstance(cfg.lived_path, str):
+        raise bad("lived_path", "must be null or a path string")
+    if not isinstance(cfg.allow_long_prompts, bool):
+        raise bad("allow_long_prompts", "must be true or false")
+    if cfg.suite not in ("all", "capability", "regression"):
+        raise bad("suite", "must be one of all, capability, regression")
+    if cfg.kinds is not None and (
+        not isinstance(cfg.kinds, list) or not set(cfg.kinds) <= set(ROUTING_KINDS)
+    ):
+        raise bad("kinds", f"must be null or a list drawn from {list(ROUTING_KINDS)}")
+
+
+def life_refusal(cfg: Config, split: str, final: bool) -> str | None:
+    """Why a benchmark v2 life may not run on this split, or None."""
+    if cfg.world != "lived_v2":
+        return None
+    if cfg.life == bench_v2.TEST_LIFE and not (split == "test" and final):
+        return "life 2 is the sealed test life: run it with --split test --final"
+    if cfg.life == bench_v2.DEV_LIFE and split != "dev":
+        return "life 1 is the dev life: run it on --split dev (the test split is life 2)"
+    return None
+
+
+def _bench_dir(cfg: Config) -> Path | None:
+    return Path(cfg.bench_dir) if cfg.bench_dir else None
+
+
+Unit = tuple[Any, World, list[Case]]  # (roster-size label, world, cases)
+
+
+def _build_units(cfg: Config, split: str) -> list[Unit]:
+    units: list[Unit] = []
+    if cfg.world == "lived":
+        wanted = {f"lived-{n}" for n in cfg.n_agents}
+        for label, world, cases in load_lived(Path(cfg.lived_path) if cfg.lived_path else LIVED_PATH):
+            if label in wanted:
+                units.append((label, world, filter_cases(cases, split=split, suite=cfg.suite, kinds=cfg.kinds)))
+    if cfg.world == "lived_v2":
+        wanted = {f"lived-{n}" for n in cfg.n_agents}
+        for label, world, cases in bench_v2.load_v2(cfg.life, directory=_bench_dir(cfg)):
+            if label in wanted:
+                units.append((label, world, filter_cases(cases, split=split, suite=cfg.suite, kinds=cfg.kinds)))
+    if cfg.include_handwritten:
+        world, cases = load_handwritten()
+        units.append(("handwritten", world, filter_cases(cases, split=split, suite=cfg.suite, kinds=cfg.kinds)))
+    return units
+
+
+def _routing_row(
+    label: Any, world: World, case: Case, sample: int, d: Decision, outcome: str, system: str, error: str | None = None,
+    dup: bool | None = None,
+) -> dict[str, Any]:
+    return {
+        "system": system, "n_agents": label, "world_seed": world.seed, "case_id": case.id, "kind": case.kind,
+        "sample": sample, "message": case.message, "gold": case.gold_targets, "acceptable": case.acceptable_ids,
+        "expects_reuse": case.expects_reuse, "duplicate_possible": duplicate_possible(case) if dup is None else dup, "outcome": outcome,
+        "error": error, "dispatched_ids": d.dispatched_ids, "created_names": d.created_names, "clarified": d.clarified,
+        "user_messages": d.user_messages, "tool_calls": d.tool_calls, "iterations": d.iterations,
+        "hit_iteration_cap": d.hit_iteration_cap, "cost": d.cost, "fresh_cost": d.fresh_cost,
+        "cached_calls": d.cached_calls, "latency_s": d.latency_s, "prompt_tokens": d.prompt_tokens,
+        "completion_tokens": d.completion_tokens,
+        "cached_prompt_tokens": d.cached_prompt_tokens, "cache_keys": d.cache_keys,
+        "second_looks": d.second_looks,
+    }
+
+
+def _fallback_row(
+    label: Any, world: World, case: Case, sample: int, system: str, message: str, decision: Decision | None
+) -> dict[str, Any]:
+    """ERROR row for a failed job; if even _routing_row fails (e.g. duplicate_possible), use a bare row."""
+    d = decision if decision is not None else Decision()
+    try:
+        return _routing_row(label, world, case, sample, d, ERROR, system, message)
+    except Exception as exc:  # e.g. duplicate_possible itself raised
+        return _routing_row(label, world, case, sample, d, ERROR, system, f"{message} (row build failed: {exc})", dup=False)
+
+
+def _git(*args: str) -> str:
+    try:
+        return subprocess.run(["git", *args], cwd=REPO_ROOT, capture_output=True, text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return "unknown"
+
+
+async def _run_routing(
+    cfg: Config, units: list[Unit], system: Any, llm: LLMClient
+) -> tuple[list[dict[str, Any]], RunAborted | None]:
+    """Run every (case, sample) with cfg.concurrency workers; stop scheduling once the run is aborted."""
+    jobs = [(label, world, case, s) for label, world, cases in units for case in cases for s in range(cfg.k)]
+    results: list[dict[str, Any] | None] = [None] * len(jobs)
+    pending = iter(enumerate(jobs))
+    aborted: RunAborted | None = None
+
+    async def worker() -> None:
+        nonlocal aborted
+        for index, (label, world, case, sample) in pending:  # shared iterator: each job runs once
+            if aborted is not None:
+                return
+            try:
+                decision = await run_routing_case(case, world, system, llm, model=cfg.model, sample=sample)
+                try:
+                    outcome, error = grade(case, decision), None
+                except Exception as exc:  # recorded as a failing sample, never silently dropped
+                    outcome, error = ERROR, f"grading failed: {type(exc).__name__}: {exc}"
+                results[index] = _routing_row(label, world, case, sample, decision, outcome, system.name, error)
+            except RunAborted as exc:
+                aborted = aborted or exc  # this in-flight case is dropped, not recorded as an error
+                return
+            except RoutingCaseError as exc:
+                results[index] = _fallback_row(label, world, case, sample, system.name, str(exc), exc.decision)
+            except Exception as exc:  # never escape gather
+                results[index] = _fallback_row(
+                    label, world, case, sample, system.name, f"{type(exc).__name__}: {exc}", None
+                )
+
+    await asyncio.gather(*(worker() for _ in range(max(1, cfg.concurrency))))
+    return [row for row in results if row is not None], aborted
+
+
+async def run_experiment(cfg: Config, *, llm: LLMClient, out_dir: Path, split: str, final: bool) -> Path:
+    refusal = life_refusal(cfg, split, final)
+    if refusal:
+        raise ValueError(refusal)
+    started = datetime.now(timezone.utc)
+    checksum, expected = compute_checksum(), expected_checksum()
+    system = get_system(cfg.system, cfg.system_options)
+    units = _build_units(cfg, split)
+    bench_meta: dict[str, Any] = {}
+    if cfg.world == "lived_v2":  # results trace to the exact probe set and rosters
+        bench = bench_v2.bench_path(cfg.life, reviewed=True, directory=_bench_dir(cfg))
+        world_file = bench_v2.world_path(cfg.life, _bench_dir(cfg))
+        bench_meta = {"bench_file": bench.name, "bench_sha256": _sha256(bench),
+                      "world_file": world_file.name, "world_sha256": _sha256(world_file)}
+        summary_file = world_file.parent / f"summaries-s{cfg.life}.json"
+        bench_meta["summaries_sha256"] = _sha256(summary_file) if summary_file.exists() else None
+
+    retrieval_rows: list[dict[str, Any]] = []
+    if "retrieval" in cfg.layers:
+        for label, world, cases in units:
+            for case in cases:
+                retrieval_rows.append({
+                    "n_agents": label, "world_seed": world.seed, "case_id": case.id, "kind": case.kind,
+                    **run_retrieval_case(case, world, system),
+                })
+
+    routing_rows: list[dict[str, Any]] = []
+    aborted: RunAborted | None = None
+    planned: dict[str, set[tuple]] = {}
+    if "routing" in cfg.layers:
+        for label, world, cases in units:
+            planned.setdefault(str(label), set()).update((world.seed, case.id) for case in cases)
+        routing_rows, aborted = await _run_routing(cfg, units, system, llm)
+
+    budget = getattr(llm, "budget", None)
+    spent = budget.spent_usd if budget is not None else None
+    fresh = sum(row["fresh_cost"] for row in routing_rows)
+    result = {
+        "meta": {
+            **asdict(cfg),
+            "split": split,
+            "final": final,
+            **bench_meta,
+            "git_sha": _git("rev-parse", "--short", "HEAD"),
+            "git_dirty": bool(_git("status", "--porcelain", "--untracked-files=no")),
+            "started_at": started.isoformat(),
+            "finished_at": datetime.now(timezone.utc).isoformat(),
+            "checksum": checksum,
+            "expected_checksum": expected,
+            # A run the API refused (no credits, bad key) is never valid: its numbers are not results.
+            "valid": (
+                expected is not None and checksum == expected and expected_file_committed()
+                and not isinstance(aborted, FatalAPIError)
+            ),
+            # spent: everything the client charged; fresh: what finished rows account for;
+            # unattributed: the rest (cases dropped when the budget ran out).
+            "budget_spent_usd": None if spent is None else round(spent, 4),
+            "fresh_cost_usd": round(fresh, 4),
+            "unattributed_cost_usd": None if spent is None else round(spent - fresh, 4),
+            "budget_exhausted": isinstance(aborted, BudgetExceeded),
+            "aborted": None if aborted is None else f"{type(aborted).__name__}: {aborted}",
+        },
+        "summary": {
+            "retrieval": summarize_retrieval(retrieval_rows),
+            "routing": summarize_routing(routing_rows, planned=planned, k=cfg.k),
+        },
+        "retrieval_rows": retrieval_rows,
+        "routing_rows": routing_rows,
+    }
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"{started:%Y%m%d-%H%M%S}-{cfg.name}-{split}.json"
+    path.write_text(json.dumps(result, indent=1), encoding="utf-8")
+    write_leaderboard(out_dir)
+    return path
+
+
+def _api_key() -> str | None:
+    if os.getenv("OPENROUTER_API_KEY"):
+        return os.environ["OPENROUTER_API_KEY"]
+    from server.config import get_settings  # loads the repo-root .env
+
+    return get_settings().openrouter_api_key
+
+
+def _fmt(value: float | None) -> str:
+    return "-" if value is None else f"{value:.2f}"
+
+
+def _usd(value: float | None) -> str:
+    return "n/a" if value is None else f"${value:.4f}"
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--config", required=True, type=Path)
+    parser.add_argument("--split", choices=["dev", "test"], default="dev")
+    parser.add_argument("--final", action="store_true", help="required to run the held-out test split")
+    parser.add_argument("--fake-llm", action="store_true", help="offline scripted model; no API calls")
+    parser.add_argument("--out-dir", type=Path, default=DEFAULT_OUT)
+    args = parser.parse_args(argv)
+
+    if args.split == "test" and not args.final:
+        print("Refusing to run the test split without --final. Tune on dev; run test once per finalist.", file=sys.stderr)
+        return 2
+    cfg = load_config(args.config)
+    refusal = life_refusal(cfg, args.split, args.final)
+    if refusal:
+        print(f"Refusing to run: {refusal}.", file=sys.stderr)
+        return 2
+
+    llm: LLMClient
+    if args.fake_llm:
+        llm = fake_llm()
+    else:
+        key = _api_key()
+        if not key:
+            print("OPENROUTER_API_KEY is not set. Add it to .env at the repo root.", file=sys.stderr)
+            return 2
+        limiter = RateLimiter(cfg.requests_per_minute) if cfg.requests_per_minute else None
+        llm = OpenRouterLLM(
+            api_key=key, cache_dir=CACHE_DIR, budget=Budget(cfg.budget_usd), concurrency=cfg.concurrency,
+            max_retries=cfg.max_retries, rate_limiter=limiter,
+            max_prompt_tokens=None if cfg.allow_long_prompts else DEFAULT_MAX_PROMPT_TOKENS,
+        )
+
+    async def go() -> Path:
+        try:
+            return await run_experiment(cfg, llm=llm, out_dir=args.out_dir, split=args.split, final=args.final)
+        finally:
+            await llm.aclose()
+
+    path = asyncio.run(go())
+    data = json.loads(path.read_text(encoding="utf-8"))
+    for size, g in data["summary"]["routing"].items():
+        print(
+            f"n={size:>11}  pass@1={_fmt(g['pass_at_1'])}  macro={_fmt(g['macro_pass_at_1'])}  "
+            f"pass^k={_fmt(g['pass_hat_k'])}  dup={_fmt(g['duplicate_rate'])}  errors={g['error_count']}  "
+            f"hit_cap={_fmt(g['hit_cap_rate'])}  incomplete={g['incomplete_cases']}"
+        )
+    meta = data["meta"]
+    print(
+        f"spent {_usd(meta['budget_spent_usd'])}  fresh {_usd(meta['fresh_cost_usd'])}  "
+        f"unattributed {_usd(meta['unattributed_cost_usd'])}  budget_exhausted={meta['budget_exhausted']}  "
+        f"valid={meta['valid']}  wrote {path}"
+    )
+    if meta.get("aborted"):
+        print(f"RUN ABORTED: {meta['aborted']}", file=sys.stderr)
+        if meta["aborted"].startswith(DailyQuotaExhausted.__name__):
+            print("Finished calls are cached: rerun the same command after the quota resets to resume.", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

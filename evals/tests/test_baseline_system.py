@@ -1,0 +1,110 @@
+import hashlib
+import json
+from html import escape
+
+import pytest
+
+from evals.grading import Decision
+from evals.systems import get_system
+from evals.systems.baseline import BaselineSystem
+from evals.worlds.lived.store import load_lived
+from evals.worlds.model import AgentSpec, World
+
+
+def lived(label: str) -> World:
+    return next(world for name, world, _ in load_lived() if name == label)
+
+
+def production_roster(world: World) -> str:
+    """The <active_agents> section as production built it before the v1 routing work (agent.py at 87413aa), verbatim."""
+    agents = [a.name for a in world.roster_order()]
+    if not agents:
+        body = "None"
+    else:
+        body = "\n".join(f'<agent name="{escape(name or "agent", quote=True)}" />' for name in agents)
+    return f"<active_agents>\n{body}\n</active_agents>"
+
+
+def test_baseline_matches_production_rendering():
+    world = lived("lived-50")
+    assert BaselineSystem().render_roster(world, None) == production_roster(world)
+
+
+def _spec(index: int, name: str) -> AgentSpec:
+    return AgentSpec(id=f"t{index}", name=name, purpose="p", entities=[], last_active_days=1, created_days=10 - index)
+
+
+@pytest.mark.parametrize(
+    "names",
+    [
+        ['Say "hi" to Bo'],
+        ["R&D <budget>"],
+        [""],
+        ['Say "hi" to Bo', "R&D <budget>", "", "plain"],
+    ],
+)
+def test_baseline_matches_production_on_tricky_names(names):
+    world = World(seed=0, agents=[_spec(i, name) for i, name in enumerate(names)])
+    rendered = BaselineSystem().render_roster(world, None)
+    assert rendered == production_roster(world)
+    if "" in names:
+        assert '<agent name="agent" />' in rendered
+
+
+def test_empty_roster_renders_none():
+    assert BaselineSystem().render_roster(World(seed=0, agents=[]), None) == "<active_agents>\nNone\n</active_agents>"
+
+
+def test_shows_every_agent_in_roster_order():
+    world = lived("lived-50")
+    assert BaselineSystem().shown_ids(world, None) == [a.id for a in world.roster_order()]
+
+
+def test_resolve_name_is_exact_like_production():
+    world = lived("lived-50")
+    agent = world.agents[0]
+    system = BaselineSystem()
+    assert system.resolve_name(world, agent.name) == agent.id
+    assert system.resolve_name(world, agent.name.upper() + "!") is None
+
+
+def test_get_system():
+    assert get_system("baseline").name == "baseline"
+    with pytest.raises(ValueError):
+        get_system("nope")
+
+
+# sha256 of the prompt and tools production sent at commit 87413aa, before the v1 routing work. If these move, every
+# cached baseline call misses and the baseline numbers are no longer comparable.
+FROZEN_PROMPT_SHA256 = "d89d3676196edcd517f2bb34f9dad2f74b7176897638a74622410129a841f6f8"
+FROZEN_TOOLS_SHA256 = "f4d7dd0edb758224dc49f605aa98fc6cf055e02c1dcad6b496bdd0875afa5e58"
+
+
+def test_frozen_prompt_and_tools_hash_to_fixed_values():
+    system = BaselineSystem()
+    assert hashlib.sha256(system.system_prompt().encode("utf-8")).hexdigest() == FROZEN_PROMPT_SHA256
+    assert hashlib.sha256(json.dumps(system.tool_schemas()).encode("utf-8")).hexdigest() == FROZEN_TOOLS_SHA256
+
+
+def test_frozen_prompt_is_stripped_like_production():
+    prompt = BaselineSystem().system_prompt()
+    assert prompt == prompt.strip() and "\r" not in prompt
+
+
+def test_signatures_cover_every_tool_schema():
+    system = BaselineSystem()
+    assert sorted(system.tool_signatures()) == sorted(s["function"]["name"] for s in system.tool_schemas())
+
+
+def test_new_turn_is_fresh_state():
+    world = lived("lived-50")
+    system = BaselineSystem()
+    args = {"agent_name": "Brand new", "instructions": "x"}
+    first, second = Decision(), Decision()
+    system.new_turn(world, None).handle("send_message_to_agent", args, first)
+    result = system.new_turn(world, None).handle("send_message_to_agent", args, second)
+    assert first.created_names == second.created_names == ["Brand new"]
+    assert result == {
+        "tool": "send_message_to_agent", "status": "success", "arguments": args,
+        "result": {"status": "submitted", "agent_name": "Brand new", "new_agent_created": True},
+    }

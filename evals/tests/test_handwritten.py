@@ -1,0 +1,90 @@
+import pytest
+
+from evals.cases import V1_ROUTING_KINDS
+from evals.worlds.handwritten import load_handwritten
+
+
+def test_handwritten_set_loads_and_covers_every_kind():
+    world, cases = load_handwritten()
+    assert len(world.agents) >= 10
+    assert {c.kind for c in cases} == set(V1_ROUTING_KINDS)
+
+
+def test_unknown_agent_id_is_rejected(tmp_path):
+    path = tmp_path / "bad.yaml"
+    path.write_text(
+        "agents:\n"
+        "  - {id: a, name: A, purpose: p, last_active_days: 1, created_days: 2}\n"
+        "cases:\n"
+        "  - {id: hw-x, kind: follow_up, message: m, gold_targets: [missing]}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="missing"):
+        load_handwritten(path)
+
+
+AGENT_A = "  - {id: a, name: A, purpose: p, last_active_days: 1, created_days: 2}\n"
+CASE_X = "  - {id: hw-x, kind: follow_up, message: m, gold_targets: [a]}\n"
+
+
+def _load(tmp_path, text: str):
+    path = tmp_path / "hw.yaml"
+    path.write_text(text, encoding="utf-8")
+    return load_handwritten(path)
+
+
+def test_duplicate_agent_id_is_rejected(tmp_path):
+    with pytest.raises(ValueError, match="duplicate agent id 'a'"):
+        _load(tmp_path, "agents:\n" + AGENT_A + AGENT_A + "cases:\n" + CASE_X)
+
+
+def test_duplicate_case_id_is_rejected(tmp_path):
+    with pytest.raises(ValueError, match="duplicate case id 'hw-x'"):
+        _load(tmp_path, "agents:\n" + AGENT_A + "cases:\n" + CASE_X + CASE_X)
+
+
+def test_missing_required_key_names_the_entry(tmp_path):
+    no_purpose = "  - {id: a, name: A, last_active_days: 1, created_days: 2}\n"
+    with pytest.raises(ValueError, match="agent 'a'.*'purpose'"):
+        _load(tmp_path, "agents:\n" + no_purpose + "cases:\n" + CASE_X)
+    no_message = "  - {id: hw-x, kind: follow_up, gold_targets: [a]}\n"
+    with pytest.raises(ValueError, match="case 'hw-x'.*'message'"):
+        _load(tmp_path, "agents:\n" + AGENT_A + "cases:\n" + no_message)
+
+
+def test_missing_top_level_key_is_a_clear_error(tmp_path):
+    with pytest.raises(ValueError, match="'agents'"):
+        _load(tmp_path, "cases:\n" + CASE_X)
+    with pytest.raises(ValueError, match="'cases'"):
+        _load(tmp_path, "agents:\n" + AGENT_A)
+
+
+def test_empty_gold_targets_need_clarify_ok(tmp_path):
+    empty = "  - {id: hw-x, kind: follow_up, message: m, gold_targets: []}\n"
+    with pytest.raises(ValueError, match="hw-x.*gold_targets"):
+        _load(tmp_path, "agents:\n" + AGENT_A + "cases:\n" + empty)
+    ok = "  - {id: hw-x, kind: same_name_people, message: m, gold_targets: [], clarify_ok: true}\n"
+    _, cases = _load(tmp_path, "agents:\n" + AGENT_A + "cases:\n" + ok)
+    assert cases[0].gold_targets == []
+
+
+AGENT_B = "  - {id: b, name: B, purpose: p, last_active_days: 1, created_days: 2}\n"
+AGENT_C = "  - {id: c, name: C, purpose: p, last_active_days: 1, created_days: 2}\n"
+
+
+def test_acceptable_ids_with_several_gold_ids_is_rejected(tmp_path):
+    bad = "  - {id: hw-x, kind: multi_task, message: m, gold_targets: [a, b], acceptable_ids: [c]}\n"
+    with pytest.raises(ValueError, match="hw-x.*acceptable_ids"):
+        _load(tmp_path, "agents:\n" + AGENT_A + AGENT_B + AGENT_C + "cases:\n" + bad)
+
+
+def test_acceptable_ids_with_one_gold_id_and_new_is_allowed(tmp_path):
+    ok = "  - {id: hw-x, kind: multi_task, message: m, gold_targets: [a, NEW], acceptable_ids: [b]}\n"
+    _, cases = _load(tmp_path, "agents:\n" + AGENT_A + AGENT_B + "cases:\n" + ok)
+    assert cases[0].acceptable_ids == ["b"]
+
+
+def test_duplicate_agent_name_is_rejected(tmp_path):
+    same_name = "  - {id: b, name: A, purpose: p, last_active_days: 1, created_days: 2}\n"
+    with pytest.raises(ValueError, match="duplicate agent name 'A'"):
+        _load(tmp_path, "agents:\n" + AGENT_A + same_name + "cases:\n" + CASE_X)

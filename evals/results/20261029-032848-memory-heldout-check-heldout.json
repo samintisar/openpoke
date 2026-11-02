@@ -1,0 +1,868 @@
+{
+ "meta": {
+  "name": "memory-heldout-check",
+  "model": "anthropic/claude-haiku-5.5",
+  "seed": 2,
+  "split": "heldout",
+  "n_agents": 3,
+  "runs": 40,
+  "budget_tokens": 4000,
+  "budget_usd": 0.2,
+  "concurrency": 3,
+  "requests_per_minute": null,
+  "max_retries": 3,
+  "system": "memory",
+  "git_sha": "43b98e5",
+  "git_dirty": true,
+  "started_at": "2026-10-29T03:28:48.552754+00:00",
+  "finished_at": "2026-10-29T03:29:13.969699+00:00",
+  "checksum": "85ae6d0ff93045079f8cd810e4c4ace934de450e82ac49a984267263c1a793be",
+  "expected_checksum": "85ae6d0ff93045079f8cd810e4c4ace934de450e82ac49a984267263c1a793be",
+  "valid": true,
+  "budget_spent_usd": 0.0607,
+  "fresh_cost_usd": 0.0607,
+  "unattributed_cost_usd": 0.0,
+  "budget_exhausted": false,
+  "aborted": null
+ },
+ "summary": {
+  "memory": {
+   "planned_agents": 3,
+   "agents": 3,
+   "errors": 0,
+   "incomplete_agents": 0,
+   "full": {
+    "recall": 1.0,
+    "by_kind": {
+     "thread_id": 1.0,
+     "draft_id": 1.0,
+     "email": 1.0,
+     "preference": 1.0,
+     "decision": 1.0,
+     "commitment": 1.0
+    },
+    "stale_rate": 0.0,
+    "mean_history_tokens": 9380.3333,
+    "mean_prompt_tokens": 17482.4444,
+    "qa_cost_usd": 0.0326
+   },
+   "compacted": {
+    "recall": 1.0,
+    "by_kind": {
+     "thread_id": 1.0,
+     "draft_id": 1.0,
+     "email": 1.0,
+     "preference": 1.0,
+     "decision": 1.0,
+     "commitment": 1.0
+    },
+    "stale_rate": 0.0,
+    "mean_history_tokens": 5624.0,
+    "mean_prompt_tokens": 11572.7778,
+    "qa_cost_usd": 0.0223,
+    "fallback_agents": 0
+   },
+   "compaction": {
+    "calls": 3,
+    "failures": 0,
+    "skipped": 0,
+    "cost_usd": 0.0058,
+    "mean_prefix_tokens": 5422.3333,
+    "mean_memory_tokens": 375.6667
+   },
+   "total_cost_usd": 0.0607
+  }
+ },
+ "agent_rows": [
+  {
+   "agent_id": "lease-gary",
+   "name": "Lease renewal with Gary",
+   "purpose": "Negotiate the apartment lease renewal with Gary Whitman, the landlord",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 97,
+   "tail_entries": 63,
+   "full_history_tokens": 9649,
+   "prefix_tokens": 5681,
+   "compacted_history_tokens": 5561,
+   "identifiers": [
+    "gary@whitmanproperties.com",
+    "1af60765abea816c",
+    "1bf1673173007ca6",
+    "jordan.reyes@gmail.com",
+    "142419040408963b",
+    "omar.haddad@northwindlabs.com",
+    "1bc155a193400d9f",
+    "17c874630187ffb2",
+    "1ae4b660f442c8b4",
+    "noreply@whitmanproperties.com",
+    "1dc702a659cd7a67",
+    "r-8597564829106666375",
+    "18633c39593e8086",
+    "110e33201e277896",
+    "1fe72c63a24c44bc",
+    "grace.liu@northwindlabs.com",
+    "r-6344576789116145753",
+    "1c93b5d884a76447",
+    "1c6819fec233da78",
+    "19fe60d0fc702dde",
+    "1899c16800fb0e4c",
+    "1ee488f26df899bc",
+    "apillai74@whitmanproperties.com",
+    "1a044a3473037253",
+    "1026cc95a06f5ca7",
+    "1c9234ef36342c32",
+    "freya.lindqvist@gmail.com",
+    "157ad1f13718cec5",
+    "1ea06f5ce06a829c",
+    "1fe515462dcbbeec",
+    "1cde95d23e8a3215",
+    "derek.shaw@yahoo.com",
+    "16a898e13518d0ca",
+    "r-5748005830908466014",
+    "134cafa13d723870",
+    "196aa6ff3c7ae5fe",
+    "r-9460893512595884031",
+    "10e0f9dc65edc3db",
+    "133bfb4fdae0ba12"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "Matter: renewal of the apartment lease for unit 4B with landlord Gary Whitman (Whitman Properties). The user is Jordan Reyes. Gary's office manager, Arjun Pillai, handles paperwork.\n\nDecisions: Final monthly rent is $3,250. This supersedes the $4,600 figure confirmed on Sept 6; the update was acknowledged on the thread on Sept 13.\n\nCommitments: Jordan promised to send the signed lease by Saturday, Sept 12. Nothing confirms it was sent, so treat it as unverified. The walkthrough was offered for Thu Sept 10 at 2:30pm. A check-in was offered for Sun Sept 20 at 4:30pm on a Whitman newsletter thread. Whether either happened is not recorded.\n\nFees from Whitman, forwarded for records: cancellation $280 (to Omar Haddad), late fee $385 (to Grace Liu), rush fee $725 (to Derek Shaw).\n\nUser preferences: always cc Jamie on anything that mentions money. The Sept 6 and Sept 13 money replies to Gary show no Jamie cc, so check this going forward. Drafts are to be left unsent until the user confirms. Automated Whitman messages have needed no action.\n\nPeople: Grace Liu (grace.liu@northwindlabs.com), Omar Haddad (omar.haddad@northwindlabs.com), Freya Lindqvist (freya.lindqvist@gmail.com), Derek Shaw (derek.shaw@yahoo.com). Jamie has no address on file.\n\nOpen loops: a Sept 24 status draft to Grace Liu is unsent. A Sept 25 request to draft a status note to Freya Lindqvist is pending.",
+    "purpose": "Negotiate and finalize the renewal of the unit 4B apartment lease with landlord Gary Whitman, keeping the user informed and the relevant people copied.",
+    "last_status": "Rent agreed at $3,250; the signed lease was due Sept 12 with no confirmation it was sent; a Grace Liu status draft is unsent and a Freya Lindqvist status draft was requested on Sept 25 but not yet created.",
+    "memory_tokens": 346,
+    "cost": 0.0018901,
+    "fresh_cost": 0.0018901,
+    "prompt_tokens": 10046,
+    "completion_tokens": 1771,
+    "cached_calls": 0,
+    "cache_keys": [
+     "17e11d5d2b697691aead23aeb1b90adfcafacb053b1de794f227ed17d7a8b430"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9649,
+     "system_tokens": 10810,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Lease renewal for unit 4B' thread with Gary?",
+       "gold": [
+        "1bf1673173007ca6"
+       ],
+       "answer": "The thread ID is **1bf1673173007ca6**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17793,
+       "cost": 0.0018283,
+       "cached": false,
+       "cache_key": "23de447d163c5de79cd6de2c0d8018611fc479deb89c5c435d16e642a2468bf4"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Gary on the 'Lease renewal for unit 4B' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-8597564829106666375"
+       ],
+       "answer": "The draft is **r-8597564829106666375** (to gary@whitmanproperties.com, subject \"Re: Lease renewal for unit 4B\", created 2026-09-05). It has not been sent or deleted in the history.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17806,
+       "cost": 0.0019116,
+       "cached": false,
+       "cache_key": "e2501f1f76d8efb9aa3af2384d07f47adfb0f36c6db405a41aef18420127b76f"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Arjun Pillai, Gary's office manager?",
+       "gold": [
+        "apillai74@whitmanproperties.com"
+       ],
+       "answer": "apillai74@whitmanproperties.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17782,
+       "cost": 0.0017862,
+       "cached": false,
+       "cache_key": "395298288b3e276935aa27f12ccaef8ab5b830e0193a6466f483804125ff6d72"
+      },
+      {
+       "kind": "preference",
+       "question": "Who did the user ask to be cc'd on anything that mentions money?",
+       "gold": [
+        "jamie"
+       ],
+       "answer": "Jamie. The 2026-09-14 note from the user said to always cc Jamie on anything that mentions money.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17781,
+       "cost": 0.0017971,
+       "cached": false,
+       "cache_key": "34ee7b48ce9a3ae0f911b0d3163317f65820d753da1a769f5e3f42fc1ecdff7e"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed monthly rent on the renewed lease?",
+       "gold": [
+        "$3,250"
+       ],
+       "answer": "The currently agreed monthly rent on the renewed lease is **$3,250**. Gary's later message replaced the earlier $4,600 figure, and I acknowledged the $3,250 update on the thread on 2026-09-13.\n\nThe user's standing instruction is to always cc Jamie on anything that mentions money. Neither the $4,600 confirmation (2026-09-06) nor the $3,250 acknowledgement (2026-09-13) cc'd Jamie, and the reply tool I have doesn't support cc.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17780,
+       "cost": 0.0020005,
+       "cached": false,
+       "cache_key": "65b3b3e52c73868b6c74d28c7cc2e9c5f88d53ecc451a4842b622708e0b7f096"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Gary they would send the signed lease?",
+       "gold": [
+        "September 12",
+        "Sep 12",
+        "Sept 12",
+        "12 September",
+        "2026-09-12"
+       ],
+       "answer": "Saturday, September 12. This was posted to the 'Lease renewal for unit 4B' thread on 2026-09-07 at Poke's request.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17779,
+       "cost": 0.0018029,
+       "cached": false,
+       "cache_key": "0fdce4eed3a8f5612165139c0f93947eabbd91e436b3f9a150360ed11c7b6d82"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5561,
+     "system_tokens": 6743,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Lease renewal for unit 4B' thread with Gary?",
+       "gold": [
+        "1bf1673173007ca6"
+       ],
+       "answer": "The thread ID is **1bf1673173007ca6**. It's the thread for the draft to gary@whitmanproperties.com with subject \"Re: Lease renewal f\u2026\", which is truncated in my records, so I can't confirm the full subject.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11340,
+       "cost": 0.001348,
+       "cached": false,
+       "cache_key": "5d1b2c4139fc051f9b4257fe193c7bc9b0d28636b2b5730361183f9fee761a0e"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Gary on the 'Lease renewal for unit 4B' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-8597564829106666375"
+       ],
+       "answer": "The draft is **r-8597564829106666375**, addressed to gary@whitmanproperties.com with subject \"Re: Lease renewal f\u2026\" on thread 1bf1673173007ca6.\n\nThe history doesn't show it was sent or approved. Later replies on that thread were sent directly, so its status is unclear.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11353,
+       "cost": 0.0013703,
+       "cached": false,
+       "cache_key": "2be26377759c1a24b9bbe383399ed1a3d267c6dc440ca433d0a376db8650feb1"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Arjun Pillai, Gary's office manager?",
+       "gold": [
+        "apillai74@whitmanproperties.com"
+       ],
+       "answer": "apillai74@whitmanproperties.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11329,
+       "cost": 0.0012049,
+       "cached": false,
+       "cache_key": "99991d2c3cdac04cbd5ef124d0b490febcfbefe5f2feae6fbc0987d6b041a9ca"
+      },
+      {
+       "kind": "preference",
+       "question": "Who did the user ask to be cc'd on anything that mentions money?",
+       "gold": [
+        "jamie"
+       ],
+       "answer": "Jamie. Jamie has no email address on file, and the Sept 6 and Sept 13 money replies to Gary didn't cc Jamie.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11328,
+       "cost": 0.0012083,
+       "cached": false,
+       "cache_key": "91c59e634e2b5d2632de0ab24da4d86d3c04d61d1754b36beac323af43e6cb8a"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed monthly rent on the renewed lease?",
+       "gold": [
+        "$3,250"
+       ],
+       "answer": "$3,250/month. This supersedes the $4,600 figure confirmed on Sept 6, and the update was acknowledged on the thread on Sept 13.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11327,
+       "cost": 0.0012067,
+       "cached": false,
+       "cache_key": "e7a47845fb9ebb6011966e5c4000a1ceea9d3cf97745c0b384e259eac9623234"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Gary they would send the signed lease?",
+       "gold": [
+        "September 12",
+        "Sep 12",
+        "Sept 12",
+        "12 September",
+        "2026-09-12"
+       ],
+       "answer": "Saturday, Sept 12. Nothing in the history confirms it was sent, so treat it as unverified.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11326,
+       "cost": 0.0011796,
+       "cached": false,
+       "cache_key": "29210b788e3a1f13a312cccbf7bc1457a75260f862c6a2768961b11e9a93e693"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "globex-renewal",
+   "name": "Globex contract renewal",
+   "purpose": "Close the 2027 contract renewal with Ben Carter at Globex",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 92,
+   "tail_entries": 68,
+   "full_history_tokens": 8930,
+   "prefix_tokens": 4985,
+   "compacted_history_tokens": 5568,
+   "identifiers": [
+    "ben@globex.com",
+    "14963726d8f442d5",
+    "elena.reyes@gmail.com",
+    "1d1d2dcb72c5ce02",
+    "15903af3c7bbcad4",
+    "16b9419e847b35f2",
+    "1ddd8678180f720d",
+    "jordan.reyes@gmail.com",
+    "r-4238621667856437886",
+    "108ab2406d89c1e1",
+    "1af023df7d15ac63",
+    "1c07b6bf81efb110",
+    "fadeyemi67@globex.com",
+    "r-3757175918475904483",
+    "120a591b62906072",
+    "100cb1d9b4f662df",
+    "noreply@globex.com",
+    "1b8f577358b44791",
+    "162222b93adc8563",
+    "122222d8e61d825c",
+    "11474422210e9ea1",
+    "18ebd00bb28a6cba",
+    "16f47706728db312",
+    "1c0e81422d4a1fc3",
+    "omar.haddad@northwindlabs.com",
+    "1fd53186baedd0fa",
+    "10d032ca88865b52",
+    "1357cd4465bf3010",
+    "1a554607b54dbba1",
+    "1cb5136906a793b7",
+    "marcus.lee@northwindlabs.com",
+    "12fc57a8c3b4aa36",
+    "kwame.mensah@outlook.com",
+    "1e6d5405ead3152a",
+    "13aaf2389115e6f9",
+    "1f5a229a59ead8ed",
+    "r-5631044397513445347",
+    "12e81688a8c3eac5",
+    "11a4881d804f3b74"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "People: Ben Carter (Globex, main contact, ben@globex.com). Femi Adeyemi (Globex procurement lead, fadeyemi67@globex.com) receives paperwork. Elena Reyes (elena.reyes@gmail.com), Omar Haddad (omar.haddad@northwindlabs.com), Marcus Lee (marcus.lee@northwindlabs.com) and Kwame Mensah (kwame.mensah@outlook.com) get forwarded Globex fee notices for their records.\n\nMain thread: 'Globex renewal: 2027 terms' (1ddd8678180f720d). Annual license fee was first $21,000, then superseded by the final agreed $39,500; I acknowledged $39,500 on Sept 11.\n\nCommitment: the user promised to return the countersigned order form to Ben by Mon Sept 21. I told Ben this on Sept 12. No return is recorded.\n\nUser preferences: keep every email in this matter under five sentences. Don't send drafts without the user's confirmation.\n\nFee notices forwarded: document fee $415 (Elena), cancellation fee $470 and $145 (Omar), deposit refund $125 (Marcus), document fee $855 (Kwame).\n\nWalkthrough: Tue Sept 22 2:30pm was offered, then replaced by Sat Oct 3 4pm (offered Sept 21 on 'Your receipt from Globex', thread 162222b93adc8563). No confirmation from Globex is recorded.\n\nOpen drafts: a Sept 8 reply to Ben saying we want to move forward (r-3757175918475904483), vague and with no details, awaiting user approval. A Sept 23 'Quick update' to Omar (r-5631044397513445347), also unsent and cut off mid-sentence.\n\nSome earlier auto-replies to noreply@globex.com were sent cut off mid-sentence.",
+    "purpose": "Close the 2027 Globex license renewal with Ben Carter, covering the agreed fee, the countersigned order form, walkthrough scheduling and related fee notices.",
+    "last_status": "Fee agreed at $39,500; the countersigned order form promised for Sept 21 is not recorded as returned, the Sept 8 draft to Ben is unsent pending user approval, and the Oct 3 walkthrough is unconfirmed.",
+    "memory_tokens": 367,
+    "cost": 0.0018298,
+    "fresh_cost": 0.0018298,
+    "prompt_tokens": 8978,
+    "completion_tokens": 1864,
+    "cached_calls": 0,
+    "cache_keys": [
+     "a63be86f0ea4e147dfbd356015df99f5a7c74f499028a7eb814bef7ba9e8a75c"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 8930,
+     "system_tokens": 10088,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Globex renewal: 2027 terms' thread with Ben?",
+       "gold": [
+        "1ddd8678180f720d"
+       ],
+       "answer": "1ddd8678180f720d",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16795,
+       "cost": 0.0017085,
+       "cached": false,
+       "cache_key": "de51d6b5918f92fbae7f08a3c9c48bc5833a0ff7e79c4e9645053e87b65de226"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Ben on the 'Globex renewal: 2027 terms' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-3757175918475904483"
+       ],
+       "answer": "The draft ID is **r-3757175918475904483** (message ID 120a591b62906072). It is addressed to ben@globex.com and has not been sent.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16808,
+       "cost": 0.0017763,
+       "cached": false,
+       "cache_key": "d0bb235f9f87f933df99421253b59ef681f2a6a873482e0448d106124f5f374a"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Femi Adeyemi, Ben's procurement lead?",
+       "gold": [
+        "fadeyemi67@globex.com"
+       ],
+       "answer": "fadeyemi67@globex.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16786,
+       "cost": 0.0016856,
+       "cached": false,
+       "cache_key": "41abfd0ff08e9b43ffaafd346efc925b1440af58b6daea66408873bb0e6893c1"
+      },
+      {
+       "kind": "preference",
+       "question": "What length limit did the user set for emails in this matter?",
+       "gold": [
+        "five sentences",
+        "5 sentences"
+       ],
+       "answer": "Five sentences: the user asked that every email in this matter be kept under five sentences (noted on 2026-09-06).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16776,
+       "cost": 0.0016971,
+       "cached": false,
+       "cache_key": "44575f56b673e7d99084b759912798db6886e99a75b7a83f3b56c2750c70bbaa"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed annual license fee?",
+       "gold": [
+        "$39,500"
+       ],
+       "answer": "**$39,500.** Ben reported this as the final agreed annual license fee, replacing the earlier $21,000 figure. I acknowledged it on the 'Globex renewal: 2027 terms' thread on 2026-09-11.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16774,
+       "cost": 0.0017694,
+       "cached": false,
+       "cache_key": "a8f9dd7ffdc1a2d3e0c668372a3ce084b2d63949b124f0ba1382148eeb76bf4b"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Ben they would return the countersigned order form?",
+       "gold": [
+        "September 21",
+        "Sep 21",
+        "Sept 21",
+        "21 September",
+        "2026-09-21"
+       ],
+       "answer": "Monday, September 21 (promised on 2026-09-12 and relayed to Ben on the 'Globex renewal: 2027 terms' thread).",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 16782,
+       "cost": 0.0017037,
+       "cached": false,
+       "cache_key": "21a21d86f0d35fecfd598f6d837fb7cafead1ade6a4f8e3b9a98085a2d0937b7"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5568,
+     "system_tokens": 6750,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the 'Globex renewal: 2027 terms' thread with Ben?",
+       "gold": [
+        "1ddd8678180f720d"
+       ],
+       "answer": "1ddd8678180f720d",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11521,
+       "cost": 0.0012136,
+       "cached": false,
+       "cache_key": "d7414b68bdaeca01fce101e1eebb57f7c7a9763aa63143b713b369266dcae98b"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Ben on the 'Globex renewal: 2027 terms' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-3757175918475904483"
+       ],
+       "answer": "Draft ID: **r-3757175918475904483** (to ben@globex.com, subject \"Re: Globex renewal: 2027 terms,\" dated Sept 8). It's vague, has no details, and is awaiting the user's approval.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11534,
+       "cost": 0.0012449,
+       "cached": false,
+       "cache_key": "663e83c1cd2a0876dfa9b1c08e3f68cec19ecd1bc0e0cfd4ef562f65b6fc42e5"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Femi Adeyemi, Ben's procurement lead?",
+       "gold": [
+        "fadeyemi67@globex.com"
+       ],
+       "answer": "fadeyemi67@globex.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11512,
+       "cost": 0.0011932,
+       "cached": false,
+       "cache_key": "2049ca424dbb683e7f51bdb40a80360adec21791ed57316d085a9835a96ef4fd"
+      },
+      {
+       "kind": "preference",
+       "question": "What length limit did the user set for emails in this matter?",
+       "gold": [
+        "five sentences",
+        "5 sentences"
+       ],
+       "answer": "Under five sentences per email in this matter.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11502,
+       "cost": 0.0011897,
+       "cached": false,
+       "cache_key": "a529adb161f75a59bc392d5b876db374cf58e14f84a24711305258f395d3e8ed"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed annual license fee?",
+       "gold": [
+        "$39,500"
+       ],
+       "answer": "The currently agreed annual license fee is $39,500. It superseded the earlier $21,000, and I acknowledged $39,500 to Ben on Sept 11.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11500,
+       "cost": 0.001205,
+       "cached": false,
+       "cache_key": "50522d60c14c0d58dfb0879114230f8098ab940a9cf59174b4bbd1063d62256b"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Ben they would return the countersigned order form?",
+       "gold": [
+        "September 21",
+        "Sep 21",
+        "Sept 21",
+        "21 September",
+        "2026-09-21"
+       ],
+       "answer": "Monday, September 21. The user promised Ben to return the countersigned order form by then. I told Ben this on September 12, and no return is recorded.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11508,
+       "cost": 0.0012063,
+       "cached": false,
+       "cache_key": "dc104a71674ab512e9a3052c98a00f7750e0c0c8a1f06845512ed57d4a46ea61"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  },
+  {
+   "agent_id": "tax-paul",
+   "name": "Tax return with Paul",
+   "purpose": "Get the 2025 tax return filed with Paul Fenwick, the accountant",
+   "error": null,
+   "entries": 160,
+   "prefix_entries": 97,
+   "tail_entries": 63,
+   "full_history_tokens": 9562,
+   "prefix_tokens": 5601,
+   "compacted_history_tokens": 5743,
+   "identifiers": [
+    "paul@fenwicktax.com",
+    "10aced37403d412a",
+    "10da8e5817c1f432",
+    "jordan.reyes@gmail.com",
+    "ihalvorsen65@fenwicktax.com",
+    "1638b822982251cd",
+    "omar.haddad@northwindlabs.com",
+    "17d8f158b361022a",
+    "10d4be2e5e2d72c4",
+    "noreply@fenwicktax.com",
+    "13921990b4eb7790",
+    "13990c8e59efebbe",
+    "17c45c1f6452dd0a",
+    "r-9838887054859060243",
+    "1eff2cbafcc1c07b",
+    "10c1bedd9a973271",
+    "1452d772254f19fb",
+    "140f488c72ebb4a6",
+    "17b1acd8592620d6",
+    "1ed22940ff192781",
+    "sara.lund@fastmail.com",
+    "r-7799386946820049129",
+    "14b455c30fa23558",
+    "11a7a3d169da26e2",
+    "grace.liu@northwindlabs.com",
+    "r-2897499402905818853",
+    "1f813698bd406067",
+    "116bb8240a356c05",
+    "18943a7d0c8697e1",
+    "19f581ad2db5f6d3",
+    "1b099d18f3b0a0e7",
+    "freya.lindqvist@gmail.com",
+    "r-5956020642324029652",
+    "1ac02893b32ccccc",
+    "133ac9af29c2421e",
+    "r-9237153105512875184",
+    "18a83f292868acba",
+    "10305fa4a3d34d28",
+    "1e7afd99cafa552c",
+    "r-9439759059571443296",
+    "1702bd99609da47b",
+    "1e9efc62c0039c9e",
+    "1461ef0d83309c71"
+   ],
+   "compaction": {
+    "status": "ok",
+    "error": null,
+    "memory": "User: Jordan Reyes. Accountant: Paul Fenwick (Fenwick Tax, paul@fenwicktax.com). Paul asked that paperwork go to bookkeeper Ingrid Halvorsen (ihalvorsen65@fenwicktax.com). Main thread: '2025 return: missing documents' (thread 10da8e5817c1f432).\n\nDecisions: Preparation fee agreed at $1,300 (confirmed Sept 6), then superseded by final $950 (acknowledged on thread Sept 12).\n\nCommitments: Jordan promised to upload brokerage 1099s by Monday Sept 14, and Paul was told on the thread (Sept 7). No upload confirmation is recorded, so treat it as unverified and possibly overdue. Jordan offered a quick call Tuesday Sept 22 at 4pm on 'Quick question about scheduling' (thread 10d4be2e5e2d72c4, Fenwick noreply). No confirmation of that call is recorded.\n\nPreferences: never propose a call or meeting before 10am.\n\nCancellation-fee notes forwarded for records: $620 to Omar Haddad (omar.haddad@northwindlabs.com, Sept 4); $105 to Sara Lund (sara.lund@fastmail.com, Sept 16).\n\nUnsent drafts awaiting user review: reply to Paul saying Jordan wants to move forward (r-9838887054859060243, Sept 8); 'Quick update' notes to Grace Liu (grace.liu@northwindlabs.com), Freya Lindqvist (freya.lindqvist@gmail.com) and Sara Lund (two, latest mentions staff holidays). Sara draft r-7799386946820049129 was deleted at user request.\n\nRoutine: brief thanks-received replies go to noreply@fenwicktax.com on 'Your receipt from Fenwick Tax' (thread 10c1bedd9a973271). Fenwick's automated update there says a corrected copy will follow same day if anything is missing.\n\nOpen: Sept 25 request to send a brief thanks-received reply on the receipt thread has not yet been carried out.",
+    "purpose": "Get Jordan Reyes's 2025 tax return filed with accountant Paul Fenwick of Fenwick Tax, by settling open document and fee points and tracking follow-ups.",
+    "last_status": "Fee agreed at $950; brokerage 1099 upload promised for Sept 14 with no confirmation recorded; Sept 22 call offer unconfirmed; the Paul reply draft and several notes remain unsent pending the user.",
+    "memory_tokens": 414,
+    "cost": 0.0020527,
+    "fresh_cost": 0.0020527,
+    "prompt_tokens": 10032,
+    "completion_tokens": 2099,
+    "cached_calls": 0,
+    "cache_keys": [
+     "f6187429caef6cca024882c7376b4a3ae7aa5def25bb1d6b68d321351cb6b941"
+    ]
+   },
+   "conditions": {
+    "full": {
+     "history_tokens": 9562,
+     "system_tokens": 10721,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the '2025 return: missing documents' thread with Paul?",
+       "gold": [
+        "10da8e5817c1f432"
+       ],
+       "answer": "The Gmail thread ID for '2025 return: missing documents' with Paul is **10da8e5817c1f432**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17876,
+       "cost": 0.0018391,
+       "cached": false,
+       "cache_key": "e4563dc8c137db33d4e4fd1aef98518c50a2678776f37be73c3575a162ab1121"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Paul on the '2025 return: missing documents' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-9838887054859060243"
+       ],
+       "answer": "The draft is **r-9838887054859060243** (message id 1eff2cbafcc1c07b). Note that a later `gmail_list_drafts` check on 2026-09-14 returned no drafts, so it may no longer exist.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17889,
+       "cost": 0.0019579,
+       "cached": false,
+       "cache_key": "7db4fec9cad0f5bf75531ff4d8bac12de821e1d371ca9a683b6b99acab251ae9"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Ingrid Halvorsen, Paul's bookkeeper?",
+       "gold": [
+        "ihalvorsen65@fenwicktax.com"
+       ],
+       "answer": "ihalvorsen65@fenwicktax.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17875,
+       "cost": 0.001812,
+       "cached": false,
+       "cache_key": "55c0cf7b0be0cc69cb8d55ae40b9b605bc03c8380c7c407f6bc60d3fd9fc7a7e"
+      },
+      {
+       "kind": "preference",
+       "question": "What is the earliest time the user is willing to take a call or meeting for this matter?",
+       "gold": [
+        "10am",
+        "10:00",
+        "10 o'clock"
+       ],
+       "answer": "The user will not take a call or meeting before 10am. This was set as a standing note for the matter on 2026-09-14.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17871,
+       "cost": 0.0018516,
+       "cached": false,
+       "cache_key": "90f9518759d52aec3ed1e6676dfa006354dc31f04546dd6f91f047d5d7827eec"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed preparation fee?",
+       "gold": [
+        "$950"
+       ],
+       "answer": "The currently agreed preparation fee is **$950**. Paul's update on 2026-09-12 replaced the earlier $1,300 figure, and I acknowledged it on the '2025 return: missing documents' thread.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17860,
+       "cost": 0.0018645,
+       "cached": false,
+       "cache_key": "3adf42affa7e82209decff3f31c3f0bd1401cfbe9da8cc3bd02726ef7b584672"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Paul they would upload the brokerage 1099s?",
+       "gold": [
+        "September 14",
+        "Sep 14",
+        "Sept 14",
+        "14 September",
+        "2026-09-14"
+       ],
+       "answer": "Monday, September 14. This was stated in the 2026-09-07 entry, where the 1099 upload promise was relayed to Paul on the '2025 return: missing documents' thread.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 17871,
+       "cost": 0.0018176,
+       "cached": false,
+       "cache_key": "4e0b356bf9bfafde6b729c618fd5e9bbfb328e2ab5ffa1bccdb86c5954dbf218"
+      }
+     ]
+    },
+    "compacted": {
+     "history_tokens": 5743,
+     "system_tokens": 6924,
+     "facts": [
+      {
+       "kind": "thread_id",
+       "question": "What is the Gmail thread id of the '2025 return: missing documents' thread with Paul?",
+       "gold": [
+        "10da8e5817c1f432"
+       ],
+       "answer": "The thread ID is **10da8e5817c1f432**.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11874,
+       "cost": 0.0012409,
+       "cached": false,
+       "cache_key": "55e0b348ca9ed2a6c8498c97f35200800a851dc09c95a7830aaa5685660e9ab4"
+      },
+      {
+       "kind": "draft_id",
+       "question": "What is the id of the draft reply to Paul on the '2025 return: missing documents' thread that is waiting for the user's confirmation?",
+       "gold": [
+        "r-9838887054859060243"
+       ],
+       "answer": "Draft ID: **r-9838887054859060243** (to paul@fenwicktax.com, subject \"Re: 2025 return: missing documents,\" dated Sept 8). It is unsent and awaiting the user's review.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11887,
+       "cost": 0.0012982,
+       "cached": false,
+       "cache_key": "716438f1403b187bf430415f49a3e49c959209c375056ff827d0f4271698559c"
+      },
+      {
+       "kind": "email",
+       "question": "What is the email address of Ingrid Halvorsen, Paul's bookkeeper?",
+       "gold": [
+        "ihalvorsen65@fenwicktax.com"
+       ],
+       "answer": "ihalvorsen65@fenwicktax.com",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11873,
+       "cost": 0.0012788,
+       "cached": false,
+       "cache_key": "82b5ba47a8fcfbe4bf09e35c4e61b53a0cbe76c6da4a673e6cb416ad74142fb9"
+      },
+      {
+       "kind": "preference",
+       "question": "What is the earliest time the user is willing to take a call or meeting for this matter?",
+       "gold": [
+        "10am",
+        "10:00",
+        "10 o'clock"
+       ],
+       "answer": "10:00 AM. The user never wants a call or meeting proposed before 10am.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11869,
+       "cost": 0.0012539,
+       "cached": false,
+       "cache_key": "e8ef6fbee6e7eb1548cd041dde20bddbc6e2b5344b0f9314796ae64e1ff4a01b"
+      },
+      {
+       "kind": "decision",
+       "question": "What is the currently agreed preparation fee?",
+       "gold": [
+        "$950"
+       ],
+       "answer": "The currently agreed preparation fee is **$950**. It superseded the earlier $1,300 agreed on Sept 6, and the change was acknowledged on the main thread (10da8e5817c1f432) on Sept 12.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11858,
+       "cost": 0.0012588,
+       "cached": false,
+       "cache_key": "bf24c1fcede594440eb1381313f9b0c4a5e316a8ece636d35bed6fde35a3a1fb"
+      },
+      {
+       "kind": "commitment",
+       "question": "By what date did the user promise Paul they would upload the brokerage 1099s?",
+       "gold": [
+        "September 14",
+        "Sep 14",
+        "Sept 14",
+        "14 September",
+        "2026-09-14"
+       ],
+       "answer": "Monday, September 14. The commitment was made on the main thread (Sept 7). No upload confirmation is recorded, so it may be overdue.",
+       "correct": true,
+       "stale": false,
+       "prompt_tokens": 11869,
+       "cost": 0.0012354,
+       "cached": false,
+       "cache_key": "b90229b0a5cccc3b68954eafc318cd9c2c04727cfd390d5f8f24f410ecdd93d6"
+      }
+     ],
+     "fallback": false
+    }
+   }
+  }
+ ]
+}

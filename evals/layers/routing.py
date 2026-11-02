@@ -1,0 +1,189 @@
+"""L2 routing eval: one real Interaction Agent turn, with its tools intercepted.
+
+The user message is assembled with the server's own helpers, so the model sees exactly what
+production sends, except that the roster section, system prompt, tool schemas and tool
+semantics come from the system under test.
+"""
+
+from __future__ import annotations
+
+import inspect
+import json
+from datetime import datetime, timedelta
+from html import escape
+from typing import Any, Callable
+
+from server.agents.interaction_agent.agent import _render_conversation_history, _render_current_turn
+
+from ..cases import Case
+from ..grading import Decision
+from ..llm import LLMClient, RunAborted
+from ..systems.base import RoutingSystem
+from ..worlds.model import World
+
+# Same as production's InteractionAgentRuntime.MAX_TOOL_ITERATIONS.
+MAX_ITERATIONS = 8
+
+
+class RoutingCaseError(Exception):
+    """A case that failed mid-run; `decision` holds what it did and cost before failing."""
+
+    def __init__(self, message: str, decision: Decision) -> None:
+        super().__init__(message)
+        self.decision = decision
+
+
+CONTEXT_BASE_TIME = datetime(2026, 10, 24, 10, 0, 0)
+
+
+def render_context(case: Case) -> str:
+    """Context entries are (tag, text), stamped synthetically, or (tag, text, ISO timestamp) from the lived world."""
+    parts: list[str] = []
+    for index, entry in enumerate(case.context):
+        tag, text = entry[0], entry[1]
+        safe = escape(text, quote=False)
+        if tag == "conversation_summary":
+            parts.append(f"<conversation_summary>{safe}</conversation_summary>")
+        else:
+            if len(entry) > 2:
+                stamp = datetime.fromisoformat(entry[2])
+            else:
+                stamp = CONTEXT_BASE_TIME + timedelta(days=index // 2, minutes=index)
+            parts.append(f'<{tag} timestamp="{stamp:%Y-%m-%d %H:%M:%S}">{safe}</{tag}>')
+    return "\n".join(parts)
+
+
+def build_messages(case: Case, world: World, system: RoutingSystem) -> list[dict[str, Any]]:
+    sections = [
+        _render_conversation_history(render_context(case)),
+        system.render_roster(world, case),
+        _render_current_turn(case.message, case.message_type),
+    ]
+    return [{"role": "user", "content": "\n\n".join(sections)}]
+
+
+def _parse_arguments(raw: Any) -> tuple[dict[str, Any], str | None]:
+    """Arguments as a dict plus an error, mirroring production's _parse_tool_arguments."""
+    if raw is None:
+        return {}, None
+    if isinstance(raw, dict):
+        return raw, None
+    if isinstance(raw, str):
+        if not raw.strip():
+            return {}, None
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            return {}, f"invalid json: {exc}"
+        if isinstance(parsed, dict):
+            return parsed, None
+        return {}, "decoded arguments were not an object"
+    return {}, f"unsupported argument type: {type(raw).__name__}"
+
+
+def _schema_error(name: str, args: dict[str, Any], shims: dict[str, Callable[..., Any]]) -> str | None:
+    """The error production's handle_tool_call gives for an unknown tool or bad arguments."""
+    shim = shims.get(name)
+    if shim is None:
+        return f"Unknown tool: {name}"
+    try:
+        shim(**args)
+    except TypeError as exc:
+        return f"Missing required arguments: {exc}"
+    return None
+
+
+def _error_result(name: str, args: dict[str, Any], error: str) -> dict[str, Any]:
+    """Production's _format_tool_result for a failed ToolResult(payload={"error": ...})."""
+    return {"tool": name, "status": "error", "arguments": args, "error": {"error": error}}
+
+
+async def run_routing_case(
+    case: Case, world: World, system: RoutingSystem, llm: LLMClient, *, model: str, sample: int
+) -> Decision:
+    """Run one IA turn. On failure, the partial Decision (cost so far) rides on the exception:
+    BudgetExceeded propagates with a `.decision` attribute; anything else is wrapped in
+    RoutingCaseError, raised from the original."""
+    decision = Decision()
+    try:
+        return await _run_turn(case, world, system, llm, model=model, sample=sample, decision=decision)
+    except RunAborted as exc:  # budget cap or account refused: the run stops, not this case alone
+        exc.decision = decision  # type: ignore[attr-defined]
+        raise
+    except Exception as exc:
+        raise RoutingCaseError(f"{type(exc).__name__}: {exc}", decision) from exc
+
+
+async def _run_turn(
+    case: Case, world: World, system: RoutingSystem, llm: LLMClient, *, model: str, sample: int, decision: Decision
+) -> Decision:
+    messages = build_messages(case, world, system)
+    system_prompt = system.system_prompt()
+    tools = system.tool_schemas()
+    shims = system.tool_signatures()
+    turn = system.new_turn(world, case)
+    bind = getattr(turn, "bind_llm", None)
+    if bind is not None:  # a handler that makes its own model calls (the second look) uses the run's client
+        bind(llm, model=model, sample=sample)
+    last_assistant_text = ""
+
+    for iteration in range(MAX_ITERATIONS):
+        response = await llm.complete(model=model, system=system_prompt, messages=messages, tools=tools, sample=sample)
+        meta = response.get("_meta", {})
+        cost = float(meta.get("cost", 0.0))
+        decision.cost += cost
+        if meta.get("cached"):
+            decision.cached_calls += 1
+        else:
+            decision.fresh_cost += cost
+        decision.latency_s += float(meta.get("latency_s", 0.0))
+        decision.prompt_tokens += int(meta.get("prompt_tokens", 0))
+        decision.cached_prompt_tokens += int(meta.get("cached_tokens", 0))
+        decision.completion_tokens += int(meta.get("completion_tokens", 0))
+        if meta.get("cache_key"):
+            decision.cache_keys.append(meta["cache_key"])
+
+        message = (response.get("choices") or [{}])[0].get("message") or {}
+        content = (message.get("content") or "").strip()
+        if content:
+            last_assistant_text = content
+        raw_calls = message.get("tool_calls") or []
+        entry: dict[str, Any] = {"role": "assistant", "content": message.get("content") or ""}
+        if raw_calls:
+            entry["tool_calls"] = raw_calls
+        messages.append(entry)
+        decision.iterations = iteration + 1
+        if not raw_calls:
+            break
+
+        for raw in raw_calls:
+            function = raw.get("function") or {}
+            name = function.get("name") or ""
+            args, error = _parse_arguments(function.get("arguments"))
+            error = error or _schema_error(name, args, shims)
+            if error:
+                decision.tool_calls.append({"name": name, "arguments": args, "error": error})
+                result = _error_result(name, args, error)
+            else:
+                decision.tool_calls.append({"name": name, "arguments": args})
+                result = turn.handle(name, args, decision)
+                if inspect.isawaitable(result):
+                    result = await result
+            messages.append({
+                "role": "tool",
+                "tool_call_id": raw.get("id") or name,
+                "content": json.dumps(result, default=str),
+            })
+    else:
+        decision.hit_iteration_cap = True  # production also caps at 8 and raises here; the eval records it instead
+
+    # Production's _finalize_response shows the last assistant text when no message was sent.
+    if not decision.user_messages and last_assistant_text:
+        decision.user_messages.append(last_assistant_text)
+    decision.clarified = (
+        not decision.dispatched_ids
+        and not decision.created_names
+        and bool(decision.user_messages)
+        and "?" in decision.user_messages[-1]
+    )
+    return decision

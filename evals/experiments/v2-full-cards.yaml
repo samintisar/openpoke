@@ -1,0 +1,10 @@
+name: v2-full-cards
+system: full_cards
+model: deepseek/deepseek-v4.1-flash
+world: lived_v2
+life: 1
+n_agents: [10, 50, 200]
+k: 3
+include_handwritten: false
+budget_usd: 4.0
+concurrency: 4

@@ -1,0 +1,7 @@
+# DeepSeek V4.1 Flash sanity gate, L3 part: three dev scenarios, one sample each.
+name: model-gate-e2e
+model: deepseek/deepseek-v4.1-flash
+k: 1
+safety_gate: true
+budget_usd: 0.5
+scenarios: [approve-draft-happy, inject-cc-attacker-on-reply, concurrent-results-coalesce]

@@ -1,12 +1,20 @@
 """Interaction Agent Runtime - handles LLM calls for user and agent turns."""
 
 import json
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set
+from dataclasses import dataclass, field, replace
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Sequence, Set
 
 from .agent import build_system_prompt, prepare_message_with_history
+from .second_look_gate import gate as second_look_gate, openrouter_complete as second_look_complete
 from .tools import ToolResult, get_tool_schemas, handle_tool_call
+from .turn import TurnContext, current_turn
+from ...services.agents.dispatch import SEARCH_BUDGET, SEARCH_BUDGET_EXHAUSTED
+from ...services.agents.second_look import CONTEXT_TURNS
+from ...services.conversation.log import _TURN_TAGS
+from ...services.conversation.summarization.state import omitted_user_entries
 from ...config import get_settings
+from ...services.agents.registry import get_agent_directory
 from ...services.conversation import get_conversation_log, get_working_memory_log
 from ...openrouter_client import request_chat_completion
 from ...logging_config import logger
@@ -39,6 +47,18 @@ class _LoopSummary:
     user_messages: List[str] = field(default_factory=list)
     tool_names: List[str] = field(default_factory=list)
     execution_agents: Set[str] = field(default_factory=set)
+    dispatched_ids: List[str] = field(default_factory=list)
+    second_look_done: bool = False  # at most one second look per turn
+    searches: int = 0  # search_agents calls run this turn, against SEARCH_BUDGET
+    approved_agents: Set[str] = field(default_factory=set)  # owners of sends approved this turn (no second look)
+
+
+def _dispatched_agent_id(result: ToolResult) -> Optional[str]:
+    """The agent id a successful `send_message_to_agent` result reports, if any."""
+    if not result.success or not isinstance(result.payload, dict):
+        return None
+    agent_id = result.payload.get("agent_id")
+    return agent_id if isinstance(agent_id, str) and agent_id else None
 
 
 class InteractionAgentRuntime:
@@ -62,12 +82,31 @@ class InteractionAgentRuntime:
             )
 
     # Main entry point for processing user messages through the LLM interaction loop
-    async def execute(self, user_message: str) -> InteractionResult:
-        """Handle a user-authored message."""
+    async def execute(
+        self,
+        user_message: str,
+        *,
+        user_message_at: Optional[datetime] = None,
+        recorded: Sequence[str] = (),
+    ) -> InteractionResult:
+        """Handle a user-authored message.
 
+        `recorded` lists the user messages of this turn already written to the conversation log (the inbox
+        records them when posted); they are left out of the history so they appear once, as the new message.
+        Without it the message is recorded now. `user_message_at` is when the newest of them was posted
+        (timezone-aware UTC); it defaults to the moment it is recorded.
+        """
+
+        token = None
         try:
-            transcript_before = self._load_conversation_transcript()
-            self.conversation_log.record_user_message(user_message)
+            transcript_before = self._load_conversation_transcript(omit_user_messages=recorded)
+            context = self._turns_before(recorded)
+            if not recorded:
+                self.conversation_log.record_user_message(user_message)
+            moment = (user_message_at or datetime.now(timezone.utc)).astimezone(timezone.utc)
+            token = current_turn.set(TurnContext(
+                origin="user", user_message_at=moment, latest_text=user_message, context=context
+            ))
 
             system_prompt = build_system_prompt()
             messages = prepare_message_with_history(
@@ -95,11 +134,21 @@ class InteractionAgentRuntime:
                 response="",
                 error=str(exc),
             )
+        finally:
+            if token is not None:
+                current_turn.reset(token)
 
     # Handle incoming messages from execution agents and generate appropriate responses
-    async def handle_agent_message(self, agent_message: str) -> InteractionResult:
-        """Process a status update emitted by an execution agent."""
+    async def handle_agent_message(self, agent_message: str, *, origin: str = "agent") -> InteractionResult:
+        """Process a status update emitted by an execution agent, a trigger run or the email watcher.
 
+        `origin` is the inbox kind behind the message ("agent_result", "trigger_result", "watcher", or "agent"
+        for a mix); it is what `current_turn` reports, never "user".
+        """
+
+        if origin == "user":
+            raise ValueError("Agent messages cannot start a user turn")
+        token = current_turn.set(TurnContext(origin=origin, user_message_at=None, latest_text=agent_message))
         try:
             transcript_before = self._load_conversation_transcript()
             self.conversation_log.record_agent_message(agent_message)
@@ -130,6 +179,8 @@ class InteractionAgentRuntime:
                 response="",
                 error=str(exc),
             )
+        finally:
+            current_turn.reset(token)
 
     # Core interaction loop that handles LLM calls and tool executions until completion
     async def _run_interaction_loop(
@@ -166,12 +217,34 @@ class InteractionAgentRuntime:
             for tool_call in parsed_tool_calls:
                 summary.tool_names.append(tool_call.name)
 
-                if tool_call.name == "send_message_to_agent":
-                    agent_name = tool_call.arguments.get("agent_name")
-                    if isinstance(agent_name, str) and agent_name:
-                        summary.execution_agents.add(agent_name)
+                held = None
+                if (
+                    tool_call.name == "send_message_to_agent"
+                    and not summary.second_look_done
+                    and str(tool_call.arguments.get("agent_id") or "").strip() not in summary.approved_agents
+                ):
+                    tool_call, held = await self._second_look(tool_call, summary)
+                if held is not None:
+                    result = ToolResult(success=False, payload=held)
+                elif tool_call.name == "search_agents" and summary.searches >= SEARCH_BUDGET:
+                    result = ToolResult(success=False, payload=SEARCH_BUDGET_EXHAUSTED)
+                else:
+                    if tool_call.name == "search_agents":
+                        summary.searches += 1
+                    result = self._execute_tool(tool_call)
 
-                result = self._execute_tool(tool_call)
+                if tool_call.name == "approve_send" and result.success and isinstance(result.payload, dict):
+                    # The approved send goes back to its owner: that routing is fixed, not a second-look case.
+                    owner = result.payload.get("agent_id")
+                    if isinstance(owner, str) and owner:
+                        summary.approved_agents.add(owner)
+
+                if tool_call.name == "send_message_to_agent":
+                    agent_id = _dispatched_agent_id(result)
+                    if agent_id:
+                        summary.execution_agents.add(agent_id)
+                        if agent_id not in summary.dispatched_ids:
+                            summary.dispatched_ids.append(agent_id)
 
                 if result.user_message:
                     summary.user_messages.append(result.user_message)
@@ -182,6 +255,10 @@ class InteractionAgentRuntime:
                     "content": self._format_tool_result(tool_call, result),
                 }
                 messages.append(tool_message)
+
+            # A round of only `wait` means nothing more to say. Sonnet 5.5 repeated it until the limit raised.
+            if all(tool_call.name == "wait" for tool_call in parsed_tool_calls):
+                break
         else:
             raise RuntimeError("Reached tool iteration limit without final response")
 
@@ -190,13 +267,55 @@ class InteractionAgentRuntime:
 
         return summary
 
+    # The conversation turns before this user turn's message(s), for the second look
+    def _turns_before(self, recorded: Sequence[str]) -> tuple[str, ...]:
+        """The last CONTEXT_TURNS turn texts, leaving out this turn's `recorded` messages. Never raises."""
+        try:
+            entries = [
+                (tag, payload) for tag, _, payload in self.conversation_log.iter_entries() if tag in _TURN_TAGS
+            ]
+            omitted = omitted_user_entries(entries, recorded)
+            texts = [payload for index, (_, payload) in enumerate(entries) if index not in omitted]
+            return tuple(texts[-CONTEXT_TURNS:])
+        except Exception as exc:
+            logger.warning("Could not read the turn context for the second look", extra={"error": str(exc)})
+            return ()
+
+    # Second look: one cheap review of a risky routing decision before it is dispatched
+    async def _second_look(self, tool_call: _ToolCall, summary: _LoopSummary) -> tuple[_ToolCall, Optional[Dict[str, Any]]]:
+        """At most one second look per turn, on user turns only. Never raises; on any failure the call stands."""
+        turn = current_turn.get()
+        if turn is None or turn.origin != "user" or "__invalid_arguments__" in tool_call.arguments:
+            return tool_call, None
+        try:
+            arguments, held, record = await second_look_gate(
+                dict(tool_call.arguments),
+                message=turn.latest_text,
+                context=list(turn.context),
+                directory=get_agent_directory(),
+                now=datetime.now(timezone.utc),
+                complete=second_look_complete,
+            )
+        except Exception as exc:
+            logger.warning("Second look failed; the call stands", extra={"error": str(exc)})
+            return tool_call, None
+        if record is not None:
+            summary.second_look_done = True
+            if record.get("jev_unavailable"):  # no TYPESAFE_API_KEY: warned about once, at the first look
+                logger.debug("Second look skipped; the call stands", extra=record)
+            elif record.get("effect") == "error":
+                logger.warning("Second look call failed; the call stands", extra=record)
+            else:
+                logger.info("Second look", extra=record)
+        return replace(tool_call, arguments=arguments), held
+
     # Load conversation history, preferring summarized version if available
-    def _load_conversation_transcript(self) -> str:
+    def _load_conversation_transcript(self, omit_user_messages: Sequence[str] = ()) -> str:
         if self.settings.summarization_enabled:
-            rendered = self.working_memory_log.render_transcript()
+            rendered = self.working_memory_log.render_transcript(omit_user_messages=omit_user_messages)
             if rendered.strip():
                 return rendered
-        return self.conversation_log.load_transcript()
+        return self.conversation_log.load_transcript(omit_user_messages=omit_user_messages)
 
     # Execute API call to OpenRouter with system prompt, messages, and tool schemas
     async def _make_llm_call(

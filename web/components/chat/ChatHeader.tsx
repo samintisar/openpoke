@@ -10,6 +10,12 @@ export function ChatHeader({ onOpenSettings, onClearHistory }: ChatHeaderProps) 
         <h1 className="text-lg font-semibold">OpenPoke 🌴</h1>
       </div>
       <div className="flex items-center gap-2">
+        <a
+          className="rounded-md border border-gray-200 px-3 py-2 text-sm hover:bg-gray-50"
+          href="/mailbox"
+        >
+          Mailbox
+        </a>
         <button
           className="rounded-md border border-gray-200 px-3 py-2 text-sm hover:bg-gray-50"
           onClick={onOpenSettings}

@@ -1,0 +1,356 @@
+<title>OpenPoke Probe Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Same split view as the transcript labelling page: probe queue, the chat the message lands in, the decision sheet. */
+:root {
+  --bg: #f3f5f7; --panel: #ffffff; --ink: #18212b; --muted: #5b6876; --line: #d8dee5;
+  --accent: #1f5f8b; --accent-soft: #e3eef6;
+  --user: #1f5f8b; --user-ink: #ffffff; --bot: #ffffff; --sys: #eef1f4;
+  --pass: #1d7a4c; --pass-soft: #e2f3ea; --fail: #b3362f; --fail-soft: #f8e4e2; --fix: #8a5a00; --fix-soft: #fff4dc;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161c; --panel: #182029; --ink: #e4e9ee; --muted: #93a1af; --line: #2b3642;
+  --accent: #6fb0e0; --accent-soft: #1d3346; --user: #2c6a96; --user-ink: #f2f7fb; --bot: #1f2934; --sys: #151c24;
+  --pass: #5fcb92; --pass-soft: #163527; --fail: #f08a82; --fail-soft: #3d1d1b; --fix: #f0c46a; --fix-soft: #3a2e12; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11161c; --panel: #182029; --ink: #e4e9ee; --muted: #93a1af; --line: #2b3642;
+  --accent: #6fb0e0; --accent-soft: #1d3346; --user: #2c6a96; --user-ink: #f2f7fb; --bot: #1f2934; --sys: #151c24;
+  --pass: #5fcb92; --pass-soft: #163527; --fail: #f08a82; --fail-soft: #3d1d1b; --fix: #f0c46a; --fix-soft: #3a2e12; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--font-body); }
+.wrap { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 32px; max-width: 1500px; margin: 0 auto; display: grid; gap: 16px; }
+header.top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; }
+h1 { font-size: 1.35rem; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); margin: 2px 0 0; max-width: 75ch; }
+.progress { display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: .85rem; font-variant-numeric: tabular-nums; }
+.bar { width: 160px; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--pass); width: 0; transition: width .3s; }
+.status { font-size: .8rem; color: var(--muted); }
+.status.err { color: var(--fail); }
+
+.grid { display: grid; grid-template-columns: 250px minmax(0, 1fr) 360px; gap: 16px; align-items: start; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+nav.queue { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - 32px); overflow: auto; padding: 6px; }
+.qgroup { font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 10px 8px 4px; }
+.qitem { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; background: none; border: 0; border-radius: 6px; padding: 6px 8px; color: inherit; font: inherit; font-size: .86rem; cursor: pointer; }
+.qitem:hover { background: var(--accent-soft); }
+.qitem[aria-current="true"] { background: var(--accent-soft); outline: 1px solid var(--accent); }
+.qitem .dot { flex: none; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.qitem.accept .dot { background: var(--pass); border-color: var(--pass); }
+.qitem.fixed .dot { background: var(--fix); border-color: var(--fix); }
+.qitem.reject .dot { background: var(--fail); border-color: var(--fail); }
+.qitem span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.picker { display: none; }
+
+main.convo { padding: 18px 20px; display: grid; gap: 14px; min-width: 0; }
+.chead { display: grid; gap: 4px; }
+.chead h2 { margin: 0; font-size: 1.05rem; font-family: var(--font-mono); font-weight: 600; overflow-wrap: anywhere; }
+.chead p { margin: 0; color: var(--muted); }
+.kind { display: inline-block; font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); width: max-content; }
+.thread { display: grid; gap: 8px; }
+.msg { max-width: min(620px, 92%); padding: 8px 12px; border-radius: 12px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .9rem; }
+.msg.user { justify-self: end; background: var(--user); color: var(--user-ink); border-bottom-right-radius: 4px; }
+.msg.bot { justify-self: start; background: var(--bot); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.event { justify-self: center; max-width: 92%; background: var(--sys); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font-size: .84rem; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+.when { font-family: var(--font-mono); font-size: .68rem; color: var(--muted); }
+.msg.user .when { color: inherit; opacity: .75; }
+.earlier { justify-self: center; font-size: .8rem; color: var(--muted); background: none; border: 1px dashed var(--line); border-radius: 999px; padding: 3px 12px; cursor: pointer; font: inherit; }
+.probe { border-top: 2px solid var(--accent); padding-top: 12px; display: grid; gap: 6px; }
+.probe h3 { margin: 0; font-size: .78rem; letter-spacing: .07em; text-transform: uppercase; color: var(--accent); }
+.probe .msg { justify-self: stretch; max-width: 100%; font-size: 1rem; }
+
+aside.sheet { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - 24px); overflow: auto; padding: 16px; display: grid; gap: 14px; }
+aside.sheet h3 { margin: 0; font-size: 1rem; }
+.gold { display: grid; gap: 8px; }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: .84rem; display: grid; gap: 2px; }
+.card b { font-size: .9rem; }
+.card .role { font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.card.new { border-style: dashed; }
+.flag { font-size: .8rem; color: var(--muted); }
+.seg { display: flex; gap: 6px; }
+.seg button { flex: 1; font: inherit; font-size: .84rem; padding: 7px 4px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.seg button:hover { border-color: var(--accent); }
+.seg button[aria-pressed="true"][data-v="accept"] { background: var(--pass-soft); border-color: var(--pass); color: var(--pass); font-weight: 700; }
+.seg button[aria-pressed="true"][data-v="fixed"] { background: var(--fix-soft); border-color: var(--fix); color: var(--fix); font-weight: 700; }
+.seg button[aria-pressed="true"][data-v="reject"] { background: var(--fail-soft); border-color: var(--fail); color: var(--fail); font-weight: 700; }
+.fixbox { display: grid; gap: 8px; border: 1px solid var(--fix); border-radius: 8px; padding: 10px; }
+.fixbox .h, .h { color: var(--muted); font-size: .8rem; line-height: 1.4; }
+input[type="search"], textarea { width: 100%; font: inherit; font-size: .86rem; padding: 7px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+textarea { min-height: 64px; resize: vertical; }
+.roster { max-height: 240px; overflow: auto; display: grid; gap: 4px; }
+.ritem { display: grid; gap: 1px; text-align: left; font: inherit; font-size: .82rem; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.ritem small { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ritem[aria-pressed="true"] { border-color: var(--fix); background: var(--fix-soft); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: .78rem; padding: 2px 8px; border-radius: 999px; background: var(--fix-soft); color: var(--fix); border: 1px solid var(--fix); }
+label.inline { display: flex; gap: 8px; align-items: center; font-size: .86rem; }
+.navrow { display: flex; gap: 8px; }
+.navrow button { flex: 1; font: inherit; padding: 8px; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent); color: var(--user-ink); cursor: pointer; font-weight: 700; }
+.navrow button.ghost { background: transparent; color: var(--accent); }
+.navrow button:disabled { opacity: .45; cursor: default; }
+.offline { background: var(--fix-soft); color: var(--fix); padding: 10px 12px; border-radius: 8px; font-size: .86rem; }
+button:focus-visible, textarea:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (max-width: 1100px) {
+  .grid { grid-template-columns: minmax(0, 1fr) 330px; }
+  nav.queue { display: none; }
+  .picker { display: block; width: 100%; font: inherit; padding: 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+}
+@media (max-width: 760px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  aside.sheet { position: static; max-height: none; }
+  .msg { max-width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>OpenPoke routing probes: blind review</h1>
+      <p class="sub">Each card is a new test message for the routing eval. Read the chat it lands in, then decide whether the proposed answer is right. Accept it, fix the answer, or reject a message that's unclear or unrealistic. No system has run on these yet. Decisions save as you go.</p>
+    </div>
+    <div>
+      <div class="progress"><div class="bar"><i id="bar"></i></div><span id="count">0 / 0</span></div>
+      <div class="status" id="status">Connecting to the review store…</div>
+    </div>
+  </header>
+  <select class="picker" id="picker" aria-label="Choose a probe"></select>
+  <div class="grid">
+    <nav class="queue panel" id="queue" aria-label="Probes"></nav>
+    <main class="convo panel" id="convo"></main>
+    <aside class="sheet panel" id="sheet" aria-label="Decision"></aside>
+  </div>
+</div>
+
+<script id="data" type="application/json">__PROBES__</script>
+<script>
+const DATA = JSON.parse(document.getElementById("data").textContent);
+const P = DATA.probes;
+const KIND = {
+  follow_up: "A follow-up on something already in progress. It should go to that thread's agent.",
+  new_task: "A brand-new request. A new agent should be created.",
+  same_person_new_topic: "A known person, but an unrelated subject. A new agent should be created, not the person's existing one.",
+  vague_reference: "Refers to earlier work only vaguely ('that', 'it', a topic without a name). The chat above should make clear which agent.",
+  multi_task: "Two requests in one message. Each should go to its own agent.",
+  same_name_people: "Two contacts share a first name. It should go to the right one, or the assistant should ask.",
+  cross_agent: "News from one person that matters to another person's thread. It should go to the agent that owns the thread being updated.",
+  dormant_revival: "Picks up a thread that's been quiet for weeks. It should reuse that thread's agent.",
+  typo: "The person's name is misspelled on purpose. It should still go to their agent.",
+  agent_result: "An agent's own report arriving (not a user message). The assistant may relay it without dispatching; if it dispatches, it should be to that agent.",
+};
+const ROLE = { user_message: "You", poke_reply: "Assistant", agent_message: "Agent report" };
+
+const reviews = {};          // doc id -> { decision, gold_targets, acceptable_ids, clarify_ok, note }
+let current = 0, db = null, saveTimer = null, showAll = false, filter = "";
+const docId = (p) => p.id.replace(/[^A-Za-z0-9_-]/g, "~");
+const rosterOf = (p) => DATA.rosters[p.roster_key || ("lived-" + p.size)] || [];
+
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") n.className = v; else if (k === "text") n.textContent = v; else n.setAttribute(k, v);
+  }
+  for (const k of kids) if (k != null) n.append(k);
+  return n;
+}
+const decided = (p) => { const r = reviews[docId(p)]; return r && r.decision && (r.decision !== "fixed" || (r.gold_targets || []).length) ? r.decision : null; };
+const when = (iso) => { try { return new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } };
+
+function renderQueue() {
+  const q = document.getElementById("queue"); q.replaceChildren();
+  const picker = document.getElementById("picker"); picker.replaceChildren();
+  let group = null, done = 0;
+  P.forEach((p, i) => {
+    const g = (p.world_seed != null && p.roster_key ? `Life ${p.world_seed} · ` : "") + `${p.size} agents`;
+    if (g !== group) { group = g; q.append(el("div", { class: "qgroup", text: g })); }
+    const d = decided(p); if (d) done++;
+    const b = el("button", { class: "qitem" + (d ? " " + d : ""), type: "button" }, el("i", { class: "dot" }), el("span", { text: `${p.kind.replace(/_/g, " ")} · ${p.message}` }));
+    b.setAttribute("aria-current", String(i === current));
+    b.onclick = () => go(i);
+    q.append(b);
+    const o = el("option", { value: String(i), text: (d ? "✓ " : "") + `${p.size} · ${p.kind} · ${p.message.slice(0, 50)}` }); if (i === current) o.selected = true; picker.append(o);
+  });
+  document.getElementById("count").textContent = `${done} / ${P.length}`;
+  document.getElementById("bar").style.width = `${(100 * done / P.length).toFixed(1)}%`;
+}
+
+function renderConvo() {
+  const p = P[current], c = document.getElementById("convo"); c.replaceChildren();
+  c.append(el("div", { class: "chead" }, el("span", { class: "kind", text: p.kind.replace(/_/g, " ") }), el("h2", { text: p.id }), el("p", { text: KIND[p.kind] || "" })));
+  const th = el("div", { class: "thread" });
+  const ctx = p.context, start = showAll ? 0 : Math.max(0, ctx.length - 8);
+  if (start > 0) { const more = el("button", { class: "earlier", type: "button", text: `Show ${start} earlier line(s)` }); more.onclick = () => { showAll = true; renderConvo(); }; th.append(more); }
+  ctx.slice(start).forEach(([tag, text, iso]) => {
+    if (tag === "user_message") th.append(el("div", { class: "msg user" }, el("div", { class: "when", text: when(iso) }), text));
+    else if (tag === "poke_reply") th.append(el("div", { class: "msg bot" }, el("div", { class: "when", text: when(iso) }), text));
+    else th.append(el("div", { class: "event" }, el("div", { class: "when", text: `${ROLE[tag] || tag} · ${when(iso)}` }), text));
+  });
+  c.append(th);
+  c.append(el("section", { class: "probe" }, el("h3", { text: p.message_type === "agent" ? "The new agent report" : "The new message" }),
+    el("div", { class: p.message_type === "agent" ? "event" : "msg user", text: p.message })));
+}
+
+function card(agent, role) {
+  if (agent === "NEW") return el("div", { class: "card new" }, el("span", { class: "role", text: role }), el("b", { text: "Create a new agent" }));
+  return el("div", { class: "card" }, el("span", { class: "role", text: role }), el("b", { text: agent.name }), el("span", { text: agent.purpose }));
+}
+
+function renderSheet() {
+  const p = P[current], sh = document.getElementById("sheet"), id = docId(p);
+  const rv = reviews[id] || {};
+  const byId = Object.fromEntries(rosterOf(p).map(a => [a.id, a]));
+  sh.replaceChildren(el("h3", { text: "Proposed answer" }));
+  if (!db) sh.append(el("div", { class: "offline", text: "The review store isn't reachable here, so decisions won't be saved. Open this page signed in to claude.ai." }));
+  const gold = el("div", { class: "gold" });
+  p.gold_targets.forEach(g => gold.append(card(g === "NEW" ? "NEW" : (byId[g] || { name: g, purpose: "" }), p.gold_targets.length > 1 ? "Should go to (one of the tasks)" : "Should go to")));
+  p.acceptable_ids.forEach(g => gold.append(card(byId[g] || { name: g, purpose: "" }, "Also acceptable")));
+  const flags = [];
+  if (p.clarify_ok) flags.push("Asking you which one is also fine.");
+  if (p.dispatch_optional) flags.push("Just relaying it without dispatching is also fine.");
+  flags.forEach(f => gold.append(el("div", { class: "flag", text: f })));
+  if (p.check) {
+    // What the independent checker models answered, by their short names.
+    const one = (a) => a === "NEW" ? "New agent" : a === "ASK" ? "Ask the user" : (byId[a] ? byId[a].name : "Unclear");
+    const said = (a) => String(a).split("|").map(one).join(" + ");  // a multi-request answer: one per request
+    const parts = Object.entries(p.check.answers || {}).map(([m, a]) => `${m.split("/").pop()}: ${said(a)}`);
+    const why = { audit: "Random check: the checkers agreed.", disagree: "The checkers disagreed with this answer." }[p.check.flag];
+    if (why) gold.append(el("div", { class: "flag", text: why }));
+    gold.append(el("div", { class: "flag", text: "Checkers said: " + parts.join("; ") }));
+  }
+  sh.append(gold);
+
+  sh.append(el("div", { class: "h", text: "Is that the right answer for this message, in this chat?" }));
+  const seg = el("div", { class: "seg", role: "group", "aria-label": "Decision" });
+  [["accept", "Right"], ["fixed", "Fix it"], ["reject", "Reject"]].forEach(([v, label]) => {
+    const b = el("button", { type: "button", "data-v": v, text: label });
+    b.setAttribute("aria-pressed", String(rv.decision === v));
+    b.onclick = () => { setReview(p, { decision: rv.decision === v ? null : v }); };
+    seg.append(b);
+  });
+  sh.append(seg);
+  if (rv.decision !== "fixed") {
+    // Read-only lookup: check for a better agent without switching to "Fix it" first.
+    const look = el("input", { type: "search", placeholder: `Look up other agents: search ${rosterOf(p).length} by name or purpose`, "aria-label": "Look up agents" });
+    look.value = filter;
+    const found = el("div", { class: "roster" });
+    const fillLook = () => {
+      found.replaceChildren();
+      const f = filter.trim().toLowerCase();
+      if (!f) return;
+      const hits = rosterOf(p).filter(a => a.name.toLowerCase().includes(f) || (a.purpose || "").toLowerCase().includes(f));
+      if (!hits.length) found.append(el("small", { text: "No agents match." }));
+      hits.slice(0, 60).forEach(a => found.append(el("div", { class: "ritem" }, el("span", { text: a.name }), el("small", { text: a.purpose || "" }))));
+    };
+    look.oninput = () => { filter = look.value; fillLook(); };
+    fillLook();
+    sh.append(look, found);
+  }
+  if (rv.decision === "reject") sh.append(el("div", { class: "h", text: "Rejected probes never run. Say why in the note (unclear, unrealistic, two right answers…)." }));
+
+  if (rv.decision === "fixed") {
+    const box = el("div", { class: "fixbox" }, el("div", { class: "h", text: "Pick the correct answer. The first pick is the main answer; any others count as also acceptable." }));
+    const chosen = rv.gold_targets || [];
+    const chips = el("div", { class: "chips" });
+    [...chosen, ...(rv.acceptable_ids || [])].forEach(g => chips.append(el("span", { class: "chip", text: g === "NEW" ? "New agent" : (byId[g] || { name: g }).name })));
+    box.append(chips);
+    const newBtn = el("button", { type: "button", class: "ritem", text: "Create a new agent" });
+    newBtn.setAttribute("aria-pressed", String(chosen.includes("NEW")));
+    newBtn.onclick = () => pick(p, "NEW");
+    const search = el("input", { type: "search", placeholder: `Search ${rosterOf(p).length} agents by name or purpose`, "aria-label": "Search agents" });
+    search.value = filter;
+    const list = el("div", { class: "roster" });
+    const fill = () => {
+      list.replaceChildren();
+      const f = filter.trim().toLowerCase();
+      rosterOf(p).filter(a => !f || a.name.toLowerCase().includes(f) || (a.purpose || "").toLowerCase().includes(f)).slice(0, 60).forEach(a => {
+        const r = el("button", { type: "button", class: "ritem" }, el("span", { text: a.name }), el("small", { text: a.purpose || "" }));
+        r.setAttribute("aria-pressed", String(chosen.includes(a.id) || (rv.acceptable_ids || []).includes(a.id)));
+        r.onclick = () => pick(p, a.id);
+        list.append(r);
+      });
+    };
+    search.oninput = () => { filter = search.value; fill(); };
+    fill();
+    const ask = el("input", { type: "checkbox", id: "askok" }); ask.checked = !!rv.clarify_ok;
+    ask.onchange = () => setReview(p, { clarify_ok: ask.checked });
+    box.append(newBtn, search, list, el("label", { class: "inline", for: "askok" }, ask, "Asking which one is also fine"));
+    sh.append(box);
+  }
+
+  const note = el("textarea", { id: "note", placeholder: "Why? (optional for Right, helpful for Fix and Reject)" }); note.value = rv.note || "";
+  note.oninput = () => { reviews[id] = { ...(reviews[id] || {}), note: note.value }; clearTimeout(saveTimer); saveTimer = setTimeout(() => save(p), 700); };
+  sh.append(el("label", { for: "note", class: "h", text: "Note" }), note);
+  const prev = el("button", { type: "button", class: "ghost", text: "Previous" }); prev.disabled = current === 0; prev.onclick = () => go(current - 1);
+  const next = el("button", { type: "button", text: current === P.length - 1 ? "Last one" : "Next" }); next.disabled = current === P.length - 1; next.onclick = () => go(current + 1);
+  sh.append(el("div", { class: "navrow" }, prev, next));
+}
+
+function pick(p, agentId) {
+  const r = reviews[docId(p)] || {};
+  const all = [...(r.gold_targets || []), ...(r.acceptable_ids || [])];
+  const nextAll = all.includes(agentId) ? all.filter(x => x !== agentId) : [...all, agentId];
+  setReview(p, { gold_targets: nextAll.slice(0, 1), acceptable_ids: nextAll.slice(1).filter(x => x !== "NEW") });
+}
+
+function setReview(p, patch) {
+  const id = docId(p), r = { ...(reviews[id] || {}), ...patch };
+  if (patch.decision !== undefined && patch.decision !== "fixed") { delete r.gold_targets; delete r.acceptable_ids; delete r.clarify_ok; }
+  if (patch.decision === "fixed" && !r.gold_targets) { r.gold_targets = []; r.acceptable_ids = []; r.clarify_ok = !!p.clarify_ok; }
+  reviews[id] = r; save(p); renderSheet(); renderQueue();
+}
+
+// One write at a time per document: changes during a write are folded into one follow-up write of the latest
+// decision. While a document has a write queued or in flight, snapshots for it are ignored so an older server
+// echo can't undo a newer click.
+const saving = {};          // doc id -> { again }
+async function save(p) {
+  if (!db) return;
+  const id = docId(p), st = document.getElementById("status");
+  if (saving[id]) { saving[id].again = true; return; }
+  saving[id] = { again: false };
+  try {
+    do {
+      saving[id].again = false;
+      const r = reviews[id] || {};
+      const doc = { probe: p.id, size: p.size, kind: p.kind, decision: r.decision || null, note: r.note || "", updatedAt: new Date().toISOString(), source_sha256: DATA.source_sha256 };
+      if (r.decision === "fixed") { doc.gold_targets = [...(r.gold_targets || [])]; doc.acceptable_ids = [...(r.acceptable_ids || [])]; doc.clarify_ok = !!r.clarify_ok; }
+      st.className = "status"; st.textContent = "Saving…";
+      await db.collection("reviews").doc(id).set(doc);
+    } while (saving[id].again);
+    st.className = "status"; st.textContent = "Saved";
+  } catch (e) { st.className = "status err"; st.textContent = `Couldn't save: ${e && e.message ? e.message : e}. Your decision stays on screen; click again to retry.`; }
+  finally { delete saving[id]; }
+}
+
+function go(i) {
+  current = Math.max(0, Math.min(P.length - 1, i)); showAll = false; filter = "";
+  try { localStorage.setItem("probe-pos", String(current)); } catch (e) {}
+  renderQueue(); renderConvo(); renderSheet();
+  document.getElementById("convo").scrollIntoView({ block: "start", behavior: "auto" });
+}
+document.getElementById("picker").onchange = (e) => go(Number(e.target.value));
+
+try { const s = Number(localStorage.getItem("probe-pos")); if (s >= 0 && s < P.length) current = s; } catch (e) {}
+renderQueue(); renderConvo(); renderSheet();
+
+(async () => {
+  const st = document.getElementById("status");
+  db = window.claude ? await window.claude.use("db") : null;
+  if (!db) { st.className = "status err"; st.textContent = "Review store unavailable: decisions won't be saved."; renderSheet(); return; }
+  db.collection("reviews").onSnapshot(snap => {
+    snap.docs.forEach(d => {
+      if (saving[d.id]) return;
+      const v = d.data() || {};  // frozen: copy the arrays before keeping them
+      reviews[d.id] = { decision: v.decision || null, gold_targets: v.gold_targets ? [...v.gold_targets] : undefined, acceptable_ids: v.acceptable_ids ? [...v.acceptable_ids] : undefined, clarify_ok: v.clarify_ok, note: v.note || "" };
+    });
+    st.className = "status"; st.textContent = "Connected. Decisions save automatically.";
+    renderQueue(); if (document.activeElement && ["note"].includes(document.activeElement.id)) return; if (document.activeElement && document.activeElement.type === "search") return; renderSheet();
+  }, e => { st.className = "status err"; st.textContent = `Review store error: ${e.message}`; });
+})();
+</script>

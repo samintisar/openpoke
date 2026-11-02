@@ -7,6 +7,21 @@ OpenPoke is a simplified, open-source take on [Interaction Company’s](https://
 - Trigger scheduler and background watchers for reminders and "important email" alerts.
 - Next.js web UI that proxies everything through the shared `.env`, so plugging in API keys is the only setup.
 
+## Agent overload: write-up and evals
+This fork reworks how the assistant routes work across hundreds of agents. It adds agent cards with retrieval, living summaries, a duplicate guard, a status-question rule, a second look at risky reuses, a lifecycle and compacted memory, plus a send-approval gate enforced in code. All of it is measured with an eval harness.
+
+On a sealed held-out world at 1,000 agents, routing goes from 0.78 (original) to 0.91 correct, and duplicate agents from 0.11 to 0.01. On the held-out safety scenarios the gate allows 0 unauthorized sends. Two pre-registered targets were missed; the write-up says which and why. To try the app without a Gmail account, see [the fake mailbox](#trying-it-without-a-real-gmail-account).
+- **A visual walkthrough, from the problem to the code** (open it in a browser): [docs/walkthrough.html](docs/walkthrough.html)
+- **What changed, how it was tested, and the results:** [docs/agent-overload.md](docs/agent-overload.md)
+- **Running the evals:** [evals/README.md](evals/README.md)
+- **Every experiment and decision:** [evals/experiments/JOURNAL.md](evals/experiments/JOURNAL.md)
+
+To run the tests (offline, no API keys needed), after creating the virtualenv in step 4 below:
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -q
+```
+
 ## Requirements
 - Python 3.10+
 - Node.js 18+
@@ -15,8 +30,8 @@ OpenPoke is a simplified, open-source take on [Interaction Company’s](https://
 ## Quickstart
 1. **Clone and enter the repo.**
    ```bash
-   git clone https://github.com/shlokkhemani/OpenPoke
-   cd OpenPoke
+   git clone -b feat/agent-overload https://github.com/samintisar/openpoke
+   cd openpoke
    ```
 2. **Create a shared env file.** Copy the template and open it in your editor:
    ```bash
@@ -73,9 +88,14 @@ OpenPoke is a simplified, open-source take on [Interaction Company’s](https://
 
 The web app proxies API calls to the Python server using the values in `.env`, so keeping both processes running is required for end-to-end flows.
 
+### Trying it without a real Gmail account
+Start the server with `OPENPOKE_FAKE_GMAIL=1` (for example `OPENPOKE_FAKE_GMAIL=1 python -m server.server` in bash) and skip step 9. Every Gmail call then goes to an in-memory mailbox seeded with a few emails, and nothing leaves your machine. Open *Mailbox* in the chat header (or [http://localhost:3000/mailbox](http://localhost:3000/mailbox)) to deliver emails to the inbox and see drafts, sent mail and the sends the approval gate blocked. The mailbox resets when the server restarts; the agents, conversation and approvals in `server/data/` do not, so press *Clear* after a restart, or drafts in the old chat will point at emails that no longer exist.
+
 ## Project Layout
 - `server/` – FastAPI application and agents
 - `web/` – Next.js app
+- `evals/` – eval harness, worlds, experiment configs, results and the journal
+- `docs/` – the agent-overload write-up, the walkthrough and the design specs
 - `server/data/` – runtime data (ignored by git)
 
 ## License

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import html
 import re
 from dataclasses import dataclass
@@ -12,6 +13,11 @@ from bs4 import BeautifulSoup
 
 from ...logging_config import logger
 from ...utils.timezones import convert_to_user_timezone
+
+
+def decode_body(data: str) -> str:
+    """Decode a Gmail base64url body; Gmail omits the `=` padding, which `urlsafe_b64decode` requires."""
+    return base64.urlsafe_b64decode(data + "=" * (-len(data) % 4)).decode("utf-8", errors="replace")
 
 
 class EmailTextCleaner:
@@ -202,9 +208,7 @@ class EmailTextCleaner:
                             data = body.get("data")
                             if isinstance(data, str):
                                 try:
-                                    import base64
-
-                                    return base64.urlsafe_b64decode(data).decode("utf-8", errors="replace")
+                                    return decode_body(data)
                                 except Exception:
                                     continue
         return message.get("htmlBody")
@@ -216,9 +220,7 @@ class EmailTextCleaner:
                 data = body.get("data")
                 if isinstance(data, str):
                     try:
-                        import base64
-
-                        return base64.urlsafe_b64decode(data).decode("utf-8", errors="replace")
+                        return decode_body(data)
                     except Exception:
                         pass
         return message.get("textBody")

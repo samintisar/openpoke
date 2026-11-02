@@ -1,0 +1,3773 @@
+{
+ "format": 1,
+ "seed": 2,
+ "world_sha256": "438ba5a6d748d13b17363bd91de594238fb3d7e0a579a5ece8cfafb763c9d854",
+ "cutoffs": {
+  "lived-10": 20,
+  "lived-50": 149,
+  "lived-200": 655,
+  "lived-1000": 655
+ },
+ "logs": {
+  "brendan-camping-weekend": [
+   [
+    2,
+    "instruction",
+    "Find the contact info for Brendan (look through the user's contacts, email history, and messages to identify who \"Brendan\" is and the best way to reach him). Then prepare a message to Brendan asking what he thinks the user and he should do for their upcoming camping weekend. If it's an email, draft it (subject + body) in a friendly, casual tone. Report back: who Brendan is, the best contact method, and the proposed draft message text."
+   ],
+   [
+    44,
+    "instruction",
+    "Ask Brendan whether the user needs to bring anything for the camping weekend (gear, food, etc.), and get back with his answer."
+   ],
+   [
+    51,
+    "result",
+    "Brendan replied: he needs an answer on the camping weekend by Monday."
+   ],
+   [
+    59,
+    "instruction",
+    "Reply to Brendan about the camping weekend: let him know that Saturday works better for us."
+   ],
+   [
+    87,
+    "instruction",
+    "Reach out to Tariq and ask whether he's still up for the camping weekend. Draft the message (text/email as appropriate) and show it for review before sending."
+   ],
+   [
+    93,
+    "result",
+    "Tariq replied: Thursday at 3 works for the camping weekend."
+   ],
+   [
+    98,
+    "result",
+    "Tariq replied: Thursday at 3 works for the camping weekend."
+   ],
+   [
+    108,
+    "instruction",
+    "Let Brendan know that Sam can come too for the camping weekend."
+   ],
+   [
+    215,
+    "instruction",
+    "Reach out to Brendan and ask whether the camping weekend is still on. Report back what he says. If a reply needs sending on the user's behalf, prepare a draft for the user to review first — don't send anything without confirmation."
+   ]
+  ],
+  "cole-camping-weekend": [
+   [
+    3,
+    "instruction",
+    "Find contact info for a person named Cole (likely in the user's contacts or email history, possibly related to a camping weekend). Then draft a message to Cole letting them know the user can help out on the camping weekend. Do NOT send anything yet — just report back Cole's contact details, the best channel to reach them (email/text), and a proposed message body for the user to review."
+   ],
+   [
+    4,
+    "result",
+    "Cole replied: he asked if we can push the camping weekend to next week."
+   ]
+  ],
+  "holly-climbing-gym": [
+   [
+    5,
+    "instruction",
+    "Find Holly in the user's contacts (likely related to a climbing gym meetup). Draft a short message asking if she's still up for the climbing gym meetup. Do NOT send it — return the draft recipient and message text so the user can approve. If you find context on the meetup date/time or location, include it."
+   ],
+   [
+    7,
+    "instruction",
+    "Ask Holly if she needs the user to bring anything to the climbing gym. Also, if not already sent, include the earlier question of whether she's still up for the climbing gym meetup. Draft the message and show it to the user for approval before sending."
+   ],
+   [
+    261,
+    "instruction",
+    "Ask Holly what they think we should do about the wedding RSVP. Relay their response back."
+   ]
+  ],
+  "kokkari-reservation": [
+   [
+    8,
+    "instruction",
+    "Check availability at Kokkari Estiatorio (a restaurant in San Francisco) for a table next weekend, April 11–12, 2026. Look at their reservation system (OpenTable or their site) for available time slots for dinner on both Saturday April 11 and Sunday April 12. Report back the available times for each day, and note party size for 2 unless otherwise needed. Provide whatever options are open."
+   ],
+   [
+    9,
+    "result",
+    "Booked a table at Kokkari; the confirmation is in your inbox."
+   ],
+   [
+    10,
+    "instruction",
+    "The user wants to keep the existing Kokkari reservation but change it from a table for one to a table for two people (same date/time, next weekend). Please modify the reservation to 2 guests and confirm the updated details. No need to send any emails to anyone — just update it and report back the confirmed date, time, and party size."
+   ],
+   [
+    19,
+    "instruction",
+    "The user has a table booked at Kokkari and now wants to know if there's anything closer to home — i.e., find a few comparable restaurant options nearer to where the user lives. Figure out the user's home area from available context, then find a few good alternatives closer to home and report them back with location/neighborhood and a short note on each. Do NOT cancel or modify the existing Kokkari reservation yet."
+   ],
+   [
+    43,
+    "instruction",
+    "The user wants to proceed with the cheaper option for the Kokkari table. Please confirm the cheaper option and move forward with securing that reservation. Report back the details (date/time, party size, price) and show the user any confirmation before it's finalized."
+   ],
+   [
+    72,
+    "instruction",
+    "The user is asking for a status update on the Kokkari reservation/table. Please check the current status of the reservation and report back: whether it's confirmed, the date/time/party size, any waitlist or pending items, and anything the user needs to do or decide."
+   ],
+   [
+    79,
+    "result",
+    "Checked Kokkari availability and found three table options; need you to pick one before I book."
+   ],
+   [
+    79,
+    "instruction",
+    "Please share the details of the three Kokkari table options you found — date, time, party size, and any seating notes — so I can present them to the user."
+   ]
+  ],
+  "edith-sheet-music": [
+   [
+    11,
+    "instruction",
+    "Find the contact named Edith (look through email contacts, prior threads, and messages to identify the right person). Then compose a short, casual message asking her if next Tuesday morning works for the sheet music. Do NOT send anything yet — return the draft (recipient, subject if email, and body) so I can show it to the user for approval first."
+   ],
+   [
+    29,
+    "instruction",
+    "The sheet music issue with Edith has come back up. Pick this thread back up from where it was left (review the context/history you already have on this), then determine and take the appropriate next step to resolve it. If a message/email to Edith is needed, prepare a draft for the user's review — do not send anything without approval. Report back with the current status, what the blocker was/is, and the next step taken or recommended."
+   ]
+  ],
+  "nina-park-big-sur-road-trip": [
+   [
+    12,
+    "instruction",
+    "Find Nina Park's contact info and draft a message asking what she thinks we should do for the Big Sur road trip. Do not send it — report back the draft (recipient, subject if email, and body) so the user can review before anything goes out."
+   ],
+   [
+    89,
+    "instruction",
+    "Draft a message to Vera asking what dates work for everyone for the Big Sur road trip. Show me the draft text before anything is sent."
+   ],
+   [
+    140,
+    "instruction",
+    "Update on the Vera Big Sur trip: Sam can come too. Please add Sam to the group/participant list for this trip (headcount, lodging, transport, any reservations that depend on party size). Confirm back what needs updating."
+   ],
+   [
+    146,
+    "result",
+    "Vera replied: she needs an answer by Monday about the road trip to Big Sur."
+   ],
+   [
+    156,
+    "instruction",
+    "Add to the message to Vera about the Big Sur road trip: the user will call Vera tonight to discuss it. Include this in the note to Vera."
+   ],
+   [
+    223,
+    "instruction",
+    "Reach out to Nina Park and ask her what she thinks we should do about book club. Get her opinion/recommendation and report back her response."
+   ],
+   [
+    227,
+    "result",
+    "Nina confirmed for book club and said thanks."
+   ]
+  ],
+  "gus-climbing-gym": [
+   [
+    13,
+    "instruction",
+    "Find Gus (contact tied to the climbing gym meetup) and draft a message asking how the user can help with the climbing gym meetup. Mention the user is excited. Present the draft for the user's review before sending anything."
+   ],
+   [
+    15,
+    "result",
+    "Gus wrote back asking for the final numbers for the climbing gym meetup."
+   ],
+   [
+    18,
+    "result",
+    "Gus replied: he asked if we can push the climbing gym meetup to next week."
+   ],
+   [
+    398,
+    "instruction",
+    "Reach out to Gus about the ski trip. Tell him the user is excited for the ski trip and ask how the user can help. Prepare this as a message/email to Gus and show me the draft before sending anything."
+   ],
+   [
+    401,
+    "instruction",
+    "Let Gus know that Sam can come on the ski trip too."
+   ]
+  ],
+  "adrian-q3-roadmap-review": [
+   [
+    17,
+    "instruction",
+    "The user wants Adrian included in the Q3 roadmap review, with the goal of wrapping up the review before the end of the month. Find the relevant Q3 roadmap review (calendar event, email thread, or doc) and add Adrian to it. If scheduling is involved, propose times that would let the review finish before end of month. Report back with what you found, what you did, and any draft (invite/message) that needs the user's confirmation before sending. Do not send anything to external parties without approval."
+   ],
+   [
+    31,
+    "instruction",
+    "Reach out to Adrian with two things: (1) ask if there's any update on the credit card dispute, and (2) let him know the user needs one more day for the Q3 roadmap review. Please find Adrian's contact details and draft the message, then report back with the draft so the user can review before sending. Do not send anything until the user confirms."
+   ],
+   [
+    35,
+    "instruction",
+    "The user is asking for a status update on the credit card dispute with Adrian. Please check whether Adrian has replied to the earlier message asking for a credit card dispute update (and the note that the user needs one more day for the Q3 roadmap review). Report back: has Adrian responded at all, and if so, what did he say about the credit card dispute?"
+   ],
+   [
+    37,
+    "result",
+    "Adrian replied: he found three options for disputing the credit card charge and needs you to pick one."
+   ],
+   [
+    37,
+    "instruction",
+    "Adrian replied with three options for disputing the credit card charge but didn't detail them. Please get the specifics of the three options (costs, pros/cons, what's required from the user) so I can present them clearly. Also confirm the Q3 roadmap review — did the \"one more day\" note get passed along?"
+   ],
+   [
+    113,
+    "instruction",
+    "Find Farah's contact (she's related to the Q3 roadmap review) and prepare a message/email to her asking what she needs from the user to get the Q3 roadmap review moving. Do NOT send it — just return the draft (recipient, subject if email, and body) so the user can review it first. Also flag if you can't find her contact info."
+   ],
+   [
+    114,
+    "result",
+    "Farah replied: she needs the final numbers before she can move the Q3 roadmap review forward."
+   ],
+   [
+    294,
+    "instruction",
+    "Reach out to Adrian and ask what he needs from the user to get the conference talk proposal moving forward. Report back with his response."
+   ]
+  ],
+  "athens-flight": [
+   [
+    19,
+    "instruction",
+    "The user wants to move \"the Athens flight\" to the following weekend. First, verify whether an Athens flight has actually been booked — search the user's inbox for any flight confirmation or booking for Athens. If a booking exists, report back the full details (airline, dates, cost, confirmation number) and the options for moving it to the following weekend, but do NOT make any changes yet. If no Athens booking exists, report that clearly."
+   ],
+   [
+    22,
+    "instruction",
+    "The user now wants the Athens flight booked for TWO passengers instead of one. Note: no Athens booking was ever confirmed — the request previously stalled pending flight selection and budget. Please: (1) check for any existing Athens itinerary/hold or booking that could be modified, and (2) if none exists, pull flight options to Athens for two passengers, including dates and prices, so the user can choose. Report back with details; do not book anything without confirmation."
+   ]
+  ],
+  "caleb-nda-signature": [
+   [
+    20,
+    "instruction",
+    "Find the NDA that needs signing by Caleb (check the user's email and docs for context on who Caleb is, which NDA, and where it stands). Then draft a polite follow-up email to Caleb asking him to sign the NDA, framing it as something the user wants wrapped up before the end of the month. Prepare the draft for the user's review — do not send it. Report back the recipient email, subject, and the full draft body."
+   ],
+   [
+    36,
+    "instruction",
+    "Reach out to Caleb for the user: ask what he needs from the user to get the pilot kickoff moving. Draft an email (or message, matching the channel you've previously used with Caleb) and return the exact draft text with recipient, subject, and body so the user can review it before anything is sent. Do not send anything yet."
+   ],
+   [
+    44,
+    "instruction",
+    "Regarding the draft note to Caleb about getting the pilot kickoff moving: the user says the draft looks good but wants the second paragraph cut. Please revise the draft by removing the second paragraph and show the updated draft for review before anything is sent."
+   ],
+   [
+    340,
+    "instruction",
+    "Set up a 30-minute meeting with Raj this week to go over the NDA signature. Find a slot that works this week and book it, then report back the confirmed time."
+   ],
+   [
+    343,
+    "instruction",
+    "The user wants to move the 30-minute call with Raj about the NDA signature to Thursday this week instead of whatever day it was currently scheduled. Please reschedule it to a Thursday slot and confirm the new time."
+   ],
+   [
+    439,
+    "instruction",
+    "Set up a 30-minute meeting with Caleb this week to go over the discount request. Find available slots and propose times, then confirm the booking. Report back with the scheduled time."
+   ],
+   [
+    443,
+    "result",
+    "Caleb replied about the discount request: he asked if we can push it to next week."
+   ],
+   [
+    561,
+    "instruction",
+    "The user says Friday works better for them for the NDA signature. Update the scheduling with Caleb accordingly and report back the current status plus any draft message needed to confirm Friday with Caleb. Do not send anything without user approval."
+   ]
+  ],
+  "haircut-booking": [
+   [
+    21,
+    "instruction",
+    "The user wants to book a haircut and asked to see what's open next weekend. Find availability for a haircut next weekend (Saturday/Sunday). Check the user's usual barber/salon if it can be identified from their email/receipts/contacts; otherwise gather a few good nearby options. Report back with the specific open time slots and locations so the user can pick, and have a booking draft/message ready for review before sending anything."
+   ],
+   [
+    174,
+    "instruction",
+    "The user dropped the haircut booking weeks ago and wants a status update. Report back on where the haircut booking stands: any appointment booked/reserved, dates, times, location, and any pending decisions the user needs to make."
+   ]
+  ],
+  "clara-demo-day-slides": [
+   [
+    23,
+    "instruction",
+    "The user wants the demo day slides for Clara finished, with a target of wrapping up before the end of the month.\n\n1. Find the existing demo day slide deck for Clara — check the user's email, shared drives/files, and any relevant threads with Clara for the deck, its current state, and what's still outstanding.\n2. Identify what specifically is unfinished (missing sections, placeholder slides, outstanding feedback from Clara, pending data/numbers, etc.).\n3. Report back a clear status: where the deck lives, what's done vs. outstanding, who owes what, and a concrete plan/next steps to finish it before month-end.\n\nDo not send or share anything with Clara without the user's explicit approval — report findings first."
+   ],
+   [
+    466,
+    "instruction",
+    "Check on the status of the demo day slides with Clara and Rohan. Is there any update on where things stand? The user would like to wrap this up before the end of the month. Report back any progress or blockers."
+   ],
+   [
+    582,
+    "instruction",
+    "The user is asking whatever happened with the demo day slides for Aisha — where did that end up? Check the status of the demo day slides work related to Aisha: what was requested, what was sent, who replied, and what the current state is. Report back a clear timeline and the current status (and whether anything is still pending on the user's side)."
+   ]
+  ],
+  "eli-ski-trip": [
+   [
+    24,
+    "instruction",
+    "The user wants to ask Eli what they think the user should do about the ski trip. Find Eli's contact details (email or phone) and any existing thread/context about the ski trip. Then prepare a short, friendly message/draft asking Eli for their thoughts on what to do about the ski trip. Do NOT send anything yet — return the recipient details, the relevant context you found about the ski trip, and the proposed draft text so the user can review and confirm before it goes out."
+   ],
+   [
+    66,
+    "instruction",
+    "Draft a message to Eli letting them know that Saturday works better for us for the ski trip. Show me the draft for review before it is sent."
+   ],
+   [
+    115,
+    "instruction",
+    "Let Eli know the user will call them tonight about the ski trip. Please send this message to Eli. Show the user the draft before it goes out."
+   ],
+   [
+    155,
+    "instruction",
+    "The user wants to reach out to Eli. Draft a message to Eli (same contact you've been handling for the ski trip) expressing that the user is excited about the half marathon training and asking how the user can help. Show the draft to the user for approval before sending anything."
+   ],
+   [
+    170,
+    "instruction",
+    "Draft (do not send) an email to Eli letting him know that Sam can come too on the ski trip. Return the draft so the user can review it before it's sent."
+   ],
+   [
+    307,
+    "instruction",
+    "Ask Lucy what dates work for everyone for the ski trip. Report back her response."
+   ],
+   [
+    396,
+    "result",
+    "Lucy asked if we can push the ski trip to next week."
+   ]
+  ],
+  "erik-baby-shower": [
+   [
+    25,
+    "instruction",
+    "Reach out to Erik and ask what dates work for everyone for the baby shower. Draft the message/email to Erik, gather his response, and report back the dates he says work. If a draft is needed for the user to review, prepare it but do not send without confirmation."
+   ],
+   [
+    30,
+    "result",
+    "Erik confirmed for the baby shower and said thanks."
+   ],
+   [
+    62,
+    "instruction",
+    "Reaching out to Sam about the baby shower: ask Sam what they think we should do for the baby shower, and ask for their ideas/suggestions on format, timing, and anything they'd want included. Draft the note and show it for review before sending — do not send until approved."
+   ],
+   [
+    83,
+    "instruction",
+    "Alongside the baby shower planning, reach out to Erik to ask whether they need the user to bring anything to the baby shower. Find Erik's correct contact info and prepare a short polite note asking if anything is needed. Do not send yet — return the draft (recipient, subject if email, and body) to me for the user to review."
+   ],
+   [
+    116,
+    "instruction",
+    "Let Sam know that Saturday works better for us for the baby shower. Show me the draft before it's sent."
+   ],
+   [
+    128,
+    "instruction",
+    "The user is asking for an update on the baby shower for Sam. Please report the current status: what has been arranged so far, any pending decisions, dates/venues considered, and what the next step is. Summarize concisely what's done and what still needs the user's input."
+   ],
+   [
+    141,
+    "instruction",
+    "The user and Sam want to push the baby shower back by one week. Find the current planned date/details for the baby shower (check email for the relevant thread), and determine what moving it one week later would affect (venue, invites, RSVPs, vendors). Report back the current date, the proposed new date, and any conflicts or things that need re-confirming. Do NOT send any emails or make any changes/booking changes yet — just gather info and report."
+   ],
+   [
+    594,
+    "instruction",
+    "Reach out to Ada and ask whether she's still up for / still able to attend the baby shower. Report back her answer. Do not send anything without checking if a confirmation is needed first; if you already have a thread or contact method with Ada, use it."
+   ]
+  ],
+  "nina-castillo-team-offsite": [
+   [
+    33,
+    "instruction",
+    "Find this week's availability for a 30-minute meeting with Nina Castillo to go over the team offsite. Check the user's calendar for open slots this week and check Nina's availability if possible. Then propose 2-3 specific 30-minute windows and draft an invite/message to Nina to set it up. Do NOT send anything — report back the options and a draft for the user to approve."
+   ],
+   [
+    34,
+    "instruction",
+    "Additional context for the Nina Castillo team offsite task: the budget is capped at $20,000. Please factor this into the offsite planning/scheduling around the 30-min meeting, and make sure any options or notes you prepare reflect this cap."
+   ]
+  ],
+  "marisol-key-handoff": [
+   [
+    38,
+    "instruction",
+    "The user has an urgent key handoff with Marisol and wants help. Please look into the context/history of the key handoff with Marisol (there may be prior threads or related emails about Marisol, including a recent question about the cost of a deep clean). Prepare a draft message to Marisol to coordinate the handoff — propose locking in a time and place and confirming she can receive/collect the key. Do not send anything yet; return a draft for the user to review. If there are specific details already known (dates, location), include them. Report back with the draft and any relevant context you find."
+   ],
+   [
+    49,
+    "instruction",
+    "Draft a message to Marisol asking whether she'd be able to come earlier for the key handoff. Keep it friendly and low-pressure — ask if there's any way she could arrive earlier than the currently planned time, and if so, what time would work for her. Show me the draft for the user to review before anything is sent."
+   ],
+   [
+    135,
+    "instruction",
+    "Status check: the user is asking for an update on the key handoff with Marisol. Report where things stand — any progress, open questions, or blockers — and what the next step is."
+   ],
+   [
+    225,
+    "instruction",
+    "Reach out to Marisol and ask her for the earliest available slot for the biweekly schedule. Don't send anything without my approval — show me the draft first. Then report back with her answer."
+   ],
+   [
+    272,
+    "instruction",
+    "The user is asking for an update on \"the biweekly with Marisol.\" Check the status of any recurring/biweekly meeting or scheduling involving Marisol. Report back with where things stand, including any open questions or next steps."
+   ],
+   [
+    277,
+    "result",
+    "Marisol replied: Thursday at 3 works for the biweekly schedule."
+   ]
+  ],
+  "dodgers-tickets": [
+   [
+    39,
+    "instruction",
+    "Find a few current options for Dodgers game tickets (upcoming home games). Look for a handful of good options across price points and seating areas, and report back with the game dates/opponents, seat sections, and prices so the user can choose. Also note where each option is available for purchase."
+   ],
+   [
+    41,
+    "result",
+    "Found Dodgers ticket options, but the price on the seats I'd flagged went up about 20% since I first pulled them — want me to go ahead at the new price?"
+   ],
+   [
+    463,
+    "instruction",
+    "The user wants to know if there are any Dodgers ticket options closer to home (i.e., closer to where the user lives) than what was previously found. Search for available Dodgers tickets/options that are closer to the user's home and report back the details (dates, sections/seats, prices, distance/location)."
+   ]
+  ],
+  "bianca-export-follow-up": [
+   [
+    40,
+    "instruction",
+    "Please follow up with Bianca regarding the export to determine the current status and the next steps required to have it completed by the end of the month. Let me know what she needs from me."
+   ],
+   [
+    46,
+    "result",
+    "Bianca replied: she confirmed the data export issue and said thanks."
+   ],
+   [
+    84,
+    "instruction",
+    "Find the correct email address for Bianca (the contact behind the existing Bianca thread, if any), and draft a reply/email asking what she needs from the user to get the case study moving. Do not send. Return the recipient, subject, and full body so it can be reviewed."
+   ],
+   [
+    85,
+    "result",
+    "Bianca replied: Thursday at 3 works for the case study approval."
+   ],
+   [
+    107,
+    "instruction",
+    "Update the Bianca case study approval draft to include that the budget is capped at 20k. Prepare the updated draft for review — do not send it yet. Return the draft text."
+   ],
+   [
+    179,
+    "instruction",
+    "The user wants to ask Bianca to finish up the procurement paperwork. Please draft a message (email) to Bianca asking her to complete/finish up the procurement paperwork, noting the user would like it wrapped up before the end of the month. Do NOT send it — just prepare the draft and return the exact recipient, subject, and body so the user can review it first."
+   ],
+   [
+    180,
+    "instruction",
+    "Draft a message to Bianca about the procurement paperwork draft. Tell her the draft looks good overall, but ask her to cut the second paragraph. Prepare this as a draft for the user to review before it's sent — do not send yet."
+   ],
+   [
+    190,
+    "instruction",
+    "Draft a message to Bianca asking what she needs from the user to get the NDA moving. Surface the draft for the user's review before sending."
+   ],
+   [
+    192,
+    "result",
+    "Bianca confirmed on the NDA signature and said thanks."
+   ],
+   [
+    198,
+    "result",
+    "Bianca confirmed the NDA is signed and said thanks."
+   ],
+   [
+    242,
+    "instruction",
+    "The user is asking for a status update on the Bianca case study. Please summarize where things stand: what was the original request/task, what's been done so far, any replies or blockers, and what the next step is. Report back concisely."
+   ],
+   [
+    303,
+    "instruction",
+    "Ask Bianca whether she has any update on the NDA. Report back what she says."
+   ],
+   [
+    386,
+    "instruction",
+    "The user is asking for a status update on the procurement paperwork involving Bianca, started a few weeks ago — whether it's still on track / what the current status is. Check the history of this thread with Bianca and report back the latest state: what's been sent, what's outstanding, and any blockers or pending replies."
+   ]
+  ],
+  "yara-book-club-scheduling": [
+   [
+    42,
+    "instruction",
+    "Reach out to Yara and the book club crew to ask what dates work for everyone for an upcoming book club meeting/get-together. Gather their availability, compile the options, and draft a message for the user to review before anything is sent. Do not send anything without the user's confirmation."
+   ],
+   [
+    48,
+    "result",
+    "Yara replied: she asked about the timeline for book club."
+   ],
+   [
+    95,
+    "instruction",
+    "Draft a message to Yara asking if book club can be pushed back a week. Show the draft to the user for review before sending anything."
+   ],
+   [
+    142,
+    "instruction",
+    "Find the book club scheduling context/thread and draft a message to Max Okonkwo asking what dates work for everyone for book club. Show me the draft (recipient, subject, body) so the user can review before sending. Do not send without approval."
+   ]
+  ],
+  "frank-retirement-party": [
+   [
+    45,
+    "instruction",
+    "Find Frank's contact info/email and draft a warm, friendly note from the user saying they're excited about Frank's retirement party and asking how they can help. Keep it short and natural. Do not send anything — return the draft (recipient, subject, body) to me so the user can review it first."
+   ],
+   [
+    47,
+    "result",
+    "Frank replied: he asked about the timeline for Dad's retirement party."
+   ],
+   [
+    50,
+    "result",
+    "Frank replied asking about the timeline for Dad's retirement party; he needs an answer by Monday."
+   ],
+   [
+    176,
+    "instruction",
+    "Draft a message to Frank covering two points: (1) ask him to change the Porto hotel to the following weekend, and (2) let him know that Saturday works better for us for Dad's retirement. Return the exact draft (recipient, subject, and body text) for the user's review — do NOT send it yet. Wait for approval before sending."
+   ],
+   [
+    632,
+    "instruction",
+    "Reach out to Frank and ask him what dates work for everyone for the anniversary dinner. Report back with his reply."
+   ]
+  ],
+  "fiona-procurement-paperwork": [
+   [
+    52,
+    "instruction",
+    "Reach out to Fiona and ask what she needs from the user in order to get the procurement paperwork moving. Draft the email/message, then show the draft to the user for review before sending anything."
+   ],
+   [
+    53,
+    "result",
+    "Fiona replied: she asked if we can push it to next week."
+   ],
+   [
+    86,
+    "instruction",
+    "Draft a short message to Fiona letting her know the user needs one more day on the procurement paperwork. Do not send it — return the draft text (recipient, subject if email, and body) so the user can review it first."
+   ],
+   [
+    91,
+    "result",
+    "Fiona replied: she needs an answer on the procurement paperwork by Monday."
+   ],
+   [
+    121,
+    "instruction",
+    "The user wants to move the procurement call with Fiona to Thursday. Please reschedule/propose Thursday for this call and show the user the updated details (time, invite message) before anything is finalized or sent."
+   ],
+   [
+    290,
+    "instruction",
+    "Check the current status of the procurement paperwork with Fiona and report back where things stand — what's been done, what's still outstanding, and what the next step is (e.g., does anything need to be sent, signed, or confirmed?)."
+   ],
+   [
+    411,
+    "instruction",
+    "Set up a 30-minute meeting with Fiona this week to go over the invoice dispute. Find a mutually available time slot this week, propose it to Fiona, and confirm the details."
+   ]
+  ],
+  "credit-card-dispute": [
+   [
+    54,
+    "instruction",
+    "The user has a credit card dispute with a scheduled follow-up call. Push/reschedule that follow-up call from its current date to the following weekend (i.e., one week later). If you have a saved record of the current call date, update it. Report back the original date and the new date."
+   ],
+   [
+    64,
+    "instruction",
+    "Update from the user on the credit card dispute: go with the cheaper option. Proceed with that choice and confirm what the next step is (and note the follow-up call was moved to the following weekend)."
+   ],
+   [
+    270,
+    "instruction",
+    "The user is asking whether the credit card dispute is still open/active. Please check the current status of this dispute and report back: is it still ongoing, what's the latest update, and is there anything the user needs to do next?"
+   ]
+  ],
+  "tomasz-postmortem": [
+   [
+    55,
+    "instruction",
+    "Reach out to Tomasz about the postmortem. The user would like to wrap up the postmortem before the end of the month. Draft a message to Tomasz conveying this and ask if that timeline works for him. Show the draft to the user for review before sending."
+   ],
+   [
+    58,
+    "instruction",
+    "The user approved the draft to Tomasz about wrapping up the postmortem before the end of the month, with one edit: cut the second paragraph entirely. Please remove the second paragraph and send the revised email to Tomasz, then confirm to me that it went out."
+   ],
+   [
+    171,
+    "instruction",
+    "The user wants to know whether the postmortem with Tomasz is still on. Check the current status of the postmortem scheduling/meeting with Tomasz and report back: is it still confirmed/on, and any relevant details (date/time, any changes)."
+   ]
+  ],
+  "pottery-class-search": [
+   [
+    56,
+    "instruction",
+    "Research pottery class options for the user near their location (check their email/calendar/history for their city if needed; default to reasonable local options). Find 3-5 good options — beginner-friendly wheel-throwing or hand-building classes, with details: studio name, location/neighborhood, price, schedule/session dates, and a link. Prioritize classes that have upcoming availability. Report the options back clearly so I can relay them to the user."
+   ],
+   [
+    67,
+    "result",
+    "The pottery class price went up since I first checked it. Want me to go ahead and book it at the new price?"
+   ],
+   [
+    77,
+    "instruction",
+    "The user is asking for an update on the pottery class signup. Report the current status: whether the class is still available, the current price, and any deadline/urgency for booking. Do not book anything yet."
+   ],
+   [
+    271,
+    "instruction",
+    "The user has decided: go with the cheaper pottery class option. Book/register for the cheaper option and confirm the details (price, schedule, start date)."
+   ]
+  ],
+  "montreal-flights": [
+   [
+    57,
+    "instruction",
+    "Look into flights to Montreal and recommend the best choice. Assume departure from San Francisco (SFO) for a long weekend trip in the near future unless the user specifies otherwise. Compare a few options across airlines/dates — include price, total travel time, number of stops, and departure/arrival times. Report back a short ranked shortlist with a clear top recommendation and the reasoning."
+   ],
+   [
+    61,
+    "result",
+    "Checked the Montreal flight: the first-choice option is full, so the next best is the Thursday 8am direct instead."
+   ],
+   [
+    117,
+    "instruction",
+    "For the Montreal flight, the user wants to go with the cheaper option. Please proceed with booking/confirming the cheaper flight option. Show the user the details (price, times, airline) before finalizing anything."
+   ],
+   [
+    224,
+    "instruction",
+    "The user is asking for a status update on the Montreal flight, which was dropped/left hanging weeks ago. Please check the current state of things: what was booked or held, any pending decisions, deadlines, prices, and any open questions that still need the user's input. Report back a concise summary of where things stand and what (if anything) needs the user's decision now."
+   ]
+  ],
+  "austin-flights": [
+   [
+    60,
+    "instruction",
+    "User wants available flights to Austin, Texas for next weekend (around Saturday April 25 and Sunday April 26, 2026). Assume departure from SFO and returning the following day or Monday unless data suggests otherwise. Find a few good flight options with airline, times, and price, and recommend the best choice. Report back the short list and your pick."
+   ],
+   [
+    80,
+    "instruction",
+    "For the Austin flight, check if there are any options departing from an airport closer to the user's home. Compare and report available alternatives (airport, times, prices) that would be more convenient based on home location."
+   ],
+   [
+    81,
+    "result",
+    "Found three flight options to Austin closer to home; need you to pick one before booking."
+   ],
+   [
+    81,
+    "instruction",
+    "Please share the specifics of the three Austin flight options closer to home — airline, departure/arrival times, airport, and fare for each — so I can present them to the user for a pick."
+   ],
+   [
+    231,
+    "instruction",
+    "The user wants a status update on the flight to Austin. Report where things currently stand: what's been booked or researched, any pending decisions, prices/options found, and what the next step is."
+   ]
+  ],
+  "ivan-pilot-kickoff": [
+   [
+    63,
+    "instruction",
+    "Set up a 30-minute meeting with Ivan sometime this week (week of Monday April 20, 2026, through Friday April 24) to go over the pilot kickoff. Check the user's calendar for open slots and Ivan's availability, propose/place the best 30-minute slot this week, and report back the confirmed time. If multiple options are needed, list the top choices. Do NOT send any invite or email without showing the user a draft first."
+   ],
+   [
+    68,
+    "result",
+    "Ivan asked if we can push the pilot kickoff to next week."
+   ],
+   [
+    187,
+    "instruction",
+    "Send the user's pilot kickoff notes to Gustavo and ask him for his comments by Wednesday. Prepare a draft email for the user to review before sending — do not send it yet. Surface the draft (recipient, subject, body) so the user can confirm or request edits."
+   ],
+   [
+    236,
+    "instruction",
+    "Set up a 30-minute meeting with Emeka this week to go over the pilot kickoff. Check my calendar for open slots and find a time that works, then send Emeka an invite (or email proposing specific times if needed). Report back with the proposed/confirmed time and any reply from Emeka."
+   ],
+   [
+    305,
+    "instruction",
+    "Reach out to Ivan and ask him to send the latest draft for the renewal by Friday. Report back with his response."
+   ],
+   [
+    318,
+    "instruction",
+    "The user reviewed the Ivan renewal draft and says it looks good, but wants the second paragraph cut. Please revise the draft by removing the second paragraph entirely, keep everything else the same, and share the updated draft back for the user to review before anything is sent."
+   ],
+   [
+    445,
+    "instruction",
+    "Pick up Ivan's renewal where it left off — it's been a few weeks. Review the latest status of the renewal (any open items, outstanding questions, or pending decisions), and surface what the next step is. Report back with a concise summary of where things stand and what's needed to move it forward."
+   ]
+  ],
+  "lena-swim-class": [
+   [
+    65,
+    "instruction",
+    "Find swim class options for Lena — look for local swim schools/classes, note the price, location, and upcoming session start dates. Identify the best fit and report back the details plus the cost so we can confirm it's within budget before booking. Do not book yet; just gather and report the top options."
+   ],
+   [
+    70,
+    "result",
+    "The first-choice swim class for Lena is full; the Tuesday/Thursday 4:30 class at the same pool has openings and I can sign her up there."
+   ],
+   [
+    71,
+    "result",
+    "Found three swim class options for Lena — Tuesday/Thursday 4:30, Wednesday 5:15, and Saturday 9:00 at the same pool — need you to pick one before I sign her up."
+   ],
+   [
+    109,
+    "instruction",
+    "For Lena's swim class signup, check whether there are any options closer to the user's home than the ones already found. Compare distance/commute from home and report back the closest alternatives with class times, availability, and pricing."
+   ],
+   [
+    191,
+    "instruction",
+    "Draft a message to Bea about Lena's school pickup. Say the user is excited and ask how they can help. Prepare the draft for the user's review (don't send yet)."
+   ],
+   [
+    195,
+    "result",
+    "Bea needs an answer on Lena's school pickup by Monday."
+   ],
+   [
+    384,
+    "instruction",
+    "Find swim classes for Lena that are closer to home than the current option. Compare locations/distance and report back the best closer options with details (location, schedule, price if available)."
+   ],
+   [
+    598,
+    "instruction",
+    "Find swim class options for Lena that are closer to home (nearer to the user's location) than whatever was previously surfaced. Report a few concrete options with locations, schedules, and pricing."
+   ]
+  ],
+  "spa-day": [
+   [
+    69,
+    "instruction",
+    "Find spa day options for the user (day spa packages, likely for the user and possibly a guest — check what the budget context allows). Determine the applicable budget for this, and if there's an option under budget, book it. Report back the options, prices, whether it fits the budget, and whether it was booked. If nothing is under budget or the budget is unclear, report that instead of booking."
+   ],
+   [
+    78,
+    "result",
+    "The first-choice spa is fully booked for the requested spa day; suggest the second-choice spa instead."
+   ],
+   [
+    78,
+    "instruction",
+    "Confirm the second-choice spa's price against the user's budget and its availability for the requested day, and hold a slot if it's under budget. Report back the price, what's included, and the day/time so the user can approve before it's confirmed."
+   ],
+   [
+    162,
+    "instruction",
+    "For the spa day, check whether there are any options closer to home than what was previously found. Report back with the closer-to-home options."
+   ]
+  ],
+  "odette-procurement-draft": [
+   [
+    73,
+    "instruction",
+    "Find Odette's email address (she may be the same contact from the procurement paperwork thread with Fiona - Procurement Paperwork). Then draft an email to Odette asking her to send the latest procurement draft by Friday. Show me the draft with her correct email address, subject, and body - do not send anything yet.\n\nAlso, check if there's an existing email thread with Odette about the procurement draft and reply in that thread if so."
+   ],
+   [
+    75,
+    "instruction",
+    "Update the draft note to Odette: in addition to asking her to send the latest procurement draft by Friday, also ask her to loop in her manager on the procurement stuff. Show the revised draft for user approval before sending."
+   ],
+   [
+    76,
+    "instruction",
+    "Draft a note to Odette asking her to send the latest NDA draft by Friday, mentioning it's needed for signature. Use Odette's correct email address (same contact you used for the procurement draft). Show me the draft text for review before sending — do not send it yet."
+   ],
+   [
+    82,
+    "instruction",
+    "The user wants to move the NDA call with Odette to Thursday. Locate the existing NDA call involving Odette, reschedule it to Thursday, and confirm the new time. If there's any conflict or the time isn't clear, report back with options."
+   ],
+   [
+    95,
+    "instruction",
+    "Draft a message to Odette asking her to loop in her manager on the NDA signature. Show the draft to the user for review before sending anything."
+   ],
+   [
+    112,
+    "instruction",
+    "On the Odette NDA, add that we'd like her to loop in her manager. Please draft the message to Odette asking her to loop in her manager on the NDA and surface it for the user's review before anything is sent."
+   ],
+   [
+    118,
+    "instruction",
+    "Status check: the user is asking for an update on Odette's NDA. Reminder that we earlier asked Odette to loop in her manager on the NDA. Please report where things stand — has Odette responded, has the manager been looped in, and what (if anything) is waiting on the user's side?"
+   ],
+   [
+    282,
+    "instruction",
+    "The user wants to pick the Odette NDA back up. Please check whether Odette still needs to sign the NDA — find out her current status on signing (whether she's signed, still pending, or needs a reminder), and report back."
+   ]
+  ],
+  "jade-nda-draft": [
+   [
+    74,
+    "instruction",
+    "Draft a short, polite note to Jade asking her to send the latest NDA draft by Friday. First find Jade's correct email address (check contacts/email history). Then show me the draft note (recipient, subject, body) for the user to review before anything is sent. Do not send it."
+   ],
+   [
+    94,
+    "instruction",
+    "Update the Jade NDA to include that the budget is capped at 20k. Make this change and show the updated draft for review before anything goes out."
+   ],
+   [
+    141,
+    "instruction",
+    "The user is asking for an update on Jade's NDA signature. Check the email thread with Jade regarding the NDA — has it been signed/sent back yet? Report the current status, plus the exact latest message from Jade if any, and what the next step is. Do not send anything."
+   ]
+  ],
+  "lorna-onboarding-notes": [
+   [
+    88,
+    "instruction",
+    "Find the user's onboarding call notes. Then draft a message/email to Lorna sharing those notes and asking her to send comments by Wednesday. Return the exact draft (recipient, subject if email, and full body text) so the user can review before it's sent. Do not send anything yet."
+   ],
+   [
+    129,
+    "instruction",
+    "The user wants to move the Lorna onboarding call to Thursday. Find the existing onboarding call invite and reschedule it to Thursday (this week). Show the user the updated invite details before sending anything."
+   ],
+   [
+    137,
+    "result",
+    "Lorna replied with a question about the timeline for the onboarding call."
+   ],
+   [
+    137,
+    "instruction",
+    "Lorna asked a question about the timeline for the onboarding call. Please share her exact message and what she's asking, so I can advise the user. Also note the user wants to move the onboarding call to Thursday."
+   ],
+   [
+    232,
+    "instruction",
+    "Message Lorna and ask what she needs from the user to get the renewal moving. Report back her response (or that the message was sent)."
+   ],
+   [
+    234,
+    "result",
+    "Lorna replied: she asked if we can push it to next week."
+   ],
+   [
+    238,
+    "instruction",
+    "Reply to Lorna and ask if there's any update on the renewal."
+   ],
+   [
+    279,
+    "instruction",
+    "The user says Friday works better for the onboarding call. Let Lorna know Friday works better for the user for the onboarding call, and confirm the details/next steps. Report back on her response."
+   ],
+   [
+    391,
+    "instruction",
+    "The user is asking about Lorna's renewal — what's the current status of the renewal process/thread with Lorna? Check the relevant email thread/context and report back where things stand: any drafts, replies, outstanding items, or dates. Give a concise status summary."
+   ]
+  ],
+  "tariq-camping-weekend": [
+   [
+    90,
+    "instruction",
+    "Draft a message to Tariq asking if there's any update on the camping weekend. Show the draft to the user for review before sending — do not send without confirmation."
+   ]
+  ],
+  "zara-big-sur-road-trip": [
+   [
+    92,
+    "instruction",
+    "Find Zara's contact info and draft a short message to her asking if she's still up for the Big Sur road trip. Do NOT send it — return the draft (recipient, subject, body) so the user can review it first."
+   ],
+   [
+    93,
+    "instruction",
+    "Ask Zara if she's still up for the Big Sur road trip. Draft the note for the user to review before anything is sent."
+   ],
+   [
+    99,
+    "result",
+    "Zara replied: she asked about the timeline for the road trip to Big Sur."
+   ],
+   [
+    140,
+    "instruction",
+    "Update on the Vera Big Sur trip: Sam can come too. Please add Sam to the group/participant list for this trip (headcount, lodging, transport, any reservations that depend on party size). Confirm back what needs updating."
+   ]
+  ],
+  "dina-camping-weekend": [
+   [
+    96,
+    "instruction",
+    "Find the contact Dina and message her asking what dates work for everyone for the camping weekend. Report back with the exact message you plan to send (or sent) so the user can review it before anything goes out."
+   ],
+   [
+    100,
+    "result",
+    "Dina replied: she's asking for the final numbers for the camping weekend."
+   ],
+   [
+    229,
+    "instruction",
+    "Give me a status update on the camping weekend with Dina. Summarize where things currently stand: what's been discussed, any open questions, decisions pending, and what (if anything) is waiting on the user. Keep it concise."
+   ]
+  ],
+  "lars-migration-meeting": [
+   [
+    97,
+    "instruction",
+    "Set up a 30-minute meeting with Lars this week to go over the migration. Find a slot that works this week and confirm the details. Report back the proposed time so the user can approve it before anything is finalized."
+   ],
+   [
+    102,
+    "result",
+    "Lars replied: he needs an answer on the API migration by Monday."
+   ],
+   [
+    136,
+    "instruction",
+    "The user is asking for an update from Lars on the migration. Check your thread/context with Lars regarding the migration (meeting, status, decisions, next steps) and report back: latest status, what Lars has said, and anything outstanding that needs the user's attention or a response."
+   ],
+   [
+    143,
+    "result",
+    "Lars replied: he confirmed for the API migration and said thanks."
+   ],
+   [
+    188,
+    "instruction",
+    "Draft a message to Lars asking what he needs from the user to get the vendor security review moving. Show the draft to the user for approval before sending."
+   ],
+   [
+    201,
+    "instruction",
+    "The user reviewed the security review draft for Lars and says it looks good, but wants the second paragraph cut. Please revise the draft by removing the second paragraph and resend the updated version for review."
+   ],
+   [
+    268,
+    "instruction",
+    "The user is asking for a status update on the API migration with Lars. Please summarize where things currently stand: what's been done, what's pending, any open questions or blockers, and any next steps or decisions waiting on the user."
+   ],
+   [
+    269,
+    "instruction",
+    "Check the current status of the API migration with Lars. The user dropped it and wants to know where things stand. Summarize the latest state and any outstanding action items, then report back."
+   ]
+  ],
+  "dog-sitter-search": [
+   [
+    101,
+    "instruction",
+    "The user needs a dog sitter for next weekend. Find available dog sitting options in their area for next weekend (Saturday and Sunday). Check reputable dog sitting services (e.g., Rover, Wag, local sitters) and compile a list of available sitters with their availability, rates, and any relevant details like reviews or experience. Report back the best options."
+   ],
+   [
+    120,
+    "instruction",
+    "The user wants to go with the cheaper option for the dog sitter. Please proceed accordingly with the cheaper option, and show the user the details before anything is finalized or booked."
+   ],
+   [
+    130,
+    "instruction",
+    "The user wants to change the dog sitter booking to the following weekend (i.e., shift the dates one weekend later). Please update the dog sitter arrangement accordingly. Show the user the updated details/options before anything is locked in."
+   ],
+   [
+    237,
+    "instruction",
+    "Update: the dog sitter search should be for TWO people instead of one. Please revise the search/arrangement accordingly and report back where things stand."
+   ],
+   [
+    239,
+    "result",
+    "Booked the dog sitter for two people; confirmation is in the inbox."
+   ]
+  ],
+  "vienna-hotel": [
+   [
+    103,
+    "instruction",
+    "Find hotel options in Vienna for next weekend. The user needs a hotel in Vienna next weekend — determine the specific dates for \"next weekend,\" then search for available hotels and return a handful of good options with dates, location, price per night, and booking links. Show the user the options before anything is booked — do not make any reservation or payment without explicit confirmation."
+   ],
+   [
+    122,
+    "instruction",
+    "The user wants to change the Vienna hotel booking to the following weekend (i.e., shift the dates forward by one week to the next weekend). Please update the search/booking accordingly and report back the updated options or booking details (dates, hotel, price) for the user to review before confirming anything."
+   ],
+   [
+    126,
+    "result",
+    "The hotel in Vienna went up in price; do you want to go ahead?"
+   ],
+   [
+    250,
+    "instruction",
+    "The user is asking whether the Vienna hotel booking is still on/confirmed. Please check the current status of the Vienna hotel reservation and report back: is it still active/confirmed, any upcoming dates, and any pending actions or deadlines related to it?"
+   ]
+  ],
+  "yuki-conference-talk": [
+   [
+    104,
+    "instruction",
+    "Find and propose a 30-minute meeting slot with Yuki this week to go over the conference talk proposal. Check Yuki's availability and suggest times. Do not finalize/lock in the meeting until the user confirms the time. Report back the proposed slot(s)."
+   ],
+   [
+    106,
+    "result",
+    "Yuki replied: asked if we can push the 30-minute conference talk proposal review to next week."
+   ]
+  ],
+  "elise-analytics-dashboard": [
+   [
+    105,
+    "instruction",
+    "Draft a message to Elise asking her to send the latest analytics dashboard draft by Friday. Find the right contact/thread for Elise and prepare the message for the user's review. Do not send anything yet — just prepare the draft and surface it back."
+   ],
+   [
+    115,
+    "instruction",
+    "Let Elise know that Friday works better for the user on the analytics dashboard. Please send this message to Elise. Show the user the draft before it goes out."
+   ],
+   [
+    306,
+    "instruction",
+    "Share the user's notes on the analytics dashboard with Hector, and ask him to send comments by Wednesday."
+   ],
+   [
+    325,
+    "instruction",
+    "The user dropped this project a few weeks ago and wants a status update on where the analytics dashboard stands. Please report current progress, any blockers, outstanding decisions needed from the user, and next steps."
+   ]
+  ],
+  "adele-tickets": [
+   [
+    110,
+    "instruction",
+    "The user wants to know what Adele concert tickets are available for next weekend. Next weekend is the weekend of May 9-10, 2026 (the coming weekend after the current date of April 29, 2026). Search for available Adele concert tickets for that weekend, including venue, dates, seat options, and prices. Report back with the available options."
+   ],
+   [
+    111,
+    "instruction",
+    "Update: the user changed the request. Instead of next weekend, check what Adele tickets are available for the FOLLOWING weekend (the weekend after next weekend). Report options for that weekend."
+   ],
+   [
+    300,
+    "instruction",
+    "Give me a status update on the Adele tickets request. What's the latest — did anything get booked or purchased, what options were found, and what's the current state / any pending decision or action needed from the user? Provide a concise summary."
+   ]
+  ],
+  "oslo-flights": [
+   [
+    119,
+    "instruction",
+    "Find flight options to Oslo for next weekend. Report back with the available options (airline, times, price, layovers) so the user can choose. Do not book anything yet."
+   ],
+   [
+    125,
+    "result",
+    "Booked the flight to Oslo; the confirmation is in your inbox."
+   ],
+   [
+    125,
+    "instruction",
+    "Hold on — the user only asked to check what was available to Oslo next weekend, not to book. Please send me the exact booking details (airline, flight numbers, dates/times, price, fare class, and cancellation/refund policy) and confirm whether it's refundable. Do not make any further changes to this reservation until the user reviews it."
+   ]
+  ],
+  "max-weller-nda-meeting": [
+   [
+    123,
+    "instruction",
+    "Find and hold a 30-minute slot this week for the user to go over the NDA with Max Weller. Propose a few available times and share the options/draft invite with me before sending or confirming anything with Max Weller."
+   ],
+   [
+    139,
+    "instruction",
+    "The user reviewed the Max Weller NDA draft and says it looks good, but wants the second paragraph removed. Please revise the draft by cutting the second paragraph, keep everything else as-is, and show the updated draft for review."
+   ],
+   [
+    243,
+    "instruction",
+    "Tell Max Weller the user needs one more day on the NDA. Send the message and report back any reply."
+   ]
+  ],
+  "watch-battery-replacement": [
+   [
+    127,
+    "instruction",
+    "Find options for getting the user's watch battery replaced. Research local watch repair shops/services near the user, plus any manufacturer or authorized service options. Compare price, turnaround time, reputation/reviews, and convenience (drop-off vs mail-in). Return a concise recommendation of the best overall choice along with 2-3 alternatives and why. Do not book anything — just present the options."
+   ],
+   [
+    154,
+    "instruction",
+    "Update the watch battery replacement booking to be for two people instead of one — Sam needs his watch battery replaced as well. Please adjust the appointment/booking accordingly (for 2 people) and confirm the details."
+   ],
+   [
+    164,
+    "instruction",
+    "The user is asking for an update on the watch battery replacement. Please report the current status — who you've contacted, any replies received, and next steps."
+   ],
+   [
+    308,
+    "instruction",
+    "The user is asking for a status update on the watch battery replacement — they say they never heard back. Please report the current status: what was done, whether it's still in progress or complete, and any pending details the user needs to act on."
+   ]
+  ],
+  "honolulu-flights": [
+   [
+    131,
+    "instruction",
+    "Look into the user's flight to Honolulu. Check the user's inbox, sent mail, and any travel/booking records for anything related to a Honolulu trip (search terms: Honolulu, HNL, Hawaii, Oahu). Determine: whether any booking exists, whether any search or quote was ever done, what dates/travelers are implied, and where things currently stand. Report back with a clear status summary — if nothing exists, say so plainly. Do not book anything."
+   ]
+  ],
+  "abby-podcast-guest-spot": [
+   [
+    132,
+    "instruction",
+    "Find the email from Abby about a podcast guest spot in the user's inbox. Once found, draft a reply from the user to Abby that says the user is excited about the guest spot and asks how they can help. Return the recipient email address, the subject line (keep the same thread/subject so it's a proper reply), and the full draft body text so the user can review it before it's sent. Do NOT send anything yet."
+   ],
+   [
+    138,
+    "result",
+    "Abby replied: she has a question about the timeline for the podcast guest spot."
+   ],
+   [
+    138,
+    "instruction",
+    "Abby replied with a question about the timeline for the podcast guest spot. Retrieve her exact message and report the full text back to me so I can relay it to the user. Also confirm the current status of the draft reply."
+   ],
+   [
+    249,
+    "instruction",
+    "Reach out to Abby and ask if she's still up for fantasy (fantasy football/league). Keep it casual and brief. Report back her reply."
+   ],
+   [
+    259,
+    "result",
+    "Abby replied about the fantasy football league — she needs an answer by Monday."
+   ]
+  ],
+  "ruth-babysitting": [
+   [
+    134,
+    "instruction",
+    "Find the existing email/text thread with Ruth about babysitting. Determine the dates/times needed and what the current status of the arrangement is (did she agree, was it left open, etc.).\n\nThen draft a short, friendly message to Ruth asking whether she's still up for babysitting and confirming the schedule details. Do NOT send anything yet — report back the thread context, the relevant dates/times, and the exact draft text for the user to approve."
+   ],
+   [
+    147,
+    "result",
+    "Ruth replied: she needs an answer by Monday about the babysitting schedule."
+   ],
+   [
+    286,
+    "instruction",
+    "We're picking the Ruth babysitting schedule back up. Please review where things left off with Ruth regarding the babysitting schedule — what was last discussed/agreed, any open questions or pending decisions — and report the current status back to me."
+   ]
+  ],
+  "farah-q3-roadmap-review": [
+   [
+    135,
+    "instruction",
+    "Find the email thread with Farah about the Q3 roadmap review scheduling. Draft a reply from the user saying that Friday works better for them for the Q3 roadmap review. Show me the exact draft (recipient, subject, body) so the user can review before anything is sent. Do not send it."
+   ],
+   [
+    579,
+    "instruction",
+    "Draft a short message to Farah saying the Q3 roadmap draft looks good, with one change: cut the second paragraph. Do not send it — return the draft text (recipient, subject, body) to me for the user's review."
+   ]
+  ],
+  "dina-big-sur-road-trip": [
+   [
+    148,
+    "instruction",
+    "Draft a short message to Dina asking whether she is still up for the Big Sur trip. Do not send it — just draft it and report the exact draft text (recipient, subject if it's an email, and body) back to me so I can get the user's confirmation before sending. If it's better sent as a text/message rather than email, draft it in that channel and tell me which channel."
+   ],
+   [
+    153,
+    "instruction",
+    "Reach out to Dina to ask for any update on the Big Sur road trip. Draft the message for the user to review before sending anything."
+   ],
+   [
+    158,
+    "result",
+    "Dina replied: Thursday at 3 works for the Big Sur road trip."
+   ],
+   [
+    170,
+    "instruction",
+    "Check for any update from Dina regarding the Big Sur road trip. Report back the latest status or her response."
+   ],
+   [
+    181,
+    "instruction",
+    "Regarding the Big Sur road trip, let Dina know the user will call her tonight. Prepare the message/email for Dina with this note and surface the draft to the user for review before sending."
+   ],
+   [
+    206,
+    "instruction",
+    "Draft a message to Dina letting her know the user is excited about the borrowed camera, and asking how the user can help. Show the draft for approval before sending. If there's a more relevant existing thread/Dina agent for the camera topic, use that context instead."
+   ],
+   [
+    210,
+    "result",
+    "Dina confirmed she got the borrowed camera and said thanks."
+   ],
+   [
+    211,
+    "instruction",
+    "Continue the thread with Dina about the Big Sur road trip. The user is excited about the borrowed camera and wants to know how they can help. Now also ask Dina if she needs the user to bring anything for Big Sur. Draft a reply/email to Dina and show it for the user's review before sending anything."
+   ],
+   [
+    214,
+    "result",
+    "Dina replied about the Big Sur road trip: she needs an answer by Monday."
+   ],
+   [
+    368,
+    "instruction",
+    "Two things:\n1) Check for any update from Dina regarding the Wicked tickets — reply from her, status, anything she's said. Report back what you find.\n2) Ask Dina whether she needs the user to bring anything for the Big Sur road trip. If this requires sending an email or message, prepare a draft and report the exact text and recipient back to me — do NOT send it without confirmation."
+   ]
+  ],
+  "bruno-conference-talk-proposal": [
+   [
+    149,
+    "instruction",
+    "Draft a check-in message to Bruno about the conference talk proposal. The user wants to wrap it up before the end of the month. Ask where things stand and what's needed to finalize. Prepare the draft for the user to review before sending."
+   ],
+   [
+    151,
+    "result",
+    "Bruno replied: he confirmed the conference talk proposal and said thanks."
+   ],
+   [
+    218,
+    "instruction",
+    "New task for Bruno (same person as before): set up a 30-minute meeting with Bruno this week to go over quarterly OKRs. Find a time that works this week, propose a couple of options, and coordinate with Bruno to confirm the slot. Report back with the confirmed time or the options Bruno can choose from. If a reply needs to be sent on the user's behalf, prepare it as a draft for the user to review first."
+   ],
+   [
+    291,
+    "result",
+    "Bruno replied with a question about the timeline for the quarterly OKRs."
+   ]
+  ],
+  "flora-trivia-night": [
+   [
+    150,
+    "instruction",
+    "Reach out to Flora and ask her what she thinks we should do about trivia night. Draft the message for the user to review before sending, and show the draft so it can be approved or edited."
+   ],
+   [
+    152,
+    "result",
+    "Flora replied: she confirmed trivia night and said thanks."
+   ],
+   [
+    157,
+    "instruction",
+    "Draft a follow-up message to Flora in the existing trivia night thread. Ask Flora if trivia night could be pushed back a week. Prepare the draft for the user to review before anything is sent."
+   ],
+   [
+    275,
+    "instruction",
+    "What's the latest status on the trivia night with Flora from a few weeks ago? Report back where things landed — did Flora confirm, decline, or is it still pending?"
+   ]
+  ],
+  "maui-rental-car": [
+   [
+    153,
+    "instruction",
+    "The user wants to go with the cheaper option for the rental car in Maui. Find the rental car options for Maui, identify the cheaper one, and proceed with booking/selecting that cheaper option. Report back with the details (company, price, dates)."
+   ]
+  ],
+  "eli-half-marathon": [
+   [
+    155,
+    "instruction",
+    "The user wants to reach out to Eli. Draft a message to Eli expressing that the user is excited about the half marathon training and asking how the user can help. Show the draft to the user for approval before sending anything."
+   ],
+   [
+    155,
+    "instruction",
+    "Disregard the previous request — another agent is already handling this message to Eli. Please do not draft or send anything."
+   ],
+   [
+    161,
+    "instruction",
+    "Update the draft note to Eli about half marathon training to also mention that the user will call him tonight to talk about the half marathon training. Show the revised draft to the user for approval before sending."
+   ],
+   [
+    244,
+    "instruction",
+    "Reach out to Max Okonkwo regarding half marathon training. Tell them the user is excited, and ask how the user can help. Draft the message and show it to the user for approval before sending."
+   ],
+   [
+    331,
+    "instruction",
+    "The user wants to pick back up half marathon training with Eli. Check where things stood with Eli on the half marathon training (last plan/schedule, any open threads), and figure out the next step — e.g., a training plan or schedule to resume. Reach out to Eli if needed to get things going again, and report back what's needed to restart."
+   ]
+  ],
+  "ray-clogged-drain": [
+   [
+    159,
+    "instruction",
+    "Draft an email/message to Ray asking whether next Tuesday morning works for the clogged drain appointment/service. Show me the draft before sending anything."
+   ],
+   [
+    186,
+    "instruction",
+    "The user is asking for a status update on the clogged drain situation with Ray. Please report the current status: has Ray been contacted, has the drain been looked at or scheduled, and what's the latest? If there's no update yet, please follow up with Ray to get one and report back."
+   ],
+   [
+    209,
+    "instruction",
+    "The user is asking for an update on the clogged drain situation with Ray. Please report the current status: what's been done so far, any replies from Ray or a plumber, scheduling details, costs, and what the next step is. If nothing has happened yet, say so clearly."
+   ],
+   [
+    212,
+    "instruction",
+    "Following up on the Ray drain situation: please reach out to Ray to confirm the appointment time for the drain service. Ask him to confirm the exact date and time. Once you have his reply, report back the confirmed appointment time. Do not send anything without showing me the draft first if a message is needed."
+   ],
+   [
+    220,
+    "result",
+    "Ray replied about the clogged drain with a question about the timeline."
+   ],
+   [
+    220,
+    "instruction",
+    "Share Ray's exact reply/question about the timeline verbatim so I can relay it to the user and figure out how to respond."
+   ],
+   [
+    240,
+    "instruction",
+    "Let Ray know that the drain problem is back again. Reply to the appropriate thread if one exists."
+   ],
+   [
+    571,
+    "instruction",
+    "Ask Ray what the earliest available slot is to come out for the garbage disposal (and confirm the clogged drain side too, if it's still pending). Report back the earliest window he offers."
+   ],
+   [
+    573,
+    "result",
+    "Ray replied: Thursday at 3 works for the disposal."
+   ],
+   [
+    588,
+    "instruction",
+    "Ray now has a leaky faucet and it's urgent (on top of the earlier clogged drain issue). Find what we can do: identify emergency/same-day plumber options near Ray, get a sense of likely causes/urgency-level fixes (e.g., shutting off the supply valve, whether it needs a pro), and surface the best available booking slots. Report back with concrete options and pricing. Do not book anything yet — just gather options and report back."
+   ],
+   [
+    611,
+    "instruction",
+    "The user wants confirmation of the appointment time with Ray for the leaky faucet repair. Reach out to Ray (plumber) to confirm the exact appointment date and time for the faucet leak visit, and report back the confirmed details. If there's no appointment booked yet or the timing is unclear, find out what's on the calendar and get it confirmed."
+   ],
+   [
+    620,
+    "instruction",
+    "Follow up with Ray on the leaky faucet appointment — confirm the exact appointment time and report back with the confirmed time. If a time was already discussed, verify it's still locked in."
+   ]
+  ],
+  "vancouver-flight": [
+   [
+    160,
+    "instruction",
+    "For the Vancouver flight, in addition to the current options, also check whether there are any departures from airports closer to home (i.e., closer to the user's location). Compare options and report back the alternatives."
+   ]
+  ],
+  "sam-baby-shower": [
+   [
+    162,
+    "instruction",
+    "Let Sam know that Saturday works better for us for the baby shower. Prepare a short draft message/email to Sam and have it ready for the user to review before it's sent."
+   ],
+   [
+    292,
+    "instruction",
+    "Reach out to Sam and ask what they think we should do for Thanksgiving this year. Get their thoughts/ideas and report back what Sam says."
+   ],
+   [
+    344,
+    "instruction",
+    "The user is asking for a status update on the baby shower related to Sam. Please report back the current status: what's been done, what's pending, any outstanding decisions or blockers, and next steps."
+   ]
+  ],
+  "victor-landing-page-copy": [
+   [
+    163,
+    "instruction",
+    "Draft a message to Victor asking what he needs from the user to get the landing page copy moving. Before sending anything, show the draft to the user for review. Do not send until the user confirms."
+   ],
+   [
+    165,
+    "instruction",
+    "Fold this into the note to Victor about the landing page copy: also ask Victor to move the call to Thursday, still on the landing page. Keep it as a single message to Victor and show the user a draft before it goes out."
+   ],
+   [
+    416,
+    "instruction",
+    "Let Victor know that Friday works better for the user regarding the landing page copy."
+   ]
+  ],
+  "ingrid-performance-review": [
+   [
+    166,
+    "instruction",
+    "Draft a message to Ingrid asking what she needs from the user in order to get the performance review moving. Find the correct recipient/thread. Do not send yet — return the draft (to, subject, body) for the user to review."
+   ]
+  ],
+  "library-book-renewals": [
+   [
+    167,
+    "instruction",
+    "The user wants to renew their library books. Look into their library account, find out which books are due/checked out, and determine the renewal options (how many renewals are allowed, whether any items are on hold or can't be renewed, and renewal lengths). Then identify and tell me the best choice for renewal. Report back with the specifics: which books, due dates, what can be renewed, and your recommendation."
+   ],
+   [
+    168,
+    "instruction",
+    "The user is asking for an update on renewing their library books. Please report the current status and your recommendation on the best choice for renewal. If you have the recommendation ready, share it now."
+   ],
+   [
+    175,
+    "instruction",
+    "Update the library book renewal task: it should cover renewals for BOTH Theo's and Lena's library books, not just a single set. Make sure both are renewed (or the best renewal option is found for both)."
+   ],
+   [
+    178,
+    "result",
+    "Renewed Lena's books at the library, but Theo's first choice couldn't be renewed — the copy is fully booked out — so I'd suggest switching him to the available edition or placing a hold for Thursday."
+   ],
+   [
+    189,
+    "instruction",
+    "The user wants to renew the library books. There are apparently multiple options/prices — go with the cheaper option. Confirm the details (which books, cost) and proceed with the cheaper renewal option."
+   ],
+   [
+    362,
+    "instruction",
+    "The user wants to check for library books (or a library branch) closer to home. Find library options/branches closest to the user's home address. Report back the closest options."
+   ],
+   [
+    363,
+    "result",
+    "Renewal at the closest library branch couldn't go through — it's fully booked — so the next option is the branch two blocks farther out on Elm, which has open slots this week."
+   ],
+   [
+    511,
+    "instruction",
+    "Give me a status update on the library book renewals: what's the current state, which books were renewed, which couldn't be, any fees or deadlines, and anything that still needs the user's decision."
+   ],
+   [
+    512,
+    "instruction",
+    "The user is asking what happened with renewing their library books. Please check the current status of the library book renewals — which books are due, whether renewals went through, and any issues (holds, limits, fines). Report back a clear summary of the status."
+   ],
+   [
+    513,
+    "instruction",
+    "User is asking for a status update on the library book renewals. Please report back on where things stand: which books were up for renewal, which have been renewed, and any that need the user's input or a decision."
+   ]
+  ],
+  "walter-anniversary-dinner": [
+   [
+    169,
+    "instruction",
+    "Find the best way to reach Walter (check email/contacts for a Walter connected to an anniversary dinner). Draft a short, friendly message from the user asking if he's still up for the anniversary dinner. Show the draft to the user for review before sending — do not send anything yet."
+   ],
+   [
+    221,
+    "instruction",
+    "Ask Walter if the anniversary dinner can be pushed back by one week. Report back with his response."
+   ],
+   [
+    402,
+    "instruction",
+    "The user is asking where the anniversary dinner for Walter ended up. Please look back through this agent's task history/context and report the current status and outcome — e.g., what was the final plan, reservation details, date/time/location, and any confirmation status or open items. Provide a concise summary of the latest state."
+   ],
+   [
+    480,
+    "instruction",
+    "What's the current status of the anniversary dinner? Reply with a concise update (any confirmations, reservations, outstanding questions)."
+   ],
+   [
+    499,
+    "instruction",
+    "The user is asking for an update on the anniversary dinner with Ollie. Please report back the current status: what's been booked/reserved or searched, any options found, and any outstanding decisions the user needs to make. If this agent isn't the right one, search for the correct one related to the anniversary dinner and report status."
+   ],
+   [
+    517,
+    "result",
+    "Told Cole Sam can come too; Cole replied asking for the final numbers for game night."
+   ],
+   [
+    632,
+    "instruction",
+    "The user wants to ask Frank what dates work for everyone for the anniversary dinner. Coordinate with that outreach as needed and report back any relevant details from the anniversary dinner thread."
+   ]
+  ],
+  "porto-hotel": [
+   [
+    172,
+    "instruction",
+    "Find hotel options in Porto, Portugal for the user's trip and determine which ones come in under budget. First confirm the user's budget and travel dates (check any prior context you have). If a suitable option comes in under budget, prepare to book it — but do NOT finalize the booking until the user confirms. Report back the recommended hotel, price, and whether it's under budget, along with anything needed to complete the booking."
+   ],
+   [
+    199,
+    "instruction",
+    "Update the Porto hotel booking to be for two people instead of one. Confirm the change once it's done."
+   ],
+   [
+    312,
+    "instruction",
+    "The user is circling back on the Porto hotel from a few weeks ago. What was the final outcome — was a hotel booked/reserved, which one, what dates, price, and any confirmation details or pending decisions? Summarize the current status and anything still outstanding."
+   ],
+   [
+    313,
+    "instruction",
+    "Look back through recent conversations/messages about a hotel in Porto (mentioned a few weeks ago) and find out where that ended up — was it booked, shortlisted, or dropped? Report the current status and any relevant details (which hotel, price, dates, booking status)."
+   ]
+  ],
+  "hector-conference-talk-notes": [
+   [
+    173,
+    "instruction",
+    "The user wants to share their conference talk proposal notes with Hector and ask him for comments by Wednesday. \n\n1. Locate the user's conference talk proposal notes (there may be relevant context in the \"Bruno - Conference Talk Proposal\" work if it exists).\n2. Draft an email to Hector sharing those notes and asking him for his comments by Wednesday.\n3. Report back the draft (recipient, subject, body) so the user can review before it's sent. Do not send anything without approval."
+   ]
+  ],
+  "sedona-rental-car": [
+   [
+    177,
+    "instruction",
+    "Find a rental car booking for Sedona and book it ONLY if the total price comes in under budget. First, determine the budget (check the user's notes/emails/travel plans for a Sedona trip and any stated rental car budget). Search available rental cars in Sedona for the relevant dates. If you find an option under budget, prepare the booking and report back the details (company, dates, price) for confirmation BEFORE finalizing. If nothing fits the budget, report that. Do not lock in anything without confirmation."
+   ],
+   [
+    196,
+    "instruction",
+    "The user wants to change the Sedona rental car booking to the following weekend (i.e., shift the reservation from the originally booked weekend to the next weekend). Update the rental car reservation dates accordingly. If you need clarification on exact dates, flag it. Confirm the new dates and pricing once changed."
+   ],
+   [
+    200,
+    "instruction",
+    "The user wants to go with the cheaper option for the Sedona rental car. Please confirm which option is cheaper and proceed with booking that one. Note: the user also previously asked to move the rental to the following weekend (relative to the original dates), so make sure the cheaper option selection is for the updated weekend dates. Confirm the final details back."
+   ],
+   [
+    205,
+    "instruction",
+    "Confirm the status of the Sedona rental car booking. The user wants the cheaper option (already requested earlier). Make sure the reservation is set to the cheaper option, and also confirm it's moved to the following weekend as previously requested. Report back the final details: company, car class, pickup/dropoff dates, and price."
+   ]
+  ],
+  "kai-grandma-s-recipes": [
+   [
+    182,
+    "instruction",
+    "Reach out to Kai and ask what they think we should do about grandma's recipes. If there's prior context (existing thread/email with Kai about this), reply in that thread; otherwise find the best way to contact Kai. Draft the message and show it to the user for approval before sending."
+   ],
+   [
+    184,
+    "result",
+    "Kai replied: they need an answer on Grandma’s recipes by Monday."
+   ],
+   [
+    185,
+    "result",
+    "Kai confirmed on Grandma's recipes and said thanks."
+   ],
+   [
+    609,
+    "instruction",
+    "Reach out to Kai and let them know the user is able to help out on the weekend for their dad's retirement party. Use whatever contact method you already have for Kai (reference any prior context you have on Kai), confirm the message was sent, and report back with how it went."
+   ]
+  ],
+  "museum-membership-renewal": [
+   [
+    183,
+    "instruction",
+    "Renew the user's museum membership. First check the renewal price against the user's budget for this — if it's under budget, go ahead and book/renew it. Report back the membership name, renewal cost, budget used, and confirmation details."
+   ]
+  ],
+  "heidi-statement-of-work": [
+   [
+    193,
+    "instruction",
+    "Reach out to Heidi about the statement of work. Let her know the user would like to wrap it up before the end of the month. Find the right contact/thread for Heidi, draft the message, and return the draft (recipient, subject, body) for the user to review before sending."
+   ],
+   [
+    197,
+    "result",
+    "Heidi replied: Thursday at 3 works for the statement of work."
+   ],
+   [
+    208,
+    "instruction",
+    "Reach out to Heidi and ask what she needs from the user to get the invoice dispute moving. Draft an email to Heidi requesting this, and share the draft with the user for review before sending anything."
+   ],
+   [
+    216,
+    "instruction",
+    "The user wants to reply to Heidi regarding the invoice dispute, telling her that Friday works better for the user. Prepare a short, friendly reply to Heidi. Do NOT send it — return the draft (recipient, subject, body) so the user can review it first."
+   ],
+   [
+    217,
+    "result",
+    "Heidi replied about the invoice dispute: she needs an answer by Monday."
+   ],
+   [
+    407,
+    "instruction",
+    "Look back through past emails/messages and any relevant history to find out where the old invoice dispute with Heidi ended up. Report the final status/outcome — did it get resolved, what was agreed, and where things currently stand. Include dates if possible."
+   ]
+  ],
+  "boston-flights": [
+   [
+    194,
+    "instruction",
+    "Find a few flight options to Boston for the user and send them to the user. If the user has not specified travel dates, look for reasonable upcoming options and note the dates. Report back with the best options (airline, times, price, and any tradeoffs)."
+   ],
+   [
+    247,
+    "instruction",
+    "The user wants to move their Boston flight to the following weekend instead. Update the booking accordingly and confirm the new dates."
+   ],
+   [
+    385,
+    "instruction",
+    "The user is asking what happened with the Boston flight from a few weeks ago — the status/outcome of that task. Please retrieve whatever context exists on this Boston flight task (the original request, any booking made, prices found, or replies from the user) and report the current status. Note: search the user's email/calendar/tools as needed to reconstruct what happened."
+   ]
+  ],
+  "aisha-team-offsite": [
+   [
+    202,
+    "instruction",
+    "Find Aisha's contact info and draft a brief, friendly message to her asking what she needs from the user in order to get the offsite moving. Prepare it as an email draft and report back the recipient, subject, and body so the user can review before sending. Do not send it."
+   ]
+  ],
+  "signe-postmortem-draft": [
+   [
+    203,
+    "instruction",
+    "Draft a message (email) to Signe asking her to send the latest postmortem draft by Friday. Find the correct contact/thread for Signe and the postmortem context. Do not send — return the draft for the user to review."
+   ],
+   [
+    246,
+    "instruction",
+    "Reach out to Signe and ask them to loop in their manager on the postmortem. Keep the message short and friendly."
+   ]
+  ],
+  "solar-panel-quotes": [
+   [
+    204,
+    "instruction",
+    "Look into solar panel quotes for the user and identify the best choice. Gather and compare quotes from reputable solar providers, factoring in price, equipment quality, warranties, financing options, and reputation. Then recommend the single best option with a brief justification, and note the runner-up. If you need specifics from the user such as location, home size, average monthly electricity usage, or budget to give an accurate recommendation, list those questions clearly."
+   ],
+   [
+    207,
+    "result",
+    "The first solar company replied: they are full, and suggest Sunrun as an alternative."
+   ]
+  ],
+  "tennis-court-booking": [
+   [
+    213,
+    "instruction",
+    "Find a few tennis court options for the user to book. Compile a shortlist of available courts with details (location, indoor/outdoor, surface, price, hours, booking process). If the user's location or preferred timeframe isn't known from context, gather general options and note what info is needed to narrow it down. Report back the options."
+   ],
+   [
+    219,
+    "instruction",
+    "The user wants to go with the cheaper option among the tennis court options you found. Please proceed with booking the cheaper court option. If a confirmation or reply email is needed, prepare a draft for the user to review — do not send anything yet."
+   ],
+   [
+    228,
+    "result",
+    "The tennis court is booked, and the confirmation is in your inbox."
+   ]
+  ],
+  "lucca-table-search": [
+   [
+    222,
+    "instruction",
+    "The user wants a table at a restaurant called \"Lucca.\" Look into available table/reservation options at Lucca and determine the best choice. Find a few options (dates/times/table types/party size) and recommend the best one. Report back the shortlist with your recommendation."
+   ],
+   [
+    303,
+    "instruction",
+    "The user wants to know if there's a restaurant table available closer to home than the table at Lucca. Look for alternatives closer to the user's home and report availability. Give a clear comparison of options."
+   ],
+   [
+    334,
+    "instruction",
+    "The user wants to change the Lucca table reservation from one person to two. Update the reservation/booking request to be for a party of two instead of one. Confirm the change and report back the result."
+   ],
+   [
+    358,
+    "instruction",
+    "The user has decided: go with the cheaper table option at Lucca. Please proceed with booking/reserving the cheaper option and confirm the details (date, time, party size, price)."
+   ],
+   [
+    476,
+    "instruction",
+    "Check the current status of the Lucca table reservation. Is the table still booked/on? Let me know the date, time, party size, and any recent status updates or confirmation details."
+   ]
+  ],
+  "ximena-bachelor-party": [
+   [
+    226,
+    "instruction",
+    "Reach out to Ximena and ask if she's still up for the bachelor party. Report back her response."
+   ],
+   [
+    373,
+    "instruction",
+    "The user wants to pick back up the Ximena bachelor party planning from a few weeks ago. Please pull up the current state of this planning effort — what's been decided, what options were gathered, what's still pending, and any outstanding questions or next steps. Report back a concise summary so we can resume."
+   ]
+  ],
+  "samir-team-offsite": [
+   [
+    230,
+    "instruction",
+    "The user needs to wrap up the team offsite with Samir before the end of the month. Check where things currently stand on the team offsite (look at any prior context, including related agents like \"Nina Castillo - Team Offsite\" and \"Aisha - Team Offsite\"), then reach out to Samir to move things to a close. Report back the current status, what's outstanding, and any response from Samir so the user can finalize before month-end."
+   ],
+   [
+    233,
+    "instruction",
+    "Send a message to Samir letting him know the user needs one more day for the team offsite. Keep it brief and friendly."
+   ],
+   [
+    235,
+    "result",
+    "Samir confirmed the extra day for the team offsite and said thanks."
+   ]
+  ],
+  "prescription-refill": [
+   [
+    241,
+    "instruction",
+    "The user wants to refill their prescription and book it if it's under budget. Find their prescription details (pharmacy, medication, prior refill info) and the relevant budget threshold, then refill/order it and book/pay if the cost is under budget. If it's over budget, do not book — report the cost back so the user can decide. Report back what was found, the cost, and whether it was booked."
+   ],
+   [
+    243,
+    "instruction",
+    "Change the prescription refill timing — it should now be for the following weekend instead of the original weekend. Refill and book only if it's under budget, as before."
+   ],
+   [
+    255,
+    "instruction",
+    "The user is asking for an update on the prescription refill. Please check the current status (e.g., whether it was submitted to the pharmacy, whether it's ready for pickup, any issues or pending items) and report back concisely."
+   ],
+   [
+    257,
+    "instruction",
+    "Status update: get the current status of the prescription refill, and specifically check whether there's a pharmacy or pickup location closer to home than the current one. Report back what the options are."
+   ],
+   [
+    260,
+    "result",
+    "Checked on the prescription refill: a closer pharmacy is available, but the price went up — should I go ahead?"
+   ]
+  ],
+  "brendan-game-night": [
+   [
+    245,
+    "instruction",
+    "Tell Brendan that the user can help out on the weekend for game night. Reach out to Brendan with this message and report back any response."
+   ],
+   [
+    248,
+    "result",
+    "Brendan replied: he still needs an answer by Monday about whether you can help out with game night this weekend."
+   ],
+   [
+    480,
+    "instruction",
+    "What's the current status of game night? Reply with a concise update (who's confirmed, timing, any outstanding questions)."
+   ],
+   [
+    516,
+    "instruction",
+    "For the game night, let Cole know that Sam can come too. Please relay this to Cole (reach out to him if needed) and confirm the headcount update is noted."
+   ]
+  ],
+  "trent-permit-stuff": [
+   [
+    251,
+    "instruction",
+    "Reach out to Trent and ask if next Tuesday morning works for the permit stuff. Wait for his reply and report back."
+   ],
+   [
+    254,
+    "result",
+    "Trent replied: he asked if we can push the permit paperwork to next week."
+   ],
+   [
+    279,
+    "instruction",
+    "The user wants Trent to send the invoice for the permit paperwork. Ask Trent to send over the invoice for the permit paperwork as soon as possible, and report back when it's on its way."
+   ],
+   [
+    375,
+    "instruction",
+    "Reach out to Trent and ask him what the earliest available slot is for the bathroom remodel. Draft the message/email to Trent and send it back to me so the user can review it before anything goes out. If a prior thread with Trent about the bathroom remodel exists, use it."
+   ],
+   [
+    382,
+    "result",
+    "Trent replied: Thursday at 3 works for the bathroom remodel."
+   ]
+  ],
+  "nadia-biscuit-checkup": [
+   [
+    252,
+    "instruction",
+    "Reach out to Nadia and ask if next Tuesday morning works for Biscuit's checkup. Report back her response."
+   ],
+   [
+    271,
+    "instruction",
+    "Reach out to Nadia and ask her to send the invoice for Biscuit's vet checkup. Let me know once it's sent or if she has questions."
+   ],
+   [
+    518,
+    "instruction",
+    "Reach out to Nadia and ask for her earliest available appointment slot for flea meds. Report back the earliest slot she offers."
+   ]
+  ],
+  "ollie-babysitting-schedule": [
+   [
+    253,
+    "instruction",
+    "Find Ollie's contact info and send them a message asking what they think the user should do about the babysitting schedule. Ask for their thoughts/recommendation and let them know to reply with what they'd suggest. Report back what was sent and any reply received."
+   ],
+   [
+    257,
+    "instruction",
+    "Message Ollie: Saturday works better for us for babysitting. Let me know what he thinks the babysitting schedule should look like."
+   ],
+   [
+    262,
+    "result",
+    "Ollie replied with a question about the timeline."
+   ],
+   [
+    321,
+    "instruction",
+    "Reach out to Ollie and ask what they think we should do for Thanksgiving. Report back their response."
+   ],
+   [
+    442,
+    "instruction",
+    "Send a message to Ollie letting him know that the user can help out on the weekend with the anniversary dinner. Check the existing thread/context with Ollie for the right channel (email/text) and who Ollie is, then send the note. Don't send anything without a clear, correct recipient. Report back what you sent and to whom."
+   ],
+   [
+    477,
+    "instruction",
+    "Look into any interaction involving Ollie and Thanksgiving. Report what was requested, any status updates, and whether anything is still pending. If there's nothing tying Ollie to Thanksgiving, say so clearly and note what Ollie is actually associated with instead."
+   ]
+  ],
+  "max-okonkwo-half-marathon-training": [
+   [
+    256,
+    "instruction",
+    "Send a message to Max Okonkwo telling them that Saturday works better for us for the half marathon training."
+   ]
+  ],
+  "abby-housewarming": [
+   [
+    258,
+    "instruction",
+    "Reach out to Abby and ask whether she's still up for the housewarming. Report back her response."
+   ],
+   [
+    404,
+    "instruction",
+    "The user is asking whether Abby's housewarming is still on — they discussed it a while back. Check the current status (any dates set, RSVPs, recent correspondence or updates) and report back concisely what ended up happening or where things stand."
+   ]
+  ],
+  "hiro-summer-cabin-week": [
+   [
+    263,
+    "instruction",
+    "Reach out to Hiro and ask what dates work for everyone for the summer cabin week. Report back with Hiro's response."
+   ],
+   [
+    265,
+    "result",
+    "Hiro replied with a question about the timeline for the summer cabin week."
+   ],
+   [
+    267,
+    "result",
+    "Hiro confirmed for the summer cabin week and said thanks."
+   ],
+   [
+    336,
+    "instruction",
+    "Reach out to Joanna and ask what she thinks we should do for summer cabin week. Relay her response back."
+   ],
+   [
+    341,
+    "result",
+    "Joanna replied: she confirmed the summer cabin week and said thanks."
+   ],
+   [
+    345,
+    "instruction",
+    "Ask Hiro if he's still up for the Christmas gifts. Report back his response."
+   ],
+   [
+    346,
+    "instruction",
+    "Please reach out to Ada and tell her the user is excited for cabin week, and ask how the user can help. Report back her response."
+   ],
+   [
+    361,
+    "result",
+    "Hiro replied: he asked if we can push the Christmas gifts to next week."
+   ],
+   [
+    397,
+    "instruction",
+    "Reach out to Ada about the summer cabin week and ask whether we can push it out by one week. Show me the draft before sending anything."
+   ],
+   [
+    421,
+    "instruction",
+    "Add a note to the cabin week thread that the user will call Ada tonight about it."
+   ],
+   [
+    440,
+    "instruction",
+    "Update on the cabin week planning with Ada: Sam can come too. Please include Sam in the guest list for the cabin week and factor them into the next steps (headcount, sleeping arrangements, costs split, etc.). Proceed with whatever the next step is."
+   ]
+  ],
+  "opal-phone-screen-notes": [
+   [
+    264,
+    "instruction",
+    "Find the user's phone screen notes and share them with Opal, asking Opal to provide comments by Wednesday. If sharing involves an email or message, prepare a draft for the user to review before sending."
+   ],
+   [
+    273,
+    "result",
+    "Opal replied asking for the final numbers for the phone screen."
+   ],
+   [
+    319,
+    "instruction",
+    "Set up a 30-minute meeting this week between the user and Rosa to go over the phone screen. Find a time that works for both and send the invite, then report back the proposed/confirmed slot."
+   ],
+   [
+    326,
+    "instruction",
+    "Reach out to Opal and ask them to send the latest signing bonus draft by Friday. Confirm the request has been sent and report back any response."
+   ]
+  ],
+  "holly-wedding-rsvp": [
+   [
+    266,
+    "instruction",
+    "Message Holly about the wedding RSVP and let her know that Saturday works better for us. Reply to the existing thread with Holly about the wedding RSVP if one exists."
+   ],
+   [
+    295,
+    "instruction",
+    "Reach out to Holly and ask whether the RSVP deadline can be pushed back by one week. Let me know what she says."
+   ]
+  ],
+  "mei-conference-talk-proposal": [
+   [
+    269,
+    "instruction",
+    "Reach out to Mei and ask what she needs from the user to get the conference talk proposal moving. Report back her response."
+   ],
+   [
+    278,
+    "result",
+    "Mei replied: Thursday at 3 works for the conference talk proposal."
+   ]
+  ],
+  "savannah-hotels": [
+   [
+    274,
+    "instruction",
+    "Find a few good hotel options in Savannah, GA for the user and report back with names, neighborhoods, approximate nightly rates, and why each stands out. If exact dates aren't known, use a generic upcoming weekend and note that pricing varies."
+   ],
+   [
+    276,
+    "result",
+    "Found three hotel options in Savannah, with neighborhoods and rough rates; pick one and I’ll send the details."
+   ],
+   [
+    276,
+    "instruction",
+    "Don't wait for a pick — the user wants to see the options themselves. Send me the full details on all three: hotel name, neighborhood, rough nightly rate, and a one-line note on what each is good for."
+   ],
+   [
+    280,
+    "result",
+    "Found three hotel options in Savannah; need you to pick one."
+   ],
+   [
+    280,
+    "instruction",
+    "Please send me the full details for the three Savannah hotel options so I can relay them to the user: hotel name, neighborhood, and rough nightly rate for each. Also note any standout pros/cons."
+   ],
+   [
+    643,
+    "instruction",
+    "The user wants the Savannah hotel changed to the following weekend instead of the currently held dates. Check the existing reservation/hold details, then look at availability and pricing for the following weekend for the same hotel (and comparable backups if that property is unavailable). Report options and any change/cancellation implications before making any change."
+   ]
+  ],
+  "bruno-quarterly-okrs": [
+   [
+    283,
+    "instruction",
+    "Reschedule the quarterly OKRs meeting with Bruno. The user says Friday works better for them, so move the meeting to Friday and let Bruno know about the change."
+   ],
+   [
+    395,
+    "instruction",
+    "User feedback on the OKRs draft: it looks good, but cut the second paragraph. Please revise the draft accordingly and have it ready for the user's review before sending anything."
+   ]
+  ],
+  "running-shoes-search": [
+   [
+    284,
+    "instruction",
+    "The user wants to order new running shoes and asked for the best choice. Research current top running shoe options and come back with a clear recommendation. Consider that the user may be training for a half marathon (there are related threads about a half marathon / half marathon training), so factor in whether they likely need daily trainers, tempo shoes, or race-day shoes. Give a small shortlist (2-3 options) with best pick, key pros/cons, and rough prices, plus where to buy. Report back concisely."
+   ],
+   [
+    288,
+    "result",
+    "The first-choice running shoes are full. The Brooks Ghost 15 is available as an alternative."
+   ]
+  ],
+  "hector-team-offsite": [
+   [
+    289,
+    "instruction",
+    "Coordinate with Hector on the team offsite. The user wants to wrap up the offsite planning before the end of the month. Contact Hector to align on logistics/dates and report back with what Hector says and any open items or decisions needed."
+   ],
+   [
+    329,
+    "instruction",
+    "Reach out to Hector and ask them to loop in their manager on the offsite planning. Let me know once it's done."
+   ],
+   [
+    339,
+    "instruction",
+    "Please ask Hector to loop in his manager on the dashboard."
+   ],
+   [
+    347,
+    "instruction",
+    "Let Hector know that the user needs one more day for the offsite."
+   ]
+  ],
+  "bea-holiday-travel": [
+   [
+    293,
+    "instruction",
+    "Reach out to Bea and ask whether they're still up for the holiday travel home. Report back with their response."
+   ],
+   [
+    296,
+    "instruction",
+    "Follow up with Bea on the holiday travel home. Ask whether they're okay pushing the holiday travel home back by a week. Report back what Bea says."
+   ],
+   [
+    301,
+    "result",
+    "Bea replied about holiday travel home: she asked if we can push it to next week."
+   ],
+   [
+    302,
+    "result",
+    "Bea replied that Thursday at 3 works for the holiday travel home."
+   ],
+   [
+    400,
+    "instruction",
+    "The user wants a status update on the holiday travel home plans with Bea. Please report back where things ended up: what's been decided or confirmed so far, any open questions, and any next steps pending. Summarize the current state concisely."
+   ]
+  ],
+  "june-christmas-gifts": [
+   [
+    297,
+    "instruction",
+    "Reach out to June and ask what dates work for everyone for the Christmas gifts. Report back her response."
+   ],
+   [
+    304,
+    "result",
+    "June replied about Christmas gifts: she needs an answer by Monday."
+   ],
+   [
+    350,
+    "instruction",
+    "Send June a message asking if she needs the user to bring anything. Report back with her response."
+   ],
+   [
+    392,
+    "instruction",
+    "User update for the Christmas gifts / get-together involving Hiro: Sam can come too. Add Sam to the plans."
+   ],
+   [
+    500,
+    "instruction",
+    "Resume the Christmas gifts task for June. Summarize current status: what's been gathered so far (ideas, shortlist, budget, any items already purchased), what's still pending, and the next best step. Provide a concise status update."
+   ]
+  ],
+  "zoo-pass": [
+   [
+    298,
+    "instruction",
+    "Renew the user's zoo pass membership. Also check what's available/going on at the zoo next weekend (hours, events, availability, any need to reserve timed entry, etc.) and report back the details."
+   ],
+   [
+    316,
+    "instruction",
+    "The user is asking for an update on the zoo pass. Please report the current status: what's been done, where things stand, and any pending items, blockers, or next steps. If you haven't started or have already completed it, say so clearly."
+   ],
+   [
+    335,
+    "instruction",
+    "The user wants to go with the cheaper option for the zoo pass renewal. Please proceed with the cheaper membership/renewal option and confirm the details."
+   ]
+  ],
+  "lima-flight": [
+   [
+    299,
+    "instruction",
+    "Find flight options to Lima, Peru for the user. Report back the best-priced options with airline, dates, and total cost. Do not book anything yet. Also note that the user mentioned a budget — we don't have the exact figure, so just gather pricing for now."
+   ],
+   [
+    314,
+    "instruction",
+    "The user wants to move the Lima flight to the following weekend instead of the currently planned weekend. Please reschedule/adjust the Lima flight booking accordingly and confirm the new dates. If you need to know the current flight dates first, look them up in your context/history. Report back the new dates once handled."
+   ],
+   [
+    317,
+    "instruction",
+    "Update from the user on the Lima flight: go with the cheaper option (of the rebooking options for moving the flight to the following weekend). Please proceed with the cheaper option and confirm the details."
+   ],
+   [
+    324,
+    "result",
+    "The first-choice flight to Lima is full; suggest the next available option, departing the same day two hours later."
+   ],
+   [
+    353,
+    "instruction",
+    "The user is asking for a status update on their Lima flight search/booking. Please report the current status: what have you found so far, any options priced/held, and what the next step is."
+   ],
+   [
+    416,
+    "instruction",
+    "The user is asking whether there's anything closer to home than Lima for the flight. Check flight options to destinations closer to home than Lima and report back with what's available."
+   ]
+  ],
+  "paula-cleaning-appointment": [
+   [
+    309,
+    "instruction",
+    "Contact Paula about the cleaning appointment. It's becoming urgent. Ask her what options she can offer given the timing (e.g., what availability or alternatives they can do). Report back with her response."
+   ],
+   [
+    311,
+    "result",
+    "Paula replied: she asked if we can push the cleaning appointment to next week."
+   ],
+   [
+    313,
+    "result",
+    "Paula replied: she asked if the cleaning appointment can be pushed to next week."
+   ]
+  ],
+  "erik-reunion": [
+   [
+    310,
+    "instruction",
+    "Reach out to Erik and ask him what dates work for everyone for the reunion. Report back his reply."
+   ]
+  ],
+  "dennis-parking-spot": [
+   [
+    315,
+    "instruction",
+    "The user says the Dennis parking spot situation is getting urgent and wants to know what can be done. Find all relevant context (emails, threads, messages, notes) about the Dennis parking spot, figure out the current status and any blockers, and identify concrete options/next steps to resolve it urgently. Report back with the key facts, the current status, and specific recommended actions."
+   ],
+   [
+    327,
+    "instruction",
+    "Reach out to Dennis to confirm the appointment time for the parking spot. Get the confirmed time and any details, then report back."
+   ]
+  ],
+  "rug-repair-options": [
+   [
+    320,
+    "instruction",
+    "Find a few (3-5) reputable rug repair options/services near the user's location. For each, gather: business name, what they specialize in (e.g., hand-knotted, antique, fringing, reweaving), contact info (phone/website), location, approximate pricing if available, and any notable customer reviews or ratings. Compile the list and send it to the user. If the user's location or the rug type/details are needed and unknown, make reasonable assumptions and note them."
+   ],
+   [
+    322,
+    "result",
+    "Found three rug repair options; need you to pick one."
+   ],
+   [
+    322,
+    "instruction",
+    "Please send me the full details of the three rug repair options you found — for each one include the business name, what they offer, estimated cost/quote, availability or turnaround time, and any contact info or link. I'll pass these to the user so they can pick."
+   ]
+  ],
+  "newspaper-delivery": [
+   [
+    323,
+    "instruction",
+    "The user wants to cancel their current newspaper delivery subscription (find it from their accounts/email — identify the provider, account details, and the cancellation process), then look into booking a new/replacement newspaper delivery service, but only if it comes in under budget. Report back with: (1) confirmation the cancellation is done or what's needed to complete it, (2) the replacement options and their costs, and the relevant budget threshold if you can find it. Do not finalize any new booking until the user confirms."
+   ],
+   [
+    351,
+    "instruction",
+    "The user wants to cancel their current newspaper delivery, and additionally wants us to check if there are newspaper delivery options closer to their home. Please look into newspaper delivery services/options that are closer to the user's home address, and also handle the cancellation of the current newspaper delivery. Report back with the cancellation status and any closer-to-home options you find."
+   ],
+   [
+    356,
+    "instruction",
+    "The user wants to cancel the current newspaper delivery and set it up for two people instead of one. Please handle this change — cancel/modify the existing subscription so it's for two people. Also continue to check for options closer to home as previously requested. Report back with status."
+   ],
+   [
+    528,
+    "instruction",
+    "The user wants a status check on the newspaper subscription cancellation they requested a few weeks ago. Please find the current status of the newspaper cancellation/delivery request — what's been done, whether the subscription has been cancelled or paused, any confirmation numbers, and any outstanding steps. Report the full status back."
+   ]
+  ],
+  "window-washer-search": [
+   [
+    328,
+    "instruction",
+    "Find and evaluate window washing services for the user, then recommend the best choice. Look into a few local window washing companies/providers, compare them on price, availability, reviews/ratings, and services offered (e.g., interior/exterior, number of stories, screens). Determine the best option for the user and report back with a clear recommendation, including the top choice plus 1-2 alternatives, and next steps to book (availability, pricing, contact info)."
+   ],
+   [
+    332,
+    "result",
+    "Booked a slot with the window washer, but their rate went up from last time — do you want me to go ahead at the new price?"
+   ],
+   [
+    332,
+    "instruction",
+    "What was the window washer's previous rate and what's the new rate? Give me the specific numbers and the booked slot date/time so I can relay to the user."
+   ]
+  ],
+  "delia-procurement-notes": [
+   [
+    330,
+    "instruction",
+    "Send the user's procurement notes to Delia and ask her to provide comments by Wednesday. Locate the procurement notes and Delia's contact info first. Draft the message, and confirm the recipient, subject, and body before sending."
+   ],
+   [
+    333,
+    "result",
+    "Delia replied with a question about the timeline for the procurement paperwork."
+   ]
+  ],
+  "teacher-gift-card": [
+   [
+    337,
+    "instruction",
+    "The user wants to book a gift card for the teacher if it's under budget. Look into the teacher gift card details (check the conversation history, any saved budgets, and any prior context about the teacher gift), determine the price and what the budget is, and if the gift card is under budget, go ahead and book it. Report back: the gift card details, its price, the budget, and whether you booked it or not. If the budget is unknown or the price exceeds it, flag that back with specifics so the user can decide."
+   ]
+  ],
+  "eye-exam-booking": [
+   [
+    338,
+    "instruction",
+    "Look into scheduling an eye exam for the user. Find providers, compare options, and determine the cost. If the cost is under the user's budget, go ahead and book it. Report back with the options considered, the price, and whether it was under budget (so the booking was made) or not."
+   ]
+  ],
+  "karaoke-room-search": [
+   [
+    342,
+    "instruction",
+    "Find a few karaoke room booking options for the user and send them to the user (via the user-facing message) as a shortlist. Include details like venue name, location, price/rate, availability, and any notable features. Aim for 3-5 solid options."
+   ]
+  ],
+  "victor-hiring-loop-feedback": [
+   [
+    348,
+    "instruction",
+    "Set up a 30-minute meeting with Victor sometime this week (week of June 15, 2026) to go over hiring loop feedback. Find a slot that works on both calendars and book it. Confirm the details back to me."
+   ],
+   [
+    352,
+    "result",
+    "Victor replied on the hiring loop feedback, asking for the final numbers."
+   ]
+  ],
+  "nate-negotiation-notes": [
+   [
+    349,
+    "instruction",
+    "Share the user's negotiation notes with Nate and ask him to send his comments back by Wednesday. Find the user's negotiation notes, send them to Nate (via email or the appropriate channel), and request his comments by Wednesday. Report back with confirmation of what was sent and to whom."
+   ]
+  ],
+  "flora-wedding-rsvp": [
+   [
+    354,
+    "instruction",
+    "Message Flora about the wedding RSVP. Let her know the user can help out on the weekend. Report back what Flora says."
+   ],
+   [
+    399,
+    "instruction",
+    "When getting back to Flora about the wedding RSVP, also ask whether they need the user to bring anything."
+   ]
+  ],
+  "wicked-tickets": [
+   [
+    355,
+    "instruction",
+    "Look into tickets for the musical \"Wicked\" and recommend the best choice. Compare available options (dates/times, seating sections, prices, venues) and come back with a clear recommendation for the best overall pick. If relevant, note any good-value seats or premium options. Report the findings back with enough detail for the user to decide."
+   ],
+   [
+    359,
+    "instruction",
+    "The user wants to change the Wicked tickets to the following weekend. Move the booking/reservation to the following weekend (the weekend after the currently planned date) and confirm the new date, time, seat selection, and price. If the tickets haven't been booked yet, let the user know and adjust the recommendation to the following weekend instead."
+   ],
+   [
+    360,
+    "result",
+    "Wicked tickets are booked, and the confirmation is in the inbox."
+   ],
+   [
+    368,
+    "instruction",
+    "Provide a status update on the Wicked tickets — current booking status, and any update or reply from Dina regarding them. Report back what you find."
+   ]
+  ],
+  "lucy-ski-trip": [
+   [
+    356,
+    "instruction",
+    "Message Lucy and let her know the user will call her tonight about the ski trip."
+   ],
+   [
+    384,
+    "instruction",
+    "Draft a message to Lucy asking whether we need to bring anything for the ski trip. Report back the exact recipient, subject (if email), and full body text so I can show it to the user for approval before anything is sent. Do NOT send it."
+   ],
+   [
+    390,
+    "instruction",
+    "When reaching out to Lucy about the ski trip, add that Saturday works better for us. Keep the existing question about what to bring, and show me the draft before anything is sent."
+   ]
+  ],
+  "hiro-christmas-call": [
+   [
+    357,
+    "instruction",
+    "Send Hiro a message letting them know the user will call them tonight about Christmas. Confirm once sent."
+   ],
+   [
+    364,
+    "instruction",
+    "Tell Hiro that Sam can come too for the Christmas gifts."
+   ],
+   [
+    417,
+    "instruction",
+    "Add a note to the Hiro Christmas gift thread: the user will call Hiro tonight about it. Please incorporate this into the relevant draft/communication and report back."
+   ]
+  ],
+  "raj-nda-draft": [
+   [
+    365,
+    "instruction",
+    "The user says Raj's NDA draft looks good, but wants the second paragraph cut. Use the existing NDA draft for Raj from context, remove the second paragraph, and save/revise the draft accordingly. Report back with the updated draft (or confirmation). Do not send it anywhere yet — the user will review before it's sent."
+   ],
+   [
+    367,
+    "instruction",
+    "The user is asking for a status update on Raj signing the NDA. Please check the current status: whether the NDA was sent to Raj, whether he has signed it, and any replies received. Report back concisely with the latest status and next step if any."
+   ],
+   [
+    381,
+    "instruction",
+    "Add to the Raj NDA thread: the message/draft to Raj should also ask him to loop in his manager. Update the draft accordingly and show the revised text for approval before anything goes out."
+   ]
+  ],
+  "rohan-demo-day-slides": [
+   [
+    366,
+    "instruction",
+    "Ask Rohan to send the latest demo day slides draft by Friday (June 26, 2026). Find the best way to reach Rohan (email or message) and prepare the request. If it's an email, draft it and share the exact text with me so the user can review before anything is sent. Note: there may be related context with the existing \"Clara - Demo Day Slides\" agent."
+   ],
+   [
+    394,
+    "instruction",
+    "Add the following detail to Rohan's demo day slides: the budget is capped at $20k. Make sure this is reflected in the relevant slide(s)."
+   ],
+   [
+    403,
+    "instruction",
+    "Regarding the demo day slides: ask Rohan to loop their manager in on the demo day slides. Reach out to Rohan about this (email is fine) and confirm once it's been sent."
+   ],
+   [
+    412,
+    "result",
+    "Rohan replied with a question about the timeline for the demo day slides."
+   ],
+   [
+    420,
+    "instruction",
+    "Reply to Rohan about the demo day slides: Friday works better for the user on the timeline."
+   ],
+   [
+    428,
+    "instruction",
+    "The user reviewed the demo slides draft and says it looks good, but wants the second paragraph cut. Please update the draft by removing the second paragraph and confirm the revised version."
+   ],
+   [
+    566,
+    "instruction",
+    "Give me a status update on the demo day slides task: where things stand, what's been done, and anything outstanding that needs the user's input or action. Summarize concisely, including any deadlines or replies pending."
+   ],
+   [
+    582,
+    "instruction",
+    "The user is asking whatever happened with the demo day slides for Aisha — where did that end up? Check the status of the demo day slides work related to Aisha: what was requested, what was sent, who replied, and what the current state is. Report back a clear timeline and the current status (and whether anything is still pending on the user's side)."
+   ],
+   [
+    590,
+    "instruction",
+    "Do you have any context on a separate thread where the user was working with Rohan on quarterly OKRs? Check any related messages with Rohan. Report back anything relevant to quarterly OKRs with Rohan — status, what's pending, what needs the user's action."
+   ]
+  ],
+  "chimney-sweep-booking": [
+   [
+    369,
+    "instruction",
+    "The user wants to schedule a chimney sweep. Check what appointment times are open next weekend (the upcoming Saturday and Sunday) for chimney sweep services. Report back the available time slots and any pricing/details, so the user can pick one."
+   ],
+   [
+    371,
+    "result",
+    "Your first-choice chimney sweep slot next weekend is fully booked; the same company has Saturday from 8–10am open as an alternative."
+   ],
+   [
+    380,
+    "result",
+    "First-choice chimney sweep is fully booked through the month; the alternative I found is Denver Hearth & Flue, with an opening Tuesday at 9am."
+   ]
+  ],
+  "nashville-flights": [
+   [
+    370,
+    "instruction",
+    "Find a few flight options to Nashville for the user and send them to the user. Include a small handful of good options (varied times/prices/airlines) with key details: airline, dates/times, price, and any notable layovers. Send the options to the user directly. If you need departure city, dates, or other specifics that aren't available in context, make reasonable assumptions and note them, or ask."
+   ],
+   [
+    395,
+    "instruction",
+    "User decided: go with the cheaper Nashville flight option with Bruno. Please proceed with booking/confirming based on the cheaper flight."
+   ],
+   [
+    641,
+    "instruction",
+    "The user wants to update the Nashville flight to be for TWO people instead of one. Find the existing Nashville flight booking/thread, change the traveler count to 2, and report back the details (dates, route, price impact, and whether any change is confirmed). Show the change for approval before finalizing if a booking action is required."
+   ]
+  ],
+  "napa-wine-tasting": [
+   [
+    372,
+    "instruction",
+    "Find wine tastings/wineries in Napa with availability for a booking next weekend (upcoming Saturday and Sunday). Report a few good options with their available time slots, price per person if listed, and any notable details. The user wants to book one, so prioritise options that have open reservation slots next weekend."
+   ],
+   [
+    379,
+    "result",
+    "Found three wine tasting options in Napa; need you to pick one before I book."
+   ],
+   [
+    379,
+    "instruction",
+    "Please send me the full details of the three Napa wine tasting options you found — names, available times/dates next weekend, prices, and any notable pros/cons — so I can present them to the user."
+   ],
+   [
+    478,
+    "instruction",
+    "The user is asking whether the Napa wine tasting is still on. Please check the current status of this booking/plan and report back with any details (date, time, confirmed/reserved status, any pending actions or issues)."
+   ]
+  ],
+  "family-photographer-search": [
+   [
+    374,
+    "instruction",
+    "The user wants to book a photographer for family photos. Research local family portrait photographers, compare them on quality, style, availability, pricing, and reviews, and recommend the single best choice with a short justification. Include the top 2-3 alternatives and how to book. Deliver a concise recommendation."
+   ]
+  ],
+  "emeka-export-issue-meeting": [
+   [
+    376,
+    "instruction",
+    "Schedule a 30-minute meeting with Emeka this week to go over the export issue. Check Emeka's availability and the user's calendar for this week (starting 2026-06-22), find a suitable 30-minute slot, and set up the meeting. Context: there's an ongoing export issue follow-up (reference existing \"Bianca Export Follow-up\" thread if helpful). Report back the proposed/confirmed time and any draft invite for user confirmation before sending."
+   ],
+   [
+    378,
+    "instruction",
+    "For the 30-min meeting being set up with Emeka this week to go over the export issue, add this detail: the budget for the export issue is capped at $20k. Make sure this context is reflected in the meeting invite/agenda/draft. Keep the existing draft invite flow — I'll still need to approve before anything goes out."
+   ],
+   [
+    383,
+    "result",
+    "Emeka replied: he needs an answer on the data export issue by Monday."
+   ],
+   [
+    487,
+    "instruction",
+    "The user wants to set up a 30-minute meeting with Emeka this week to go over the integration timeline. Find Emeka's availability this week, propose a 30-min slot that works, and set it up (send the invite) — or if you need to confirm a time first, come back with the best options. Report back the confirmed time or the options you need a decision on."
+   ],
+   [
+    603,
+    "instruction",
+    "The user wants to tell Emeka they need one more day on the export. Please prepare a short, polite message/email to Emeka communicating that the user needs an additional day on the export timeline. Do not send anything yet — prepare the draft and report back the exact recipient, subject (if email), and body text so the user can review it first."
+   ]
+  ],
+  "nopa-reservation": [
+   [
+    377,
+    "instruction",
+    "Look into booking a table at Nopa (the restaurant in San Francisco). First determine the relevant budget for this dinner (check prior conversation/context for the budget the user is referring to). Check the estimated cost/price for the reservation against that budget. If it comes in under budget, proceed to find available reservation times and prepare to book. If it's over budget, do not book and report back the details. Report back the budget you found, the estimated cost, and available times."
+   ]
+  ],
+  "victor-on-call-rotation": [
+   [
+    387,
+    "instruction",
+    "Sort out the on-call rotation with Victor and wrap it up before the end of the month. Check the existing thread/context with Victor about the on-call rotation, figure out what's outstanding, coordinate with Victor to finalize it, and get it fully closed out before month-end. Report back the current status, what you did, and anything that still needs the user's input or confirmation."
+   ],
+   [
+    610,
+    "instruction",
+    "The user is asking: \"did we ever hear back from Yuki on the on-call rotation? where'd it end up?\" Check the full history of this thread — did Yuki ever reply about the on-call rotation? Report the current status, the final outcome (or lack of a reply), what was last sent, and who said what. If there's no reply yet, say so explicitly and give the date/time of the last outgoing message."
+   ]
+  ],
+  "martha-holiday-travel": [
+   [
+    388,
+    "instruction",
+    "Reach out to Martha and ask what she thinks we should do about holiday travel home. Get her thoughts/preferences (timing, dates, where she'd want to travel from/to, any constraints). Report back what she says."
+   ],
+   [
+    389,
+    "instruction",
+    "Update for the Martha holiday travel outreach: Saturday works better for us. Make sure this preference is reflected in whatever you're coordinating/scheduling with Martha about holiday travel home."
+   ],
+   [
+    575,
+    "instruction",
+    "The user wants to let Martha know they can help out on the weekend with her birthday. Note: this appears to be a different topic than the holiday travel thread this agent previously handled, but reuse the existing Martha contact/context. Find the correct way to reach Martha (email thread if available). Prepare a short, friendly message from the user letting Martha know they're available to help with her birthday this weekend. Do not send it — return the drafted message (recipient, subject, body) back to me so the user can review before anything goes out."
+   ],
+   [
+    577,
+    "result",
+    "Martha replied: Thursday at 3 works."
+   ],
+   [
+    578,
+    "result",
+    "Martha wrote back asking for the final numbers for Mom's birthday."
+   ],
+   [
+    647,
+    "instruction",
+    "Draft a message to Martha asking whether she needs the user to bring anything for the holiday. Prepare the draft for the user's review before anything is sent — do not send yet. Report back with the exact draft text (recipient, subject, body)."
+   ]
+  ],
+  "meal-kit-subscription": [
+   [
+    393,
+    "instruction",
+    "The user wants to cancel their meal kit subscription. Find a few options for how to cancel it (e.g., different meal kit services' cancellation processes, or the specific steps/links to cancel). Identify which meal kit service the user is subscribed to if possible (check email receipts or account info), then gather the concrete cancellation options. Report back the options clearly so the user can act on them."
+   ]
+  ],
+  "flora-half-marathon-training": [
+   [
+    405,
+    "instruction",
+    "Reach out to Flora and ask what she thinks we should do about half marathon training. Send her a message asking for her thoughts/input on how to approach the half marathon training. Report back Flora's response."
+   ],
+   [
+    408,
+    "instruction",
+    "Send a message to Flora letting them know that Sam can come too for the half marathon."
+   ],
+   [
+    414,
+    "result",
+    "Flora replied with a question about the timeline for half marathon training."
+   ]
+  ],
+  "dublin-flights": [
+   [
+    406,
+    "instruction",
+    "The user wants to see what flight options are available to Dublin for next weekend (around Saturday July 11 and Sunday July 12, 2026, returning shortly after). Find available flights to Dublin, including departure/arrival times, airlines, and prices. Report the best options back."
+   ],
+   [
+    409,
+    "instruction",
+    "The user wants an update on the status of the flight to Dublin search for next weekend. Check where things stand — what options (if any) were found, pricing, times — and report back a concise summary of the current status so I can relay to the user."
+   ]
+  ],
+  "dina-borrowed-camera": [
+   [
+    409,
+    "instruction",
+    "The user borrowed a camera from Dina and wants to push the return/borrowing period back by a week. Reach out to Dina to ask if it's okay to keep the borrowed camera for an extra week (return it a week later than originally agreed), and let me know what she says. If there was a prior thread or context about this camera loan, reference it."
+   ]
+  ],
+  "wanda-premium-quote": [
+   [
+    410,
+    "instruction",
+    "Find the relevant context with Wanda (likely an insurance premium or similar quote) and ask Wanda how much the premium will run. Report back the amount and any details Wanda provides."
+   ],
+   [
+    413,
+    "result",
+    "Wanda replied: she asked for the final numbers."
+   ],
+   [
+    554,
+    "instruction",
+    "The user is asking for a status update on Wanda and the policy premium quote. Please report where things currently stand: what was requested, what's been gathered or sent, whether Wanda has replied, any outstanding items or decisions needed from the user, and the current premium figures/options if available. If the thread has stalled, note what the next step would be."
+   ],
+   [
+    555,
+    "instruction",
+    "The user asked for a status update on Wanda and the policy premium — where does it currently stand? Please check the state of the insurance policy premium discussion with Wanda (any open questions, awaiting reply, pending decisions, or next steps needed from the user) and report back a concise status summary."
+   ]
+  ],
+  "zuni-table-search": [
+   [
+    415,
+    "instruction",
+    "Look into getting a table/availability at Zuni (Zuni Cafe). Find the best available option — check upcoming reservation availability and report back the best choice (best time/date/table). Give a clear recommendation on which option is best and why."
+   ]
+  ],
+  "chicago-flights": [
+   [
+    418,
+    "instruction",
+    "Find a few good flight options to Chicago for the user and report the best choices back with details (airline, times, price, layovers). Check the user's usual departure city/home airport from context if available."
+   ]
+  ],
+  "rintaro-table-search": [
+   [
+    419,
+    "instruction",
+    "Look into the status of a restaurant table/reservation at Rintaro. The user asked a few weeks ago about booking a table at Rintaro and wants to know where it ended up (what the outcome was — e.g., was it booked, for what date/time, or is it still pending). Find the relevant email threads or booking confirmations and report back the current status."
+   ]
+  ],
+  "gus-ski-trip": [
+   [
+    422,
+    "instruction",
+    "Reach out to Gus and ask whether the ski trip can be pushed back a week. Report back with his response."
+   ]
+  ],
+  "yosemite-campsite": [
+   [
+    423,
+    "instruction",
+    "Look into reserving a campsite at Yosemite. Find available campsite options with their dates and prices, and determine whether they're within budget (check any budget context you can find for the user's camping/travel plans; if no budget figure exists, report the pricing options and flag that you need a budget number). Report back the best options and their prices so a reservation can be made if it's under budget."
+   ],
+   [
+    424,
+    "result",
+    "Found three campsite options at Yosemite under budget; need you to pick one to reserve."
+   ],
+   [
+    424,
+    "instruction",
+    "Great. Please send me the exact details for all three under-budget campsite options (name, dates, cost, location/amenities) so I can present them to the user for a final pick before you reserve."
+   ]
+  ],
+  "hamilton-tickets": [
+   [
+    425,
+    "instruction",
+    "Find what Hamilton tickets are available for next weekend. Report back the available options with dates, times, seat/section details, and prices."
+   ],
+   [
+    431,
+    "result",
+    "Hamilton tickets are booked; the confirmation is in the inbox."
+   ]
+  ],
+  "stefan-director-of-product-role": [
+   [
+    426,
+    "instruction",
+    "Ping Stefan about the Director of Product role. The user wants to wrap this up before the end of the month, so convey that timeline/urgency. Find the relevant thread or contact (check email and any related context for Stefan and the Director of Product role), draft an appropriate message, and get the user's confirmation before sending. Report back what you found and a proposed draft."
+   ],
+   [
+    569,
+    "instruction",
+    "Context: the user wants to send Mona their notes on the Director of Product role and ask her for comments by Wednesday.\n\nFind the user's notes on the Director of Product role (check any existing drafts/threads, e.g. the Stefan - Director of Product Role work and anything related to Mona). Then prepare an email to Mona that shares those notes and asks for her comments by end of day Wednesday.\n\nDo not send anything. Draft it and report back to me with the recipient address, subject, and the full body so I can show it to the user for approval."
+   ]
+  ],
+  "toronto-flights": [
+   [
+    427,
+    "instruction",
+    "Find a few flight options to Toronto for the user and send them to the user."
+   ],
+   [
+    631,
+    "instruction",
+    "The user is asking whatever happened with the flight to Toronto that was discussed a few weeks ago. Pull up all context/history you have on this Toronto flight task, including any dates, options, prices, decisions, and where things currently stand (e.g. whether anything was ever booked, quoted, or abandoned). Report back a concise status summary: what was discussed, what the state is now, and what the next step would be."
+   ]
+  ],
+  "dina-book-club": [
+   [
+    429,
+    "instruction",
+    "Reach out to Dina to tell her that the user is excited about book club and wants to know how they can help. Send the message and confirm back what was sent."
+   ],
+   [
+    432,
+    "instruction",
+    "Check for any reply from Dina about book club. Earlier we reached out to Dina letting her know the user is excited about book club and asking how the user can help. Report back any response received, or confirm if there's no update yet."
+   ],
+   [
+    433,
+    "result",
+    "Dina replied: she confirmed for book club and said thanks."
+   ]
+  ],
+  "spanish-tutor-search": [
+   [
+    430,
+    "instruction",
+    "Find Spanish tutors for the user and check their availability for next weekend. Report back with a few good tutor options (name, where they teach / platform, rates, and any credentials) along with what time slots are available next weekend."
+   ],
+   [
+    466,
+    "instruction",
+    "The user wants to go with the cheaper option for the Spanish tutor. Please select the lower-cost tutor option and proceed with booking/arranging accordingly."
+   ]
+  ],
+  "imani-quarterly-okrs": [
+   [
+    434,
+    "instruction",
+    "Set up a 30-minute meeting with Imani this week to go over quarterly OKRs. Find availability that works for both the user and Imani, propose a slot, and confirm the meeting. Report back with the proposed/confirmed time."
+   ],
+   [
+    436,
+    "result",
+    "Imani replied with a question about the timeline for the quarterly OKRs; will follow up once it's clear."
+   ]
+  ],
+  "smoke-detector-search": [
+   [
+    435,
+    "instruction",
+    "The user needs to replace a smoke detector. Find a few good smoke detector options (a mix of quality/reasonable-price picks, ideally including any recommended model with features like 10-year sealed battery, combination smoke/CO if relevant, and smart options if worthwhile). Send the options to the user with a brief summary of each, including price and where to buy."
+   ],
+   [
+    437,
+    "instruction",
+    "The user is asking for an update on the smoke detector options they requested. Please report the current status: if you have found options, share the few best smoke detector options with details (model, price, key features, where to buy). If still in progress, let me know where things stand."
+   ],
+   [
+    438,
+    "result",
+    "Found smoke detector options, but the replacement for your current model has gone up in price since last check — want me to go ahead at the higher price?"
+   ]
+  ],
+  "lena-school-uniform": [
+   [
+    441,
+    "instruction",
+    "The user needs to order Lena's school uniform. Look into the available options (check the school's uniform requirements if you can find them, and source current purchase options/prices). Report back a clear recommendation for the best choice, with reasons and any details needed to order (size, price, vendor)."
+   ],
+   [
+    449,
+    "instruction",
+    "Give me a status update on ordering Lena's school uniform — the best options you've found so far and a recommendation, so I can report back to the user."
+   ],
+   [
+    450,
+    "result",
+    "Found three uniform options for Lena; need you to pick one so I can place the order."
+   ],
+   [
+    450,
+    "instruction",
+    "Please send me the full details of the three uniform options you found for Lena (name/brand, price, where from, sizing, any pros/cons or recommendation) so I can present them to the user for a decision."
+   ],
+   [
+    457,
+    "instruction",
+    "Update for the Lena school uniform order: the order should now be for TWO people instead of one. Add Theo to the order alongside Lena. Please confirm the options/details account for two people (sizing and quantity), and update the ordering plan accordingly. Report back the updated options for Lena and Theo so the user can pick and place the order."
+   ]
+  ],
+  "samir-analytics-dashboard": [
+   [
+    444,
+    "instruction",
+    "Reach out to Samir and ask him to send the latest analytics dashboard draft by Friday. Confirm back once the request has been sent (or if Samir replies with anything that needs my attention)."
+   ],
+   [
+    446,
+    "result",
+    "Samir replied: he confirmed he'll send the latest analytics dashboard draft by Friday, and said thanks."
+   ],
+   [
+    448,
+    "result",
+    "Samir replied: Thursday at 3 works for him on the analytics dashboard."
+   ]
+  ],
+  "fishing-license-renewal": [
+   [
+    461,
+    "instruction",
+    "The user needs to renew their fishing license and wants to know what's available next weekend (the weekend of July 18-19, 2026). Find out how to renew the fishing license, what renewal options/appointment slots or locations are available next weekend, any requirements (documents, fees), and report back the available options with details so the user can pick."
+   ]
+  ],
+  "nina-castillo-sprint-planning-notes": [
+   [
+    464,
+    "instruction",
+    "The user wants to send their sprint planning notes to Nina Castillo and ask for comments by Wednesday.\n\nFirst, locate the user's sprint planning notes (search notes/docs/email/drive). Then verify: are these notes associated with Nina Castillo, or with a different person? Flag clearly if there's a mismatch (i.e., if the sprint planning notes actually belong to / are owned by someone else, or if Nina Castillo is actually tied to a different topic like the team offsite).\n\nOnce confirmed, draft an email/message to Nina Castillo that shares the sprint planning notes and asks for comments by Wednesday. Report back the exact draft (to, subject, body) and any mismatch you found. Do NOT send anything yet — just return the draft and findings for the user to review."
+   ],
+   [
+    469,
+    "result",
+    "Nina replied: she's asking for the final numbers for sprint planning."
+   ],
+   [
+    479,
+    "instruction",
+    "Note for Nina Castillo regarding sprint planning: the budget is capped at 20k. Pass this along and continue the conversation."
+   ],
+   [
+    616,
+    "instruction",
+    "Draft (do not send yet) a short message to Nina Castillo letting her know Friday works better for the user for sprint planning. Report back the exact text you would send so the user can confirm it before anything goes out."
+   ]
+  ],
+  "pierce-lang-onsite": [
+   [
+    473,
+    "instruction",
+    "Reach out to Pierce Lang and ask what they need from the user to get the onsite moving. Mention that the onsite budget is capped at 20k. Report back on what Pierce says he needs."
+   ],
+   [
+    521,
+    "instruction",
+    "Let Pierce know that Friday works better for the onsite (rather than whatever day was previously proposed). Confirm the change and report back any response."
+   ],
+   [
+    531,
+    "instruction",
+    "Reach out to Pierce and ask him to send the latest signing bonus draft by Friday. This relates to the signing bonus that's part of his onsite/offer discussions. Please compose a message to Pierce requesting the most recent version of the signing bonus draft, noting the Friday deadline. Show me the draft before sending."
+   ],
+   [
+    532,
+    "result",
+    "Pierce replied: he can send the signing bonus draft by Friday, but needs an answer by Monday."
+   ],
+   [
+    543,
+    "instruction",
+    "Draft a reply to Pierce's last email. The user wants to tell Pierce they'd like to wrap up the negotiation before the end of the month. Produce the exact recipient, subject, and body text of the draft email for the user to review — do not send it."
+   ]
+  ],
+  "tokyo-flights": [
+   [
+    482,
+    "instruction",
+    "Find a few flight options to Tokyo and send them to the user. Ask the user for any missing details if needed (departure city, dates, one-way vs round-trip, cabin class, number of passengers) — but if you can make reasonable assumptions, present a handful of options. Deliver the options to the user."
+   ],
+   [
+    485,
+    "instruction",
+    "Update to the existing Tokyo flight search: the user wants the dates changed to the following weekend (shift the search to the weekend after whatever dates were previously being looked at). Find a few flight options to Tokyo for those new dates and send them to the user. If you don't have the original dates on file, check with the user's context first."
+   ],
+   [
+    490,
+    "result",
+    "The first-choice flight to Tokyo is full; recommend the later nonstop departing 5:40pm, which still arrives same day."
+   ],
+   [
+    491,
+    "result",
+    "The Tokyo flight is booked; the confirmation is in your inbox."
+   ]
+  ],
+  "couch-selling-old-sofa": [
+   [
+    486,
+    "instruction",
+    "The user wants to sell their old couch and is asking for the single best option. Research the realistic choices for selling a used couch (e.g. Facebook Marketplace, Craigslist, OfferUp, local consignment/furniture resale shops, buying-back via a furniture retailer, or donation with pickup if resale isn't worth it). Compare them on: likely resale value, effort/time to sell, speed of sale, fees, and risk (no-shows, lowballers, hauling). Then give a clear, concise recommendation of the single best choice, with a suggested asking price range and a couple of tips for listing it. Report back the recommendation in a short summary I can relay to the user."
+   ],
+   [
+    519,
+    "instruction",
+    "The user wants to move the couch sale/pickup to the following weekend (i.e., shift the currently scheduled weekend by one week). Please update the arrangement accordingly and confirm the new timing."
+   ]
+  ],
+  "gustavo-onboarding-call": [
+   [
+    489,
+    "instruction",
+    "Find Gustavo in the user's contacts/email and reach out to him about an onboarding call. Ask him what he needs from the user to get the onboarding moving. If there's any relevant context about who Gustavo is or what the onboarding is for, use it. Draft the email and report back the draft (recipient, subject, body) so the user can review before anything is sent. Do not send without confirmation."
+   ],
+   [
+    492,
+    "instruction",
+    "Follow-up on the Gustavo onboarding call: when you send the message to Gustavo asking what he needs from me to get the onboarding call moving, also ask him to loop in his manager on the onboarding call. Please include that request in the draft. Share the draft with me so I can review before anything goes out."
+   ]
+  ],
+  "ian-fantasy-football": [
+   [
+    493,
+    "instruction",
+    "Find the user's contact named Ian (likely related to fantasy football / a fantasy sports league). Then send a message letting Ian know the user can help out this weekend for fantasy. Produce a draft of the message for the user to review first (do not send without approval). If you can't find Ian's contact info, report back with what's needed."
+   ],
+   [
+    501,
+    "result",
+    "Ian replied that Thursday at 3 works for the fantasy football league."
+   ]
+  ],
+  "rosa-onsite-meeting": [
+   [
+    494,
+    "instruction",
+    "Set up a 30-minute meeting with Rosa this week to go over the onsite. Check the user's calendar for availability and propose a slot, then coordinate with Rosa to confirm. Details to cover: the onsite. Report back the proposed/confirmed time and any draft message to Rosa for the user to review before anything is sent."
+   ],
+   [
+    495,
+    "instruction",
+    "When coordinating the onsite with Rosa, also ask her to loop in her manager on the onsite. Prepare a draft message for the user to review before sending anything."
+   ],
+   [
+    497,
+    "instruction",
+    "Draft a message to Rosa about the negotiation — the user wants to wrap it up before the end of the month. Ask Rosa where things stand and what's needed to close it out by month's end. Do NOT send anything yet; return the draft text for the user to review."
+   ],
+   [
+    502,
+    "result",
+    "Rosa replied asking for the final numbers before the onsite interview."
+   ],
+   [
+    504,
+    "result",
+    "Rosa replied: she can do Thursday at 3 for the onsite interview."
+   ],
+   [
+    506,
+    "instruction",
+    "The user is asking whether Rosa's phone screen is still on. Please check with Rosa and report back on: whether the phone screen is still happening, whether the Thursday 3pm onsite slot is confirmed, and any pending items (she had asked for final numbers before the onsite). Report what you find."
+   ],
+   [
+    509,
+    "result",
+    "Rosa replied: she can do Thursday at 3 for the offer negotiation."
+   ],
+   [
+    512,
+    "result",
+    "Rosa confirmed she can do Thursday at 3 for the offer negotiation, and said thanks."
+   ]
+  ],
+  "ada-summer-cabin-week": [
+   [
+    495,
+    "instruction",
+    "Find Ada in the user's contacts/email and ask her if the summer cabin week can be pushed back by a week. Prepare a draft message for the user to review before sending anything."
+   ]
+  ],
+  "car-registration-renewal": [
+   [
+    496,
+    "instruction",
+    "The user needs to renew their car registration. Find out what appointment slots (e.g., at the local DMV or equivalent registration office) are available next weekend. Check the user's details as needed (vehicle info, current registration) and report back the available options next weekend, including times and locations. Do not book anything yet — just report the available options so the user can choose."
+   ],
+   [
+    507,
+    "result",
+    "Found three renewal options for your car registration; need you to pick one."
+   ],
+   [
+    527,
+    "instruction",
+    "Update the car registration renewal so it's for two people instead of one: the user and Sam. Make sure both names are included on the registration. Confirm back once updated, including any details needed (e.g., Sam's full name) that might be missing."
+   ],
+   [
+    533,
+    "result",
+    "The car registration renewal price went up; do you want me to go ahead?"
+   ]
+  ],
+  "prague-hotel-search": [
+   [
+    498,
+    "instruction",
+    "Find hotel availability in Prague for next weekend. Check availability for the upcoming weekend (Friday through Sunday, or a similar short stay), and report back with a few good options including names, locations, nightly rates, and availability. Look for well-reviewed, centrally located hotels."
+   ],
+   [
+    503,
+    "result",
+    "The first-choice hotel in Prague is fully booked; suggest Hotel Josef as an alternative, which has availability."
+   ],
+   [
+    513,
+    "result",
+    "Your first-choice hotel in Prague is full for those dates; I suggest the Hotel Josef as an alternative, which has availability and similar rates."
+   ],
+   [
+    515,
+    "instruction",
+    "Update to the Prague hotel search: forget the \"closer to home\" (walkable/central) option. The user wants to just go with the cheaper available option. Please compare the available options (including Hotel Josef) on price for the dates and proceed with the cheapest one. If booking requires confirmation, report back the choice and price first."
+   ]
+  ],
+  "nina-park-wedding-rsvp": [
+   [
+    505,
+    "instruction",
+    "Reach out to Nina Park about the wedding RSVP. Ask her whether she's still planning to attend / still up for it, and get an update. Report back what she says."
+   ],
+   [
+    522,
+    "instruction",
+    "Reach out to Nina Park and ask if we can push the RSVP deadline back by a week."
+   ],
+   [
+    526,
+    "result",
+    "Nina confirmed her wedding RSVP and said thanks."
+   ]
+  ],
+  "delia-integration-timeline": [
+   [
+    510,
+    "instruction",
+    "Schedule a 30-minute meeting with Delia this week to go over the integration timeline. Propose a few available slots this week and get it on the calendar. Report back with the confirmed time or the options that need a decision."
+   ],
+   [
+    523,
+    "instruction",
+    "In your follow-up with Delia about the integration timeline, include that the budget is capped at 20k. Draft the message and show it for approval before sending."
+   ],
+   [
+    616,
+    "instruction",
+    "Draft (do not send yet) a short message to Delia letting her know the integration timeline budget is capped at 20k. Report back the exact text you would send so the user can confirm it before anything goes out."
+   ]
+  ],
+  "hector-analytics-dashboard": [
+   [
+    524,
+    "instruction",
+    "Find the history of an \"analytics dashboard\" project or thread involving Hector. Look through past emails and conversation history between the user and Hector (and any related threads). Determine: what the analytics dashboard was about, whether it ever moved forward, what the latest state is, and whether anything is still pending or waiting on the user. Report back a concise summary of the timeline and current status."
+   ]
+  ],
+  "eli-podcast-guest-spot": [
+   [
+    525,
+    "instruction",
+    "Reach out to Eli and tell them the user is excited about the podcast guest spot, and ask how the user can help. Show the user a draft before sending if this is going out via email."
+   ]
+  ],
+  "coldplay-tickets": [
+   [
+    530,
+    "instruction",
+    "Find a few options for Coldplay concert tickets and send them to the user. Include key details for each option: date/venue/city, seat section, and price (per ticket and total for the quantity needed). If there's an upcoming local show or a tour date near the user, prioritize that. Summarize the options back to me with the specific ticket details."
+   ],
+   [
+    535,
+    "result",
+    "Found Coldplay tickets, but the price went up — do you want me to go ahead?"
+   ],
+   [
+    584,
+    "instruction",
+    "Give me a status update on the Coldplay ticket search — what's been found or booked so far, quantities, dates, seat/price options, and anything pending a decision from the user. If there's a draft waiting, include the exact text."
+   ],
+   [
+    643,
+    "instruction",
+    "The user wants Coldplay ticket options that are closer to home than whatever was previously found. Check the venues/dates already gathered and look for alternatives nearer the user's home city. Report back the closest options, dates, and prices. Do not purchase anything."
+   ]
+  ],
+  "boat-tour-search": [
+   [
+    536,
+    "instruction",
+    "The user is looking for a boat tour to book (budget still TBD). They now want to know about options closer to home. Home base is the San Francisco Bay Area / Palo Alto. Find a few boat tour options in the Bay Area (e.g., San Francisco Bay, Sausalito, Tiburon, Half Moon Bay, Monterey/Bay Area coastal) with pricing, duration, and availability. Report the options with prices so we can compare against budget."
+   ]
+  ],
+  "victor-conference-talk-proposal": [
+   [
+    537,
+    "instruction",
+    "The user wants to ask Victor what he needs from them in order to get the conference talk proposal moving. Draft a short, friendly message to Victor asking what he needs from the user to move the conference talk proposal forward, and share the draft back for the user's approval before sending."
+   ],
+   [
+    542,
+    "result",
+    "Victor replied: Thursday at 3 works for the conference talk proposal."
+   ]
+  ],
+  "ian-climbing-gym": [
+   [
+    538,
+    "instruction",
+    "The user wants to let Ian know that the user can help out this weekend for the climbing gym meetup. Reach out to Ian (use the existing Ian contact if you can find one) with a message saying the user is available to help with the climbing gym meetup this weekend. Draft the message and share it for the user's review before sending."
+   ],
+   [
+    545,
+    "result",
+    "Ian replied: he asked if we can push the climbing gym meetup to next week."
+   ],
+   [
+    568,
+    "instruction",
+    "Check in on the climbing gym meetup: what's the latest with Ian? Has he replied / confirmed anything? Report back the current status and any open questions for the user."
+   ]
+  ],
+  "vera-trivia-night": [
+   [
+    539,
+    "instruction",
+    "Check in with Vera and ask if she's still up for trivia night. Draft a message to Vera for the user's review before it is sent."
+   ],
+   [
+    541,
+    "result",
+    "Vera replied: she's still in for trivia night but asked for the final numbers."
+   ]
+  ],
+  "imani-incident-postmortem": [
+   [
+    540,
+    "instruction",
+    "Draft a message to Imani letting her know the user would like to wrap up the incident postmortem before the end of the month. Ask what she needs from the user to get it finished. Return the exact draft text (recipient, subject if applicable, body) so it can be shown to the user for approval before sending. Do NOT send it yet."
+   ],
+   [
+    546,
+    "result",
+    "Imani replied: Thursday at 3 works for the incident postmortem."
+   ],
+   [
+    555,
+    "result",
+    "Imani replied: she can do Thursday at 3 for the incident postmortem."
+   ],
+   [
+    558,
+    "instruction",
+    "The user wants to email Imani asking her to move the incident postmortem to Thursday. Draft a short, friendly email to Imani requesting the postmortem be moved to Thursday (keep it flexible/conversational, reference that Thursday at 3 had been floated). Return the exact recipient email, subject line, and full body text so it can be shown to the user for approval. Do NOT send anything — draft only."
+   ]
+  ],
+  "cooking-class-search": [
+   [
+    544,
+    "instruction",
+    "Research cooking classes in the user's area (Bay Area / San Francisco) that can be reserved. Look at reputable options (e.g., recreational cooking schools, chef-led studios, hands-on classes) and gather: class/course name, cuisine or theme, location, price per person, available dates/times, group size limits, and booking/reservation process or cancellation policy. Then recommend the single best choice with a brief justification, plus 2-3 alternatives ranked. Don't book anything yet — just report back the shortlist and top pick so I can confirm with the user. If you need clarification on date, party size, or budget, flag that in your report rather than guessing."
+   ]
+  ],
+  "nina-castillo-launch-checklist": [
+   [
+    547,
+    "instruction",
+    "Draft a follow-up to Nina Castillo about the launch checklist, expressing that the user would like to wrap it up before the end of the month. Return the draft (recipient, subject, body) for review before anything is sent."
+   ],
+   [
+    592,
+    "instruction",
+    "Reach out to Nina Castillo and ask her to loop in her manager on the launch checklist. Report back with her response and whether she's done it."
+   ]
+  ],
+  "cole-book-club": [
+   [
+    548,
+    "instruction",
+    "Draft a message to Cole asking if he's still up for book club. Return the draft for user approval before sending."
+   ],
+   [
+    579,
+    "instruction",
+    "Draft a short message to Cole asking whether they need the user to bring anything to book club. Do not send it — return the draft text (recipient, subject, body) to me for the user's review."
+   ]
+  ],
+  "delia-onboarding-meeting": [
+   [
+    549,
+    "instruction",
+    "Set up a 30-minute meeting with Delia this week to go over onboarding. Find a slot that works, and draft the outreach/calendar invite for the user's approval before sending anything. Report back with the proposed time and a draft of the message."
+   ]
+  ],
+  "lyon-hotel-search": [
+   [
+    550,
+    "instruction",
+    "Find hotel options in Lyon, France for the user's upcoming trip. Check the user's email/calendar and any travel context to determine the trip dates and any stated hotel budget. Assemble a shortlist of good options with nightly rates, location, and total cost, and flag whether they fall within the user's budget. Do not book anything yet — just report back the options, rates, and whether they're under budget."
+   ],
+   [
+    552,
+    "result",
+    "Booked the hotel in Lyon; the confirmation is in your inbox."
+   ]
+  ],
+  "tomasz-conference-talk-proposal": [
+   [
+    551,
+    "instruction",
+    "Draft a message to Tomasz about the conference talk proposal. Ask him what he needs from the user to get it moving. Show the draft for approval before sending."
+   ],
+   [
+    559,
+    "instruction",
+    "Follow-up on the conference talk proposal email draft for Tomasz. In addition to asking what he needs from the user to get the proposal moving, add a request that Tomasz loop in his manager on the conference talk proposal. Combine both asks into a single draft email and show it to the user for approval before sending anything."
+   ],
+   [
+    561,
+    "instruction",
+    "The user wants an update on the conference talk proposal. Earlier they asked us to ping Tomasz asking what he needs from the user to get the proposal moving, and to tell Tomasz to loop in their manager. Report back: (1) any reply/status from Tomasz, and (2) the current state of the draft note to Tomasz (including the \"loop in their manager\" ask). Do not send anything without user approval — just give me the status and the draft text."
+   ],
+   [
+    564,
+    "result",
+    "Tomasz replied: he wrote back asking for the final numbers for the conference talk proposal."
+   ],
+   [
+    567,
+    "instruction",
+    "Draft a message to Tomasz asking him to send the latest spec draft by Friday. Same person you've been coordinating with. Do not send — return the draft text for the user to review."
+   ],
+   [
+    570,
+    "instruction",
+    "Draft (do not send) a message to Tomasz telling him that Friday works better for the spec draft deadline. Pull up the latest thread context on the spec timing first, then write a short, friendly draft. Return the exact draft text (recipient, subject if email, body) so it can be shown to the user for review."
+   ],
+   [
+    592,
+    "instruction",
+    "Give me a status update on Tomasz's conference talk proposal: where it currently stands, what he has submitted or confirmed, any feedback he's given, and anything still pending or blocked. Report back concisely."
+   ]
+  ],
+  "aisha-api-migration": [
+   [
+    562,
+    "instruction",
+    "Draft a message to Aisha about the API migration. Ask for a status update and whether it can be wrapped up before the end of the month. Show me the draft for approval before sending anything — do not send yet."
+   ]
+  ],
+  "gus-housewarming": [
+   [
+    563,
+    "instruction",
+    "Draft a short, warm message to Gus (contact for the housewarming). The user wants to say they're excited about the housewarming and ask how they can help — offer to bring something, help set up, whatever's needed. Find Gus's contact details and prepare this as a ready-to-send draft (email or text, whichever channel you have for him). Do NOT send anything — just return the exact recipient, subject (if email), and full draft text so the user can approve it first."
+   ],
+   [
+    623,
+    "instruction",
+    "Ask Gus whether they need the user to bring anything to the housewarming. Show the user the draft before anything is sent."
+   ]
+  ],
+  "zara-half-marathon-training": [
+   [
+    572,
+    "instruction",
+    "Reach out to Zara and ask whether she's still up for the half marathon training. Before sending, prepare a draft message for the user to review — show the exact recipient, subject, and body, and do not send anything until the user confirms."
+   ]
+  ],
+  "bob-brake-repair": [
+   [
+    576,
+    "instruction",
+    "Find the contact info for Bob (the auto/brake repair shop) and reach out to ask what the earliest appointment slot is for the user's brake repair. Show me (OpenPoke) a draft of the message first before sending anything, then report back Bob's earliest availability."
+   ],
+   [
+    580,
+    "instruction",
+    "Ask Bob to send over the brake invoice."
+   ],
+   [
+    581,
+    "result",
+    "Bob replied: he needs an answer on the brake invoice by Monday."
+   ]
+  ],
+  "martha-birthday-help": [
+   [
+    577,
+    "instruction",
+    "Earlier we messaged Martha offering to help out on the weekend with her birthday. Her reply came back as \"Thursday at 3 works,\" which doesn't answer that at all. Please follow up with Martha to clarify: confirm she got the message that we can help on the weekend for her birthday, and ask what day/time and what she'd like help with. Report back with her actual answer."
+   ]
+  ],
+  "ada-retirement-party": [
+   [
+    583,
+    "instruction",
+    "Contact Ada and ask what dates work for everyone for dad's retirement party. Report back her reply."
+   ],
+   [
+    606,
+    "instruction",
+    "The user wants Ada to know that Sam can also come to the retirement party. Please notify Ada that Sam will be attending as well — confirm the party details (date, time, location) accommodate one more guest, and let the user know Ada's response. Do not send anything to Ada without showing the user a draft first if it's an email."
+   ],
+   [
+    614,
+    "result",
+    "Ada replied that Thursday at 3 works for Dad's retirement party."
+   ],
+   [
+    617,
+    "result",
+    "Ada replied: she asked for the final numbers for Dad's retirement party."
+   ],
+   [
+    636,
+    "instruction",
+    "The user wants to let Ada know that Saturday works better for them for the retirement party. Prepare a short, friendly message to Ada with this update. Do NOT send it — return the draft (recipient, subject if email, and body) to me so I can show it to the user for approval first."
+   ]
+  ],
+  "contact-lens-options": [
+   [
+    585,
+    "instruction",
+    "Find a few options for new contact lenses for the user. Look into current popular/well-rated contact lens options (e.g., daily vs monthly, different brands) and gather details like where to buy them, pricing, and any relevant notes (prescription requirements, etc.). There's also an existing \"Eye Exam Booking\" agent that may have the user's prescription/eye exam context — check with it if useful. Compile the options and send them to the user as a message/recommendation list."
+   ],
+   [
+    587,
+    "instruction",
+    "The user is asking for an update on the contact lens options they requested (a few options with different brands/wear schedules, pricing, and where to buy). Please report the current status: if the options are ready, send them over; if not, tell me exactly where things stand and what's still pending."
+   ],
+   [
+    603,
+    "instruction",
+    "The user wants contact lens options that are closer to home this time (the previous options may have been too far away). Find a few contact lens providers/options near the user's home address, including names, distance from home, and any relevant details like pricing or appointment availability. Report back the top options."
+   ]
+  ],
+  "bakery-cake-order": [
+   [
+    586,
+    "instruction",
+    "The user wants a cake for next weekend (Sat Aug 15 / Sun Aug 16, 2026). Check the bakery's availability for next weekend and find out what cake options they have available (flavors, sizes, pricing, lead time). Do NOT place the order yet — report back the available options and whether they can accommodate next weekend so the user can confirm before we order. Note: it's unclear which specific bakery is meant; check the user's email/messages for a bakery they've used recently or have a relationship with, and use that one."
+   ],
+   [
+    608,
+    "instruction",
+    "The user is asking for a status update on the bakery cake order. Please report back with the current status: which bakery, what was ordered, order date, confirmation number, any open questions or decisions needed, and anything outstanding. If work is still pending, give a concrete next step."
+   ],
+   [
+    615,
+    "result",
+    "The bakery quoted a higher price than before — want me to go ahead and order at the new price?"
+   ],
+   [
+    629,
+    "instruction",
+    "The user wants to update the existing bakery cake order: change it from one person to two people. Reach out to the bakery to make this change, confirm the updated order details, and report back what the bakery says."
+   ],
+   [
+    634,
+    "instruction",
+    "The user again asked to change the bakery cake order from one person to two people. Confirm the current status of the order and whether the change to two people has actually been made. If it hasn't, get it updated with the bakery now and report back exactly what the order now says (size, servings, date, price)."
+   ]
+  ],
+  "tariq-podcast-guest-spot": [
+   [
+    589,
+    "instruction",
+    "Reach out to Tariq about a possible podcast guest spot. Ask if he's interested in being a guest on the podcast, and ask which dates work for everyone for it. Report back what he says — including any scheduling constraints or preferred dates."
+   ]
+  ],
+  "rohan-quarterly-okrs": [
+   [
+    590,
+    "instruction",
+    "The user is asking for a status update on the quarterly OKRs they were working on with Rohan. Search the user's email/messages/calendar for any thread involving Rohan and quarterly OKRs, and figure out where things stand: what was last sent/received, what's still pending, and what (if anything) needs the user's action. Report back a concise status summary."
+   ]
+  ],
+  "nina-park-housewarming": [
+   [
+    591,
+    "instruction",
+    "Find everything related to Nina Park's housewarming: the date/time/location, whether the user has RSVP'd, whether a gift or contribution was discussed or is expected, and any pending asks from Nina (e.g., help with food, drinks, setup, bringing something specific). Search the user's email and messages for the housewarming invite/threads. Report back a clear summary: what the event is, what's already handled, and what concrete things are still open or would be helpful for the user to do. Also flag if there's no such event in the inbox at all."
+   ]
+  ],
+  "ingrid-offsite": [
+   [
+    593,
+    "instruction",
+    "Reach out to Ingrid to check in on the offsite planning. The user wants to get the offsite wrapped up before the end of the month. Ask Ingrid where things stand, what's still outstanding, and what dates/details she needs from the user to finalize. Report back her response."
+   ],
+   [
+    598,
+    "instruction",
+    "Get an update on the offsite with Ingrid — where things stand, what's confirmed, what's still open, and whether it can be wrapped up before end of month. Report status concisely."
+   ]
+  ],
+  "locksmith-options": [
+   [
+    595,
+    "instruction",
+    "Find a few locksmith options for the user (assume their home location from context; if unknown, search generally and note it). For each option include: business name, phone number, service area/distance, services offered (e.g., lockout, rekey, lock replacement), pricing or price ranges (call-out fee, typical rates), availability/hours (esp. emergency/24-7), and ratings/reviews summary. Aim for 3-5 options covering different price points and note which are best for emergency vs. scheduled work. Report back with a clean list the user can review. Do not book anything without user confirmation."
+   ],
+   [
+    596,
+    "result",
+    "Found three locksmith options and need you to pick one."
+   ],
+   [
+    596,
+    "instruction",
+    "Please paste the full details of the three locksmith options you found — for each: business name, phone/website, price or rate, availability (same-day/after-hours), distance/area, and any ratings or notes. I need this so I can relay the options to the user for their pick."
+   ],
+   [
+    604,
+    "instruction",
+    "Update the locksmith search: it's for TWO people instead of one. Please redo/refine the options so they account for two people (e.g., two keys/keycards or two locksmiths needed for the job, whatever applies), and report back the names, rates, and availability for the revised search."
+   ]
+  ],
+  "zara-borrowed-camera": [
+   [
+    597,
+    "instruction",
+    "Reach out to Zara and ask if she's still up for borrowing the camera. Report back her response."
+   ],
+   [
+    600,
+    "result",
+    "Zara confirmed she's still up for borrowing the camera and said thanks."
+   ]
+  ],
+  "notary-search-follow-up": [
+   [
+    599,
+    "instruction",
+    "Search the user's email, messages, and notes for any past request or thread about finding a notary (public notary, mobile notary, notary appointment, notarizing documents) from roughly the last 3-6 weeks. Determine: (1) whether such a request ever existed, (2) its current status, and (3) the details — any notary options found, rates, availability, whether an appointment was booked, and any outstanding action items. Report back exactly what you find; if nothing exists, say so clearly."
+   ],
+   [
+    601,
+    "instruction",
+    "The user asked whether a notary search from a few weeks ago is still on / whether anything ever came of it. Dig through their email and notes to determine the status of any notary search, and report back a clear answer: was there ever a notary search, what happened with it, and whether anything is still pending or needs action. If there's nothing at all, say so plainly."
+   ],
+   [
+    602,
+    "instruction",
+    "Any update on whether the notary search from a few weeks ago ever went anywhere? Check email and notes and report back what you find (or confirm nothing ever happened)."
+   ]
+  ],
+  "phoenix-rental-car": [
+   [
+    601,
+    "instruction",
+    "Find rental car options in Phoenix for next weekend (Friday through Sunday, ~3 days). Search availability across major agencies and a couple of discount options. Report back: agency name, car class, total price for the weekend (including taxes/fees if shown), pickup location (airport vs. city), and any notable policies (mileage, cancellation). Give 3-5 solid options, cheapest first, and flag any that are unusually good or bad."
+   ],
+   [
+    602,
+    "result",
+    "Phoenix rental car search for next weekend: your first choice is full, so I suggest checking the downtown location or a comparable SUV from another agency."
+   ],
+   [
+    602,
+    "instruction",
+    "Give me the concrete specifics on the Phoenix rental car search for next weekend: the agency names, vehicle types, daily or total rates, and pickup/return locations (including the downtown branch option and the comparable SUV from another agency). Include availability status for each."
+   ]
+  ],
+  "mei-team-offsite": [
+   [
+    605,
+    "instruction",
+    "The user wants to set up a 30-minute meeting with Mei this week to go over the team offsite.\n\nFind a 30-minute slot that works for both the user and Mei sometime in the next few days (this week). Check the user's calendar for open slots, propose the best options to Mei, and confirm the meeting. If it helps, reference any existing context about the team offsite.\n\nReport back with the confirmed time, or the proposed options if it's pending Mei's reply."
+   ]
+  ],
+  "signe-migration-meeting": [
+   [
+    607,
+    "instruction",
+    "Set up a 30-minute meeting with Signe this week to go over the migration. Find available slots and propose/confirm the best option. Report back the scheduled time and details."
+   ],
+   [
+    647,
+    "instruction",
+    "Draft a reply to Signe on the migration meeting thread saying that Friday works better for the user (rather than whatever date was previously proposed). Prepare the draft for the user's review before anything is sent — do not send yet. Report back with the exact draft text (recipient, subject, body)."
+   ]
+  ],
+  "elise-team-offsite": [
+   [
+    611,
+    "instruction",
+    "The user wants to let Elise know that Friday works better for them for the team offsite. Draft a short, friendly message to Elise saying Friday works better for the team offsite scheduling. Show the draft text to the user for approval before sending anything."
+   ]
+  ],
+  "samir-quarterly-okrs": [
+   [
+    612,
+    "instruction",
+    "The user wants to coordinate with Samir on the quarterly OKRs and wrap them up before end of month. Find the relevant Samir thread/context about quarterly OKRs, draft a message to Samir proposing to finalize the quarterly OKRs before month-end (propose a short working session this week if needed), and report back with the draft for user review before anything is sent. If there's any remaining open item or pending question from Samir, surface it."
+   ],
+   [
+    613,
+    "result",
+    "Samir replied: he needs an answer on the quarterly OKRs by Monday."
+   ],
+   [
+    621,
+    "instruction",
+    "Follow up with Samir on the quarterly OKRs: ask him to loop in his manager on the OKR discussion. Note that we'd like to wrap this up before the end of the month, and Samir had said he needs an answer by Monday. Prepare a draft message for the user to review before anything is sent."
+   ],
+   [
+    625,
+    "result",
+    "Samir replied: he can do Thursday at 3 for the quarterly OKRs."
+   ]
+  ],
+  "yara-ski-trip": [
+   [
+    618,
+    "instruction",
+    "Reach out to Yara and ask whether she's still up for the ski trip. Report back her response."
+   ],
+   [
+    624,
+    "result",
+    "Yara replied about the ski trip: she needs an answer by Monday."
+   ],
+   [
+    626,
+    "result",
+    "Yara confirmed for the ski trip and said thanks."
+   ]
+  ],
+  "emeka-renewal-draft": [
+   [
+    619,
+    "instruction",
+    "Reach out to Emeka asking him to send over the latest renewal draft by Friday."
+   ],
+   [
+    623,
+    "instruction",
+    "Tell Emeka that Friday works better for the user for the renewal. Show the user the draft before anything is sent."
+   ]
+  ],
+  "jade-renewal-draft": [
+   [
+    627,
+    "instruction",
+    "Reach out to Jade and ask her to send over the latest renewal draft by Friday. Report back what she says."
+   ]
+  ],
+  "ruth-thanksgiving": [
+   [
+    630,
+    "instruction",
+    "Find the contact for Ruth and draft a message to her from the user. The user wants to let Ruth know they're excited for Thanksgiving and ask how they can help. Draft the message and return it so the user can review it before it is sent. Do not send anything yet."
+   ],
+   [
+    648,
+    "instruction",
+    "Check for any reply or update from Ruth regarding Thanksgiving plans. Report back the latest status and exact wording of any response so I can relay it to the user."
+   ]
+  ],
+  "kofi-integration-timeline-meeting": [
+   [
+    633,
+    "instruction",
+    "Set up a 30-minute meeting with Kofi this week to go over the integration timeline. Find a time that works for both Kofi and the user, propose it to Kofi, and report back the confirmed slot. Do not finalize/send anything without the user's confirmation — show the proposed time and message first."
+   ],
+   [
+    639,
+    "result",
+    "Kofi replied: he asked whether we can push the integration timeline to next week."
+   ],
+   [
+    641,
+    "instruction",
+    "The user wants an update from Kofi on the integration timeline. Pull the latest status: has Kofi replied since asking whether the integration timeline could be pushed to next week? If there's an unanswered question, surface the exact wording. Also report whether a 30-minute meeting has been booked or is still pending."
+   ]
+  ],
+  "erik-mom-s-birthday": [
+   [
+    635,
+    "instruction",
+    "Find the right Erik in the user's contacts (the one related to family/birthday, not the baby shower or reunion Erik unless it's the same person — use best judgment and note who you picked). Then draft a friendly message/email from the user to Erik that: (1) asks him about Mom's birthday, (2) says the user is excited, and (3) asks how the user can help. Do NOT send anything yet — just return the draft (to, subject, body) so it can be shown to the user first."
+   ]
+  ],
+  "lucy-borrowed-camera": [
+   [
+    637,
+    "instruction",
+    "The user wants to reach out to Lucy to ask what dates work for everyone regarding the borrowed camera. Check any existing email/thread context about the borrowed camera (there are related threads about a borrowed camera with Dina and Zara) so the message makes sense in context. Then write a short, friendly message to Lucy asking which dates work for everyone for the borrowed camera. Do NOT send anything — return the draft (recipient, subject, body) so the user can review and approve it first."
+   ],
+   [
+    638,
+    "result",
+    "Lucy replied with a question about the timeline for the borrowed camera."
+   ],
+   [
+    638,
+    "instruction",
+    "You reported that Lucy replied with a question about the timeline for the borrowed camera. Report back Lucy's exact reply verbatim so I can relay it to the user accurately. Do not send anything further to Lucy until the user approves a response."
+   ],
+   [
+    639,
+    "instruction",
+    "Surface the exact wording of Lucy's reply about the borrowed camera timeline — I need the full question she asked so the user can decide how to answer."
+   ],
+   [
+    640,
+    "instruction",
+    "Reply in the existing borrowed camera thread with Lucy. Let her know the user will call her tonight about the camera. Show me the draft first (recipient, subject, body) before anything is sent."
+   ],
+   [
+    645,
+    "instruction",
+    "Check for any new replies from Lucy in the borrowed camera thread since the last message (a note saying the user will call her tonight about the camera). Report the latest status and any new wording from Lucy."
+   ]
+  ],
+  "signe-analytics-dashboard": [
+   [
+    642,
+    "instruction",
+    "Find the user's notes on the analytics dashboard (check any existing analytics dashboard related work/threads for the right doc). Then prepare a message to Signe sharing those notes and asking for her comments by Wednesday. Do NOT send — return the exact draft (recipient, subject, body) to me for the user's review first."
+   ]
+  ],
+  "flora-bachelor-party": [
+   [
+    644,
+    "instruction",
+    "Draft a message to Flora asking if she's still up for the bachelor party. Keep it casual and friendly. Show the draft to the user for review before sending it — do not send until the user confirms."
+   ]
+  ],
+  "delfina-table-search": [
+   [
+    646,
+    "instruction",
+    "Look into getting a table at Delfina (the restaurant in San Francisco) and recommend the best option. Research availability/reservation options, note any details that matter (party size flexibility, times, cancellation policies, walk-in vs reservation, chef's counter vs main dining room vs Pizzeria Delfina if relevant), and come back with a clear recommendation of the best choice plus the alternatives. If a reservation can be booked, prepare the details but do not book without approval."
+   ]
+  ],
+  "kai-school-pickup": [
+   [
+    649,
+    "instruction",
+    "Find the thread or contact for Kai regarding Lena's school pickup. Draft a message to Kai that (1) asks about Lena's school pickup, and (2) lets him know the user can help out on the weekend. Prepare the draft for the user to review before sending — do not send it. Report back the recipient, subject (if email), and the full draft body."
+   ],
+   [
+    651,
+    "result",
+    "Kai confirmed he can handle Lena's school pickup and said thanks."
+   ],
+   [
+    653,
+    "result",
+    "Kai replied: Thursday at 3 works for Lena's school pickup."
+   ]
+  ],
+  "passport-renewal-options": [
+   [
+    650,
+    "instruction",
+    "The user needs to renew their US passport. Find a few solid renewal options for them and report back with the details. Cover the main routes available: (1) renewing by mail with Form DS-82 (confirm current eligibility rules, fees, turnaround times, and the mailing address), (2) online renewal through the State Department's online renewal portal if currently open/available, (3) expedited service options, and (4) any in-person options like regional passport agencies or an appointment at a local acceptance facility (e.g., post office, county clerk) in case they need urgent processing. Include current fees, standard vs expedited processing times, whether expedited shipping is available, and any documents/photos required. Also note any recent changes to processing times or the online renewal pilot's status. Give the user a concise comparison of the best options so they can pick one."
+   ]
+  ],
+  "elise-vendor-security-review": [
+   [
+    652,
+    "instruction",
+    "Find the user's \"vendor security review notes\" (search their documents/files/notes for anything matching that, e.g. a doc, deck, or note titled something like \"Vendor Security Review\"). Once found, prepare a draft message/email to Elise that shares those notes and asks her for comments by Wednesday. Report back with: what you found (title/link), the draft recipient/subject/body, and note any ambiguity about which notes file is the right one."
+   ]
+  ],
+  "will-wedding-rsvp": [
+   [
+    654,
+    "instruction",
+    "Draft a message from the user to Will about the wedding RSVP. Ask Will what dates work for everyone. Find the correct contact/thread for Will and prepare the draft for the user's review before anything is sent."
+   ]
+  ],
+  "ada-baby-shower": [
+   [
+    655,
+    "instruction",
+    "Find the contact for Ada (related to the baby shower) and prepare a message to her saying that Saturday works better for us for the baby shower. Check the inbox for any earlier thread with Ada about the baby shower and reply on that thread if one exists. Prepare a draft message for the user to review before it's sent — do not send anything yet. Report back the draft recipient, subject, and body."
+   ]
+  ]
+ }
+}

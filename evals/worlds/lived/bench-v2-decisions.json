@@ -1,0 +1,391 @@
+[
+ {
+  "id": "v2-s1-10-cross_agent-02",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-10-follow_up-01",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-10-multi_task-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-agent_result-01",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-agent_result-05",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-cross_agent-04",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-cross_agent-06",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-cross_agent-07",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-cross_agent-09",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-follow_up-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-follow_up-01",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-follow_up-03",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-follow_up-05",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-multi_task-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-multi_task-01",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-multi_task-03",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-new_task-07",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-paraphrase-01",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-paraphrase-03",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-paraphrase-04",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-paraphrase-05",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-paraphrase-07",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-paraphrase-08",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-same_person_new_topic-02",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-same_person_new_topic-08",
+  "decision": "fixed",
+  "note": "",
+  "gold_targets": [
+   "NEW"
+  ],
+  "acceptable_ids": [
+   "simon-relocation-package-meeting"
+  ],
+  "clarify_ok": true
+ },
+ {
+  "id": "v2-s1-200-status_question-03",
+  "decision": "fixed",
+  "note": "",
+  "gold_targets": [
+   "gary-whitman-lease-renewal-call"
+  ],
+  "acceptable_ids": [],
+  "clarify_ok": true
+ },
+ {
+  "id": "v2-s1-200-status_question-08",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-typo-07",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-200-vague_reference-02",
+  "decision": "fixed",
+  "note": "",
+  "gold_targets": [
+   "gary-whitman-lease-renewal-call"
+  ],
+  "acceptable_ids": [],
+  "clarify_ok": false
+ },
+ {
+  "id": "v2-s1-50-multi_task-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-50-multi_task-03",
+  "decision": "reject",
+  "note": "Both should\u2019ve created a new agent"
+ },
+ {
+  "id": "v2-s1-50-paraphrase-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-50-paraphrase-01",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-50-paraphrase-02",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-50-same_person_new_topic-04",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-50-typo-04",
+  "decision": "reject",
+  "note": "Should\u2019ve created a new agent"
+ },
+ {
+  "id": "v2-s1-50-vague_reference-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s1-50-vague_reference-01",
+  "decision": "reject",
+  "note": "Should\u2019ve created new agent"
+ },
+ {
+  "id": "v2-s2-10-same_person_new_topic-01",
+  "decision": "fixed",
+  "note": "",
+  "gold_targets": [
+   "NEW"
+  ],
+  "acceptable_ids": [],
+  "clarify_ok": true
+ },
+ {
+  "id": "v2-s2-10-status_question-02",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-cross_agent-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-cross_agent-02",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-cross_agent-07",
+  "decision": "reject",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-cross_agent-08",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-dormant_revival-05",
+  "decision": "reject",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-dormant_revival-06",
+  "decision": "accept",
+  "note": "Should only be gus ski trip"
+ },
+ {
+  "id": "v2-s2-200-follow_up-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-multi_task-02",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-multi_task-07",
+  "decision": "fixed",
+  "note": "",
+  "gold_targets": [
+   "NEW"
+  ],
+  "acceptable_ids": [
+   "frank-retirement-party"
+  ],
+  "clarify_ok": false
+ },
+ {
+  "id": "v2-s2-200-paraphrase-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-paraphrase-02",
+  "decision": "fixed",
+  "note": "",
+  "gold_targets": [
+   "paula-cleaning-appointment"
+  ],
+  "acceptable_ids": [],
+  "clarify_ok": false
+ },
+ {
+  "id": "v2-s2-200-paraphrase-05",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-paraphrase-06",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-paraphrase-08",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-paraphrase-09",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-same_person_new_topic-06",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-status_question-05",
+  "decision": "fixed",
+  "note": "",
+  "gold_targets": [
+   "marisol-key-handoff"
+  ],
+  "acceptable_ids": [],
+  "clarify_ok": true
+ },
+ {
+  "id": "v2-s2-200-typo-09",
+  "decision": "fixed",
+  "note": "",
+  "gold_targets": [
+   "frank-retirement-party"
+  ],
+  "acceptable_ids": [],
+  "clarify_ok": false
+ },
+ {
+  "id": "v2-s2-200-vague_reference-01",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-200-vague_reference-02",
+  "decision": "fixed",
+  "note": "",
+  "gold_targets": [
+   "trent-permit-stuff"
+  ],
+  "acceptable_ids": [],
+  "clarify_ok": true
+ },
+ {
+  "id": "v2-s2-200-vague_reference-08",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-50-agent_result-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-50-dormant_revival-01",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-50-multi_task-01",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-50-multi_task-02",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-50-multi_task-03",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-50-paraphrase-00",
+  "decision": "accept",
+  "note": ""
+ },
+ {
+  "id": "v2-s2-50-status_question-00",
+  "decision": "accept",
+  "note": ""
+ }
+]

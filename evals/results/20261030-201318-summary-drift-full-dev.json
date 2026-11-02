@@ -1,0 +1,2799 @@
+{
+ "size": "lived-200",
+ "model": "deepseek/deepseek-v4.1-flash",
+ "seed": 1,
+ "view": "full",
+ "real": {
+  "all": {
+   "agents": 200,
+   "judged": 200,
+   "supported": 0.84,
+   "current": 0.99,
+   "origin": 0.995,
+   "actionable": 1.0
+  },
+  "by_runs": {
+   "1 run": {
+    "agents": 70,
+    "judged": 70,
+    "supported": 0.886,
+    "current": 0.986,
+    "origin": 1.0,
+    "actionable": 1.0
+   },
+   "2-3 runs": {
+    "agents": 92,
+    "judged": 92,
+    "supported": 0.826,
+    "current": 1.0,
+    "origin": 0.989,
+    "actionable": 1.0
+   },
+   "4+ runs": {
+    "agents": 38,
+    "judged": 38,
+    "supported": 0.789,
+    "current": 0.974,
+    "origin": 1.0,
+    "actionable": 1.0
+   }
+  },
+  "empty": 0,
+  "over_cap": 27,
+  "judge_errors": 0
+ },
+ "stress": {
+  "agents": 8,
+  "folds_added": 20,
+  "judged": 8,
+  "supported": 0.625,
+  "current": 0.75,
+  "origin": 1.0,
+  "actionable": 1.0,
+  "before": {
+   "agents": 8,
+   "judged": 8,
+   "supported": 0.625,
+   "current": 1.0,
+   "origin": 1.0,
+   "actionable": 1.0
+  },
+  "over_cap": 0,
+  "failed_updates": 0
+ },
+ "items": {
+  "real": [
+   {
+    "id": "elena-christmas-gifts",
+    "runs": 3,
+    "chars": 484,
+    "summary": "Now: the user's requested status update on Elena's Christmas gift list is awaiting a report; nothing is yet confirmed about whether the list was finalized, what is on it, or any pending purchases or drafts, and no sending has been approved. Matter: sorting Christmas gifts for Elena; her relationship to the user, interests, sizes, wishlists and past gifts are unknown. Topics: gift ideas, existing gifts bought or planned, Christmas events and shopping deadlines, weekend scheduling.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ethan-ski-trip",
+    "runs": 2,
+    "chars": 430,
+    "summary": "Now: Ethan Ski Trip is drafting a short, casual message to Ethan saying Jamie can come too on the ski trip, in the same thread; not sent yet, and the exact recipient, subject and body are awaiting a report from Ethan Ski Trip. Matter: whether Ethan is still up for the ski trip on previously discussed dates; user, Ethan and now Jamie involved. Topics: ski trip dates, Ethan's reply status, Jamie joining, draft for user approval.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "No unsupported claims."
+    }
+   },
+   {
+    "id": "beatriz-housewarming",
+    "runs": 5,
+    "chars": 432,
+    "summary": "Now: the latest run — a short note to Beatriz about the Big Sur road trip, checking threads/calendar including Jake — has no result yet, so it is awaiting a report; nothing has been drafted or sent, and all five runs are still pending. Matter: unsent drafts to Beatriz about her housewarming, with help offers; Jordan wants a 20k relocation budget cap and a one-week housewarming delay. Topics: game night, Big Sur, Saturday timing.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary overstates that nothing has been drafted and recasts Jordan's separate points as wants for a 20k cap and one-week delay, which the runs do not support."
+    }
+   },
+   {
+    "id": "jamie-cooking-class",
+    "runs": 5,
+    "chars": 500,
+    "summary": "Now: The birthday cooking class is booked; confirmation is reported in the inbox. The following-weekend change’s new date/time/price and double-booking check are unreported. Matter: Finding and reserving a Saturday-evening cooking class for Jamie (birthday recipient), under $150, for next month; the user requests and chooses. Topics: class search, pricing, Saturday slots, cheaper option, booking, confirmation email, following-weekend reschedule, avoiding double-booking, authorization correction.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "paul-tax-return",
+    "runs": 5,
+    "chars": 294,
+    "summary": "Now: Run 5 has not reported; the inbox check for Paul's deduction receipts is awaiting a report. Matter: the user's tax return and deductions with Paul, the tax contact. Topics: return status, cost, deadline, deduction receipts, Paul saying he's sending them, what he needs, and draft approval.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "pablo-export-issue-meeting",
+    "runs": 4,
+    "chars": 426,
+    "summary": "Now: drafting (not sending) a short reply in the existing Pablo thread saying Friday works better for the export issue meeting; awaiting the draft report with exact recipient, subject, and body so the user can approve it. Matter: user is scheduling a 30-minute \"export issue\" meeting with Pablo this week. Topics: calendar slot choice, Pablo's contact details, invite sending, conflicts, an earlier reply asking for more time.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "seattle-flight-search",
+    "runs": 2,
+    "chars": 447,
+    "summary": "Now: the booking run was told to compare options, pick the lowest-priced Seattle flight, and book it, reporting airline, times, total price and confirmation number or why booking failed; no result yet, so selection, price and confirmation are pending on the agent. Matter: flights from the user's home city to Seattle (SEA) next Thursday, 2026-04-09; user unnamed. Topics: no budget given, saved preferences and home airport, no booking confirmed.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "zoe-conference-talk-draft",
+    "runs": 6,
+    "chars": 480,
+    "summary": "Now: latest run was to draft a short, friendly reply in Zoe's existing thread asking for one more day on the conference talk proposal; no result yet, so awaiting a report. Nothing sent; user confirmation still required. Matter: Zoe's conference talk proposal; the user wants her latest draft, with any message approved before sending. Topics: contact lookup, check-ins, moving the proposal call to Thursday, and Zoe's requests for final numbers, sign-off, and an answer by Monday.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "maya-quarterly-okrs-draft",
+    "runs": 7,
+    "chars": 482,
+    "summary": "Now: the draft email asking Maya to set up 30 minutes this week to review hiring loop feedback, checked against her existing thread with the user, is awaiting a report; nothing has been sent and the exact recipient, subject and body still need the user's review. Matter: quarterly OKRs, involving Maya and Tobias as contributors/contacts. Topics: Maya's OKR draft, Friday and Monday deadlines, asking one more day, museum membership renewal, Tobias's OKR part, hiring loop feedback.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the last draft was checked against Maya's existing thread and that nothing has been sent, but Run 7 reported nothing, so those claims are not backed by the runs."
+    }
+   },
+   {
+    "id": "gary-whitman-lease-renewal-call",
+    "runs": 5,
+    "chars": 352,
+    "summary": "Now: Run 5 reports Gary replied that Thursday at 3 works for the parking spot; nothing has been sent, and drafts await the user's approval. Matter: scheduling Gary Whitman's lease renewal call with the user. Topics: finding Gary's contact details, whether Tuesday morning works, a follow-up nudge, confirming the appointment time, and the parking spot.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "jake-big-sur-road-trip",
+    "runs": 4,
+    "chars": 310,
+    "summary": "Now: drafting a reply to Nikhil in the Big Sur thread, saying the user can help out on the weekend, awaits a report; no send yet. Matter: Big Sur road trip involving Jake (dates, lodging, drive vs fly) and Nikhil. Topics: game-night draft awaiting user approval; Jake's reply pending; weekend help with Nikhil.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "Jake's reply pending contradicts Run 1, which reported Jake already replied."
+    }
+   },
+   {
+    "id": "museum-membership-renewal-options",
+    "runs": 2,
+    "chars": 498,
+    "summary": "Now: the latest step — sending the three renewal tiers (price, inclusions, renewal date) plus the tier of the already-completed renewal — has not reported yet; its report is pending on the agent. Matter: the user wants to renew a museum membership; museum name still unidentified. Topics: renewal price, membership tier, benefits, early-renewal/discount offers, an existing booking (not to be changed or cancelled), the completed renewal's tier, and emailing options only to the user's own address.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "helen-babysitting-schedule",
+    "runs": 3,
+    "chars": 473,
+    "summary": "Now: this run was to find the latest status of the babysitting schedule conversation with Helen (most recent messages, agreed dates, open questions) and report back; no messages to be sent to Helen. No result yet, so agreed dates and what is pending on the user or Helen are awaiting report. Matter: locking in Helen's babysitting dates with Helen. Topics: draft message for user review; earlier conflicting reply (confirmed vs. cannot keep it, asked to push to next week).",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "haircut-spots-this-week",
+    "runs": 2,
+    "chars": 490,
+    "summary": "Now: awaiting the search agent's report on salons closer to home; no options found, sent or decided yet. Pending with the agent: 3-5 options nearer home than the Division place, ideally matching that appointment's time slot, otherwise earliest availability, each with name, distance/location and times. Matter: user wants a short list of haircut options only; nothing booked, no one contacted. Topics: ratings, weekly availability, Division location, distance from home, time-slot matching.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "boat-tour-availability-next-weekend",
+    "runs": 1,
+    "chars": 366,
+    "summary": "Now: the availability search for next weekend has not reported yet; results are pending on the agent. Nothing has been booked or sent. Matter: find boat tours with openings on Saturday 2026-04-18 or Sunday 2026-04-19, listing operator, date, departure time, price, and booking link per option, noting the day. Topics: booking links; no booking or outreach permitted.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ferry-search-victoria-next-weekend",
+    "runs": 2,
+    "chars": 431,
+    "summary": "Now: run reported three Saturday sailings to Victoria — 8:30am $68, 1:15pm $72, 5:45pm $79 — and asks which to book. Nothing reported on the shifted weekend, change fees, or amending the existing booking; no changes made; decision pending on user. Matter: find ferry options to Victoria, BC, prioritizing Friday evening, else Saturday/Sunday, plus Sunday/Monday returns. Topics: operators, times, prices, availability, change fees.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "Run 2 was about the shifted weekend and reported three Saturday sailings, so the summary's claim that nothing was reported on the shifted weekend is contradicted."
+    }
+   },
+   {
+    "id": "rita-biweekly-schedule",
+    "runs": 4,
+    "chars": 446,
+    "summary": "Now: Rita asked when the deep clean must happen and whether Thursday is still open; she awaits a day/time from the user. The deep-clean note still needs user approval before sending; combine with the earlier biweekly earlier-start request if possible. Matter: checking Rita's urgent biweekly schedule for the user; Rita, plus Mia's moved-up pickup. Topics: deep clean, earlier start, Thursday slot, Friday deadline, invoice draft, draft approval.",
+    "answers": {
+     "supported": false,
+     "current": false,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the deep-clean note still needs approval, but Run 4 reports Rita already replied, which contradicts that claim and makes it not current."
+    }
+   },
+   {
+    "id": "library-books-renewal-options",
+    "runs": 1,
+    "chars": 396,
+    "summary": "Now: online renewal hit a full queue, so nothing is renewed and no confirmation has arrived; renewal by phone or at the library desk is the recommended next step, pending on the user. Matter: overdue library books and their renewal options for the user (no titles or library named). Topics: due dates, renewal limits, fines, holds, online/phone/in-person renewal; those details were not reported.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "honolulu-flight-search-pdx",
+    "runs": 2,
+    "chars": 467,
+    "summary": "Now: the latest check has not reported yet — requested were the current fare, outbound and return times, airline, and the increase since the last check; nothing is to be booked until the user confirms, and that report is pending on the agent. Matter: finding Portland (PDX) to Honolulu (HNL) flights for next weekend, Fri–Sun 2026-04-17 to 04-19. Topics: Friday departures prioritized; cheapest/most convenient options; return options; airlines, times, prices, stops.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "newspaper-delivery-cancel-and-restart",
+    "runs": 2,
+    "chars": 507,
+    "summary": "Now: the request to push the delivery stop to the weekend after next, keeping the restart for when the user is back, is awaiting a report from the delivery agent; no new stop dates, restart date, or blockers are known yet. Matter: the user wants an active newspaper delivery subscription stopped and restarted around their return, without other changes. Topics: inbox search for delivery/subscription emails, cancellation, confirmation numbers, stop and resume or new start dates. Involved: the user and the",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ravi-vendor-security-review-draft",
+    "runs": 1,
+    "chars": 425,
+    "summary": "Now: the requested draft (recipient address, subject, body) was not returned; Ravi's thread only shows he replied that Thursday at 3 works for the vendor security review, so the Friday-draft request is still pending and nothing has been sent. Matter: drafting a friendly message asking Ravi for the latest vendor security review draft, for user review before sending. Topics: vendor security review scheduling (Thursday 3pm).",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "jake-borrowed-camera",
+    "runs": 2,
+    "chars": 383,
+    "summary": "Now: Jake replied asking when the camera is needed back; the return timeline is still open. An updated unsent message adding that Jamie can come too, with the rest of the check-in unchanged, still needs to be shown to the user before sending. Matter: a camera Jake borrowed; user, Jake and Jamie involved. Topics: return timing, possible damage, outstanding questions, Jamie joining.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "couch-sale-research",
+    "runs": 1,
+    "chars": 507,
+    "summary": "Now: latest run returned a short comparison and recommended Facebook Marketplace for free, fast local pickup, but also gave a conflicting set of options and asked which to set up; no listing posted and nothing sent. Awaiting the user's choice; research-only scope. Matter: research the best way to sell an old couch, comparing options on price, effort and speed with one recommendation; no contacting or posting listings. Topics: Facebook Marketplace, Craigslist, consignment, donation/pickup, junk removal.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "freya-game-night",
+    "runs": 4,
+    "chars": 467,
+    "summary": "Now: the status check of the game night thread with Freya has not reported yet — whether Freya replied, which dates are proposed and what is confirmed is awaiting that report; no new message sent to Freya. Matter: planning game night, with Freya contacted and Jamie now included. Topics: finding Freya's contact, her earlier reply, the open date/timeline question, Adele ticket prices, the headcount rise by two, and a drafted message still pending the user's review.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "septime-next-weekend-availability",
+    "runs": 1,
+    "chars": 424,
+    "summary": "Now: awaiting the availability report for Septime next weekend (Saturday and Sunday); no result has come back yet, so nothing about hours, reservation slots or closures is known or confirmed. Matter: checking Septime's weekend availability, including reservation slots and open hours; if multiple Septime locations exist, the intended one must be confirmed with the user. Topics: reservations, opening hours, venue location.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "harriet-sheet-music-pickup",
+    "runs": 7,
+    "chars": 365,
+    "summary": "Now: Harriet replied she can't do lessons this week and asked to push to next week; the lesson price she was asked for is still unanswered and no earlier times were given, so the user must decide on next week's timing. Matter: Harriet (sheet music contact), the user, and Jamie (pickup). Topics: sheet music pickup, lessons schedule and cost, invoice, recital help.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "hana-performance-review-check-in",
+    "runs": 3,
+    "chars": 448,
+    "summary": "Now: the latest run — drafting a short, friendly reply to Hana saying her performance review draft looks good but the second paragraph should be cut, unsent pending user approval — is awaiting a report; nothing drafted, sent or approved yet. Matter: short friendly messages to Hana about her performance review; Hana's surname, role and contact details unknown. Topics: contact lookup, meeting scheduling, draft edits, user approval before sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "gym-membership-renewal-check",
+    "runs": 2,
+    "chars": 478,
+    "summary": "Now: latest run checking whether the membership was renewed, is still pending or has lapsed; no result yet — that step is awaiting a report. Nothing sent or drafted. Also still pending: user's decision on renewing at the higher price, and the gym name, exact due date, price and search locations. Matter: finding the user's gym membership renewal details; no booking or payment authorised. Topics: price increase, payment decision, email/calendar search, status and expiry date.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "simon-relocation-package-meeting",
+    "runs": 2,
+    "chars": 417,
+    "summary": "Now: no draft returned yet; latest run reports Simon replied asking to push the relocation package to next week. The draft with Jordan's two separate asks is still pending on the agent. Matter: drafting, not sending, an email to Simon about the relocation package; Jordan requests (1) 20k budget cap, (2) housewarming pushed back a week. Topics: calendar 30-minute slots, suggesting times, user review before sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "marco-book-club-note",
+    "runs": 7,
+    "chars": 455,
+    "summary": "Now: the latest run researching the book club thread about Ben Okafor picking this month's book (current book, votes/suggestions, meeting date, deadline) awaits a report; no email or message sent. Matter: unsent casual email to Marco offering weekend book club help; Marco's email unconfirmed. Topics: Marco contact lookup; Ethan Ski Trip thread; ski-trip RSVP; possible call tonight; moving book club to Saturday; Ben Okafor's book pick and group thread.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "car-registration-renewal-options",
+    "runs": 2,
+    "chars": 457,
+    "summary": "Now: the latest run — checking emails and threads for renewal status, confirmations, or next steps — has not reported yet; that summary is pending from this agent, with nothing sent or booked. Matter: researching car registration renewal options for a user whose state or region is unspecified. Topics: online DMV, mail, in-person and third-party processes; typical fees; deadlines; documents to have ready; location-dependent steps; no-submit/no-pay limit.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "contact-lens-order-options",
+    "runs": 4,
+    "chars": 503,
+    "summary": "Now: run checking whether the cheaper option can be scheduled or delivered for the following weekend, with current price and new timing, has not reported yet — that step is awaiting a report. No order placed or changed; nothing to be placed until the user confirms the price. Matter: user wants new contact lenses; agent researches ordering options and recommends one. Topics: online retailers, pharmacies, eye clinics, subscription services; price, shipping speed, convenience, weekend delivery timing.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "adele-tickets-research",
+    "runs": 4,
+    "chars": 490,
+    "summary": "Now: asked to update the request from one ticket to two, same event, date and preferences; no result yet, so updated two-ticket options, prices and availability are awaiting Adele Tickets Research's report. Still no purchase. Matter: find and recommend the best Adele concert ticket option (dates, venues, seating, prices with fees); no names given. Topics: weekend shift, availability, price/fee comparison, venue and seating, cheaper options, booking confirmation, ticket quantity change.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ben-carter-export-deadline-note",
+    "runs": 2,
+    "chars": 426,
+    "summary": "Now: latest run has not reported; the draft reply's recipient, subject and body are awaiting a report, pending on the agent. Matter: draft a short reply to Ben Carter in an existing export thread saying Friday works better for the user; do not send. Topics: original export wrap-up-before-month-end request; finding Ben Carter's address in contacts/recent threads; replying in export thread such as Pablo Export Issue Meeting.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "mia-pumpkin-patch-next-weekend",
+    "runs": 2,
+    "chars": 453,
+    "summary": "Now: the closer-to-home class-trip search is awaiting its report — nothing found or booked yet. Still open: the earlier claimed booking (confirmation said to be in the user's inbox), which the user should verify or cancel. Matter: finding pumpkin patches for a trip with young child Mia, now ideally closer to home for her class. Topics: next and this weekend options; hours, tickets, timed slots; class booking availability; distance from home; prices.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "hugo-nda-signature-notes",
+    "runs": 2,
+    "chars": 429,
+    "summary": "Now: the draft reply to Hugo (NDA looks good, cut the second paragraph, short, same thread, not sent) has not reported yet; recipient, subject and body are still pending with this agent, so nothing is ready to show for approval. Matter: emailing Hugo about the NDA signature — his notes, comments by Wednesday, and the Monday signature deadline. Topics: Hugo's email address lookup, NDA signature deadline, review before sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "kyoto-next-weekend-availability",
+    "runs": 2,
+    "chars": 498,
+    "summary": "Now: latest run has not reported yet — comparison of the tracked Kyoto hotel's new rate against other Kyoto options and the resulting booking (or a flag if the cheapest differs on dates, location or cancellation terms) is still pending, as is the confirmation details. Matter: Kyoto availability for next weekend, Sat–Sun 2026-04-25/26 — hotels/ryokans, flights into KIX/ITM, trains, tours. Topics: hotel price rise, booking authorization, switching from report-only to booking the cheapest option.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "dana-forecast-budget-request",
+    "runs": 5,
+    "chars": 423,
+    "summary": "Now: the latest run (drafting a reply asking Dana to loop in her manager on the budget forecast) has reported no result yet; that draft is awaiting a report, and nothing has been sent. Matter: the user and Dana, over Dana's forecast/budget requests and the postmortem. Topics: forecast/budget threads, postmortem wrap-up and its 20k budget cap, deadlines, blockers, manager loop-in, and drafts kept for the user's approval.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "No criteria failed."
+    }
+   },
+   {
+    "id": "quinn-procurement-paperwork-request",
+    "runs": 5,
+    "chars": 387,
+    "summary": "Now: Run 5 is awaiting a report; no draft reply to Petra about needing one more day on the procurement paperwork has been returned. Matter: the user's procurement paperwork with Quinn and Petra; drafts require user approval before sending. Topics: Quinn's Thursday 3 scheduling, capping budget at $20k, Petra's Friday deadline, locating the latest draft, and Quinn's confirmation/thanks.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "jake-game-night-reply",
+    "runs": 3,
+    "chars": 471,
+    "summary": "Now: latest run (check for new replies from Jake and report latest status, open questions, next steps; no send) is awaiting a report from Jake Game Night Reply. Matter: resume game night plans with Jake; find the most recent game night thread with Jake, draft a brief casual reply saying Saturday works better, don't send, return exact recipient, subject and body for user approval. Topics: Freya Game Night thread and whether Jake is in it; open questions on date, time,",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "noah-fraser-sow-wrap-up-draft",
+    "runs": 3,
+    "chars": 430,
+    "summary": "Now: the check of the latest Noah Fraser SOW thread — whether he sent a signed or revised SOW, his most recent message date, and current status — is awaiting a report; nothing sent, per instructions. Matter: wrapping up Noah Fraser's statement of work by month-end, via email draft the user reviews. Topics: finding his address via contacts/threads; replying in the existing SOW thread; draft fine minus paragraph two; no sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "yosemite-campsite-availability-next-weekend",
+    "runs": 5,
+    "chars": 539,
+    "summary": "Now: Run 5 has not reported yet; pending is a report on three open Yosemite campsites for next weekend, exact current prices, names/loop numbers, and booking deadline or hold time; no booking requested, user will confirm which to reserve. Matter: user's Yosemite National Park campsite availability for next weekend (Sat/Sun from 2026-04-25), covering Upper/Lower/North Pines, Camp 4, Tuokah/Hodgdon, Recreation.gov. Topics: closer-to-home campsites, reservation status, price increases, confirmation, booking deadlines/cancellation terms.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "carl-deck-fix-earliest-slot",
+    "runs": 1,
+    "chars": 394,
+    "summary": "Now: draft is awaiting a report from the agent; nothing drafted, reviewed, or sent yet. Matter: drafting a message to Carl asking about fixing the deck and whether he can take the earliest available slot; the user must review the draft (recipient, subject, body) and confirm before anything is sent. Topics: Carl's email address lookup; deck repair scheduling; user confirmation before sending.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary claims nothing was drafted, reviewed, or sent, but the run only shows an empty report, so those actions are not confirmed."
+    }
+   },
+   {
+    "id": "megan-podcast-check",
+    "runs": 1,
+    "chars": 427,
+    "summary": "Now: the search-and-draft run has not reported yet; no draft, recipient, subject or body exists, and nothing has been sent or confirmed. Pending on Megan Podcast Check to report the draft for the user's approval before any send. Matter: checking with Megan whether she is still up for the podcast thing; a short casual note is to be drafted and shown to the user first. Topics: podcast, Megan contact/thread, send confirmation.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "teresa-alvarez-reunion-dates",
+    "runs": 1,
+    "chars": 373,
+    "summary": "Now: the latest run has not reported yet — it is awaiting a report on what dates Teresa suggested and who on the Alvarez side has responded. No message has been sent; any draft to Teresa must be shown first. Matter: checking reunion dates with Teresa Alvarez and gathering Alvarez-side responses. Topics: reunion dates, Alvarez family responses, draft-approval requirement.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary claims no message has been sent, but the run report is empty and the instruction only says not to send without showing a draft first, so that claim is not backed."
+    }
+   },
+   {
+    "id": "amy-mia-coverage-next-week",
+    "runs": 2,
+    "chars": 486,
+    "summary": "Now: Amy replied on the existing thread that she can't do the coverage this week and asked to push it to next week; she'll send the invoice once that is settled. The follow-up draft (coverage, earliest free time, invoice) is still pending and has not been shown to the user; nothing sent. Matter: whether Amy has coverage for Mia and her earliest free time next week. Involved: Amy (contact), Mia (needs coverage), user (approves drafts). Topics: invoice, existing thread, availability,",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ben-okafor-camping-weekend",
+    "runs": 2,
+    "chars": 494,
+    "summary": "Now: latest run asked which dates Ben is available over coming weeks from any existing thread, to report specific dates/times and open uncertainties, sending nothing to Ben without user approval; no report yet, so this step is still awaiting the agent's findings. Matter: reaching Ben Okafor about the camping weekend and what to do for the trip. Topics: his contact info, any existing camping-weekend thread, drafting messages for review, locking in dates, and podcast guest-spot coordination.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "rafael-moreno-anniversary-dinner",
+    "runs": 2,
+    "chars": 457,
+    "summary": "Now: latest run asked for a short, warm draft to Rafael Moreno saying Saturday works better for the anniversary dinner, for user approval before any send; no result yet, so no draft or recipient/subject/body has come back — awaiting the run's report, then user approval. Matter: checking whether Rafael Moreno is still up for the anniversary dinner and replying in their most recent thread. Topics: Saturday timing, draft approval, email thread with Rafael.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "vienna-next-weekend-availability",
+    "runs": 3,
+    "chars": 474,
+    "summary": "Now: the run to book the cheaper Vienna hotel near the Ring for next weekend has not reported yet; booking outcome, dates and total price are pending with the agent, and it was told to check back with the user if details are needed or that option is gone. Matter: finding and now booking a Vienna stay walkable to Innere Stadt (old city) for next weekend, around 2026-05-04. Topics: hotels, apartments, availability, prices, booking links, notable openings, Ring vs boutique",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "monica-flea-meds-pickup",
+    "runs": 2,
+    "chars": 458,
+    "summary": "Now: review of the Monica flea-medication thread — new replies, what's agreed, what's open, and pickup logistics — is awaiting a report; no findings yet, nothing sent, and no reply drafted or approved. Matter: casual email arranging pickup of flea meds from Monica next Tuesday morning; contact must be found in the user's email or contacts if not on hand. Topics: thread review, contact lookup, draft review, explicit approval before sending, pickup timing.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "chloe-q3-roadmap-review",
+    "runs": 7,
+    "chars": 424,
+    "summary": "Now: Run 7's draft reply to Chloe on the Q3 roadmap thread — saying Friday works better and asking about anything closer to home for the Kokkari table booking — awaits the agent's report, then user approval before sending. Matter: Q3 roadmap review with Chloe, involving the user and Chloe. Topics: end-month wrap-up, Friday timing, 20k budget cap, Kokkari table booking, Chloe's manager, draft review, one-more-day request.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ravi-q3-roadmap-review",
+    "runs": 1,
+    "chars": 378,
+    "summary": "Now: the draft email to Ravi has not reported yet — that step is awaiting a result, so no recipient, subject or body exists to review. Matter: the user wants a short, casual draft asking Ravi to wrap up the Q3 roadmap review before month-end; it must not be sent, and Chloe must not be mentioned. Topics: replying in an existing Ravi Q3 roadmap thread versus starting a new one.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "leila-signing-bonus-follow-up",
+    "runs": 3,
+    "chars": 404,
+    "summary": "Now: the latest run has not reported yet, so the follow-up draft and any thread details are pending with the agent; nothing drafted or sent, awaiting user approval once reported. Matter: Leila's signing bonus (surname unknown); Leila and the user involved. Topics: locating the signing bonus thread, earlier discussion details, timeline and paperwork questions, draft reply, user approval before sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "grace-design-spec-review",
+    "runs": 2,
+    "chars": 421,
+    "summary": "Now: the run drafting a reply in the existing Grace thread asking to move the design spec review call to Thursday has not reported yet — no recipient, subject or body available, nothing sent, user approval still pending. Matter: short, friendly email to Grace, design spec reviewer, about the review call, now moved to Thursday. Topics: locating the thread/Grace's email address; holding for user approval before sending.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the call is 'now moved to Thursday,' but the last run only asked to move it and has not reported, so that claim is not backed by the runs."
+    }
+   },
+   {
+    "id": "marcus-security-review-draft-request",
+    "runs": 2,
+    "chars": 423,
+    "summary": "Now: the status check on Marcus's vendor security review is awaiting a report; no findings yet. Pending: user needs current status, what Marcus or others await, and any needed decision. Matter: draft a short, friendly, unsent email to Marcus asking for the latest security review draft by Friday; find his address from contacts or recent threads. Topics: vendor security review; Monday reply deadline; dropped-ball request.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "mateo-moving-day-availability",
+    "runs": 4,
+    "chars": 470,
+    "summary": "Now: the check of Mateo's latest thread — whether he confirmed the moving day, whether it is still on, the date and time, and any plan changes — is awaiting a report; nothing is confirmed yet. Matter: helping with Mateo's moving day, including checking helpers' dates and what Mateo still needs; involves Mateo, the user, Jamie and Mia. Topics: moving date/window, helpers and emails, availability replies, Mia's school pickup, draft messages for review; no emails sent.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "megan-fantasy-football-note",
+    "runs": 4,
+    "chars": 416,
+    "summary": "Now: the re-read of Megan's actual reply, to resolve the earlier contradiction about whether she wants to push the league to next week or keep Saturday, is awaiting a report; nothing was sent or drafted. Matter: find Megan's email and latest fantasy football thread, then draft a short casual lowercase no-emoji note for user pre-send review. Topics: address lookup, outreach draft, Saturday vs next-week scheduling.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says nothing was drafted, but Run 2 refers to an existing draft note, so that claim is contradicted."
+    }
+   },
+   {
+    "id": "julia-podcast-guest-spot",
+    "runs": 2,
+    "chars": 463,
+    "summary": "Now: the run to find which dates and times work for the podcast guest spot, from any existing thread, has not reported yet; that step is awaiting a report, and no messages will be sent without the user's approval. Matter: the user wants Julia's opinion and now needs available guest-spot dates/times locked in, so an email to Julia is drafted for review. Topics: podcast guest spot, scheduling dates and times, unconfirmed options, email drafting, no-send review.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says an email to Julia is drafted for review, but Run 1 reported nothing, so no draft is evidenced."
+    }
+   },
+   {
+    "id": "sara-bachelor-party-note",
+    "runs": 3,
+    "chars": 463,
+    "summary": "Now: updating Sara's draft to add a zoo-pass renewal ask — whether the following weekend works — keeping the existing Saturday bachelor-party point; no report yet, so nothing found, sent or decided; the full draft (recipient, subject, body) awaits user approval. Matter: find Sara's bachelor-party thread and draft, not send, a short casual reply from the user. Topics: picking the right Sara, matching the user's texting style, Saturday timing, zoo pass renewal.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says a full draft awaits approval even though no run reported any draft, and 'nothing found' is not supported by the empty reports."
+    }
+   },
+   {
+    "id": "toronto-flight-booking",
+    "runs": 3,
+    "chars": 442,
+    "summary": "Now: awaiting the agent's report on nonstop PDX–Toronto options and other airports near home that avoid a 3-hour drive, compared with the current Toronto plan; no booking, options to be sent for user review. Matter: booking a Toronto flight for the user, contingent on a $350 budget. Topics: budget search in threads and notes, trip dates, cheapest fares ($412 seen), airline/times/stops/price, booking confirmation, PDX nonstops, drive time.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "lucia-reunion-note",
+    "runs": 4,
+    "chars": 458,
+    "summary": "Now: the check of email and calendar for a settled reunion date with Lucia has not reported yet — no result, so whether a date was confirmed, the open options and who has not replied, and whether the Doyle side's weekend availability was checked are all pending on this agent. Nothing sent or drafted. Matter: user and Lucia, coordinating the family reunion. Topics: Lucia's email lookup, reunion details, existing thread, earlier unsent draft note to Lucia.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "leo-renewal-meeting-scheduler",
+    "runs": 1,
+    "chars": 411,
+    "summary": "Now: the run has not reported yet; calendar slot search, Leo's contact lookup, and the draft invite for user approval are all awaiting a report. Matter: scheduling a 30-minute meeting this week with Leo (full name unknown) about the renewal; user must approve recipient, subject and body before anything is sent. Topics: calendar availability, Leo's email from contacts or recent emails, approval step, renewal.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "zoo-pass-renewal-options",
+    "runs": 3,
+    "chars": 460,
+    "summary": "Now: a check of the existing renewal thread and any new replies for an update (what was said, by whom, deadlines, pending actions) is awaiting this agent's report; no result yet, so nothing is known about updates or replies. Matter: renewing the user's zoo pass — tiers, prices, durations, discounts, auto-renew deals, best option. Topics: membership tiers, pricing, discounts, auto-renewal, prior request to execute a renewal (uncomfirmed, no purchase scope).",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary claims the prior renewal request had no purchase scope, but Run 2 explicitly instructed the helper to complete the renewal."
+    }
+   },
+   {
+    "id": "luis-grandma-recipes-check",
+    "runs": 1,
+    "chars": 414,
+    "summary": "Now: Luis's latest reply asks whether Grandma's recipes can be pushed to next week; no specific date/time or reply timestamp was reported, and a response/decision is pending on the user. Matter: user wants Luis's status on going through grandma's recipes together; Luis is the contact. Topics: most recent message exchange via email/other channels; scheduling; whether Luis confirmed, declined, or proposed a time.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "gloria-santos-reunion-dates",
+    "runs": 2,
+    "chars": 507,
+    "summary": "Now: the run drafting a short reply to Gloria Santos saying Saturday works better for the reunion has not reported yet; the draft's recipient, subject and body are still pending, and nothing has been sent. Matter: finding reunion dates for the family/friends reunion, involving Gloria Santos, Teresa Alvarez and Lucia. Topics: prior date discussions in the Teresa Alvarez Reunion Dates and Lucia Reunion Note threads; candidate open weekends; Saturday vs. other days; draft approval required before sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "mia-birthday-cake-bakery-options",
+    "runs": 3,
+    "chars": 411,
+    "summary": "Now: the update on Mia's birthday cake is awaiting a report — no alternate date, cake details, price, or order status has come back yet; nothing is to be ordered or confirmed. Matter: finding a bakery to make a birthday cake for Mia's party next weekend; nothing ordered, everything pending the user's approval. Topics: bakery availability, cake options, prices, lead times, pickup, order slots, order approval.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says no order status has come back, but Run 1 reported the order was being held pending approval."
+    }
+   },
+   {
+    "id": "iris-integration-timeline-note",
+    "runs": 5,
+    "chars": 468,
+    "summary": "Now: Kira replied Thursday at 3 works for the integration timeline discussion; no send/reply without user approval. Run 2 and Run 4 reports pending. Matter: Drafting/reviewing short emails to Iris (integration/NDA contact) about wrapping the timeline before month-end; Kira (notes recipient) and Hugo (NDA context) also involved. Topics: Iris’s next-week/Friday scheduling, export NDA, final export numbers, Hugo NDA Signature Notes, Kira’s comments on timeline notes.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "eye-exam-next-week-booking",
+    "runs": 2,
+    "chars": 405,
+    "summary": "Now: no result has come back yet from the latest run, so whether any appointment is booked or pending, and any reply from the eye doctor's office, is awaiting a report; no slots or prices reported. Matter: the user wants an eye exam next week only if under budget; providers and prices unknown. Topics: budget ceiling confirmation, next-week availability, booking deferred pending the user's confirmation.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ben-carter-onboarding-draft-request",
+    "runs": 1,
+    "chars": 391,
+    "summary": "Now: the search-and-draft run has not reported yet; recipient, subject and draft body are still awaited, and nothing has been sent. Matter: find the most recent email thread with Ben Carter about the onboarding call and draft a short, friendly reply asking for his latest onboarding-call draft by Friday; do not send it. Topics: thread search, Friday deadline, user approval before any send.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "smoke-detector-replacement-this-week",
+    "runs": 1,
+    "chars": 468,
+    "summary": "Now: the latest run reports a booking for this week was made, with a confirmation said to be in the user's inbox, but no budget ceiling was set, so that booking conflicts with the instructions and is unverified; user should confirm it and, if needed, set the ceiling. Matter: smoke detector replacement/installation at the user's house this week (2026-05-13). Topics: available time slots, total cost per option, booking or hidden fees, cheapest-suitable booking rule.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "All criteria are met."
+    }
+   },
+   {
+    "id": "austin-flight-search-next-weekend",
+    "runs": 1,
+    "chars": 398,
+    "summary": "Now: the flight search run has been launched with the stated criteria, but no result has been reported yet; options are pending on the agent, and nothing is to be booked. Matter: finding open flights to Austin, TX for next weekend, departing Friday, with airline, departure/arrival times, price, and nonstop status; nonstop preferred, otherwise best connecting options. Topics: no other topics yet.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "leo-export-issue-note",
+    "runs": 1,
+    "chars": 364,
+    "summary": "Now: search and draft for Leo's export issue are pending; no result has been reported yet, so recipient, subject, draft body, and context remain unknown. Matter: user wants to ask Leo what is needed to move the export issue forward; possibly involves Ben Carter, Pablo, and an export deadline. Topics: inbox search, contact email, most recent thread, unsent draft.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "megan-wedding-rsvp-check",
+    "runs": 3,
+    "chars": 412,
+    "summary": "Now: a draft reply to Megan saying the user will call tonight about the RSVP is awaiting its report — exact recipient, subject, and body pending for user approval; nothing sent. Matter: Megan's wedding RSVP; drafting a short, casual reply in her existing thread. Topics: whether Megan is attending, her latest message date and gist, inbox and sent-mail search, plus-one Jamie, earlier revised reply adding Jamie.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "gary-heater-repair-cost",
+    "runs": 2,
+    "chars": 378,
+    "summary": "Now: the run to draft a note to Gary Whitman (go with the cheaper Barcelona hotel option; ask him to come earlier for the broken heater) is awaiting its report; nothing has been drafted or sent yet. Matter: the user wants the expected heater repair cost; Gary Whitman is the contact handling the repair. Topics: Barcelona hotel October search, cheaper option, heater scheduling.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "tara-support-escalation-notes",
+    "runs": 1,
+    "chars": 402,
+    "summary": "Now: the latest run has not reported yet, so the search for the escalation notes and Tara's email address, and the draft email (not to be sent), are still pending on the agent's report. Matter: drafting an email to Tara containing the support escalation notes and asking for her comments by Wednesday, for user review only. Topics: escalation notes versions, Tara's contact details, Wednesday deadline.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "felix-vendor-security-review-draft-request",
+    "runs": 5,
+    "chars": 350,
+    "summary": "Now: Run 5 has not reported; the requested security-review follow-up draft to Felix is awaiting the agent's report, then user review; nothing is to be sent without approval. Matter: vendor security review with Felix, involving the user as approver. Topics: postmortem needs, looping in Felix's manager, Thursday 3 scheduling, and the $20k budget cap.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "luis-moving-help-note",
+    "runs": 3,
+    "chars": 387,
+    "summary": "Now: latest run reports Luis confirmed the moving help and thanked; the requested short, casual draft saying Saturday works better (not Sunday, not sent) has not been returned, so it is still pending. Matter: moving help for Luis; Jamie can help; Luis's role unstated. Topics: finding Luis's email in contacts/threads, day preference (Saturday vs Sunday), Jamie's afternoon availability.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "noah-nda-follow-up",
+    "runs": 1,
+    "chars": 385,
+    "summary": "Now: the search of Noah's NDA thread and a draft asking what he needs from the user were launched but have not reported yet; nothing has been sent, and drafting still needs user approval first. Matter: the user's NDA with Noah (surname unknown) — establishing what he is waiting on to move it forward. Topics: latest NDA thread, Noah's reply, draft message for user review, NDA status.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "elena-cabin-week-check",
+    "runs": 4,
+    "chars": 461,
+    "summary": "Now: the latest status check on Elena's cabin week has not reported yet; its findings on whether dates are confirmed or still open are pending, and nothing was sent or drafted. Matter: planning a summer cabin week with Elena (surname unknown), a participant, with the user organizing. Topics: cabin trip planning, summer scheduling, proposed dates and open questions, Saturday availability, a prior draft reply to Elena's latest message, checking in with Elena.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the user is organizing and references a prior draft reply, but the runs only show the user asking how to help and do not report any organizer role or completed draft."
+    }
+   },
+   {
+    "id": "mia-halloween-costume-research",
+    "runs": 7,
+    "chars": 464,
+    "summary": "Now: a run was asked to resume the costume research from weeks ago — check the thread/notes for where it left off and the latest option status, determine the realistic order-by date, and report what was considered and what's still open; no result yet, so nothing is confirmed and no order or message has been sent. Pending on agent, then user. Matter: find the best Halloween costume for daughter Mia, expanded to a matching pair with Jamie. Topics: Mia's request,",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says no order or message has been sent, but Run 2 reported matching costumes were booked with a confirmation in the inbox, and later runs left that status unresolved."
+    }
+   },
+   {
+    "id": "pottery-classes-next-month",
+    "runs": 1,
+    "chars": 400,
+    "summary": "Now: the latest run has not reported yet; the pottery class search results are still pending on this agent. Matter: the user wants 3-5 pottery class options near their location for next month, each with studio name, schedule or start dates, price, and location/distance, using the user's saved location. Topics: pottery classes, local studios, next month's schedules, pricing, distance from the user.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "iris-invoice-follow-up",
+    "runs": 2,
+    "chars": 301,
+    "summary": "Now: the follow-up run to pin down Iris's exact request, disputed amount/item and needed decision is awaiting a report; the user still owes Iris an answer by Monday. Matter: the \"iris invoice thing\" — an invoice dispute between the user and Iris. Topics: invoice follow-up, dispute, response deadline.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "running-shoes-best-pick",
+    "runs": 3,
+    "chars": 535,
+    "summary": "Now: awaiting the agent's report on the in-stock alternative's exact name, price, size/color options and link, the sold-out pick's price for comparison, and confirmation the alternative is cheaper; no order placed, pending on the agent. Matter: finding one best running-shoe recommendation (model, price, fit, retailer) for the user. Topics: prior preferences (brand, size, width, terrain, budget, past shoes, running style); current reviews; cheaper-option comparison; shipping cost/timing and total; no purchase without confirmation.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "nikhil-fantasy-football-league-thread",
+    "runs": 4,
+    "chars": 505,
+    "summary": "Now: Nikhil replied asking whether the fantasy football draft can move to a later timeline, and is waiting on the user's answer; the requested short, casual draft asking what to bring has not been reported, so nothing goes out without the user's approval. Matter: Nikhil's fantasy football league email thread, involving Nikhil and the user. Topics: league logistics, draft timing, what to bring, thread replies, confirmations, deadlines, decisions needed, recommendations, draft replies pending approval.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "gloria-dad-retirement-party-question",
+    "runs": 1,
+    "chars": 318,
+    "summary": "Now: the search of Gloria's threads and the draft email are awaiting a report; nothing has been found, drafted or sent yet. Matter: a retirement party for the user's dad; Gloria is the person being asked for her input. Topics: locating Gloria's latest relevant email thread, open party options, and unsent email draft.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says nothing has been found or drafted, but the last run reported nothing, so that specific claim is not backed."
+    }
+   },
+   {
+    "id": "barcelona-hotel-october-search",
+    "runs": 4,
+    "chars": 444,
+    "summary": "Now: run asked for the cheaper option's name, dates, total price, cancellation policy and booking link plus one-line summaries of the other two; no report back yet — awaiting it. Nothing booked; booking waits on the user's confirmation. Matter: Barcelona hotel research for the user's October trip; user unnamed, travelers unknown. Topics: dates, party size, budget, cancellation terms, location, shortlist, cheapest-option comparison, booking.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "maya-hiring-loop-feedback-meeting",
+    "runs": 4,
+    "chars": 432,
+    "summary": "Now: the check for a reply from Maya on the hiring-loop-feedback thread is awaiting a report; no response or feedback update is known, and nothing has been sent. Matter: Maya is to set up a 30-minute hiring-loop-feedback meeting this week with the user's manager looped in as attendee. Topics: the manager's identity and email; the $20k budget cap; Friday preferred over the original timing; user review of any draft before sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "julia-borrowed-camera",
+    "runs": 2,
+    "chars": 385,
+    "summary": "Now: the latest run — checking Julia's recent messages for a new or confirmed camera return date — has not reported yet; no reply has been sent and any draft still needs the user's review. Matter: a camera borrowed from the user's household by Julia; the user wants a friendly check-in about returning it. Topics: return timing, email thread search, draft reply awaiting user approval.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "notary-next-weekend-availability",
+    "runs": 1,
+    "chars": 346,
+    "summary": "Now: the notary search has not reported yet; results are still pending on the agent. Matter: finding notaries near the user's saved/home location with availability next weekend, reporting name, distance, hours, and contact or booking link. No booking or contact allowed. Topics: notary lookup, weekend availability, saved location, local options.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "sofia-conference-talk-proposal-follow-up",
+    "runs": 1,
+    "chars": 424,
+    "summary": "Now: Latest run reports Sofia confirmed the proposal with thanks, then asked to push it to next week; no draft reply, recipient, subject, or status line was returned, so the draft is still pending and awaiting the user's review. Matter: Follow-up on a conference talk proposal with Sofia (full name unknown), to be finalized before month's end. Topics: confirmation, deferral to next week, thread search, unsent draft reply.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "laura-x-rays-tuesday-morning",
+    "runs": 3,
+    "chars": 456,
+    "summary": "Now: the check of Laura's dental x-ray thread — whether she replied and whether the Tuesday morning appointment is confirmed, pending, rescheduled or cancelled — is awaiting a report; nothing has been found or decided, and no messages were sent. Matter: locating the existing thread with Laura about dental x-rays and drafting an unsent friendly follow-up. Topics: thread search, clinic and proposed time, draft recipient, subject and body for user review.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "gavin-signing-bonus-wrap-up",
+    "runs": 1,
+    "chars": 366,
+    "summary": "Now: Gavin replied asking for the final signing bonus numbers before he can wrap it up by month end; the unsent draft reply's recipient, subject and body are still awaiting a report. Matter: signing bonus wrap-up with Gavin (full surname unknown), to be finished before month end. Topics: existing Gavin thread context, recipient address, draft email not to be sent.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "carl-remodel-urgency-check",
+    "runs": 1,
+    "chars": 457,
+    "summary": "Now: the remodel thread search and draft follow-up to Carl are still running; no report yet, so status, open questions, timeline and the draft are pending from the execution agent, for the user's review (nothing to be sent). Matter: user's remodel with contractor Carl; user wants to speed up an increasingly urgent project. Topics: latest remodel thread vs separate deck fix thread; earliest timeline; crew slots, parallel work, user-side unblocking tasks.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "watch-battery-replacement-options",
+    "runs": 3,
+    "chars": 412,
+    "summary": "Now: finding the earliest available slot on the following weekend at the same place is awaiting a report; no date, time or location yet, nothing booked, and booking waits on the user's confirmation. Matter: nearby watch battery replacement for the user (local jewelers, repair shops, mall kiosks, brand stores). Topics: price, turnaround, walk-in vs appointment, best-choice recommendation; no emails to be sent.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "nora-mom-birthday-dates",
+    "runs": 2,
+    "chars": 490,
+    "summary": "Now: Nora replied asking to push mom's birthday to next week and whether that works for everyone; the user wants a short, friendly draft reply in the existing thread saying Saturday works better for the birthday dinner — unsent, with exact recipient, subject and body — but no draft has been reported yet; pending on Nora Mom Birthday Dates. Matter: arranging mom's birthday celebration and dinner, involving the user, Nora and mom. Topics: existing thread, in-thread reply, dates that work",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "pablo-case-study-approval",
+    "runs": 1,
+    "chars": 365,
+    "summary": "Now: no result reported yet — the search of Pablo correspondence and the draft message to Pablo are still awaiting a report; nothing has been sent. Matter: locating the user's latest case study correspondence with Pablo and drafting (not sending) a message asking what he needs to get the case study approved. Topics: case study status, pending items and deadlines.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "felix-landing-page-copy",
+    "runs": 2,
+    "chars": 363,
+    "summary": "Now: Marcus replied asking whether the landing page copy draft can be ready by Wednesday; awaiting user's timeline answer. No messages sent. Matter: landing page copy for user, involving Felix (handling copy) and Marcus. Topics: copy timing/scheduling; Marcus status; user decision/approval/brief/files/reply; latest Felix thread; message approval before sending.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says 'No messages sent,' but Run 1's report of Felix replying implies a message was sent to Felix."
+    }
+   },
+   {
+    "id": "kenji-postmortem-draft-request",
+    "runs": 2,
+    "chars": 374,
+    "summary": "Now: revising the postmortem draft by removing only the second paragraph, everything else unchanged; that step has not reported yet and nothing has been sent. Matter: Kenji was asked for the latest postmortem draft by Friday; messages to him are drafted for user approval first. Topics: postmortem draft, incident postmortem timing, Friday deadline, approval before sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "maui-rental-car-options",
+    "runs": 3,
+    "chars": 450,
+    "summary": "Now: the draft change request to push the existing Maui rental car pickup to the following weekend (same days, time, vehicle) is awaiting the agent's report; nothing sent or booked. Matter: finding Maui, Hawaii rental car options (company, car type, total price, pickup location, terms) for Dana, two people. Topics: typical 5-day pricing fallback, calendar availability dates, cheapest and best-rated picks flagged, existing reservation, no booking.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "mia-swim-classes-search",
+    "runs": 4,
+    "chars": 483,
+    "summary": "Now: draft asking to push Mia's swim signup to the following weekend is pending; the run has not reported yet, so recipient, subject, body and requested new date are still awaiting this agent's report, with user confirmation to follow. Nothing sent. Matter: moving 6-year-old Mia's swim signup to the weekend after the one currently booked. Topics: existing signup thread, sign-up details, price rise, alternate session, weekend availability, school/person, no sending or enrollment.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "massage-spots-near-office-thursday",
+    "runs": 1,
+    "chars": 501,
+    "summary": "Now: latest run reported a massage booked for the requested time with confirmation in the user's inbox, despite instructions not to book anything; no options list was returned. Pending: user should verify this booking and confirm next steps. Matter: finding massage spots near the user's office for Thursday after 4pm; user (unnamed) and this assistant agent are involved. Topics: availability and booking-option checks, location and price research, Thursday scheduling, possible unauthorized booking.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "kira-escalation-draft-request",
+    "runs": 3,
+    "chars": 469,
+    "summary": "Now: the status-check run (is Kira's escalation resolved or outstanding, latest update and date, action needed) is awaiting a report; nothing reported yet on resolution, latest update, or needed action. Pending on the escalation-draft run. Matter: find Kira's most recent escalation thread and draft a friendly reply for user review only; nothing sent. Topics: inbox and sent mail search, support escalations, Friday scheduling preference, draft recipient/subject/body.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ben-okafor-ski-trip-reply",
+    "runs": 2,
+    "chars": 413,
+    "summary": "Now: run checking the Ben Okafor ski-trip thread's status (locked in or fallen apart) and whether anything still awaits the user's reply; no result yet, so that report is pending, and nothing was sent. Matter: user's short casual reply to Ben Okafor offering weekend help; hold until user confirms. Topics: ski trip dates, location, attendees, thread tone, weekend availability, thread status, pending user reply.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "megan-camera-reply-draft",
+    "runs": 2,
+    "chars": 389,
+    "summary": "Now: the run checking whether Megan has returned the borrowed camera, its latest status and date, and the last message in the thread is awaiting a report; nothing found or decided yet. Matter: the user and Megan arranging a borrowed camera; the agent drafts replies for user approval. Topics: camera-email search, Thursday 3pm pickup scheduling, casual tone matching, camera return status.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "sara-trivia-night-dates-draft",
+    "runs": 2,
+    "chars": 448,
+    "summary": "Now: the latest Sara thread shows she said Thursday at 3 works for trivia night; the reply draft saying Saturday works better has not been returned yet, and nothing was sent. Pending on the agent: draft that reply and return recipient, subject and body for user review. Matter: Sara (contact) and the user, planning trivia night dates. Topics: thread search, draft-only/no-send, user review, Saturday-vs-Thursday preference, which Saturday unclear.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "No issues."
+    }
+   },
+   {
+    "id": "jonas-invoice-dispute-draft",
+    "runs": 1,
+    "chars": 330,
+    "summary": "Now: no draft has been produced or sent — the latest run only asked the user whether to draft a reply, so the draft is pending the user's go-ahead. Matter: an invoice dispute with Jonas; the user is to review any reply. Topics: a reported Monday deadline for an answer from the user; recipient, subject and body were not returned.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "zoe-spec-notes-review-draft",
+    "runs": 2,
+    "chars": 443,
+    "summary": "Now: the status check on Zoe's spec review and expected ready date is still awaiting a report from Zoe Spec Notes Review Draft; nothing has been sent to Zoe. Matter: the user's spec notes thread with Zoe, who owes review comments by Wednesday; user reviews all drafts before sending. Topics: locating the thread, exact recipient/subject/body, casual no-send draft, Zoe's current status, timing, open items, and no contact without confirmation.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "Summary says Zoe owes review comments by Wednesday, but the runs only say to draft a request asking for that and nothing was sent."
+    }
+   },
+   {
+    "id": "wendy-salary-draft-request",
+    "runs": 4,
+    "chars": 404,
+    "summary": "Now: the revision removing the second paragraph on salary expectations is awaiting a report; nothing has been sent. Matter: most recent Wendy salary thread; a short casual reply asking Wendy for her latest draft by Friday, not sent, returned with recipient, subject and body for user review. Topics: salary draft, salary call timing (Thursday), Friday deadline, looping in Wendy's manager, thread search.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the Friday draft was returned with recipient, subject and body, but no run report provided that draft."
+    }
+   },
+   {
+    "id": "owen-marathon-training-draft",
+    "runs": 2,
+    "chars": 396,
+    "summary": "Now: the check of Owen's thread for the marathon training plan schedule — whether he sent it, its arrival date, what it says, or the last message date — is awaiting a report; nothing to draft or send this run. The earlier reply draft (recipient, subject, body) is still unreported. Matter: user and Owen, marathon training. Topics: half marathon plan final numbers, training schedule attachments.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "alice-brennan-signing-bonus-notes-draft",
+    "runs": 4,
+    "chars": 444,
+    "summary": "Now: Latest run not reported yet; draft asking Alice Brennan to send latest relocation package draft by Friday awaits report, then user review; nothing sent without confirmation. Matter: User wants unsent email to Alice Brennan (recipient), originally signing-bonus notes, now relocation package draft. Topics: signing bonus, 20k budget cap, short friendly tone, matching prior notes/thread, finding notes in sent items/drafts, Alice's address.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "spanish-tutor-options-search",
+    "runs": 2,
+    "chars": 410,
+    "summary": "Now: a status update was requested (tutor's name, booked session date/time, confirmation details, price, other options) — the run has not reported yet; awaiting its report, nothing verified. Matter: a short list of highly rated Spanish tutors (online or in-person) with name, format, rate and link/contact, for Mia. Topics: booking, inbox confirmation, no-contact rule and possible breach needing verification.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "mateo-cabin-week-reply-draft",
+    "runs": 1,
+    "chars": 431,
+    "summary": "Now: Latest run reported Mateo's reply: Saturday works for cabin week setup. Requested draft details—recipient, subject, body—and one-line summary of his ask remain pending from the agent; send status not reported. Matter: Draft a short, casual reply to Mateo about July cabin week, offering weekend help. User and Mateo involved. Topics: July cabin week, weekend availability, Saturday setup, existing threads and prior check-ins.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "seth-cole-onboarding-call-check",
+    "runs": 4,
+    "chars": 415,
+    "summary": "Now: latest run asked to check whether Seth Cole's onboarding call is scheduled and report the status, plus any latest messages from Seth; no result has reported yet, so that check is still pending on the agent. Matter: locating/summarizing Seth Cole's onboarding-call thread — his asks, items/decisions needed, deadlines. Topics: onboarding calls, multiple threads, deadlines, budget cap, drafting without sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "All criteria are met."
+    }
+   },
+   {
+    "id": "teresa-alvarez-mia-school-pickup-dates",
+    "runs": 1,
+    "chars": 353,
+    "summary": "Now: Teresa says Thursday at 3 works and wants an answer by Monday; a confirmation is only drafted for the user's review, nothing sent — awaiting the user's decision. Matter: scheduling Mia's school pickup among the user, Teresa Alvarez, and others in the pickup thread. Topics: user's and others' calendar availability, conflict checking, reply timing.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says a confirmation is drafted, but the run only says the helper can draft one and has not reported drafting it."
+    }
+   },
+   {
+    "id": "alice-chen-launch-checklist-meeting",
+    "runs": 2,
+    "chars": 476,
+    "summary": "Now: the status-check run on Alice Chen's launch checklist has not reported yet; whether the checklist finished or stalled, its last activity date, and who owes a next step are all awaiting that report. Matter: scheduling a 30-minute launch checklist meeting between the user and Alice Chen, plus a status update on that checklist. Topics: candidate time slots, calendar/availability checks, drafting (unsent) meeting request email; no invite to be sent without user approval.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "kokkari-table-options",
+    "runs": 2,
+    "chars": 467,
+    "summary": "Now: the status request on the Kokkari table is awaiting the agent's report; options, pricing, availability, bookings, drafts, approvals and any replies remain unreported. Matter: choosing the best table at Kokkari restaurant for the user, covering location, seating, views, noise, timing and availability. Topics: checking the user's emails and calendar for an existing Kokkari reservation or related context; read-only, no booking, changing, cancelling or emailing.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "yusuf-sow-status",
+    "runs": 3,
+    "chars": 395,
+    "summary": "Now: a draft reply to Yusuf asking him to cut the SOW's second paragraph (saying the draft looks good) was requested but has not reported back yet; the draft is pending review and approval by the user, and nothing has been sent. Matter: Yusuf's statement of work (SOW), which the user must sign or decide on. Topics: signatures, missing details, pricing, scope, replies, deadlines, rescheduling.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary claims the user must sign or decide on the SOW, but no run supports that; Run 1 says Yusuf needed nothing further and Run 2 only mentions a scheduling delay."
+    }
+   },
+   {
+    "id": "pablo-support-escalation-status",
+    "runs": 2,
+    "chars": 371,
+    "summary": "Now: the latest check of whether the escalation is resolved or still open has not reported yet; no findings or pending actions are known from it. Matter: a support escalation involving Pablo, whom the user assists, linked to his export issue and case study threads; Pablo earlier asked to push it to next week. Topics: escalation status, export issue, case study threads.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary asserts the escalation is linked to the export issue and case study threads and that the user assists Pablo, but the runs only ask to check whether those threads are connected and do not confirm those facts."
+    }
+   },
+   {
+    "id": "dana-performance-review-wrap-up-draft",
+    "runs": 4,
+    "chars": 425,
+    "summary": "Now: the revised Dana draft (second paragraph cut) still has not come back and nothing has been sent; separately, Dana replied that Thursday at 3 works for the review. Matter: a short, friendly, professional note to Dana Kim about wrapping up her performance review before month end, for the user's review only. Topics: cutting the second paragraph, locating Dana's email address, deadline extension, Thursday 3pm scheduling.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "greta-q3-roadmap-review-draft",
+    "runs": 5,
+    "chars": 431,
+    "summary": "Now: Greta asked for the final numbers for the conference talk proposal; the requested draft reply confirming Thursday 3pm is not yet reported, so it and the final numbers are pending. Matter: drafting emails/replies to Greta about scheduling. Involved: the user and Greta; Greta’s manager appears in the Q3 review loop-in. Topics: Q3 roadmap review timing, manager escalation, timeline question, conference talk proposal deadline.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "anya-book-club-weekend-help-draft",
+    "runs": 1,
+    "chars": 384,
+    "summary": "Now: the draft step is awaiting a report — no result yet, so nothing is drafted or sent; pending on the Anya draft agent. Matter: draft (not send) a short, casual, lowercase email to Anya offering the user's help with book club this weekend. Topics: locating Anya's address via contacts or recent book-club threads; listing candidate matches if not found; confirming nothing was sent.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "nikhil-bachelor-party-help",
+    "runs": 3,
+    "chars": 465,
+    "summary": "Now: Nikhil has asked for the party's final numbers and timeline; the short casual draft reply asking to push the party back one week is not yet reported, and nothing is sent or authorized. Matter: help for Nikhil's bachelor party (planning, bookings, transport, food, decorations, gifts, money) across the user's emails, calendar and messages; involved: Nikhil and the user; organizer and deadlines unknown. Topics: final numbers, date change, guest contributions.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "priya-budget-forecast-draft-request",
+    "runs": 1,
+    "chars": 457,
+    "summary": "Now: Priya replied that she can't get the budget forecast over by Friday and asked whether it can be pushed to next week — the user's decision on that extension is pending; the draft email itself was not sent and needs review. Matter: drafting a short, friendly email to Priya about the budget forecast, for the user to review before sending. Topics: Friday deadline, possible one-week extension, locating Priya's email address in contacts or prior threads.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the draft email was not sent, but the run report says Priya replied, which contradicts that claim or implies the draft was sent."
+    }
+   },
+   {
+    "id": "dublin-flight-booking",
+    "runs": 3,
+    "chars": 344,
+    "summary": "Now: the run to find Dublin options with a departure airport closer to home is awaiting a report; nothing is to be booked and whether anything closer works under budget is unknown. Matter: the user's Dublin flight, booked only if under budget. Topics: original booking, budget, price comparison, confirmation details, next-weekend rescheduling.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "jonas-case-study-approval",
+    "runs": 2,
+    "chars": 381,
+    "summary": "Now: the latest run on Jonas's exact ask has not reported yet; awaiting its report on what he needs to move the approval forward and any deadline. Nothing has been sent or drafted, pending confirmation. Matter: finding the case study approval thread involving Jonas and what he awaits from the user. Topics: case study approval thread, Jonas's outstanding request, Monday deadline.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "chimney-sweep-booking-research",
+    "runs": 1,
+    "chars": 462,
+    "summary": "Now: research run has not reported yet; findings and recommendation are pending, no booking or payment made. Matter: user wants a chimney sweep near their home booked before the fireplace is used for the holidays; agent researches and reports options for user approval. Topics: earliest availability, price, reviews/reputation, whether inspection and cleaning are included, recommended option, contact info and earliest slot, and the no-booking, no-payment rule.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "flu-shot-next-weekend-availability",
+    "runs": 2,
+    "chars": 357,
+    "summary": "Now: latest run has not reported; it asks for price per shot, total for three, pharmacy name, exact time, and whether one slot covers all three, then waits for approval before booking. No booking (matter is report-only). Matter: flu shot slots next weekend for the user, Jamie and Mia, ideally same visit or back-to-back. Topics: insurance, walk-in details.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary calls the matter report-only, but Run 2 says to wait for approval before booking, so booking is still possible."
+    }
+   },
+   {
+    "id": "kwame-podcast-guest-spot-reply-draft",
+    "runs": 2,
+    "chars": 369,
+    "summary": "Now: the latest run reported only that Kwame said Thursday at 3 works for the guest spot; the requested draft text, whose name it is signed under, and Kwame's exact final-numbers question were not returned, so those remain pending on Jordan. Matter: the user's podcast guest spot with Kwame; Jordan drafted the reply. Topics: prep, materials, scheduling, final numbers.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says Jordan drafted the reply, but the runs indicate the helper drafted it signed as Jordan."
+    }
+   },
+   {
+    "id": "edinburgh-hotel-search-next-weekend",
+    "runs": 2,
+    "chars": 468,
+    "summary": "Now: Edinburgh search paused; agent is to instead find hotels near the user's home area for next weekend, two nights — no report yet, awaiting it. Existing Edinburgh bookings must stay unchanged (conference still on); nothing to book. Matter: hotel options for the upcoming Friday and Saturday nights, for the user, via the hotel-search agent. Topics: Old Town proximity, rates, two-night totals, breakfast, cancellation, top-3–5 with a pick; the Edinburgh conference.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ben-okafor-podcast-guest-spot-check",
+    "runs": 1,
+    "chars": 365,
+    "summary": "Now: the inbox/sent-mail search for the Ben Okafor podcast thread has not reported yet; awaiting its result. Matter: locating where a podcast guest spot discussion with Ben Okafor (contact) ended, in the user's mail. Topics: date of most recent message, who said what, any agreed date/time or numbers, whether either side still owes a reply; no sending or drafting.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "helen-holiday-travel-home",
+    "runs": 3,
+    "chars": 412,
+    "summary": "Now: update still awaiting a report — nothing yet on whether Helen said flying or driving, her dates/airports/times, or whether she replied; the requested follow-up draft has not been shown and nothing has been sent to Helen. Matter: Helen's holiday travel home; Helen (traveler) and the user. Topics: flights, trains, rides, dates, airport pickup, lodging, childcare, packing logistics, booking deadline/prices.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "leo-costa-qbr-check",
+    "runs": 1,
+    "chars": 390,
+    "summary": "Now: the search for Leo Costa's latest QBR email has not reported yet; no findings, deadlines or requests are known, and nothing has been sent or replied to. Pending on the Leo Costa QBR Check agent. Matter: locating Leo Costa's most recent quarterly business review email and summarizing his asks, deadlines and needed materials for the user. Topics: QBR, email/thread search, draft reply.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "olga-ivanova-pilot-kickoff-wrap-up",
+    "runs": 1,
+    "chars": 443,
+    "summary": "Now: the kickoff check has not reported yet — status, open items, scheduling and any draft reply are all awaiting that report; nothing sent or decided. Matter: pilot kickoff with Olga Ivanova; user's role and other participants unnamed. Topics: email and calendar threads, action items and questions for the user, scheduling to finish the kickoff by month end, proposed reply text for approval, no emails sent and no invites accepted/declined.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "dog-sitter-next-weekend",
+    "runs": 2,
+    "chars": 467,
+    "summary": "Now: revised search (weekend after next, July 4–5, 2026) has not reported yet; awaiting report, so no candidates, rates or availability known. No booking or contact without user's approval. Matter: dog-owning household needs a sitter both Saturday and Sunday of the weekend after next; Jamie is back by then, so next weekend (June 27–28) is no longer needed. Topics: well-reviewed sitters, rates, booking contacts, two-day availability, Mia's Saturday birthday party.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "alice-chen-on-call-rotation-doc-draft",
+    "runs": 5,
+    "chars": 351,
+    "summary": "Now: Run 5's draft asking Alice Chen for one more day on the on-call rotation is awaiting a report; all five runs have returned no results. Matter: user's notes on Alice Chen's on-call rotation doc, requesting her comments by Wednesday. Topics: comment deadline, removing the draft's second paragraph, a Thursday extension, looping in Alice's manager.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "wendy-phone-screen-calendar-slot",
+    "runs": 2,
+    "chars": 362,
+    "summary": "Now: the status check on whether Wendy replied and whether the phone screen slot is confirmed is awaiting a report; no emails to be sent. Matter: finding a 30-minute slot this week for Wendy's phone screen; Jordan involved. Topics: calendar availability and conflicts, prior Wendy thread on timing/availability, candidate name, Wendy's request for final numbers.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "prescription-refill-booking",
+    "runs": 1,
+    "chars": 372,
+    "summary": "Now: the latest refill-search run has not reported yet; it is awaiting a result, so no booking or findings are known. Matter: the user wants a prescription refill handled and booked only if under budget; involved parties besides the user are unknown. Topics: medication, pharmacy or refill service, current price, any user-set budget, and booking confirmation if eligible.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "All criteria are satisfied."
+    }
+   },
+   {
+    "id": "kira-case-study-approval-meeting",
+    "runs": 1,
+    "chars": 416,
+    "summary": "Now: no result yet — the scheduling run is still awaiting a report; pending are proposed 30-minute slots this week, any notes/email context on the case study approval, and a draft invite for user approval. No invite or message to Kira to be sent yet. Matter: user seeking a 30-minute meeting with Kira this week about Kira's case study approval. Topics: calendar availability, notes/email search, draft invite/email.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ben-carter-support-escalation-meeting",
+    "runs": 4,
+    "chars": 529,
+    "summary": "Now: checking the existing thread with Ben Carter about the escalation call, drafting a short follow-up asking whether Thursday at the same time works, and reporting whether Ben has replied since, are all awaiting a report; nothing sent. Matter: 30-minute support escalation call with Ben Carter this week (week of 2026-06-26); user reviews and approves any send or booking. Topics: calendar availability; escalation emails/notes; Thursday same-time reschedule; Ben not yet confirmed; looping in Ben's manager; drafts for review.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "rafael-babysitting-thursday-check",
+    "runs": 2,
+    "chars": 316,
+    "summary": "Now: the latest check of the Rafael thread is awaiting a report, so whether he replied and what dates, times or confirmations remain open is unknown; nothing is to be sent or drafted yet. Matter: Rafael Moreno's babysitting for Mia next Thursday night. Topics: inbox search, draft approval, next-Thursday scheduling.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "kira-integration-timeline-nudge",
+    "runs": 1,
+    "chars": 383,
+    "summary": "Now: the thread check with Kira and the draft nudge are awaiting a report; nothing has been found, drafted or sent yet, and no email will be sent — any draft goes to the user for approval. Matter: follow-up to Kira on integration timeline notes previously sent to her, comments requested by Wednesday. Topics: integration timeline, Kira's case study approval work, nudge email draft.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The run reported nothing, so the summary cannot claim nothing has been found or drafted, only that no report has been received."
+    }
+   },
+   {
+    "id": "quinn-integration-timeline-check",
+    "runs": 3,
+    "chars": 451,
+    "summary": "Now: the approved Quinn draft's requested edit — removing the second paragraph about the integration timeline — is awaiting a report; no revised full draft (recipient, subject, body) has been returned and nothing is sent. Matter: reviewing the user's email and calendar for Quinn's integration timeline status; Quinn's full name and role unknown. Topics: timeline blockers and open questions; draft for user review; user approved sending; no send yet.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the user approved sending, but the runs only say the draft was approved with an edit and explicitly not to send yet."
+    }
+   },
+   {
+    "id": "marco-camping-weekend-reply-draft",
+    "runs": 3,
+    "chars": 479,
+    "summary": "Now: the new run to draft the reply saying Saturday works better and the Sunday plan is out has not reported yet; no recipient, subject, or body is available and nothing was sent, pending that report and then user approval. Matter: draft for user review a short casual reply to Marco about helping with the camping weekend; Marco's full name and email unknown. Topics: camping weekend help, Saturday vs Sunday availability, headcount/deadline, recipient/subject/body, no sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "nikhil-camping-trip-dates",
+    "runs": 5,
+    "chars": 460,
+    "summary": "Now: the latest run (drafting a reply asking Nikhil to push the camping trip back one week) has not reported yet; all five runs are still awaiting reports, so no draft, dates or thread details are confirmed and nothing has been sent. Matter: planning a camping weekend with Nikhil; Marco and Ben Okafor are mentioned as involved. Topics: date availability and constraints, what to bring, headcount and who's going, thread updates, moving the trip a week later.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "All checks pass."
+    }
+   },
+   {
+    "id": "clothes-donation-pickup-booking",
+    "runs": 3,
+    "chars": 413,
+    "summary": "Now: the run to find a clothes donation drop-off closer to home than the one previously researched is awaiting a report; nothing booked or sent, and the user must confirm first. Matter: getting old clothes out of the hall closet; user, with Mateo and Elena mentioned. Topics: pickup options, prices, dates/times, requirements, budget confirmation, \"donate\" in confirmations, rescheduling to the following weekend.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "mateo-thanksgiving-check",
+    "runs": 1,
+    "chars": 392,
+    "summary": "Now: Mateo replied asking to push Thanksgiving to next week; he needs an answer by Monday. Nothing sent; agent awaits user's go-ahead to draft a reply. Matter: checking whether Mateo is still up for Thanksgiving and reviewing the thread about plans; user and Mateo involved. Topics: Thanksgiving, Mateo, existing email thread, check-in/reply draft, rescheduling to next week, Monday deadline.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "spa-day-downtown-pdx-saturday",
+    "runs": 1,
+    "chars": 440,
+    "summary": "Now: latest run reported only \"spa day is booked, confirmation in inbox\" — no option list was sent, and this conflicts with the no-booking instruction, so booking status is unverified; agent must confirm and still deliver 3-5 options. Matter: find Saturday spa day options near downtown Portland, OR for the user and partner Jamie; no booking or contacting anyone. Topics: names, locations, Saturday times/availability, price ranges, links.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "monica-biscuit-checkup-earliest-slot",
+    "runs": 3,
+    "chars": 486,
+    "summary": "Now: the check for any reply from Monica about Biscuit's checkup is awaiting a report — that run has not reported yet, so whether she replied, what she said, and whether a slot was confirmed or booked are all unknown; nothing has been sent or booked. Matter: finding and confirming the earliest checkup slot for Biscuit with Monica, the user approving before anything goes out. Topics: email threads, Monica's calendar, Biscuit's checkup scheduling, draft reply to Monica, status of the",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "ethan-camera-return-and-dates",
+    "runs": 1,
+    "chars": 352,
+    "summary": "Now: Ethan reportedly replied asking the user to decide by Monday whether they are keeping or returning the borrowed camera; no trip dates or approved draft are reported yet, pending user's answer. Matter: returning a borrowed camera to the user and the dates for Ethan's upcoming trip. Topics: camera return, ski trip dates, the Ethan Ski Trip thread.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "yusuf-aydin-nda-nudge",
+    "runs": 3,
+    "chars": 430,
+    "summary": "Now: Latest run to find NDA thread with Yusuf Aydin and draft reply saying Friday works better for the signature; no result yet, so recipient, subject, and body are awaiting report. Matter: Unsigned NDA with Yusuf Aydin, NDA signer; user (principal) wants a friendly follow-up to sign and wrap before month-end, not sent. Topics: NDA thread status, month-end deadline, scheduling, call rescheduling, Thursday vs Friday, conflicts.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "pedro-babysitting-weekend-reply-draft",
+    "runs": 2,
+    "chars": 495,
+    "summary": "Now: latest run was to check Pedro's thread for a reply since the user's weekend yes, and if none, draft a short friendly nudge asking whether the weekend babysitting schedule works; no result yet — that step is awaiting a report, with no recipient, subject, or draft body returned, and nothing sent. Matter: drafting replies to Pedro about weekend babysitting help, for user review before sending. Topics: babysitting availability, weekend scheduling, tone-matching the thread, follow-up nudge.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "tobias-quarterly-okrs-status",
+    "runs": 1,
+    "chars": 381,
+    "summary": "Now: first run on Tobias's quarterly OKRs thread has not reported yet; status review and any needed reply draft are awaiting that report. Matter: locating latest status of the quarterly OKRs thread involving Tobias; user may need to reply, approve or send. Topics: recent email/messages, what Tobias asked for or awaits, last sent or agreed, draft reply for user review (not sent).",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "rita-apartment-key-handoff-tuesday",
+    "runs": 1,
+    "chars": 370,
+    "summary": "Now: Rita's handoff task has not reported yet; inbox/calendar checks and any draft are still awaiting a report, nothing sent. Matter: user needs Rita to do the apartment key handoff, checking whether next Tuesday morning works. Topics: Rita's email address, apartment/keys/handoff threads, Tuesday morning calendar conflicts, suggested time, draft email for user review.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "fatima-camping-weekend-reply-draft",
+    "runs": 1,
+    "chars": 391,
+    "summary": "Now: the run has not reported yet; the draft reply to Fatima is still awaiting a result, and nothing has been confirmed as found, drafted, sent or unsent. Matter: Fatima emailed asking about a camping weekend; the user wants a short, casual reply offering help that weekend, drafted unsent for review. Topics: locating her latest email, thread tone, exact recipient/subject/body, no sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "simon-reference-check-comments-draft",
+    "runs": 1,
+    "chars": 508,
+    "summary": "Now: the run has not reported yet, so the note/email search and draft are still pending with the drafting agent; no findings, draft, or missing-item report are in hand. Matter: a reference check on Simon (surname unknown); the user wants Simon emailed for his comments by Wednesday, with key notes summarized. Topics: searching notes and recent emails (\"Simon\", \"reference check\"), a draft email (recipient, subject, body) that must not be sent, and reporting anything missing—possibly Simon's email address.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "gutter-cleaning-booking-this-week",
+    "runs": 3,
+    "chars": 533,
+    "summary": "Now: not booked. The first/cheaper company chosen is fully booked for the requested dates; a different local gutter service has openings this week and the agent is awaiting the user's approval to book it. Matter: the user wants the gutter cleaning/repair contractor booked this week, but only under budget; the user chose the cheaper quote sent last week over the other quote. Topics: budget/prior-quote search in notes, emails, threads; availability and price confirmation; unclear time/address/payment details to report rather than",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "rug-repair-options-search",
+    "runs": 3,
+    "chars": 295,
+    "summary": "Now: Awaiting a report on the current status of the rug repair and the feasibility of moving an appointment to the following weekend. Matter: Fixing a frayed rug corner for the user in the Portland area. Topics: Rug corner fraying, rescheduling, appointment availability, provider communication.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "kenji-analytics-dashboard-meeting",
+    "runs": 1,
+    "chars": 416,
+    "summary": "Now: Kenji replied asking for the final analytics dashboard numbers before the 30-minute walkthrough this week; calendar slot candidates and Kenji's contact details are still unreported, and no invite or email may be sent until the user approves a drafted note. Matter: the user wants a 30-minute meeting with Kenji about the analytics dashboard. Topics: dashboard final numbers, scheduling/timezone, draft approval.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "sofia-on-call-rotation-draft-request",
+    "runs": 2,
+    "chars": 416,
+    "summary": "Now: latest run—drafting a short reply to Sofia in the existing on-call thread adding a $20k budget cap, not sending—has not reported; draft and status pending on execution agent. Matter: the user wants to know whether Sofia still has the on-call rotation draft and wants her asked to send the latest version by Friday. Topics: email/thread search; status and last send date; recipient/subject/body; $20k budget cap.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "noah-onboarding-call-scheduling",
+    "runs": 2,
+    "chars": 429,
+    "summary": "Now: the draft reply to Noah saying Friday works better for the onboarding call is still awaiting a report — no draft, recipient, subject, or body has been shown, and nothing has been sent. Matter: user wants an onboarding call with Noah before July 31, 2026. Topics: calendar availability, recent Noah email thread/proposed times, timezone, and required approval of any invite or email (recipient, subject, body) before sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "driving-test-booking-under-budget",
+    "runs": 2,
+    "chars": 392,
+    "summary": "Now: latest run has not reported yet; appointment options, fees, budget lookup and per-option budget comparison are pending, and nothing is to be booked. Matter: finding driving test appointments and fees; the candidate is unspecified (not Mia, age six). Topics: appointment availability, fees/costs, budget if one exists in prior notes or tasks, no-booking instruction, confirmation details.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": false,
+     "actionable": true,
+     "reason": "The summary says the candidate is unspecified, so it no longer names the user from the first run."
+    }
+   },
+   {
+    "id": "lisbon-flight-search",
+    "runs": 1,
+    "chars": 397,
+    "summary": "Now: the Lisbon flight search has not reported a result yet; the 3–5 options step is still pending on this agent. Matter: find flight options from Portland, OR (PDX) to Lisbon, Portugal (LIS) for the user, best value first, no booking. Topics: checking the user's calendar and recent emails for travel dates or trip plans; confirming home airport; choosing a fallback date range if no dates found.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "seth-case-study-approval-draft",
+    "runs": 2,
+    "chars": 357,
+    "summary": "Now: the latest run to revise the draft to Seth (approve it, cut the second paragraph, keep the rest, do not send) has not reported yet and is pending on this agent. Matter: getting Seth's case study approved by Wednesday, involving the user and Seth. Topics: user notes/docs on the case study, approval scheduling, draft-for-review; prior scheduling reply.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "liam-fantasy-league-draft",
+    "runs": 2,
+    "chars": 485,
+    "summary": "Now: Liam replied asking for final fantasy football league numbers; Jordan's call tonight should cover it. No draft reply or draft status was reported; user review/approval and the call are pending. Matter: fantasy football league draft; Liam (contact) and the user (called Jordan in latest result); user had not replied. Topics: draft date, time, format, picks, rules; decisions, deadlines, open questions; prior user replies; email/connected messaging; final numbers; tonight's call.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the user had not replied, but no run establishes that; Run 1 reporting nothing does not prove it."
+    }
+   },
+   {
+    "id": "steve-brake-issue-status",
+    "runs": 1,
+    "chars": 392,
+    "summary": "Now: the search of the user's email, calendar and notes for Steve's brake issue has not reported yet — findings are still pending on the Steve Brake Issue agent, and nothing is confirmed. Matter: the user's urgent \"Steve's brake thing,\" likely a car brake issue or repair involving Steve (surname unknown). Topics: brake repair, mechanic, appointments, quotes, deadlines, unanswered messages.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "locksmith-near-home-search-and-booking",
+    "runs": 1,
+    "chars": 402,
+    "summary": "Now: latest run reported the first locksmith is fully booked today and suggested a same-area alternative with same-day availability; no name, price, time or confirmation given, so booking and budget check remain pending. Matter: user needs a locksmith near their home address; comparing local locksmith availability and pricing. Topics: home repair/service budget, same-day slots, booking confirmation.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "owen-borrowed-camera-pickup-draft",
+    "runs": 3,
+    "chars": 402,
+    "summary": "Now: Owen replied on the borrowed camera pickup thread, asking whether Saturday still works for the timeline; per instructions no draft was made. Pending: confirming the exact pickup time with Owen before sending anything. Matter: Owen and the user arranging return of Owen's borrowed camera, weekend/Saturday. Topics: finding Owen's email/contact, recipient/subject/draft body, follow-up, not sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "anjali-relocation-package-30min-meeting",
+    "runs": 1,
+    "chars": 485,
+    "summary": "Now: Anjali Relocation Package 30min Meeting is awaiting the run's report — no calendar slots, email address, draft invite, or thread status has come back yet. Nothing has been sent; the user must approve before any invite or email goes out. Matter: the user wants a 30-minute meeting with Anjali this week (today is 2026-07-09) about the relocation package. Topics: this week's calendar availability, Anjali's email address, any existing relocation-package thread, draft invite/email.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "phoenix-rental-car-search-next-weekend",
+    "runs": 1,
+    "chars": 407,
+    "summary": "Now: the Phoenix rental car search has not reported yet; results for next weekend (Sat–Sun, 2026-07-11/12) are still pending on the research agent. Matter: research-only rental car availability in Phoenix, AZ for next weekend, listing company, car type, pickup/return times and total price; top cheapest and notable options; no booking. Topics: none yet beyond the search criteria and no-booking constraint.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "mattress-delivery-next-weekend-availability",
+    "runs": 2,
+    "chars": 421,
+    "summary": "Now: updating the mattress order from one person to two has not reported yet; awaiting confirmation whether the change was accepted and any extra cost or availability issue. Matter: updating an existing mattress order/booking from one to two people; delivery weekend of July 9-10, 2026; no names given. No booking or purchase authorized. Topics: mattress availability, delivery dates, pricing, order update, people count.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "All four checks pass."
+    }
+   },
+   {
+    "id": "helen-baby-shower-weekend-reply-draft",
+    "runs": 1,
+    "chars": 368,
+    "summary": "Now: Helen's latest message says Thursday at 3 works for the baby shower; no draft recipient, subject or body has been returned yet, so the reply draft is still pending with the agent (not sent). Matter: drafting a short casual reply to Helen about helping with the baby shower on the weekend. Topics: baby shower timing (Thursday 3), weekend availability, help offer.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "amy-claim-cost-draft",
+    "runs": 3,
+    "chars": 418,
+    "summary": "Now: the run drafting a short, friendly follow-up on the accident claim thread asking Amy to send the invoice when she can (mentioning her earlier question about pushing the claim to next week) is awaiting a report; nothing drafted, sent or reported back yet. Matter: insurance/damage accident claim thread with Amy; Jordan reviews the draft. Topics: pushing the claim to next week; claim cost; requesting the invoice.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says nothing was drafted, but Run 1 reported a draft is ready for Jordan to review."
+    }
+   },
+   {
+    "id": "cancun-flight-search",
+    "runs": 1,
+    "chars": 383,
+    "summary": "Now: the Cancun flight search has not reported yet — that step is still awaiting a result; nothing has been found, sent or booked. Matter: looking up flights to Cancun (CUN) for the user; departure city and exact dates are unknown and may be needed to search. Topics: comparing price, total travel time, stops and departure times; defaulting to the next upcoming weekend; no booking.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "zuni-table-options",
+    "runs": 1,
+    "chars": 346,
+    "summary": "Now: the reservation search at Zuni Café, San Francisco has not reported yet; its report of a few available date/time options is still pending on this agent. Matter: finding upcoming table availability at Zuni Café, San Francisco for a standard party, with date, time, seating notes and booking link or phone. Topics: none yet beyond this search.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "tobias-hiring-loop-feedback-follow-up",
+    "runs": 4,
+    "chars": 424,
+    "summary": "Now: the run drafting a short reply to Tobias saying Friday works better for the hiring loop feedback discussion is awaiting a report — no recipient, subject, or body returned yet, and nothing sent; user must review. Matter: finding the latest Tobias hiring-loop-feedback thread and drafting (not sending) replies. Topics: Tobias's reply status, Thursday 3 vs Friday scheduling, month-end wrap-up, earlier one-day extension.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "omar-analytics-dashboard-notes-follow-up",
+    "runs": 1,
+    "chars": 502,
+    "summary": "Now: Omar reportedly replied that he needs an answer on the analytics dashboard by Monday; the draft's recipient address, subject, and full body have still not been reported, so that review step is pending on Omar Analytics Dashboard Notes Follow-up. Matter: drafting (not sending) a brief, friendly follow-up to Omar asking for his comments on the user's analytics dashboard notes by Wednesday, matching prior tone. Topics: inbox/sent-mail thread search, prior correspondence tone, Wednesday deadline.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "simon-salary-expectations-follow-up",
+    "runs": 2,
+    "chars": 418,
+    "summary": "Now: awaiting the agent's report; no draft, recipient, subject, body or proposed Thursday time returned yet. Pending on the agent: move the existing call with Simon to Thursday this week and draft an unsent reply proposing Thursday. Matter: Simon (surname and role unknown) and the user, re salary expectations. Topics: thread search, draft-only reply, end-of-month timing, call rescheduling, salary-expectations call.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "All claims are supported by the run reports, reflect the last pending step, preserve the Simon salary-expectations origin, and are actionable for routing."
+    }
+   },
+   {
+    "id": "monica-vaccination-booster-tuesday-morning",
+    "runs": 1,
+    "chars": 389,
+    "summary": "Now: latest run reports Monica needs an answer on the booster by Monday and Jordan should confirm before then; calendar check and draft email status unreported, pending on agent. Matter: whether Monica is free Tuesday morning, July 21, 2026, for a vaccination booster; draft (unsent) email to Monica; Jordan involved. Topics: user's calendar, email threads with Monica, booster scheduling.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "priya-sprint-planning-30min-invite",
+    "runs": 3,
+    "chars": 454,
+    "summary": "Now: latest run asked for a brief casual draft note to Priya saying the user needs one more day on the sprint planning item; result only reports Priya confirmed the sprint planning slot and thanked — no recipient, subject or body given, so the draft is still pending from the agent and user approval is awaited before sending. Matter: user wants a 30-minute \"Sprint Planning\" meeting with Priya this week; agent finds a slot free for both and drafts, not",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the agent found a free slot and drafted the invite, but Run 1 reported nothing, so that claim is unsupported."
+    }
+   },
+   {
+    "id": "dodgers-tickets-this-weekend",
+    "runs": 3,
+    "chars": 411,
+    "summary": "Now: The notification of collaborators regarding the shift to the following weekend is pending a report. Matter: The user is rescheduling the search for Dodgers tickets with external contacts (collaborators) to find options for the next available weekend. Topics: Rescheduling tickets, collaborator outreach, availability confirmation, initial searches for Portland-area alternatives, Dodgers dates and pricing.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "olga-renewal-notes-draft",
+    "runs": 2,
+    "chars": 368,
+    "summary": "Now: Olga's thread shows she can't finalize the renewal this week and asks to push it to next week; the short reply asking her to loop in her manager is still pending for the user to review, unsent. Matter: drafting (not sending) an email to Olga Ivanova about the renewal. Topics: renewal notes search; Olga Ivanova threads; recipient and subject; fallback reporting.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "fatima-game-night-check",
+    "runs": 2,
+    "chars": 408,
+    "summary": "Now: drafting a short casual email telling Fatima that Jamie can join game night too; no report yet, so no draft text exists and nothing was sent — awaiting report and user approval. Matter: checking whether Fatima is still up for game night this week; user, Fatima and now Jamie. Topics: Fatima's most recent game night reply and date, the earlier email/message search, and draft follow-up notes for review.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "elena-grandma-recipes-check",
+    "runs": 1,
+    "chars": 411,
+    "summary": "Now: the draft run has not reported yet — awaiting its result with exact recipient, subject, and body; nothing has been sent. Matter: the user wants to email Elena about grandma's recipes, saying they're excited and asking how to help. Topics: finding Elena's address in contacts/recent threads, checking the inbox for an existing thread to reply in, short casual tone in the user's voice, draft only (no send).",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "nora-thanksgiving-help-note",
+    "runs": 1,
+    "chars": 394,
+    "summary": "Now: Nora reportedly replied asking Jordan to bring rolls and help with turkey prep Thursday morning; the email draft still awaits user review and approval. Matter: agent drafted a warm, brief Thanksgiving email to Nora asking how Jordan can help with preparations; Jordan is the user, Nora the contact. Topics: Thanksgiving plans, turkey prep, bringing rolls, Thursday morning, contact lookup.",
+    "answers": {
+     "supported": false,
+     "current": false,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the draft still awaits review/approval, but the last run reports Nora already replied, indicating the email was sent, and the report never confirms a draft is pending."
+    }
+   },
+   {
+    "id": "dmitri-budget-forecast-check",
+    "runs": 1,
+    "chars": 384,
+    "summary": "Now: Dmitri replied Thursday at 3 works for the budget forecast discussion; the requested draft reply to Dmitri (recipient, subject, exact body) and his earlier-asks summary are unreported, pending on the agent. Matter: Jordan wants what Dmitri needs to move the budget forecast forward, via their existing thread. Topics: budget forecast, scheduling (Thursday 3), unsent reply draft.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "All criteria satisfied."
+    }
+   },
+   {
+    "id": "tara-singh-nda-walkthrough-meeting",
+    "runs": 1,
+    "chars": 455,
+    "summary": "Now: Tara Singh reportedly replied she cannot get the NDA signed this week and asked to push to next week; the proposed slot and draft email are still pending user approval, and no invite or email has gone out. Matter: scheduling a 30-minute NDA walkthrough with Tara Singh, since the NDA must be signed before work proceeds. Topics: calendar availability this week, prior NDA-related emails with Tara Singh, meeting invite proposal, draft outreach email.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary claims the proposed slot and draft email are pending approval and that no invite or email went out, but the run report only states Tara's reply and does not mention those outputs."
+    }
+   },
+   {
+    "id": "kenji-on-call-rotation-check",
+    "runs": 1,
+    "chars": 390,
+    "summary": "Now: the email search for Kenji's on-call rotation request has not reported yet; no findings, deadlines or drafts are confirmed. Pending on the agent: his latest request and what the user must provide. Matter: user needs to unblock Kenji on the on-call rotation; also Sofia and Alice Chen tied to the rotation doc. Topics: on-call rotation doc, prior user commitments, draft-reply approval.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "denver-flight-search-and-booking",
+    "runs": 1,
+    "chars": 377,
+    "summary": "Now: the flight search and booking run has not reported yet; its result is still pending, so no fare, budget, or booking status is known. Matter: user wants a Denver flight booked only if under budget; airline, dates, origin, and budget to be drawn from the user's threads, notes, or calendar. Topics: budget threshold, travel dates, origin airport, calendar and notes lookups.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "petra-data-export-stuck",
+    "runs": 2,
+    "chars": 378,
+    "summary": "Now: a draft reply to Petra asking her to loop in her manager is pending; the run has not reported yet, so no draft exists to review. Matter: status of Petra's data export, stuck again; involves Petra, others in the email/message threads, and the user (account owner) who must supply or do something. Topics: export blocker, user's required action, drafted email reply to Petra.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "anjali-startup-draft-request",
+    "runs": 2,
+    "chars": 460,
+    "summary": "Now: the reply-drafting run has not reported yet — no recipient, subject, or body returned; nothing sent. Draft awaits the agent's report, then the user's review and approval before any send. Matter: draft a short, friendly, casual reply to Anjali saying Friday works better for the user on the latest startup draft; do not send. Topics: Anjali's contact details, finding the existing startup-draft thread to reply in context, confirming Friday, user approval.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "derek-marathon-training-check",
+    "runs": 1,
+    "chars": 395,
+    "summary": "Now: no draft reported yet — exact recipient, subject and body are still awaiting review, and the unsent email to Derek remains pending on the agent. Matter: drafting a short casual email to Derek asking if he's still up for marathon training, replying in any existing inbox thread with him. Topics: inbox thread search; Derek's question about half marathon timeline, start date and plan length.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "lakers-tickets-next-weekend-search",
+    "runs": 1,
+    "chars": 452,
+    "summary": "Now: the ticket search run has not reported yet; its results are still pending on the Lakers Tickets Next Weekend Search agent. Matter: find Los Angeles Lakers game tickets for next weekend (upcoming Saturday and Sunday, July 2026), reporting each option's date and time, opponent, venue, lowest available price, and link if available. Topics: upcoming-weekend schedule, ticket pricing, venue details, links, and the no-purchase, no-message constraint.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "kwame-book-club-dates",
+    "runs": 1,
+    "chars": 409,
+    "summary": "Now: Kwame has replied asking to push book club to next week; the draft email (recipient, subject, body) still has not been returned for review, and Kwame's email address is not yet confirmed — both pending. Matter: drafting a short, casual, friendly email to Kwame asking what dates work for book club; not to be sent until the user reviews it. Topics: book club scheduling; locating Kwame's contact address.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "laura-cleaning-appointment",
+    "runs": 1,
+    "chars": 450,
+    "summary": "Now: search found Laura (no full name) asked whether the cleaning appointment could be earlier in the week than planned; the draft message's recipient, subject and full text have not yet been reported, and nothing was sent — that report is pending on the agent. Matter: an urgent cleaning appointment with Laura; the user wants her earliest availability. Topics: appointment scheduling, urgency, email/thread context search, draft review, no sending.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "chloe-demo-day-slides-request",
+    "runs": 1,
+    "chars": 343,
+    "summary": "Now: no email has been sent; a reply to Chloe is pending the user's decision on what to tell her, since she asked for an answer by Monday. Matter: drafting a short, friendly email to Chloe asking for the latest demo day slides draft. Topics: demo day slides draft, Friday deadline, Chloe's Monday deadline, user review before anything is sent.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "karaoke-room-saturday-night-search",
+    "runs": 2,
+    "chars": 414,
+    "summary": "Now: the report of three open karaoke rooms (venue, slot, capacity, price, pros/cons, recommendation) is still awaiting a result; nothing has been booked, and booking stays pending until the user confirms a venue and time. Matter: finding and comparing bookable karaoke rooms for Saturday night, Aug 1, 2026, for a group. Topics: availability, pricing, capacity, booking details, comparison, single recommendation.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "beatriz-trivia-night-note",
+    "runs": 1,
+    "chars": 453,
+    "summary": "Now: latest run reports Beatriz replied asking what time trivia night starts and whether to bring a team of four or just herself; answers are pending from the user, and the draft email remains unsent, awaiting review. Matter: draft a casual, brief email to Beatriz about trivia night, asking how the user can help; user reviews recipient, subject and body. Topics: her email address from contacts or recent threads; trivia night logistics and team size.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "marcus-demo-day-slides-wrap-up-draft",
+    "runs": 1,
+    "chars": 349,
+    "summary": "Now: draft not yet reported — this step is awaiting a result; nothing drafted or sent so far. Matter: an unsent casual email to Marcus asking to wrap up the demo day slides before month's end, for the user to review before sending. Topics: locating Marcus's email via contacts, the Chloe demo day slides thread, or the Marcus Security Review thread.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "dmitri-q3-roadmap-30min-request",
+    "runs": 1,
+    "chars": 450,
+    "summary": "Now: no result yet from the latest run; the draft recipient, subject and body are still awaiting a report, and nothing has been sent. Approval is pending on the user, who must explicitly confirm before any send. Matter: drafting a casual, brief email asking Dmitri for a 30-minute meeting this week on the Q3 roadmap; Dmitri's email address to be found in the user's contacts or recent threads. Topics: contact lookup, meeting scheduling, Q3 roadmap.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   },
+   {
+    "id": "beatriz-big-sur-trip-push-request",
+    "runs": 1,
+    "chars": 364,
+    "summary": "Now: the draft email to Beatriz is still awaiting a report from the agent — nothing has been written, checked or sent yet. Matter: drafting a short, friendly email asking Beatriz to push the Big Sur road trip back one week, for the user to review before sending. Topics: the Jake Big Sur Road Trip thread, trip dates, replying in-thread if one exists, do-not-send.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    }
+   }
+  ],
+  "stress": [
+   {
+    "id": "chloe-q3-roadmap-review",
+    "runs": 27,
+    "chars": 341,
+    "summary": "Now: No news — no reply from Chloe and no new messages; instruction was not to send. Draft still awaits the user's approval. Pending: Chloe's reply and the user's approval. Matter: Wrapping up the Q3 roadmap review with Chloe before month end, on the user's behalf. Topics: Q3 roadmap budget cap of 20k, Friday timing, Kokkari table booking.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    },
+    "base_runs": 7,
+    "failed_updates": 0,
+    "before": "Now: Run 7's draft reply to Chloe on the Q3 roadmap thread — saying Friday works better and asking about anything closer to home for the Kokkari table booking — awaits the agent's report, then user approval before sending. Matter: Q3 roadmap review with Chloe, involving the user and Chloe. Topics: end-month wrap-up, Friday timing, 20k budget cap, Kokkari table booking, Chloe's manager, draft review, one-more-day request."
+   },
+   {
+    "id": "harriet-sheet-music-pickup",
+    "runs": 27,
+    "chars": 420,
+    "summary": "Now: latest check found nothing new — no reply and no new messages; draft still awaits user approval, and nothing will be sent without it. Matter: Harriet Sheet Music Pickup — find Harriet's contact and draft a message asking if next Tuesday, April 21, 2026 morning works to pick up sheet music; involves Harriet, the user, and Jamie. Topics: lesson schedule, lesson cost, earlier lesson times, Jamie's pickup, approval.",
+    "answers": {
+     "supported": false,
+     "current": false,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary claims a draft awaits user approval even though no run reported a draft, and it omits Harriet's pending request to push the lesson schedule to next week."
+    },
+    "base_runs": 7,
+    "failed_updates": 0,
+    "before": "Now: Harriet replied she can't do lessons this week and asked to push to next week; the lesson price she was asked for is still unanswered and no earlier times were given, so the user must decide on next week's timing. Matter: Harriet (sheet music contact), the user, and Jamie (pickup). Topics: sheet music pickup, lessons schedule and cost, invoice, recital help."
+   },
+   {
+    "id": "marco-book-club-note",
+    "runs": 27,
+    "chars": 415,
+    "summary": "Now: Latest check: nothing new—no reply, no new messages; nothing sent. Pending: draft additions (what to bring; Saturday move) and Ben Okafor book-choice research await reports. Matter: User wants to help Marco with his book club; drafting an email for approval. Topics: Marco email lookup, Saturday move, bringing items, Ben Okafor choosing this month's book, votes, meeting date/deadline, repeated status checks.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    },
+    "base_runs": 7,
+    "failed_updates": 0,
+    "before": "Now: the latest run researching the book club thread about Ben Okafor picking this month's book (current book, votes/suggestions, meeting date, deadline) awaits a report; no email or message sent. Matter: unsent casual email to Marco offering weekend book club help; Marco's email unconfirmed. Topics: Marco contact lookup; Ethan Ski Trip thread; ski-trip RSVP; possible call tonight; moving book club to Saturday; Ben Okafor's book pick and group thread."
+   },
+   {
+    "id": "maya-quarterly-okrs-draft",
+    "runs": 27,
+    "chars": 462,
+    "summary": "Now: checked again; nothing new since last report — no reply or new messages; nothing sent. Pending: user approval before any OKRs email, plus reports on Tobias OKRs-reply check and Maya hiring-loop draft. Matter: quarterly OKRs email to Maya by Friday; involves user, Maya (recipient), Tobias (OKRs thread participant). Topics: Maya's email address, approval before sending, Tobias's input/needs, hiring-loop 30-minute feedback meeting, repeated no-news checks.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "none"
+    },
+    "base_runs": 7,
+    "failed_updates": 0,
+    "before": "Now: the draft email asking Maya to set up 30 minutes this week to review hiring loop feedback, checked against her existing thread with the user, is awaiting a report; nothing has been sent and the exact recipient, subject and body still need the user's review. Matter: quarterly OKRs, involving Maya and Tobias as contributors/contacts. Topics: Maya's OKR draft, Friday and Monday deadlines, asking one more day, museum membership renewal, Tobias's OKR part, hiring loop feedback."
+   },
+   {
+    "id": "mia-halloween-costume-research",
+    "runs": 27,
+    "chars": 427,
+    "summary": "Now: check found nothing new—no reply or new messages; pending: order/report and order-by-date report await results. Matter: user's Halloween costume research for daughter Mia, now seeking a matching pair for Mia and Jamie; buy only if cheaper option has matching pair. Topics: emails/messages/notes search, costume options, prices, availability, shipping, order-by date, recommendation, no purchase/send, repeated news checks.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    },
+    "base_runs": 7,
+    "failed_updates": 0,
+    "before": "Now: a run was asked to resume the costume research from weeks ago — check the thread/notes for where it left off and the latest option status, determine the realistic order-by date, and report what was considered and what's still open; no result yet, so nothing is confirmed and no order or message has been sent. Pending on agent, then user. Matter: find the best Halloween costume for daughter Mia, expanded to a matching pair with Jamie. Topics: Mia's request,"
+   },
+   {
+    "id": "zoe-conference-talk-draft",
+    "runs": 26,
+    "chars": 390,
+    "summary": "Now: latest check found nothing new — no reply or new messages; nothing sent. Pending: draft reply asking Zoe for one more day still awaits a report, and user approval before sending; status checks continue. Matter: user asking Zoe for the latest conference talk proposal draft, then an extra day, in the existing thread. Topics: drafting/approval workflow, contact lookup, Friday deadline.",
+    "answers": {
+     "supported": true,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": ""
+    },
+    "base_runs": 6,
+    "failed_updates": 0,
+    "before": "Now: latest run was to draft a short, friendly reply in Zoe's existing thread asking for one more day on the conference talk proposal; no result yet, so awaiting a report. Nothing sent; user confirmation still required. Matter: Zoe's conference talk proposal; the user wants her latest draft, with any message approved before sending. Topics: contact lookup, check-ins, moving the proposal call to Thursday, and Zoe's requests for final numbers, sign-off, and an answer by Monday."
+   },
+   {
+    "id": "alice-chen-on-call-rotation-doc-draft",
+    "runs": 25,
+    "chars": 362,
+    "summary": "Now: run 25 checked again and found nothing new — no reply and no new messages; the pending step is still awaiting Alice Chen's response. Matter: the user wants their notes on Alice Chen's on-call rotation doc sent to her for comments by Wednesday, but the email must not be sent. Topics: recent emails and notes from or about Alice Chen; repeated status checks.",
+    "answers": {
+     "supported": false,
+     "current": true,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary says the pending step is awaiting Alice Chen's response, but no email was ever sent because the drafts were explicitly not sent, so that claim is unsupported."
+    },
+    "base_runs": 5,
+    "failed_updates": 0,
+    "before": "Now: Run 5's draft asking Alice Chen for one more day on the on-call rotation is awaiting a report; all five runs have returned no results. Matter: user's notes on Alice Chen's on-call rotation doc, requesting her comments by Wednesday. Topics: comment deadline, removing the draft's second paragraph, a Thursday extension, looping in Alice's manager."
+   },
+   {
+    "id": "beatriz-housewarming",
+    "runs": 25,
+    "chars": 347,
+    "summary": "Now: run 25 found nothing new — no reply or new messages; the drafted message to Beatriz still awaits the user's approval and has not been sent. Matter: drafting a casual note to Beatriz saying the user is excited for her housewarming and asking how to help (bringing something or setting up), covering her contact details and any relevant thread.",
+    "answers": {
+     "supported": false,
+     "current": false,
+     "origin": true,
+     "actionable": true,
+     "reason": "The summary claims a pending housewarming draft awaiting approval despite empty run reports and later runs shifting to other matters such as the Big Sur road trip, so it is neither fully supported nor current."
+    },
+    "base_runs": 5,
+    "failed_updates": 0,
+    "before": "Now: the latest run — a short note to Beatriz about the Big Sur road trip, checking threads/calendar including Jake — has no result yet, so it is awaiting a report; nothing has been drafted or sent, and all five runs are still pending. Matter: unsent drafts to Beatriz about her housewarming, with help offers; Jordan wants a 20k relocation budget cap and a one-week housewarming delay. Topics: game night, Big Sur, Saturday timing."
+   }
+  ]
+ },
+ "spent_usd": 0.0352
+}

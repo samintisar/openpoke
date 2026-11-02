@@ -1,0 +1,106 @@
+[
+ {
+  "id": "v2-s1-200-multi_task-02",
+  "decision": "fixed",
+  "gold_targets": [
+   "simon-reference-check-comments-draft",
+   "ben-okafor-camping-weekend"
+  ],
+  "acceptable_ids": [
+   "ben-okafor-podcast-guest-spot-check"
+  ],
+  "note": "Misroute leftover: an old misroute put this person's thread on another person's helper; Julia's helper is not a valid answer for Ben Okafor's podcast thread."
+ },
+ {
+  "id": "v2-s2-200-typo-05",
+  "decision": "fixed",
+  "gold_targets": [
+   "kofi-integration-timeline-meeting"
+  ],
+  "acceptable_ids": [],
+  "note": "Misroute leftover: an old misroute put this person's thread on another person's helper; Lucy's camera helper is not a valid answer for Kofi's integration timeline."
+ },
+ {
+  "id": "v2-s2-200-agent_result-06",
+  "decision": "fixed",
+  "gold_targets": [
+   "imani-incident-postmortem"
+  ],
+  "acceptable_ids": [],
+  "note": "Misroute leftover: an old misroute put this person's thread on another person's helper; Wanda's helper is not a valid answer for Imani's postmortem report."
+ },
+ {
+  "id": "v2-s2-200-multi_task-07",
+  "decision": "fixed",
+  "gold_targets": [
+   "frank-retirement-party",
+   "NEW"
+  ],
+  "acceptable_ids": [],
+  "note": "Restores the reviewer's intent: the page holds one answer, so the two-request key collapsed. Frank's helper + a new one; Walter's misroute removed."
+ },
+ {
+  "id": "v2-s2-50-follow_up-00",
+  "decision": "fixed",
+  "gold_targets": [
+   "farah-q3-roadmap-review"
+  ],
+  "acceptable_ids": [],
+  "note": "Misroute leftover: an old misroute put this person's thread on another person's helper; Farah's own helper becomes the answer; Adrian's is dropped."
+ },
+ {
+  "id": "v2-s2-200-multi_task-08",
+  "decision": "fixed",
+  "gold_targets": [
+   "hector-analytics-dashboard",
+   "nina-park-housewarming"
+  ],
+  "acceptable_ids": [
+   "hector-team-offsite"
+  ],
+  "note": "Misroute leftover: an old misroute put this person's thread on another person's helper; Hector's own helper becomes the answer; Elise's is dropped."
+ },
+ {
+  "id": "v2-s2-200-dormant_revival-03",
+  "decision": "fixed",
+  "gold_targets": [
+   "ada-summer-cabin-week"
+  ],
+  "acceptable_ids": [],
+  "note": "Misroute leftover: an old misroute put this person's thread on another person's helper; Ada's own helper becomes the answer; Hiro's is dropped."
+ },
+ {
+  "id": "v2-s2-200-dormant_revival-08",
+  "decision": "fixed",
+  "gold_targets": [
+   "lucy-ski-trip"
+  ],
+  "acceptable_ids": [],
+  "note": "Misroute leftover: an old misroute put this person's thread on another person's helper; Lucy's own helper becomes the answer; Eli's is dropped."
+ },
+ {
+  "id": "v2-s2-50-multi_task-03",
+  "decision": "reject",
+  "note": "Misroute leftover: an old misroute put this person's thread on another person's helper; Vera's road trip keyed to Nina Park's helper and Vera has none (as Gustavo's probe)."
+ },
+ {
+  "id": "v2-s1-200-paraphrase-07",
+  "decision": "reject",
+  "note": "Misroute leftover: an old misroute put this person's thread on another person's helper; the Soylent contact is Petra, keyed to Quinn's helper (Quinn is at Hooli); Petra has none."
+ },
+ {
+  "id": "v2-s2-200-paraphrase-07",
+  "decision": "reject",
+  "note": "Misroute leftover: an old misroute put this person's thread on another person's helper; the Soylent contact is Emeka, keyed to Ivan's helper (Ivan is at Hooli); Emeka has none."
+ },
+ {
+  "id": "v2-s1-200-vague_reference-02",
+  "decision": "fixed",
+  "gold_targets": [
+   "gary-whitman-lease-renewal-call"
+  ],
+  "acceptable_ids": [],
+  "clarify_ok": true,
+  "note": "Consistency with 'how's the parking going?': names no one and the lease card never mentions parking, so asking is fair."
+ }
+]

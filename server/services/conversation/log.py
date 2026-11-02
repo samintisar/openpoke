@@ -4,12 +4,13 @@ import re
 import threading
 from html import escape, unescape
 from pathlib import Path
-from typing import Dict, Iterator, List, Optional, Protocol, Tuple
+from typing import Dict, Iterator, List, Optional, Protocol, Sequence, Tuple
 
 from ...config import get_settings
 from ...logging_config import logger
 from ...models import ChatMessage
 from ...utils.timezones import now_in_user_timezone
+from .summarization.state import omitted_user_entries
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # pragma: no cover - used for type checkers only
@@ -47,6 +48,8 @@ def _resolve_working_memory_log() -> "WorkingMemoryLog":
 
 
 _ATTR_PATTERN = re.compile(r"(\w+)\s*=\s*\"([^\"]*)\"")
+# Entries that are conversation turns (wait markers are orchestration metadata).
+_TURN_TAGS = ("user_message", "agent_message", "poke_reply")
 
 
 class ConversationLog:
@@ -123,15 +126,27 @@ class ConversationLog:
             if item is not None:
                 yield item
 
-    def load_transcript(self) -> str:
+    def load_transcript(self, omit_user_messages: Sequence[str] = ()) -> str:
+        """The log as tagged lines; `omit_user_messages` drops the last user entry matching each payload."""
+        entries = list(self.iter_entries())
+        omitted = omitted_user_entries([(tag, payload) for tag, _, payload in entries], omit_user_messages)
         parts: List[str] = []
-        for tag, timestamp, payload in self.iter_entries():
+        for position, (tag, timestamp, payload) in enumerate(entries):
+            if position in omitted:
+                continue
             safe_payload = escape(payload, quote=False)
             if timestamp:
                 parts.append(f"<{tag} timestamp=\"{timestamp}\">{safe_payload}</{tag}>")
             else:
                 parts.append(f"<{tag}>{safe_payload}</{tag}>")
         return "\n".join(parts)
+
+    def recent_texts(self, limit: int, tags: Tuple[str, ...] = _TURN_TAGS) -> List[str]:
+        """Payloads of the last `limit` entries with one of `tags`, oldest first."""
+        if limit <= 0:
+            return []
+        texts = [payload for tag, _, payload in self.iter_entries() if tag in tags]
+        return texts[-limit:]
 
     def record_user_message(self, content: str) -> None:
         timestamp = self._append("user_message", content)

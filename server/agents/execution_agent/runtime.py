@@ -1,9 +1,10 @@
 """Simplified Execution Agent Runtime."""
 
+import asyncio
 import inspect
 import json
 from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .agent import ExecutionAgent
 from .tools import get_tool_schemas, get_tool_registry
@@ -20,6 +21,10 @@ class ExecutionResult:
     response: str
     error: Optional[str] = None
     tools_executed: List[str] = None
+    agent_id: str = ""
+    # Stopped at the iteration limit or a timeout; the runner lists what was already done in `side_effects`
+    partial: bool = False
+    side_effects: List[str] = field(default_factory=list)
 
 
 class ExecutionAgentRuntime:
@@ -28,12 +33,12 @@ class ExecutionAgentRuntime:
     MAX_TOOL_ITERATIONS = 8
 
     # Initialize execution agent runtime with settings, tools, and agent instance
-    def __init__(self, agent_name: str):
+    def __init__(self, agent_id: str, agent_name: Optional[str] = None):
         settings = get_settings()
-        self.agent = ExecutionAgent(agent_name)
+        self.agent = ExecutionAgent(agent_id, agent_name)
         self.api_key = settings.openrouter_api_key
         self.model = settings.execution_agent_model
-        self.tool_registry = get_tool_registry(agent_name=agent_name)
+        self.tool_registry = get_tool_registry(agent_id, agent_name=self.agent.name)
         self.tool_schemas = get_tool_schemas()
 
         if not self.api_key:
@@ -121,7 +126,19 @@ class ExecutionAgentRuntime:
                     messages.append(tool_message)
 
             else:
-                raise RuntimeError("Reached tool iteration limit without final response")
+                # Out of iterations: report a partial result (the runner adds what was already done) instead of raising
+                reason = f"Stopped at the tool-call limit ({self.MAX_TOOL_ITERATIONS} iterations) before finishing"
+                logger.warning(f"[{self.agent.name}] {reason}")
+                self.agent.record_response(f"Partial: {reason}")
+                return ExecutionResult(
+                    agent_name=self.agent.name,
+                    agent_id=self.agent.agent_id,
+                    success=False,
+                    response=reason,
+                    error="Iteration limit",
+                    tools_executed=tools_executed,
+                    partial=True,
+                )
 
             if final_response is None:
                 raise RuntimeError("LLM did not return a final response")
@@ -130,6 +147,7 @@ class ExecutionAgentRuntime:
 
             return ExecutionResult(
                 agent_name=self.agent.name,
+                agent_id=self.agent.agent_id,
                 success=True,
                 response=final_response,
                 tools_executed=tools_executed
@@ -143,6 +161,7 @@ class ExecutionAgentRuntime:
 
             return ExecutionResult(
                 agent_name=self.agent.name,
+                agent_id=self.agent.agent_id,
                 success=False,
                 response=failure_text,
                 error=error_msg
@@ -228,7 +247,12 @@ class ExecutionAgentRuntime:
             return False, {"error": f"Unknown tool: {tool_name}"}
 
         try:
-            result = tool_func(**arguments)
+            if inspect.iscoroutinefunction(tool_func):
+                result = tool_func(**arguments)
+            else:
+                # Blocking tools (Composio calls) run in a thread, so the run's timeout and other runs keep going;
+                # to_thread copies the context, so the tool still sees `current_run`.
+                result = await asyncio.to_thread(tool_func, **arguments)
             if inspect.isawaitable(result):
                 result = await result
             return True, result

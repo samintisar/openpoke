@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenPoke Agent Overload Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* One screen per part of the walkthrough; arrow keys or the buttons move between screens. */
+:root {
+  --bg: #eef2f5;
+  --surface: #ffffff;
+  --sunk: #e3e9ee;
+  --ink: #15212b;
+  --muted: #566573;
+  --line: #c3ced8;
+  --accent: #0d7380;
+  --accent-soft: #d3ecef;
+  --fail: #c2410c;
+  --fail-soft: #fde4d7;
+  --ok: #2f7d32;
+  --ok-soft: #dcefdc;
+  --s-orig: #8a6d3b;
+  --s-v1: #7b8ea0;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1318; --surface: #141c23; --sunk: #1b252e; --ink: #e2e9ef; --muted: #93a3b1;
+    --line: #2c3a46; --accent: #45b8c6; --accent-soft: #143840; --fail: #f2814f; --fail-soft: #3d2015;
+    --ok: #6cc070; --ok-soft: #173119; --s-orig: #d0a75c; --s-v1: #8fa3b6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1318; --surface: #141c23; --sunk: #1b252e; --ink: #e2e9ef; --muted: #93a3b1;
+  --line: #2c3a46; --accent: #45b8c6; --accent-soft: #143840; --fail: #f2814f; --fail-soft: #3d2015;
+  --ok: #6cc070; --ok-soft: #173119; --s-orig: #d0a75c; --s-v1: #8fa3b6;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.5; margin: 0;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 24px;
+}
+.app { max-width: 1240px; margin: 0 auto; display: grid; gap: 14px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.12; }
+h1 { font-size: clamp(2.2rem, 5.5vw, 3.6rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.5rem, 3.4vw, 2.2rem); font-weight: 700; letter-spacing: -0.01em; }
+h3 { font-size: 1.12rem; font-weight: 700; }
+p { margin: 0; max-width: 72ch; }
+code, .mono { font-family: var(--font-mono); font-size: 0.86em; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.muted { color: var(--muted); }
+
+/* Top bar */
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.bar .title { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+button { font: inherit; cursor: pointer; }
+.btn { font-size: 0.92rem; padding: 7px 14px; border-radius: 7px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.btn:hover { border-color: var(--ink); }
+.btn.on { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.btn[disabled] { opacity: .4; cursor: default; }
+.btn:focus-visible, .dot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.count { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); min-width: 64px; text-align: center; }
+
+/* Progress: one segment per screen, grouped by part of the talk */
+.progress { display: flex; gap: 4px; flex-wrap: wrap; }
+.dot { flex: 1 1 24px; height: 8px; border-radius: 4px; border: none; background: var(--line); padding: 0; }
+.dot.done { background: var(--accent-soft); }
+.dot.cur { background: var(--accent); }
+
+/* Stage */
+.stage { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.slide { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: clamp(20px, 4vw, 44px); min-height: min(640px, 76vh); display: grid; gap: 22px; align-content: start; min-width: 0; }
+.slide.cover { align-content: center; gap: 36px; }
+.slide.cover h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); }
+.slide.cover .lede { font-size: 1.2rem; max-width: 38em; }
+.slide.cover .card { padding: 20px 22px; }
+.slide.cover .foot { max-width: none; font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 14px; }
+.slide.statement { background: var(--accent); color: var(--surface); border-color: var(--accent); align-content: center; }
+.slide.statement .eyebrow { color: var(--accent-soft); }
+.slide header { display: grid; gap: 8px; }
+
+/* Building blocks */
+.grid { display: grid; gap: 14px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.g3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.card { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.card .tag { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; color: var(--fail); }
+.card.good .tag { color: var(--accent); }
+.card p { font-size: 0.95rem; color: var(--muted); }
+.big { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1.05; font-variant-numeric: tabular-nums; }
+.big .from { color: var(--muted); font-weight: 500; font-size: 0.6em; }
+.big.bad { color: var(--fail); }
+.stat { display: grid; gap: 4px; }
+.stat .l { font-size: 0.92rem; color: var(--muted); }
+pre { margin: 0; background: var(--sunk); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.55; color: var(--ink); }
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 0.88rem; }
+td.file { font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent); word-break: break-word; }
+td.step { font-weight: 700; white-space: nowrap; }
+tr.final td { font-weight: 700; }
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 0.74rem; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+.pill.met { background: var(--ok-soft); color: var(--ok); }
+.pill.missed { background: var(--fail-soft); color: var(--fail); }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; align-items: start; }
+.steps li::before { content: counter(s); font-family: var(--font-mono); font-weight: 600; font-size: 0.85rem; width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.quote { font-family: var(--font-display); font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 700; line-height: 1.15; max-width: 26ch; }
+.callout { border-left: 4px solid var(--accent); padding: 6px 0 6px 14px; color: var(--muted); }
+.callout.warn { border-left-color: var(--fail); }
+
+/* Bars drawn to one scale: width = value on a 0.70–1.00 axis */
+.bars { display: grid; gap: 14px; }
+.bargroup { display: grid; gap: 5px; }
+.bargroup .gl { font-family: var(--font-mono); font-size: 0.8rem; color: var(--muted); }
+.barrow { display: grid; grid-template-columns: 72px minmax(0, 1fr) 56px; gap: 8px; align-items: center; font-size: 0.85rem; }
+.track { background: var(--sunk); border-radius: 4px; height: 16px; overflow: hidden; }
+.fill { height: 100%; border-radius: 4px; }
+.barrow .v { font-family: var(--font-mono); font-size: 0.82rem; text-align: right; font-variant-numeric: tabular-nums; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.82rem; color: var(--muted); }
+.legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+
+.hint { font-size: 0.82rem; color: var(--muted); text-align: center; }
+
+@media (max-width: 900px) {
+}
+@media (prefers-reduced-motion: no-preference) {
+  .slide:not([hidden]) { animation: in .2s ease-out; }
+  @keyframes in { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="bar">
+    <span class="title">OpenPoke · agent overload · walkthrough</span>
+    <div class="controls">
+      <button class="btn" id="prev" type="button">← Back</button>
+      <span class="count" id="count" aria-live="polite">1 / 20</span>
+      <button class="btn" id="next" type="button">Next →</button>
+    </div>
+  </div>
+  <div class="progress" id="progress" aria-label="Screens"></div>
+
+  <div class="stage" id="stage">
+    <div id="slides">
+
+<!-- 1 -->
+<section class="slide cover" id="cover" data-part="Intro">
+  <header>
+    <span class="eyebrow">OpenPoke · agent overload</span>
+    <h1>Keeping one assistant accurate across 1,000 agents</h1>
+    <p class="muted lede">What broke as agents piled up, how I measured it, what fixed it, and what still doesn’t work.</p>
+  </header>
+  <div class="grid g3">
+    <div class="card stat"><span class="big"><span class="from">0.78 →</span> 0.91</span><span class="l">routing correct at 1,000 agents</span></div>
+    <div class="card stat"><span class="big"><span class="from">0.11 →</span> 0.01</span><span class="l">duplicate agents created at 1,000</span></div>
+    <div class="card stat"><span class="big"><span class="from">6 →</span> 0</span><span class="l">unauthorized email sends, gate off vs on</span></div>
+  </div>
+  <p class="muted foot">Original OpenPoke vs the final system, on a sealed held-out world that was not read until one final run per system.</p>
+</section>
+
+<!-- 2 -->
+<section class="slide" id="plan" data-part="Intro">
+  <header>
+    <span class="eyebrow">How this walkthrough is organised</span>
+    <h2>Seven parts, from the problem to the code</h2>
+  </header>
+  <div class="tablewrap"><table>
+    <tr><th>#</th><th>Part</th><th>What it covers</th></tr>
+    <tr><td>1</td><td><b>The problem</b></td><td>How OpenPoke routes, what users ran into and why, how bad the original got</td></tr>
+    <tr><td>2</td><td><b>How I measured</b></td><td>Three eval layers, simulated lives, answer keys, sealed test</td></tr>
+    <tr><td>3</td><td><b>What I tried</b></td><td>v1, the finding that changed direction, v2, fixes beyond routing, what I reverted</td></tr>
+    <tr><td>4</td><td><b>Results</b></td><td>Sealed numbers, targets, checks that the results held, safety, what users notice now</td></tr>
+    <tr><td>5</td><td><b>Product code tour</b></td><td>One message, “any update from Carl?”, through 12 files</td></tr>
+    <tr><td>6</td><td><b>Eval code tour</b></td><td>World → keys → run → grade → compare → checksum</td></tr>
+    <tr><td>7</td><td><b>Gaps and next</b></td><td>What’s still wrong, what I’d do with two more weeks</td></tr>
+  </table></div>
+  <p class="callout">The full write-up, with every number’s source, is <code>docs/agent-overload.md</code>; every experiment and decision is in <code>evals/experiments/JOURNAL.md</code>.</p>
+</section>
+
+<!-- 3 -->
+<section class="slide" id="system" data-part="Problem">
+  <header>
+    <span class="eyebrow">1 · The problem</span>
+    <h2>One assistant routes every task by picking a name from a list that only grows</h2>
+  </header>
+  <div class="grid g2">
+    <div class="grid" style="gap:14px">
+      <div class="card"><h3>One assistant, many workers</h3><p>The interaction agent talks to you and hands each task to an execution agent: draft, reply, remind.</p></div>
+      <div class="card"><h3>Agents never retire</h3><p>Every task creates or reuses one. Nothing is archived or merged.</p></div>
+      <div class="card"><h3>Routing by bare name</h3><p>Each turn, the assistant sees every name in <code>roster.json</code>: no purpose, status or last-used time.</p></div>
+    </div>
+    <div class="grid" style="gap:10px;align-content:start">
+      <span class="eyebrow" style="color:var(--muted)">What the assistant saw at 1,000 agents</span>
+<pre>&lt;active_agents&gt;
+  &lt;agent name="Email to Alice" /&gt;
+  &lt;agent name="Alice follow-up" /&gt;
+  &lt;agent name="Carl Remodel Urgency Check" /&gt;
+  &lt;agent name="Kwame Book Club Dates" /&gt;
+  … 996 more
+&lt;/active_agents&gt;
+
+user: any update from my contractor on the bathroom job?</pre>
+      <p class="callout warn">Which one? “Remodel Urgency Check” doesn’t say bathroom, so it made <b>Bathroom Job Contractor Update</b>: a duplicate.</p>
+    </div>
+  </div>
+</section>
+
+<!-- user experience before -->
+<section class="slide" id="before" data-part="Problem">
+  <header>
+    <span class="eyebrow">1 · The problem, for the user</span>
+    <h2>What users ran into once they had lots of tasks, and why</h2>
+  </header>
+  <div class="tablewrap"><table>
+    <tr><th>What you’d notice</th><th>Example</th><th>Cause in the code</th></tr>
+    <tr><td><b>It forgot what it was doing</b></td><td>“Any update from my contractor?” started from scratch instead of checking the thread it already had with Carl.</td><td>Routing by bare name; identity is just a name</td></tr>
+    <tr><td><b>Follow-ups landed in the wrong conversation</b></td><td>A note about Kwame’s game night went into the book club thread.</td><td>Routing by bare name</td></tr>
+    <tr><td><b>It got slower and costlier the more you used it</b></td><td>Every message carried every task’s name, and every worker re-read its whole history.</td><td>Prompt lists every agent; memory grows without limit</td></tr>
+    <tr><td><b>The same task could run twice</b></td><td>Two runs of one agent at once interleaved its log: duplicated or garbled work.</td><td>No concurrency control</td></tr>
+    <tr><td><b>Quick answers waited behind slow ones</b></td><td>A two-second lookup held back until a long email search finished.</td><td>One global batch</td></tr>
+    <tr><td><b>Repeated or contradictory replies</b></td><td>Two “on it!” messages, or a reminder in the middle of reviewing a draft.</td><td>Assistant turns race</td></tr>
+    <tr><td><b>Email could go out without your yes</b></td><td>A forward you had declined was sent anyway; an email claiming “you already approved” could trigger one.</td><td>Approval only in the prompt; email text read as instructions</td></tr>
+  </table></div>
+  <p class="callout warn">Also found: it broke on Windows, the configured model was no longer served, and there were no tests or evals.</p>
+</section>
+
+<!-- 5 -->
+<section class="slide" id="baseline" data-part="Problem">
+  <header>
+    <span class="eyebrow">1 · The problem</span>
+    <h2>How bad the original got, measured on the sealed test world</h2>
+  </header>
+  <div class="grid g3">
+    <div class="stat card"><span class="big bad">0.781</span><span class="l">routing correct at 1,000 agents, down from 0.893 at 50</span></div>
+    <div class="stat card"><span class="big bad">0.113</span><span class="l">duplicate rate at 1,000: about 1 decision in 9 made a second agent for an existing matter</span></div>
+    <div class="stat card"><span class="big bad">35.4k</span><span class="l">prompt tokens per decision at 1,000, up from 15.1k at 200, and growing with every agent</span></div>
+  </div>
+  <div class="card">
+    <h3>And on safety</h3>
+    <p>With approval left to the prompt, held-out scenarios produced <b>6 unauthorized sends</b>, including a forward the user had explicitly declined (3 runs out of 3).</p>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide" id="harness" data-part="Measure">
+  <header>
+    <span class="eyebrow">2 · How I measured</span>
+    <h2>I built the measurement first, in three layers</h2>
+  </header>
+  <div class="grid g3">
+    <div class="card good"><span class="tag">L1 · retrieval</span><h3>Is the right card shown?</h3><p>No model calls. Free and deterministic, so I used it for sweeps.</p></div>
+    <div class="card good"><span class="tag">L2 · routing</span><h3>Does it pick the right agent?</h3><p>One real assistant turn with the production prompt and tools, on rosters of 10 to 1,000. Tool calls are intercepted and the outcome graded: correct, acceptable, minor, costly (duplicate), harmful (wrong agent).</p></div>
+    <div class="card good"><span class="tag">L3 · end to end</span><h3>Does the whole system behave?</h3><p>Real agents against an in-memory Gmail, 26 scenarios. Sends are audited where mail leaves the mailbox, separately from the gate.</p></div>
+  </div>
+  <p class="callout">Plus a memory eval (plant facts, compact, ask for them back) and an LLM judge from another model family, used only on the 3 checks where it agreed with my 42 hand labels at least 85% of the time. Evals run on DeepSeek V4.1 Flash, chosen after a reliability check (malformed tool calls 0.55%, wait loops 1.2%).</p>
+</section>
+
+<!-- 7 -->
+<section class="slide" id="worlds" data-part="Measure">
+  <header>
+    <span class="eyebrow">2 · How I measured</span>
+    <h2>Simulated lives, answer keys from construction, and a sealed test</h2>
+  </header>
+  <div class="grid g2">
+    <div class="grid" style="gap:10px;align-content:start">
+      <h3>Building a world</h3>
+      <ol class="steps">
+        <li><span>Code writes a 180-day life plan: contacts, topics, events. Every event knows its thread.</span></li>
+        <li><span>A model writes each event as a casual text message.</span></li>
+        <li><span>The real assistant plays the events and grows its own roster, with its own messy names.</span></li>
+        <li><span>Snapshots at 10, 50, 200 agents; 1,000 adds ~800 unrelated errands to the 200 roster, same probes.</span></li>
+        <li><span>Probes are the next events in the life, 12 kinds, same quota in both lives.</span></li>
+      </ol>
+    </div>
+    <div class="grid" style="gap:12px;align-content:start">
+      <div class="card"><h3>Answer keys</h3><p>The agent that handled that thread during growth. “Ask the user” also counts when another live matter shares the person and topic.</p></div>
+      <div class="card"><h3>Checked</h3><p>Three checker models vote. I reviewed every disagreement plus a 10% random sample: <b>68 reviewed, 54 accepted, 9 fixed, 5 rejected</b>. Random audit: <b>0 of 20</b> changed.</p></div>
+      <div class="card"><h3>Discipline</h3><p>Tune on life 1 (Jordan). Life 2 (Riley) sealed until one final run per system. Keep rule: a change stays only if its target improves and nothing gets worse by more than 0.02. Checksum over the grader and benchmark.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide" id="v1" data-part="Tried">
+  <header>
+    <span class="eyebrow">3 · What I tried</span>
+    <h2>v1: show the relevant few, and guard against duplicates in code</h2>
+  </header>
+  <div class="grid g2">
+    <div class="grid" style="gap:12px;align-content:start">
+      <div class="card good"><span class="tag">registry</span><h3>Agent cards in SQLite</h3><p>Replaces roster.json. An id, plus purpose, people, last active and status.</p></div>
+      <div class="card good"><span class="tag">retrieval</span><h3>Top 8 + active in the last hour</h3><p>Scored by keywords, entities and recency. About 13 cards in the prompt at any size.</p></div>
+      <div class="card good"><span class="tag">dedup guard</span><h3>Creates checked against existing cards</h3><p>Same name, or same person and topic, is pushed back. Guard off: duplicates 0.00 → 0.11.</p></div>
+    </div>
+    <div class="grid" style="gap:12px;align-content:start">
+      <div class="card good"><span class="tag">reuse policy</span><h3>An agent owns a matter</h3><p>A person plus a subject belongs to one agent, whatever the next step is.</p></div>
+      <div class="card"><h3>v1’s first test</h3><p>Intervals touching zero. The error analysis showed the <b>benchmark itself</b> was part of the problem: dev had 1 vague-reference case, test had 6, and some keys were wrong. So I rebuilt it as benchmark v2 before going further.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide statement" id="insight" data-part="Tried">
+  <span class="eyebrow">3 · The finding that changed direction</span>
+  <p class="quote">The right card was already shown. The assistant still didn’t pick it.</p>
+  <div class="grid g3">
+    <div><h3>Stale cards → duplicates</h3><p>19 of 60 failures. “Any update on the bathroom job?” created a new agent while <i>Carl Remodel Urgency Check</i> held the thread.</p></div>
+    <div><h3>Status questions spawned agents</h3><p>“How’s the Athens flight going?” created <i>Athens Flight Status Update</i>.</p></div>
+    <div><h3>Same person, new topic</h3><p>“Ask Kwame about game night” went to <i>Kwame Book Club Dates</i>.</p></div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide" id="v2" data-part="Tried">
+  <header>
+    <span class="eyebrow">3 · What I tried</span>
+    <h2>v2: make each card say what its agent is doing now</h2>
+  </header>
+  <div class="tablewrap"><table>
+    <tr><th>Change</th><th>What it does</th><th class="num">pass@1 lost when switched off<br>1,000 / 200 agents</th></tr>
+    <tr><td><b>Living summaries</b></td><td>After every run a small model updates the card: “Now” first, at most 70 words; rebuilt from the run log every 5th run.</td><td class="num">−0.027 / −0.052</td></tr>
+    <tr><td><b>Status rule</b></td><td>A progress question goes to the agent holding the matter. None fits: ask. Never create an agent just to check.</td><td class="num">−0.027 / −0.042</td></tr>
+    <tr><td><b>Search budget</b></td><td>The 4th <code>search_agents</code> call in a turn is refused. Long search loops were failing turns.</td><td class="num">−0.021 / −0.024</td></tr>
+    <tr><td><b>Second look (Jev)</b></td><td>On ~7% of turns, TypeSafe’s classifier checks a risky reuse. It can only split off a new topic.</td><td class="num">−0.015 / −0.012</td></tr>
+  </table></div>
+  <p class="callout">Leave-one-out on dev: each change switched off inside the full system. Every one helps; summaries and the status rule carry most of the gain.</p>
+</section>
+
+<!-- beyond routing -->
+<section class="slide" id="beyond" data-part="Tried">
+  <header>
+    <span class="eyebrow">3 · What I built</span>
+    <h2>Beyond routing: fixing the rest of overload</h2>
+  </header>
+  <div class="tablewrap"><table>
+    <tr><th>Failure</th><th>Fix</th><th>File</th><th>Evidence</th></tr>
+    <tr><td><b>Identity is just a name</b></td><td>SQLite registry: every agent has an id, so near-identical names can’t collide</td><td class="file">services/agents/registry.py</td><td>Unit tests</td></tr>
+    <tr><td><b>The roster only grows</b></td><td>Lifecycle: dormant after 7 idle days, archived after 30, revived on a strong match; open work keeps an agent active</td><td class="file">services/agents/lifecycle.py</td><td>Revival 27 of 27; no accuracy cost</td></tr>
+    <tr><td><b>Memory grows without limit</b></td><td>Compaction: old history folded into a summary; exact IDs pulled out by code and kept with 60 characters of context</td><td class="file">services/agents/memory.py</td><td>Recall 1.00 held-out; ~5.5k tokens vs 9–10k</td></tr>
+    <tr><td><b>No concurrency control</b></td><td>A FIFO lock per agent, so it never runs twice at once; at most 4 agents run together</td><td class="file">services/execution/runner.py</td><td>Unit tests</td></tr>
+    <tr><td><b>One global batch</b></td><td>The shared batch is gone: each result is delivered as soon as its agent finishes</td><td class="file">services/execution/runner.py</td><td>Unit tests</td></tr>
+    <tr><td><b>Assistant turns race</b></td><td>A durable inbox: one assistant turn at a time; results arriving mid-turn join the next; survives a restart</td><td class="file">services/inbox/</td><td>Unit tests</td></tr>
+    <tr><td><b>Agent hits its step limit</b></td><td>An agent that hits its limit reports what it already did (drafts, triggers) instead of failing</td><td class="file">agents/execution_agent/runtime.py</td><td>Unit tests</td></tr>
+  </table></div>
+</section>
+
+<!-- 11 -->
+<section class="slide" id="reverted" data-part="Tried">
+  <header>
+    <span class="eyebrow">3 · What I tried</span>
+    <h2>What I tried and dropped, by the keep rule</h2>
+  </header>
+  <div class="tablewrap"><table>
+    <tr><th>Idea</th><th>What happened</th><th>Decision</th></tr>
+    <tr><td>Same person, new topic → always a new agent</td><td>Duplicates doubled, to 0.16–0.18</td><td>Dropped</td></tr>
+    <tr><td>Hide archived agents entirely</td><td>Retrieval recall fell to 0.62</td><td>Show them on a strong match</td></tr>
+    <tr><td>A bare list of IDs in compacted memory</td><td>Lost the thread ID half the time</td><td>Keep 60 characters of context</td></tr>
+    <tr><td>Answer status questions from the card</td><td>Replied without asking the agent</td><td>Always ask the agent</td></tr>
+    <tr><td>“Several fit, ask which”</td><td>pass@1 −0.083 at 50 agents</td><td>Reverted</td></tr>
+    <tr><td>Jev as a general reviewer</td><td>Fixed 9, broke 27</td><td>Split-only: fixed 9, broke 0</td></tr>
+    <tr><td>Conversation-aware retrieval</td><td>Never added a right card</td><td>Removed</td></tr>
+  </table></div>
+  <p class="callout warn">The eval was wrong once too: a grader bug caused 33 of 49 early baseline “failures”. I fixed the grader, not the system, and read failures by hand from then on.</p>
+</section>
+
+<!-- 12 -->
+<section class="slide" id="results" data-part="Results">
+  <header>
+    <span class="eyebrow">4 · Results</span>
+    <h2>On the sealed world, the gain held: +0.13 at 1,000 agents</h2>
+  </header>
+  <div class="grid g2">
+    <div class="grid" style="gap:10px;align-content:start">
+      <div class="legend"><span><i style="background:var(--s-orig)"></i>Original</span><span><i style="background:var(--s-v1)"></i>v1</span><span><i style="background:var(--accent)"></i>Final</span></div>
+      <div class="bars" id="bars" aria-label="Routing correct or acceptable by roster size"></div>
+      <p class="muted" style="font-size:0.85rem">Correct or acceptable, life 2, DeepSeek V4.1 Flash, 3 samples × 108 cases per size. Bars start at 0.70.</p>
+    </div>
+    <div class="grid" style="gap:12px;align-content:start">
+      <div class="stat card"><span class="big">+0.130</span><span class="l">final minus original at 1,000 agents, 95% interval [+0.071, +0.198]</span></div>
+      <div class="stat card"><span class="big"><span class="from">0.113 →</span> 0.014</span><span class="l">duplicates at 1,000: 3 in 324 samples, against v1’s 29</span></div>
+      <div class="stat card"><span class="big"><span class="from">35.4k →</span> 23.5k</span><span class="l">prompt tokens per decision at 1,000, now flat with roster size</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="slide" id="targets" data-part="Results">
+  <header>
+    <span class="eyebrow">4 · Results</span>
+    <h2>Six targets written before any v2 result: four met, two missed</h2>
+  </header>
+  <div class="tablewrap"><table>
+    <tr><th>Target at 1,000 agents</th><th class="num">Result</th><th></th></tr>
+    <tr><td>Correct or acceptable ≥ 0.95</td><td class="num">0.910</td><td><span class="pill missed">missed</span></td></tr>
+    <tr><td>Harmful (wrong agent) ≤ 0.01</td><td class="num">0.049</td><td><span class="pill missed">missed</span></td></tr>
+    <tr><td>Duplicate ≤ 0.03</td><td class="num">0.014</td><td><span class="pill met">met</span></td></tr>
+    <tr><td>Prompt tokens ≤ 25k</td><td class="num">23.5k</td><td><span class="pill met">met</span></td></tr>
+    <tr><td>Second look fires on ≤ 20% of turns</td><td class="num">0.074</td><td><span class="pill met">met</span></td></tr>
+    <tr><td>Gain over the original, interval excludes zero</td><td class="num">+0.130</td><td><span class="pill met">met</span></td></tr>
+  </table></div>
+  <div class="card">
+    <h3>Why harmful missed</h3>
+    <p>Most of it is “same person, new topic” (0.67): “Kwame” grabs Kwame’s existing agent. Jev is perfect on exactly that case on dev, but the second look fires on only 7% of turns because its trigger is too coarse.</p>
+  </div>
+</section>
+
+<!-- did it hold up -->
+<section class="slide" id="held" data-part="Results">
+  <header>
+    <span class="eyebrow">4 · Results</span>
+    <h2>Did it hold up? Checks I ran against my own results</h2>
+  </header>
+  <div class="grid g3">
+    <div class="card good"><span class="tag">summary drift</span><h3>Current 0.60 → 0.97</h3><p>Summaries are rewritten every run, so they could drift. A judge compared each one with the agent’s runs; I read its failures. The latest status was being cut off and details drifted. Putting “Now” first, no guessing, and a rebuild every 5th run fixed it; routing stayed within noise.</p></div>
+    <div class="card good"><span class="tag">status wording</span><h3>0.99 on new phrasings</h3><p>Each status question asked 10 new ways, written before the run. Clear rewordings correct: original 0.62, v1 0.59, final 0.99. Turns that created an agent: 29, 24, 1 of 100.</p></div>
+    <div class="card"><span class="tag">what it found</span><h3>A gap I couldn’t close</h3><p>27 rewordings dropped the person’s name and were truly ambiguous; final guessed 17 times. An “ask which” line fixed that but failed the keep rule elsewhere, so it was reverted.</p></div>
+  </div>
+  <p class="callout">These ran after the sealed test, so they’re checked on dev only; the life-2 numbers stay those of the frozen system.</p>
+</section>
+
+<!-- 14 -->
+<section class="slide" id="safety" data-part="Results">
+  <header>
+    <span class="eyebrow">4 · Results</span>
+    <h2>Safety, memory, and a live test on the production model</h2>
+  </header>
+  <div class="grid g3">
+    <div class="card good"><span class="tag">send gate</span><h3>0 unauthorized sends</h3><p>15 held-out runs. Gate off, same scenarios: 6. Every draft gets a content hash; only the user’s own yes, after seeing it, approves that exact content.</p></div>
+    <div class="card good"><span class="tag">memory</span><h3>Recall 1.00</h3><p>Planted facts survive compaction on a held-out seed, including a decision that was later changed, at ~5.5k tokens instead of 9–10k and growing.</p></div>
+    <div class="card"><span class="tag">live on Sonnet 5.5</span><h3>9 of 25 turns failed → 0 of 12</h3><p>Evals ran on DeepSeek. Testing the production model by hand found a wait loop the evals couldn’t see. Fixed with a test before submitting.</p></div>
+  </div>
+  <p class="callout">The same live session: a phishing email claiming “the user already approved” was refused and flagged; an edit while approving produced a new draft and a new question. Two reply rules from my hand labels: don’t repeat a draft the user can already see, and warn plainly when something claims the user’s approval.</p>
+</section>
+
+<!-- user experience now -->
+<section class="slide" id="now" data-part="Results">
+  <header>
+    <span class="eyebrow">4 · Results, for the user</span>
+    <h2>What a user notices now, and what is still rough</h2>
+  </header>
+  <div class="grid g2">
+    <div class="card good">
+      <h3>Better</h3>
+      <ul style="margin:0;padding-left:18px;display:grid;gap:8px;color:var(--muted)">
+        <li><b>It remembers the matter.</b> “How’s the Carl quote going?” goes to the thread it already has, with the latest status.</li>
+        <li><b>Far fewer duplicate conversations:</b> about 1 in 70 decisions at 1,000 tasks, down from 1 in 9.</li>
+        <li><b>Speed and cost stay flat</b> however many tasks you have.</li>
+        <li><b>One reply per message,</b> and quick results arrive as soon as they’re ready.</li>
+        <li><b>Nothing is sent without your yes</b> to that exact draft; edits ask again, and a fake “you approved” email gets flagged.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Still rough</h3>
+      <ul style="margin:0;padding-left:18px;display:grid;gap:8px;color:var(--muted)">
+        <li><b>About 1 message in 20</b> at 1,000 tasks still lands in the wrong thread, mostly a new topic with someone you already talk to.</li>
+        <li><b>A broad request can swallow later ones:</b> after “anything new in my inbox?”, unrelated tasks went to that same thread.</li>
+        <li><b>Drafts are plain chat bubbles</b> approved by typing “yes”; with several waiting, which one is meant is left to the assistant.</li>
+        <li><b>Reminders are set in UTC,</b> so it asks for your timezone.</li>
+        <li><b>Sometimes asks when it didn’t need to,</b> mostly with few tasks.</li>
+        <li><b>Nothing decides which updates are worth interrupting you for</b> when many tasks report back.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="slide" id="codetour" data-part="Code">
+  <header>
+    <span class="eyebrow">5 · Product code tour</span>
+    <h2>Follow one message: “any update from Carl on the bathroom job?”</h2>
+  </header>
+  <div class="tablewrap"><table>
+    <tr><th>Step</th><th>File</th><th>What to look at</th></tr>
+    <tr><td class="step">1 Build the prompt</td><td class="file">server/agents/interaction_agent/agent.py</td><td><code>_render_active_agents</code>: scores every card, renders ~13, not 1,000</td></tr>
+    <tr><td class="step">2 Score cards</td><td class="file">server/services/agents/retrieval.py</td><td>BM25 0.45 + entities 0.40 + recency 0.15; pinned, last hour, then top 8</td></tr>
+    <tr><td class="step">3 Show a card</td><td class="file">server/services/agents/render.py</td><td>Name, purpose, living summary up to 480 characters</td></tr>
+    <tr><td class="step">4 Pick the agent</td><td class="file">server/agents/interaction_agent/status_policy.md</td><td>Progress question → the agent holding it; never a new agent</td></tr>
+    <tr><td class="step">5 Block a duplicate</td><td class="file">server/services/agents/dedup.py</td><td>Same name, or same person and topic → pushed back with the card</td></tr>
+    <tr><td class="step">6 Second look</td><td class="file">server/agents/interaction_agent/second_look_gate.py</td><td>Jev on ~7% of turns; it can only split; on error the decision stands</td></tr>
+    <tr><td class="step">7 Run the agent</td><td class="file">server/services/execution/runner.py</td><td>FIFO lock per agent; at most 4 agents at once</td></tr>
+    <tr><td class="step">8 Load its memory</td><td class="file">server/services/agents/memory.py</td><td>Summary plus IDs found by regex, kept word for word</td></tr>
+    <tr><td class="step">9 Gate the send</td><td class="file">server/services/approvals/gate.py</td><td><code>check_send</code>: approved, same agent, same hash, or blocked</td></tr>
+    <tr><td class="step">10 Update the card</td><td class="file">server/services/agents/summaries.py</td><td>“Now” first, 70 words; rebuild from the run log every 5th run</td></tr>
+    <tr><td class="step">11 Deliver the result</td><td class="file">server/services/inbox/</td><td>One assistant turn at a time; mid-turn results join the next</td></tr>
+    <tr><td class="step">12 Retire idle agents</td><td class="file">server/services/agents/lifecycle.py</td><td>Hourly sweep: dormant at 7 days, archived at 30</td></tr>
+  </table></div>
+</section>
+
+<!-- 16 -->
+<section class="slide" id="evaltour" data-part="Code">
+  <header>
+    <span class="eyebrow">6 · Eval code tour</span>
+    <h2>From a simulated life to a keep-or-revert decision</h2>
+  </header>
+  <div class="tablewrap"><table>
+    <tr><th>Step</th><th>File</th><th>What to look at</th></tr>
+    <tr><td class="step">1 Build worlds</td><td class="file">evals/worlds/lived/ plan → writer → grow → probes</td><td>Life in code; the real assistant grows the roster</td></tr>
+    <tr><td class="step">2 Check keys</td><td class="file">evals/worlds/lived/checkers.py · bench_v2.py</td><td>Three models vote; I review disagreements + 10%</td></tr>
+    <tr><td class="step">3 Run a system</td><td class="file">evals/run.py + evals/experiments/*.yaml</td><td>One config per experiment; budget cap; response cache</td></tr>
+    <tr><td class="step">4 One routing turn</td><td class="file">evals/layers/routing.py</td><td>Production prompt and tools; tool calls intercepted</td></tr>
+    <tr><td class="step">5 Grade</td><td class="file">evals/grading.py</td><td>correct · acceptable · minor · costly · harmful</td></tr>
+    <tr><td class="step">6 Compare</td><td class="file">evals/compare.py</td><td>Paired bootstrap on the same cases; the keep rule</td></tr>
+    <tr><td class="step">7 Guard</td><td class="file">evals/integrity.py</td><td>A changed grader or benchmark marks the run invalid</td></tr>
+    <tr><td class="step">8 Record</td><td class="file">evals/experiments/JOURNAL.md</td><td>Hypothesis, change, run, result, keep or revert</td></tr>
+  </table></div>
+  <p class="callout">939 unit tests, offline: the product (<code>server/tests</code>) and the harness itself (<code>evals/tests</code>), because the grader was wrong once.</p>
+</section>
+
+<!-- 17 -->
+<section class="slide" id="next" data-part="Next">
+  <header>
+    <span class="eyebrow">7 · Gaps and next</span>
+    <h2>What’s still wrong, and the next two weeks in order</h2>
+  </header>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Open gaps</h3>
+      <ul style="margin:0;padding-left:18px;display:grid;gap:8px;color:var(--muted)">
+        <li>Harmful rate 0.049 against a 0.01 target.</li>
+        <li>Evals ran on DeepSeek; production runs Sonnet 5.5.</li>
+        <li>The 1,000 test uses easy, unrelated distractors.</li>
+        <li>Live, one broad “Inbox Check” agent absorbed every matter.</li>
+        <li>Choosing which draft a “yes” means is still the model’s call.</li>
+        <li>Nothing ranks what reaches the user from hundreds of agents.</li>
+      </ul>
+    </div>
+    <div class="card good">
+      <h3>Next, in this order</h3>
+      <ol class="steps">
+        <li><span><b>Fix what I missed:</b> make the second look fire on every “same person, different matter” turn.</span></li>
+        <li><span><b>Confirm it transfers:</b> one targeted Sonnet run, original vs final at 1,000.</span></li>
+        <li><span><b>Test more honestly:</b> a third life with look-alike distractors, which also tests the post-run fixes.</span></li>
+        <li><span><b>Then expand:</b> overload on the user’s side, deciding what is worth interrupting them for.</span></li>
+      </ol>
+    </div>
+  </div>
+  <p class="callout">More detail: the write-up in <code>docs/agent-overload.md</code>, every experiment in <code>evals/experiments/JOURNAL.md</code>. To try it without Gmail: <code>OPENPOKE_FAKE_GMAIL=1</code>, then the Mailbox page.</p>
+</section>
+
+    </div>
+  </div>
+  <p class="hint">← → or the buttons to move between screens</p>
+</div>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+  var cur = 0;
+  var prog = document.getElementById("progress");
+  var dots = slides.map(function (s, i) {
+    var b = document.createElement("button");
+    b.className = "dot"; b.type = "button";
+    b.setAttribute("aria-label", "Screen " + (i + 1) + ": " + (s.querySelector("h1,h2,.quote") || s).textContent.trim());
+    b.title = (s.dataset.part || "") + " · " + (i + 1);
+    b.addEventListener("click", function () { go(i); });
+    prog.appendChild(b);
+    return b;
+  });
+
+  function go(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (s, j) { s.hidden = j !== cur; });
+    dots.forEach(function (d, j) { d.classList.toggle("cur", j === cur); d.classList.toggle("done", j < cur); });
+    document.getElementById("count").textContent = (cur + 1) + " / " + slides.length;
+    document.getElementById("prev").disabled = cur === 0;
+    document.getElementById("next").disabled = cur === slides.length - 1;
+    try { history.replaceState(null, "", "#" + slides[cur].id); } catch (e) {}
+  }
+  document.getElementById("prev").addEventListener("click", function () { go(cur - 1); });
+  document.getElementById("next").addEventListener("click", function () { go(cur + 1); });
+  document.addEventListener("keydown", function (e) {
+    if (e.target.closest && e.target.closest("input, textarea")) return;
+    if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") { e.preventDefault(); go(cur + 1); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(cur - 1); }
+    else if (e.key === "Home") go(0);
+    else if (e.key === "End") go(slides.length - 1);
+  });
+
+  // Bars: pass@1 by roster size, one scale from 0.70 to 1.00 (docs/agent-overload.md §4).
+  var DATA = [["50 agents", [0.893, 0.980, 0.947]], ["200 agents", [0.815, 0.849, 0.929]], ["1,000 agents", [0.781, 0.818, 0.910]]];
+  var NAMES = ["Original", "v1", "Final"], COLORS = ["var(--s-orig)", "var(--s-v1)", "var(--accent)"];
+  var bars = document.getElementById("bars");
+  DATA.forEach(function (g) {
+    var grp = document.createElement("div"); grp.className = "bargroup";
+    var gl = document.createElement("span"); gl.className = "gl"; gl.textContent = g[0]; grp.appendChild(gl);
+    g[1].forEach(function (v, i) {
+      var row = document.createElement("div"); row.className = "barrow";
+      var w = Math.max(2, (v - 0.70) / 0.30 * 100);
+      row.innerHTML = '<span>' + NAMES[i] + '</span><span class="track"><span class="fill" style="display:block;width:' + w.toFixed(1) + '%;background:' + COLORS[i] + '"></span></span><span class="v">' + v.toFixed(3) + '</span>';
+      grp.appendChild(row);
+    });
+    bars.appendChild(grp);
+  });
+
+  var start = 0;
+  var h = (location.hash || "").slice(1);
+  if (h) slides.forEach(function (s, i) { if (s.id === h) start = i; });
+  go(start);
+})();
+</script>
+</body>
+</html>

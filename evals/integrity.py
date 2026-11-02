@@ -1,0 +1,131 @@
+"""Checksum of eval files an experiment loop must never edit.
+
+Update only by deliberate human commit:  python -m evals.integrity --update
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import subprocess
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+EXPECTED_FILE = "evals/PROTECTED.sha256"
+PROTECTED = (
+    "evals/cases.py",
+    "evals/grading.py",
+    "evals/metrics.py",
+    "evals/layers/retrieval.py",
+    "evals/layers/routing.py",
+    "evals/worlds/model.py",
+    "evals/worlds/handwritten.py",
+    "evals/worlds/handwritten_cases.yaml",
+    "evals/suites/regression.txt",
+    "evals/run.py",
+    "evals/llm.py",
+    "evals/judge.py",  # calibrated against the human labels (20261029-091906-judge-dev.json); frozen since
+    "evals/integrity.py",
+    "evals/systems/baseline.py",
+    "evals/systems/frozen/baseline_system_prompt.md",
+    "evals/systems/frozen/baseline_tools.json",
+    "evals/systems/cards_from_world.py",
+    "evals/systems/retrieved.py",
+    "evals/systems/full_cards.py",
+    "evals/worlds/lived/model.py",
+    "evals/worlds/lived/personas.py",  # life 1's people are frozen with its world
+    "evals/worlds/lived/plan.py",
+    "evals/worlds/lived/writer.py",
+    "evals/worlds/lived/grow.py",
+    "evals/worlds/lived/probes.py",
+    "evals/worlds/lived/store.py",
+    "evals/worlds/lived/world-s1.json",
+    "evals/worlds/lived/round2-s1.reviewed.json",
+    "evals/worlds/lived/world-s2.json",
+    "evals/worlds/lived/bench_v2.py",  # load_v2 reads the reviewed files below
+    "evals/worlds/lived/bench-v2-s1.reviewed.json",
+    "evals/worlds/lived/bench-v2-s2.reviewed.json",
+    "evals/worlds/lived/bench-v2-decisions.json",  # the human review, as collected
+    "evals/worlds/lived/bench-v2-corrections.json",  # curator corrections, each with its reason
+    "evals/worlds/lived/replay.py",  # recovers growth's agent logs from the cache, at $0
+    "evals/worlds/lived/agent-logs-s1.json",
+    "evals/worlds/lived/agent-logs-s2.json",
+    "evals/worlds/lived/summaries.py",
+    "evals/worlds/lived/summaries-s1.json",
+    "evals/worlds/lived/summaries-s2.json",
+    # The v2 system, frozen for the life-2 final run; later changes are journalled post-run fixes
+    "server/services/agents/summaries.py",
+    "server/services/agents/second_look.py",
+    "server/services/agents/jev_review.py",
+    "server/services/agents/jev.py",
+    "server/services/agents/retrieval.py",
+    "server/services/agents/render.py",
+    "server/services/agents/dispatch.py",
+    "server/agents/interaction_agent/second_look_gate.py",
+    "server/agents/interaction_agent/status_policy.md",
+    "server/agents/interaction_agent/system_prompt.md",
+    "server/agents/interaction_agent/agent.py",
+    "server/agents/interaction_agent/runtime.py",
+    "evals/compare.py",
+    "evals/second_look_calibration.py",
+    "evals/jev_llm.py",
+    "evals/worlds/memory_gen.py",
+    "evals/layers/memory.py",
+    "evals/memory_run.py",
+    "evals/layers/e2e.py",
+    "evals/worlds/e2e_scenarios.yaml",
+    "evals/fakes/gmail.py",
+    "server/services/gmail/fake_mailbox.py",  # the eval's FakeGmail, moved into the server
+    "evals/e2e_run.py",
+)
+_MISSING = b"<missing>"
+
+
+def compute_checksum(root: Path = REPO_ROOT) -> str:
+    digest = hashlib.sha256()
+    for rel in PROTECTED:
+        digest.update(rel.encode("utf-8") + b"\0")
+        path = root / rel
+        data = path.read_bytes().replace(b"\r\n", b"\n") if path.exists() else _MISSING  # e.g. world not generated yet
+        digest.update(data + b"\0")
+    return digest.hexdigest()
+
+
+def expected_checksum(root: Path = REPO_ROOT) -> str | None:
+    path = root / EXPECTED_FILE
+    return path.read_text(encoding="utf-8").strip() if path.exists() else None
+
+
+def expected_file_committed(root: Path = REPO_ROOT) -> bool:
+    """False when PROTECTED.sha256 differs from HEAD; True if git is unavailable."""
+    try:
+        result = subprocess.run(
+            ["git", "diff", "--quiet", "HEAD", "--", EXPECTED_FILE], cwd=root, capture_output=True
+        )
+    except OSError:
+        return True
+    return result.returncode == 0
+
+
+def write_expected(root: Path = REPO_ROOT) -> str:
+    value = compute_checksum(root)
+    path = root / EXPECTED_FILE
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(value + "\n", encoding="utf-8")
+    return value
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--update", action="store_true", help="write the current checksum as expected")
+    args = parser.parse_args(argv)
+    if args.update:
+        print(write_expected())
+        return 0
+    current, expected = compute_checksum(), expected_checksum()
+    print(f"current  {current}\nexpected {expected}")
+    return 0 if current == expected else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

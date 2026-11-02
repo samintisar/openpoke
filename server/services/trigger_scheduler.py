@@ -3,20 +3,33 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime, timezone
-from typing import Optional, Set
+from datetime import datetime, timedelta, timezone
+from typing import Dict, Optional, Set
 
-from ..agents.execution_agent.batch_manager import ExecutionBatchManager
-from ..agents.execution_agent.runtime import ExecutionResult
 from ..logging_config import logger
+from . import approvals
+from .agents.lifecycle import sweep
+from .agents.registry import get_agent_directory
+from .execution.runner import get_agent_runner
 from .triggers import TriggerRecord, get_trigger_service
 
 
 UTC = timezone.utc
+LIFECYCLE_SWEEP_INTERVAL = timedelta(hours=1)
 
 
 def _utc_now() -> datetime:
     return datetime.now(UTC)
+
+
+def _agents_with_pending_sends(now: datetime) -> Set[str]:
+    """Expire approvals past their time, then the agents still waiting on one; empty if the store fails."""
+    try:
+        approvals.expire_stale(now)
+        return approvals.agent_ids_with_pending(now)
+    except Exception as exc:
+        logger.exception("Pending send lookup failed", extra={"error": str(exc)})
+        return set()
 
 
 def _isoformat(dt: datetime) -> str:
@@ -33,6 +46,7 @@ class TriggerScheduler:
         self._running = False
         self._in_flight: Set[int] = set()
         self._lock = asyncio.Lock()
+        self._last_sweep: Optional[datetime] = None
 
     async def start(self) -> None:
         async with self._lock:
@@ -59,11 +73,46 @@ class TriggerScheduler:
         try:
             while self._running:
                 await self._poll_once()
+                self._maybe_sweep(_utc_now())
                 await asyncio.sleep(self._poll_interval)
         except asyncio.CancelledError:  # pragma: no cover - shutdown path
             raise
         except Exception as exc:  # pragma: no cover - defensive
             logger.exception("Trigger scheduler loop crashed", extra={"error": str(exc)})
+
+    def run_lifecycle_sweep(self, now: Optional[datetime] = None) -> Dict[str, str]:
+        """Expire stale send approvals and demote stale agents (open work = an active trigger with a next fire or a
+        pending send under 7 days old); logs failures, never raises."""
+        now = now or _utc_now()
+        self._last_sweep = now
+        try:
+            open_work = self._service.agent_ids_with_triggers_due(now) | _agents_with_pending_sends(now)
+            changed = sweep(get_agent_directory(), now, open_work)
+        except Exception as exc:
+            logger.exception("Agent lifecycle sweep failed", extra={"error": str(exc)})
+            return {}
+        if changed:
+            logger.info("Agent lifecycle sweep", extra={"changed": changed})
+        return changed
+
+    def _maybe_sweep(self, now: datetime) -> None:
+        if self._last_sweep is None or now - self._last_sweep >= LIFECYCLE_SWEEP_INTERVAL:
+            self.run_lifecycle_sweep(now)
+
+    def _revive(self, trigger: TriggerRecord, fired_at: datetime) -> None:
+        """A trigger fire is activity: the agent's card goes active and its last_active_at moves to now."""
+        try:
+            get_agent_directory().touch(trigger.agent_id, trigger.payload, fired_at)
+        except KeyError:
+            logger.warning(
+                "Trigger agent has no registry card",
+                extra={"trigger_id": trigger.id, "agent_id": trigger.agent_id},
+            )
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning(
+                "Failed to revive trigger agent",
+                extra={"trigger_id": trigger.id, "agent_id": trigger.agent_id, "error": str(exc)},
+            )
 
     async def _poll_once(self) -> None:
         now = _utc_now()
@@ -73,6 +122,12 @@ class TriggerScheduler:
 
         for trigger in due_triggers:
             if trigger.id in self._in_flight:
+                continue
+            if not trigger.agent_id:
+                logger.warning(
+                    "Skipping trigger without agent_id",
+                    extra={"trigger_id": trigger.id, "agent": trigger.agent_name},
+                )
                 continue
             self._in_flight.add(trigger.id)
             asyncio.create_task(self._execute_trigger(trigger), name=f"trigger-{trigger.id}")
@@ -89,10 +144,13 @@ class TriggerScheduler:
                     "scheduled_for": trigger.next_trigger,
                 },
             )
-            execution_manager = ExecutionBatchManager()
-            result = await execution_manager.execute_agent(
-                trigger.agent_name,
+            self._revive(trigger, fired_at)
+            result = await get_agent_runner().run(
+                trigger.agent_id,
                 instructions,
+                origin="trigger",
+                trigger_id=trigger.id,
+                agent_name=trigger.agent_name,
             )
             if result.success:
                 self._handle_success(trigger, fired_at)
@@ -128,7 +186,8 @@ class TriggerScheduler:
         if trigger.recurrence_rule:
             self._service.schedule_next_occurrence(trigger, fired_at=fired_at)
         else:
-            self._service.clear_next_fire(trigger.id, agent_name=trigger.agent_name)
+            # A one-shot trigger that failed never fires again: complete it, which revokes its standing approvals.
+            self._service.mark_as_completed(trigger.id, agent_id=trigger.agent_id)
 
     def _format_instructions(self, trigger: TriggerRecord, fired_at: datetime) -> str:
         scheduled_for = trigger.next_trigger or _isoformat(fired_at)
@@ -146,6 +205,23 @@ class TriggerScheduler:
             f"Scheduled occurrence time: {scheduled_for}.\n\n"
             f"Metadata:\n{metadata}\n\n"
             f"Payload:\n{trigger.payload}"
+            f"{self._standing_note(trigger)}"
+        )
+
+    def _standing_note(self, trigger: TriggerRecord) -> str:
+        """Tell the agent which recipients the user pre-approved for this trigger, so it sends instead of asking."""
+        try:
+            standing = approvals.get_approval_store().active_standing(trigger.id, trigger.agent_id)
+        except Exception as exc:  # pragma: no cover - defensive
+            logger.warning(f"Standing approval lookup failed for trigger {trigger.id}: {exc}")
+            return ""
+        recipients = sorted({address for approval in standing for address in approval.recipients})
+        if not recipients:
+            return ""
+        return (
+            "\n\nStanding approval: the user pre-approved sends from this trigger to exactly "
+            f"{', '.join(recipients)}. Create the draft and send it with gmail_execute_draft in this run; "
+            "no further approval is needed for these recipients. Any other recipient still needs approval."
         )
 
 
@@ -159,4 +235,4 @@ def get_trigger_scheduler() -> TriggerScheduler:
     return _scheduler_instance
 
 
-__all__ = ["TriggerScheduler", "get_trigger_scheduler"]
+__all__ = ["LIFECYCLE_SWEEP_INTERVAL", "TriggerScheduler", "get_trigger_scheduler"]

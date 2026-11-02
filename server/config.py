@@ -50,12 +50,14 @@ class Settings(BaseModel):
     server_host: str = Field(default=os.getenv("OPENPOKE_HOST", "0.0.0.0"))
     server_port: int = Field(default=_env_int("OPENPOKE_PORT", 8001))
 
-    # LLM model selection
-    interaction_agent_model: str = Field(default="anthropic/claude-sonnet-4")
-    execution_agent_model: str = Field(default="anthropic/claude-sonnet-4")
-    execution_agent_search_model: str = Field(default="anthropic/claude-sonnet-4")
-    summarizer_model: str = Field(default="anthropic/claude-sonnet-4")
-    email_classifier_model: str = Field(default="anthropic/claude-sonnet-4")
+    # LLM model selection. anthropic/claude-sonnet-4, the old default for all five, is no longer served
+    # by OpenRouter. Reasoning roles get the strong tier; search, summaries, memory compaction and email
+    # triage are high-volume and simple, so they get the cheap tier (about 20x cheaper).
+    interaction_agent_model: str = Field(default="anthropic/claude-sonnet-5.5")
+    execution_agent_model: str = Field(default="anthropic/claude-sonnet-5.5")
+    execution_agent_search_model: str = Field(default="anthropic/claude-haiku-5.5")
+    summarizer_model: str = Field(default="anthropic/claude-haiku-5.5")
+    email_classifier_model: str = Field(default="anthropic/claude-haiku-5.5")
 
     # Credentials / integrations
     openrouter_api_key: Optional[str] = Field(default=os.getenv("OPENROUTER_API_KEY"))
@@ -70,6 +72,16 @@ class Settings(BaseModel):
     # Summarisation controls
     conversation_summary_threshold: int = Field(default=100)
     conversation_summary_tail_size: int = Field(default=10)
+
+    # Execution-agent memory: verbatim history kept in the prompt before older entries are compacted
+    history_token_budget: int = Field(default=4000)
+
+    # Execution-agent runs: concurrent runs across all agents, and the per-run time limit
+    max_concurrent_agents: int = Field(default=4)
+    agent_timeout_seconds: int = Field(default=90)
+
+    # Interaction inbox: how long non-user items wait so near-simultaneous results share one turn
+    inbox_debounce_seconds: float = Field(default=2)
 
     @property
     def cors_allow_origins(self) -> List[str]:
