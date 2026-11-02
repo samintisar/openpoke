@@ -380,8 +380,6 @@ The result matches what a sealed test should show: final's gain shrank from dev 
   - Standing approvals bound recipients, not content.
   - Inbox delivery is at least once.
   - Interrupted agent runs aren't resumed after a restart.
-- **Jev is an outside dependency.** Without `TYPESAFE_API_KEY` the second look is skipped and routing falls back to the rest of the system.
-
 ## 9. Reproduce
 
 ```bash
