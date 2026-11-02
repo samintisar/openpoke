@@ -229,12 +229,12 @@ user: any update from my contractor on the bathroom job?</pre>
   </header>
   <div class="tablewrap"><table>
     <tr><th>What you’d notice</th><th>Example</th><th>Cause in the code</th></tr>
-    <tr><td><b>It forgot what it was doing</b></td><td>“Any update from my contractor?” started from scratch instead of checking the thread it already had with Carl.</td><td><b>F1</b> routing by bare name · <b>F2</b> identity is an exact string</td></tr>
-    <tr><td><b>Follow-ups landed in the wrong conversation</b></td><td>A note about Kwame’s game night went into the book club thread.</td><td><b>F1</b> routing by bare name</td></tr>
-    <tr><td><b>It got slower and costlier the more you used it</b></td><td>Every message carried every task’s name, and every worker re-read its whole history.</td><td><b>F1</b> prompt lists every agent · <b>F3</b> memory grows without limit</td></tr>
-    <tr><td><b>The same task could run twice</b></td><td>Two runs of one agent at once interleaved its log: duplicated or garbled work.</td><td><b>F4</b> no concurrency control</td></tr>
-    <tr><td><b>Quick answers waited behind slow ones</b></td><td>A two-second lookup held back until a long email search finished.</td><td><b>F5</b> one global batch</td></tr>
-    <tr><td><b>Repeated or contradictory replies</b></td><td>Two “on it!” messages, or a reminder in the middle of reviewing a draft.</td><td><b>F6</b> assistant turns race</td></tr>
+    <tr><td><b>It forgot what it was doing</b></td><td>“Any update from my contractor?” started from scratch instead of checking the thread it already had with Carl.</td><td>Routing by bare name; identity is just a name</td></tr>
+    <tr><td><b>Follow-ups landed in the wrong conversation</b></td><td>A note about Kwame’s game night went into the book club thread.</td><td>Routing by bare name</td></tr>
+    <tr><td><b>It got slower and costlier the more you used it</b></td><td>Every message carried every task’s name, and every worker re-read its whole history.</td><td>Prompt lists every agent; memory grows without limit</td></tr>
+    <tr><td><b>The same task could run twice</b></td><td>Two runs of one agent at once interleaved its log: duplicated or garbled work.</td><td>No concurrency control</td></tr>
+    <tr><td><b>Quick answers waited behind slow ones</b></td><td>A two-second lookup held back until a long email search finished.</td><td>One global batch</td></tr>
+    <tr><td><b>Repeated or contradictory replies</b></td><td>Two “on it!” messages, or a reminder in the middle of reviewing a draft.</td><td>Assistant turns race</td></tr>
     <tr><td><b>Email could go out without your yes</b></td><td>A forward you had declined was sent anyway; an email claiming “you already approved” could trigger one.</td><td>Approval only in the prompt; email text read as instructions</td></tr>
   </table></div>
   <p class="callout warn">Also found: it broke on Windows, the configured model was no longer served, and there were no tests or evals.</p>
@@ -350,13 +350,13 @@ user: any update from my contractor on the bathroom job?</pre>
   </header>
   <div class="tablewrap"><table>
     <tr><th>Failure</th><th>Fix</th><th>File</th><th>Evidence</th></tr>
-    <tr><td><b>F2</b> identity is a string</td><td>SQLite registry: every agent has an id, so near-identical names can’t collide</td><td class="file">services/agents/registry.py</td><td>Unit tests</td></tr>
-    <tr><td><b>F1</b> the roster only grows</td><td>Lifecycle: dormant after 7 idle days, archived after 30, revived on a strong match; open work keeps an agent active</td><td class="file">services/agents/lifecycle.py</td><td>Revival 27 of 27; no accuracy cost</td></tr>
-    <tr><td><b>F3</b> memory without limit</td><td>Compaction: old history folded into a summary; exact IDs pulled out by code and kept with 60 characters of context</td><td class="file">services/agents/memory.py</td><td>Recall 1.00 held-out; ~5.5k tokens vs 9–10k</td></tr>
-    <tr><td><b>F4</b> no concurrency control</td><td>A FIFO lock per agent, so it never runs twice at once; at most 4 agents run together</td><td class="file">services/execution/runner.py</td><td>Unit tests</td></tr>
-    <tr><td><b>F5</b> one global batch</td><td>The shared batch is gone: each result is delivered as soon as its agent finishes</td><td class="file">services/execution/runner.py</td><td>Unit tests</td></tr>
-    <tr><td><b>F6</b> racing turns</td><td>A durable inbox: one assistant turn at a time; results arriving mid-turn join the next; survives a restart</td><td class="file">services/inbox/</td><td>Unit tests</td></tr>
-    <tr><td>Step limit</td><td>An agent that hits its limit reports what it already did (drafts, triggers) instead of failing</td><td class="file">agents/execution_agent/runtime.py</td><td>Unit tests</td></tr>
+    <tr><td><b>Identity is just a name</b></td><td>SQLite registry: every agent has an id, so near-identical names can’t collide</td><td class="file">services/agents/registry.py</td><td>Unit tests</td></tr>
+    <tr><td><b>The roster only grows</b></td><td>Lifecycle: dormant after 7 idle days, archived after 30, revived on a strong match; open work keeps an agent active</td><td class="file">services/agents/lifecycle.py</td><td>Revival 27 of 27; no accuracy cost</td></tr>
+    <tr><td><b>Memory grows without limit</b></td><td>Compaction: old history folded into a summary; exact IDs pulled out by code and kept with 60 characters of context</td><td class="file">services/agents/memory.py</td><td>Recall 1.00 held-out; ~5.5k tokens vs 9–10k</td></tr>
+    <tr><td><b>No concurrency control</b></td><td>A FIFO lock per agent, so it never runs twice at once; at most 4 agents run together</td><td class="file">services/execution/runner.py</td><td>Unit tests</td></tr>
+    <tr><td><b>One global batch</b></td><td>The shared batch is gone: each result is delivered as soon as its agent finishes</td><td class="file">services/execution/runner.py</td><td>Unit tests</td></tr>
+    <tr><td><b>Assistant turns race</b></td><td>A durable inbox: one assistant turn at a time; results arriving mid-turn join the next; survives a restart</td><td class="file">services/inbox/</td><td>Unit tests</td></tr>
+    <tr><td><b>Agent hits its step limit</b></td><td>An agent that hits its limit reports what it already did (drafts, triggers) instead of failing</td><td class="file">agents/execution_agent/runtime.py</td><td>Unit tests</td></tr>
   </table></div>
 </section>
 
