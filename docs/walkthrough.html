@@ -6,7 +6,7 @@
 <title>OpenPoke Agent Overload Walkthrough</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* One screen per part of the walkthrough; arrow keys or the buttons move between screens. */
 :root {
@@ -25,7 +25,7 @@
   --s-orig: #8a6d3b;
   --s-v1: #7b8ea0;
   --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 }
 @media (prefers-color-scheme: dark) {
@@ -81,9 +81,11 @@ button { font: inherit; cursor: pointer; }
 /* Stage */
 .stage { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
 .slide { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: clamp(20px, 4vw, 44px); min-height: min(640px, 76vh); display: grid; gap: 22px; align-content: start; min-width: 0; }
-.slide.dark { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-.slide.dark .muted { color: var(--line); }
-.slide.dark .eyebrow { color: var(--accent-soft); }
+.slide.cover { align-content: center; gap: 36px; }
+.slide.cover h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); }
+.slide.cover .lede { font-size: 1.2rem; max-width: 38em; }
+.slide.cover .card { padding: 20px 22px; }
+.slide.cover .foot { max-width: none; font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 14px; }
 .slide.statement { background: var(--accent); color: var(--surface); border-color: var(--accent); align-content: center; }
 .slide.statement .eyebrow { color: var(--accent-soft); }
 .slide header { display: grid; gap: 8px; }
@@ -102,7 +104,6 @@ button { font: inherit; cursor: pointer; }
 .stat { display: grid; gap: 4px; }
 .stat .l { font-size: 0.92rem; color: var(--muted); }
 pre { margin: 0; background: var(--sunk); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.55; color: var(--ink); }
-.slide.dark pre { background: #0d1318; color: #c9d6e0; }
 .tablewrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
 th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -159,17 +160,18 @@ tr.final td { font-weight: 700; }
     <div id="slides">
 
 <!-- 1 -->
-<section class="slide dark" id="cover" data-part="Intro">
+<section class="slide cover" id="cover" data-part="Intro">
   <header>
-    <span class="eyebrow">samintisar/openpoke · feat/agent-overload</span>
-    <h1>Agent overload in OpenPoke</h1>
-    <p class="muted" style="font-size:1.2rem">What broke as agents piled up, how I measured it, what fixed it, and what still doesn’t work.</p>
+    <span class="eyebrow">OpenPoke · agent overload</span>
+    <h1>Keeping one assistant accurate across 1,000 agents</h1>
+    <p class="muted lede">What broke as agents piled up, how I measured it, what fixed it, and what still doesn’t work.</p>
   </header>
   <div class="grid g3">
-    <div class="stat"><span class="big">0.78 → 0.91</span><span class="l muted">routing correct at 1,000 agents, sealed test</span></div>
-    <div class="stat"><span class="big">0.113 → 0.014</span><span class="l muted">duplicate agents at 1,000</span></div>
-    <div class="stat"><span class="big">0</span><span class="l muted">unauthorized sends with the gate (6 without)</span></div>
+    <div class="card stat"><span class="big"><span class="from">0.78 →</span> 0.91</span><span class="l">routing correct at 1,000 agents</span></div>
+    <div class="card stat"><span class="big"><span class="from">0.11 →</span> 0.01</span><span class="l">duplicate agents created at 1,000</span></div>
+    <div class="card stat"><span class="big"><span class="from">6 →</span> 0</span><span class="l">unauthorized email sends, gate off vs on</span></div>
   </div>
+  <p class="muted foot">Original OpenPoke vs the final system, on a sealed held-out world that was not read until one final run per system.</p>
 </section>
 
 <!-- 2 -->
