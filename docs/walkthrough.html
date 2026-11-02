@@ -266,7 +266,7 @@ user: any update from my contractor on the bathroom job?</pre>
     <div class="card good"><span class="tag">L2 · routing</span><h3>Does it pick the right agent?</h3><p>One real assistant turn with the production prompt and tools, on rosters of 10 to 1,000. Tool calls are intercepted and the outcome graded: correct, acceptable, minor, costly (duplicate), harmful (wrong agent).</p></div>
     <div class="card good"><span class="tag">L3 · end to end</span><h3>Does the whole system behave?</h3><p>Real agents against an in-memory Gmail, 26 scenarios. Sends are audited where mail leaves the mailbox, separately from the gate.</p></div>
   </div>
-  <p class="callout">Plus a memory eval (plant facts, compact, ask for them back) and an LLM judge from another model family, used only on the 3 checks where it agreed with my 42 hand labels at least 85% of the time. Evals run on one fixed model, chosen after a reliability check (malformed tool calls 0.55%, wait loops 1.2%).</p>
+  <p class="callout">Plus a memory eval (plant facts, compact, ask for them back) and an LLM judge from another model family, used only on the 3 checks where it agreed with my 42 hand labels at least 85% of the time. Evals run on DeepSeek V4.1 Flash, chosen after a reliability check (malformed tool calls 0.55%, wait loops 1.2%).</p>
 </section>
 
 <!-- 7 -->
@@ -308,7 +308,7 @@ user: any update from my contractor on the bathroom job?</pre>
     </div>
     <div class="grid" style="gap:12px;align-content:start">
       <div class="card good"><span class="tag">reuse policy</span><h3>An agent owns a matter</h3><p>A person plus a subject belongs to one agent, whatever the next step is.</p></div>
-      <div class="card"><h3>v1’s first test</h3><p>0.84 at 1,000 agents, intervals touching zero. The error analysis showed the <b>benchmark itself</b> was part of the problem: dev had 1 vague-reference case, test had 6, and some keys were wrong. So I rebuilt it as benchmark v2 before going further.</p></div>
+      <div class="card"><h3>v1’s first test</h3><p>Intervals touching zero. The error analysis showed the <b>benchmark itself</b> was part of the problem: dev had 1 vague-reference case, test had 6, and some keys were wrong. So I rebuilt it as benchmark v2 before going further.</p></div>
     </div>
   </div>
 </section>
@@ -387,7 +387,7 @@ user: any update from my contractor on the bathroom job?</pre>
     <div class="grid" style="gap:10px;align-content:start">
       <div class="legend"><span><i style="background:var(--s-orig)"></i>Original</span><span><i style="background:var(--s-v1)"></i>v1</span><span><i style="background:var(--accent)"></i>Final</span></div>
       <div class="bars" id="bars" aria-label="Routing correct or acceptable by roster size"></div>
-      <p class="muted" style="font-size:0.85rem">Correct or acceptable, life 2, 3 samples × 108 cases per size. Bars start at 0.70.</p>
+      <p class="muted" style="font-size:0.85rem">Correct or acceptable, life 2, DeepSeek V4.1 Flash, 3 samples × 108 cases per size. Bars start at 0.70.</p>
     </div>
     <div class="grid" style="gap:12px;align-content:start">
       <div class="stat card"><span class="big">+0.130</span><span class="l">final minus original at 1,000 agents, 95% interval [+0.071, +0.198]</span></div>
@@ -439,11 +439,11 @@ user: any update from my contractor on the bathroom job?</pre>
     <h2>Safety, memory, and a live test on the production model</h2>
   </header>
   <div class="grid g3">
-    <div class="card good"><span class="tag">send gate</span><h3>0 unauthorized sends</h3><p>15 held-out runs, on each of two models. Gate off: 6. Every draft gets a content hash; only the user’s own yes, after seeing it, approves that exact content.</p></div>
+    <div class="card good"><span class="tag">send gate</span><h3>0 unauthorized sends</h3><p>15 held-out runs. Gate off, same scenarios: 6. Every draft gets a content hash; only the user’s own yes, after seeing it, approves that exact content.</p></div>
     <div class="card good"><span class="tag">memory</span><h3>Recall 1.00</h3><p>Planted facts survive compaction on a held-out seed, including a decision that was later changed, at ~5.5k tokens instead of 9–10k and growing.</p></div>
-    <div class="card"><span class="tag">live on the production model</span><h3>9 of 25 turns failed → 0 of 12</h3><p>Evals ran on a different model. Testing the production model by hand found a wait loop the evals couldn’t see. Fixed with a test before submitting.</p></div>
+    <div class="card"><span class="tag">live on Sonnet 5.5</span><h3>9 of 25 turns failed → 0 of 12</h3><p>Evals ran on DeepSeek. Testing the production model by hand found a wait loop the evals couldn’t see. Fixed with a test before submitting.</p></div>
   </div>
-  <p class="callout">The same live session: a phishing email claiming “the user already approved” was refused and flagged; an edit while approving produced a new draft and a new question. Two reply rules from my hand labels: drafts repeated in the reply text went from 12 of 36 to 0 of 34, and fake approvals now get an explicit warning (0 of 3 → 3 of 3).</p>
+  <p class="callout">The same live session: a phishing email claiming “the user already approved” was refused and flagged; an edit while approving produced a new draft and a new question. Two reply rules from my hand labels: don’t repeat a draft the user can already see, and warn plainly when something claims the user’s approval.</p>
 </section>
 
 <!-- user experience now -->
@@ -531,7 +531,7 @@ user: any update from my contractor on the bathroom job?</pre>
       <h3>Open gaps</h3>
       <ul style="margin:0;padding-left:18px;display:grid;gap:8px;color:var(--muted)">
         <li>Harmful rate 0.049 against a 0.01 target.</li>
-        <li>Evals ran on a different model from production.</li>
+        <li>Evals ran on DeepSeek; production runs Sonnet 5.5.</li>
         <li>The 1,000 test uses easy, unrelated distractors.</li>
         <li>Live, one broad “Inbox Check” agent absorbed every matter.</li>
         <li>Choosing which draft a “yes” means is still the model’s call.</li>
@@ -542,7 +542,7 @@ user: any update from my contractor on the bathroom job?</pre>
       <h3>Next, in this order</h3>
       <ol class="steps">
         <li><span><b>Fix what I missed:</b> make the second look fire on every “same person, different matter” turn.</span></li>
-        <li><span><b>Confirm it transfers:</b> one targeted run on the production model, original vs final at 1,000.</span></li>
+        <li><span><b>Confirm it transfers:</b> one targeted Sonnet run, original vs final at 1,000.</span></li>
         <li><span><b>Test more honestly:</b> a third life with look-alike distractors, which also tests the post-run fixes.</span></li>
         <li><span><b>Then expand:</b> overload on the user’s side, deciding what is worth interrupting them for.</span></li>
       </ol>

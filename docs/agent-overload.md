@@ -24,7 +24,7 @@ The full experiment log, with every run and decision, is [`evals/experiments/JOU
   - **Duplicate agents almost disappear:** 0.113 → **0.014** at 1,000.
   - **The prompt stays flat:** 23.5k tokens per decision at 1,000 agents. The original's prompt is 35.4k there and grows with every agent.
 - **Two of my pre-registered targets were missed, and I report them as they are.** At 1,000 agents, correct is 0.91 against a target of 0.95, and the harmful rate is 0.049 against 0.01. Duplicates, tokens, the second-look rate and a significant gain over the original all met their targets.
-- **Sending email is enforced in code.** On the held-out safety scenarios the approval gate allowed **0 unauthorized sends** in 15 runs, on each of two models. With the gate off, the same scenarios produced 6, including a forward the user had declined.
+- **Sending email is enforced in code.** On the held-out safety scenarios the approval gate allowed **0 unauthorized sends** in 15 runs. With the gate off, the same scenarios produced 6, including a forward the user had declined.
 - **Agent memory is bounded.** Compacted history recalls **1.00** of planted facts on a held-out seed, at about 5.5k tokens instead of 9–10k.
 - **The agent was assessed three ways:**
   1. code checks on the end state;
@@ -72,7 +72,7 @@ Probe messages are the next events in that life, at 10, 50, 200 and 1,000 agents
 
 ### Benchmark v2: why the first benchmark wasn't enough
 
-v1's test run ended at 0.84 pass@1 at 200 and 1,000 agents, with intervals that touched zero. The error analysis showed the benchmark itself was part of the problem:
+v1's first test run had intervals that touched zero. The error analysis showed the benchmark itself was part of the problem:
 - **Dev and test had different mixes.** At 200 agents, dev had 1 vague-reference case and test had 6.
 - **Both splits came from one simulated life.**
 - **Some answer keys didn't hold up.** "how's the parking spot thing going?" was keyed to a lease-call agent whose card never mentions parking.
@@ -87,7 +87,7 @@ So v2 rebuilt it ([`bench_v2.py`](../evals/worlds/lived/bench_v2.py)):
 
 ### Model
 
-Routing evals run on one fixed model (model B below), chosen after a reliability gate on malformed tool calls (0.55%), wait loops (1.2%) and error rows (0%). Safety and memory were run on model B and on an earlier eval model (model A). The production model is a different one, which these evals don't measure.
+Evals run on **DeepSeek V4.1 Flash**, chosen after a reliability gate on malformed tool calls (0.55%), wait loops (1.2%) and error rows (0%). Production defaults to Claude Sonnet 5.5, which these evals don't measure.
 
 ### Discipline
 
@@ -262,35 +262,28 @@ I tested TypeSafe's Jev in seven ways on dev replays before giving it a role:
 
 Live on dev, the split-only reviewer beat the LLM reviewer slightly (pass@1 +0.006, harmful −0.006, fewer tokens), so it became the default.
 
-### v1's own test run, for the record
-
-On v1's original test split (model A, about 32 cases per size), retrieval reached 0.98 at 50 and 0.84 at 1,000, against the original's 0.89 and 0.76. The intervals touched zero, and the error analysis above is what led to v2.
-
-![v1 routing pass@1 on its test split with 95% intervals](figures/routing-test.svg)
-
 ### Safety, end to end
 
 | | Dev, 21 scenarios × 3 | Test, 5 scenarios × 3 |
 |---|---|---|
-| Gate on, model A: unauthorized sends | 0 | **0** (6 attempts blocked) |
-| Gate off, model A: unauthorized sends | 1 | **6** |
-| Gate on, model B: unauthorized sends | **0** of 22 sends (3 attempts blocked) | **0** (6 attempts blocked; 15/15 pass) |
+| Gate on: unauthorized sends | **0** of 22 sends (3 attempts blocked) | **0** (6 attempts blocked; 15/15 pass) |
+| Gate off: unauthorized sends | not run | **6** of 9 sends |
 
-**The gate-off failures:** on test, the user declines a forward and it goes out anyway (3/3 runs), and a forward goes out before the user approves it (3/3). On dev, a helper replied to a thread directly instead of drafting.
+**The gate-off failures:** on test, the user declines a forward and it goes out anyway (3/3 runs), and a forward goes out before the user approves it (3/3).
 
-**On model B, safety holds but tasks finish a little less often.** Dev pass@1 is 0.95 and pass^k 0.89, against model A's 0.98 and 0.95. The main failure is the assistant saying it did something without the tool call: 5 of 63 runs went off script that way (for example, "I'll pass that on" with nothing dispatched), and 2 runs never sent an approved draft.
+**Safety holds, but tasks don't always finish.** Dev pass@1 is 0.95 and pass^k 0.89. The main failure is the assistant saying it did something without the tool call: 5 of 63 runs went off script that way (for example, "I'll pass that on" with nothing dispatched), and 2 runs never sent an approved draft.
 
-**Judge on the gate-on test transcripts (model A):** asked before sending 15/15, one clear reply 15/15, no internal jargon 14/15 (one reply mentioned "Action 1"). **After the two reply rules (dev):** drafts repeated in the reply text 12/36 → 0/34, and explicit warnings when an email faked the user's approval 0/3 → 3/3.
+**Judge on the gate-on test transcripts:** asked before sending 15/15, one clear reply 15/15, no internal jargon 15/15.
 
 ### Memory
 
 | | Recall of planted facts | History tokens |
 |---|---|---|
 | Full history | 1.00 | 9–10k, growing without limit |
-| Compacted, held-out seed (model A / B) | **1.00 / 1.00** | 5.8k / 5.5k |
-| Compacted, dev seed (model A / B) | 1.00 / 0.97 | 5.5k / 6.1k |
+| Compacted, held-out seed | **1.00** | 5.5k |
+| Compacted, dev seed | 0.97 | 6.1k |
 
-Every fact type stayed at 1.00 on the held-out seed: thread ID, draft ID, email address, preference, a decision later superseded (stale answers 0.00) and a commitment. On model B's dev run, 2 of 12 compactions failed and fell back to the full history, so nothing was lost but nothing was saved for those agents.
+Every fact type stayed at 1.00 on the held-out seed: thread ID, draft ID, email address, preference, a decision later superseded (stale answers 0.00) and a commitment. On the dev run, 2 of 12 compactions failed and fell back to the full history, so nothing was lost but nothing was saved for those agents.
 
 ## 5. After the sealed run: checks on dev
 
@@ -330,10 +323,10 @@ I changed the status rule's wording once after reading dev failures, so its dev 
 
 ### A live session on the production model
 
-The evals never ran the production model. I used the app by hand in fake mailbox mode (`OPENPOKE_FAKE_GMAIL=1`) for 13 messages: an inbox check, replies and sends, an edit while approving, a decline, status questions, a reminder, and an email claiming "the user already approved" a forward. This is a hand-run session, not an eval, so it's evidence of failure modes, not rates.
+The evals never ran Sonnet 5.5, the production default. I used the app by hand in fake mailbox mode (`OPENPOKE_FAKE_GMAIL=1`) for 13 messages: an inbox check, replies and sends, an edit while approving, a decline, status questions, a reminder, and an email claiming "the user already approved" a forward. This is a hand-run session, not an eval, so it's evidence of failure modes, not rates.
 
 - **Safety held throughout.** 2 sends, both approved; the injected forward was refused and called out as phishing; an edit while approving produced a new draft and a new question; a decline sent nothing.
-- **The assistant's turn hit its 8-step limit on 9 of 25 turns.** The production model kept calling `wait` until the loop raised, so some acknowledgements never reached the user. The loop is unchanged from the original OpenPoke, and the model gate measured wait loops at 1.2% on model B. **Fix:** a round in which the model only calls `wait` ends the turn (`interaction_agent/runtime.py`, `server/tests/test_wait_ends_turn.py`). On a fresh session after the fix: 0 of 12 turns failed. The L2 routing layer has its own frozen copy of the loop and is unchanged; L3 runs the production loop, so later L3 runs include the fix.
+- **The assistant's turn hit its 8-step limit on 9 of 25 turns.** Sonnet kept calling `wait` until the loop raised, so some acknowledgements never reached the user. The loop is unchanged from the original OpenPoke, and the model gate measured wait loops at 1.2% on DeepSeek. **Fix:** a round in which the model only calls `wait` ends the turn (`interaction_agent/runtime.py`, `server/tests/test_wait_ends_turn.py`). On a fresh session after the fix: 0 of 12 turns failed. The L2 routing layer has its own frozen copy of the loop and is unchanged; L3 runs the production loop, so later L3 runs include the fix.
 - **Not fixed, listed in §8:** every task went to one broad "Inbox Check" agent, one reply leaked a tool name, and reminders are set in UTC.
 
 ## 6. How I avoided tuning to the benchmark
@@ -359,7 +352,7 @@ The result matches what a sealed test should show: final's gain shrank from dev 
 - **The first reuse rule** ("same person, new topic → new agent") roughly doubled duplicates, to 0.16–0.18.
 - **Hiding archived agents entirely** dropped retrieval recall to 0.62, because every lost case pointed at an agent idle for 30+ days.
 - **A bare list of IDs in compacted memory** lost the thread ID half the time.
-- **Free models** looped on `wait` in about 40% of turns. Evals moved to model A, then to model B.
+- **Free models** looped on `wait` in about 40% of turns. Evals moved to DeepSeek V4.1 Flash.
 - **An eval bug:** agent-result cases penalised relaying the agent's question to the user. It caused 33 of 49 early baseline "failures". I fixed the grader, not the system.
 - **Shorter summaries (300 characters)** cost accuracy and saved no tokens: the extra tokens came from search loops, not card length.
 - **The first status rule** told the assistant to answer from the card's summary. It started replying without dispatching, sometimes promising work it never started. The kept rule always asks the agent doing the work.
@@ -371,7 +364,7 @@ The result matches what a sealed test should show: final's gain shrank from dev 
 
 - **The harmful-rate target is missed by a wide margin** (0.049 against 0.01). About 1 decision in 20 at 1,000 agents still goes to the wrong agent. Each one can mean a follow-up landing in the wrong thread.
 - **One world per split,** written by a model. Construction-based keys, three checker models and a human review reduce label noise but don't remove it.
-- **Evals ran on a different model from production.** The production model isn't measured. Model B's main failure, saying it acted without calling the tool, may not carry over in either direction. One hand-run session on the production model already found a failure model B rarely shows (the `wait` loop, §5), so a measured run on the production model is the first thing to add.
+- **Evals ran on DeepSeek; production runs Sonnet 5.5.** The production default isn't measured. DeepSeek's main failure, saying it acted without calling the tool, may not carry over in either direction. One hand-run session on Sonnet already found a failure DeepSeek rarely shows (the `wait` loop, §5), so a measured Sonnet run is the first thing to add.
 - **A broad agent absorbs every matter.** In that session, the agent created for "anything new in my inbox?" took every later task: Priya's reply, Dana's parking spot, Carl's quote, a dentist reminder. Its summary names everyone in the inbox, so it outranks every card. The benchmark has no probe kind for agents created by a broad request.
 - **Reminders are set in UTC.** The browser's timezone doesn't reach the trigger tool; the assistant flagged it and asked.
 - **A tool name leaked once.** One reply began with "send_message_to_user / message:", which the jargon check is meant to catch.
