@@ -30,8 +30,8 @@ python -m pytest -q
 ## Quickstart
 1. **Clone and enter the repo.**
    ```bash
-   git clone https://github.com/shlokkhemani/OpenPoke
-   cd OpenPoke
+   git clone -b feat/agent-overload https://github.com/samintisar/openpoke
+   cd openpoke
    ```
 2. **Create a shared env file.** Copy the template and open it in your editor:
    ```bash
@@ -94,6 +94,8 @@ Start the server with `OPENPOKE_FAKE_GMAIL=1` (for example `OPENPOKE_FAKE_GMAIL=
 ## Project Layout
 - `server/` – FastAPI application and agents
 - `web/` – Next.js app
+- `evals/` – eval harness, worlds, experiment configs, results and the journal
+- `docs/` – the agent-overload write-up, the walkthrough and the design specs
 - `server/data/` – runtime data (ignored by git)
 
 ## License

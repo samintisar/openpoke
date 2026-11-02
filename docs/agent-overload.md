@@ -364,6 +364,7 @@ The result matches what a sealed test should show: final's gain shrank from dev 
 
 - **The harmful-rate target is missed by a wide margin** (0.049 against 0.01). About 1 decision in 20 at 1,000 agents still goes to the wrong agent. Each one can mean a follow-up landing in the wrong thread.
 - **One world per split,** written by a model. Construction-based keys, three checker models and a human review reduce label noise but don't remove it.
+- **The 1,000-agent roster is padded with unrelated errands.** It is the 200 roster plus about 800 background errands from the same life, not look-alikes of the probes' matters, so it is likely easier than a real 1,000-agent history.
 - **Evals ran on DeepSeek; production runs Sonnet 5.5.** The production default isn't measured. DeepSeek's main failure, saying it acted without calling the tool, may not carry over in either direction. One hand-run session on Sonnet already found a failure DeepSeek rarely shows (the `wait` loop, §5), so a measured Sonnet run is the first thing to add.
 - **A broad agent absorbs every matter.** In that session, the agent created for "anything new in my inbox?" took every later task: Priya's reply, Dana's parking spot, Carl's quote, a dentist reminder. Its summary names everyone in the inbox, so it outranks every card. The benchmark has no probe kind for agents created by a broad request.
 - **Reminders are set in UTC.** The browser's timezone doesn't reach the trigger tool; the assistant flagged it and asked.
